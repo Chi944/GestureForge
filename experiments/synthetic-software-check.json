@@ -94,7 +94,7 @@
           "p": 2,
           "weights": "distance"
         },
-        "fit_seconds": 0.0324842999689281,
+        "fit_seconds": 0.010506199905648828,
         "labels": [
           "BOOKMARK",
           "NEUTRAL",
@@ -115,9 +115,9 @@
           "PREVIOUS": 3.956124651432037
         },
         "timing": {
-          "estimator_fit_seconds": 0.02445669996086508,
-          "fit_seconds": 0.0324842999689281,
-          "threshold_seconds": 0.008024999988265336
+          "estimator_fit_seconds": 0.008684499887749553,
+          "fit_seconds": 0.010506199905648828,
+          "threshold_seconds": 0.0018204000080004334
         }
       },
       "sample_predictions": [
@@ -783,9 +783,9 @@
         }
       ],
       "timing": {
-        "fit_seconds": 0.0324842999689281,
-        "predict_seconds": 0.6344039998948574,
-        "predict_seconds_per_sample": 0.010573399998247624
+        "fit_seconds": 0.010506199905648828,
+        "predict_seconds": 0.20295109995640814,
+        "predict_seconds_per_sample": 0.0033825183326068025
       },
       "train_samples": 60,
       "trial_predictions": [
@@ -944,7 +944,7 @@
           "tol": 0.001,
           "verbose": false
         },
-        "fit_seconds": 0.013486300013028085,
+        "fit_seconds": 0.004470699932426214,
         "labels": [
           "BOOKMARK",
           "NEUTRAL",
@@ -965,9 +965,9 @@
           "PREVIOUS": 3.956124651432037
         },
         "timing": {
-          "estimator_fit_seconds": 0.007380399969406426,
-          "fit_seconds": 0.013486300013028085,
-          "threshold_seconds": 0.0061036000261083245
+          "estimator_fit_seconds": 0.0026759000029414892,
+          "fit_seconds": 0.004470699932426214,
+          "threshold_seconds": 0.001793599920347333
         }
       },
       "sample_predictions": [
@@ -1633,9 +1633,9 @@
         }
       ],
       "timing": {
-        "fit_seconds": 0.013486300013028085,
-        "predict_seconds": 0.08130019996315241,
-        "predict_seconds_per_sample": 0.0013550033327192068
+        "fit_seconds": 0.004470699932426214,
+        "predict_seconds": 0.03949410002678633,
+        "predict_seconds_per_sample": 0.0006582350004464387
       },
       "train_samples": 60,
       "trial_predictions": [

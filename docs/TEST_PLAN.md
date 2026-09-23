@@ -1,6 +1,6 @@
 # GestureForge Test Plan and Requirement Traceability
 
-Status: software verification is recorded in `docs/evidence/verification.json`; live camera, participant pilot, real NEXT actions, and a two-hold live smoke check are recorded in `docs/evidence/PILOT_RESULTS.md`. Formal twenty-hold run, live false-action and latency measurements, second-machine verification and signed submission evidence remain open.
+Status: software verification is recorded in `docs/evidence/verification.json`; live camera, participant pilot, real NEXT actions, and a two-hold live smoke check are recorded in `docs/evidence/PILOT_RESULTS.md`. Fresh-source setup and an actual Windows interface screenshot are also recorded. The required second-machine verification remains open for the assignment. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
 
 ## Test Strategy
 
@@ -24,9 +24,9 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | RQ-006 kNN/SVM comparison | Reproducible evaluate command output; aggregate pilot metrics in `docs/evidence/PILOT_RESULTS.md` | Bounded search evidence | Development validation complete; held-out final pending |
 | RQ-007 Hold/rearm controller | State-machine unit tests | Live replay and system tests | Software verified |
 | RQ-008 Assignment NEXT only | Viewer/controller integration test; live NEXT event log | Superseded by all-command tests | Verified for assignment live path |
-| RQ-009 Exactly-once actions | Duplicate event and long-hold tests; two live five-second holds advanced once each | Twenty five-second holds per profile | Software verified plus live smoke check; formal run pending |
+| RQ-009 Exactly-once actions | Duplicate event and long-hold tests; two live deliberate holds advanced once each | Twenty five-second holds per profile | Software verified plus assignment live smoke check; formal run reserved for final project |
 | RQ-010 Preview-only PREVIOUS/BOOKMARK | UI smoke check | Replaced by command execution | Software verified |
-| RQ-011 Manifest retains invalid detections | Manifest validation test | Same | Software verified |
+| RQ-011 Manifest retains invalid detections | Manifest validation test; P01 scheduled pilot samples were all valid | Same | Software verified; no invalid real P01 captures to report |
 | RQ-012 Metrics include UNKNOWN | Evaluation unit test with known confusion matrix | Final held-out report | Software verified |
 | RQ-013 Profile persistence | Not in assignment scope | Round-trip, reload, delete, corrupt file | Future |
 | RQ-014 JSON decks | Not in assignment scope | Valid and malformed deck tests | Future |

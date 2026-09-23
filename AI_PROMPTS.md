@@ -32,6 +32,10 @@ The current prompt archive should be reviewed manually before submission. Repres
 
 > ensure all requirements are met in order to score the highest band and not be penalised
 
+> What is left for the assignment build and what is next? Also, I want the branch to be on main and I want my readme to be professionally designed like my memepet repo but make it suitable for assignment submission. Also, resolve any issues that can be resolved for me
+
+This follow-up used AI assistance to prepare the README, audit stale submission status, verify setup, and maintain GitHub branches/issues. The interface screenshot was captured from the application with the camera off; it is not a generated or simulated live-recognition result.
+
 ## Human Review Needed
 
 Before submission:

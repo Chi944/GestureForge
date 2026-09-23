@@ -4,9 +4,10 @@ Created: 2026-09-23
 
 Repository:
 
-- URL: https://github.com/Chi944/gestureforge-ict304
+- URL: https://github.com/Chi944/GestureForge_304
 - Visibility: Private
-- Local remote: `origin` -> `https://github.com/Chi944/gestureforge-ict304.git`
+- Local remote: `origin` -> `https://github.com/Chi944/GestureForge_304.git`
+- Current local and GitHub default branch: `main`
 - Local branch at setup time: `codex/assignment-prototype`
 
 Milestones:
@@ -38,7 +39,7 @@ Notes:
 - GitHub connector issue creation returned 404 for this newly created private repository, so issues and the project board were created through the signed-in GitHub browser session.
 - Do not claim GitHub peer review, CI, or project progress until the relevant commits, pushes, reviews, and checks actually happen.
 
-## Tracking update, 2026-09-23
+## Earlier tracking update, 2026-09-23
 
 The initial implementation branch was pushed after local verification:
 
@@ -64,3 +65,15 @@ The agile board and issue bodies were updated to reflect the actual state of the
 No GitHub comments or messages were posted during the board update.
 
 The table reflects the subsequent 23 September pilot update: project status fields were changed and verified in GitHub. Source commit `b5aea04` also passed [Assignment checks #4](https://github.com/Chi944/gestureforge-ict304/actions/runs/35832253894). Later commit checks are reported separately.
+
+## Main branch and issue review, 2026-09-23
+
+At the user's request, `main` was created from verified prototype commit `c555559`, pushed with an upstream, and selected as the GitHub default. `git ls-remote --symref origin HEAD` returned `ref: refs/heads/main HEAD`. The previous `codex/assignment-prototype` branch is retained.
+
+- Issue [#3](https://github.com/Chi944/GestureForge_304/issues/3): closed, board Done. Both classifiers have reproducible real pilot results. The 25/40 negative BOOKMARK acceptance limitation is explicitly retained; final rejection targets are not claimed as met.
+- Issue [#4](https://github.com/Chi944/GestureForge_304/issues/4): closed, board Done. The NEXT-only interface and real hold/rearm smoke evidence satisfy the assignment implementation scope.
+- Issue [#6](https://github.com/Chi944/GestureForge_304/issues/6): open, In progress. Resolved camera/data blockers were removed. Second-computer installation, marker data access and submission gates remain open.
+- Issue #7: open, In progress for report and declaration completion.
+- Issues #8 and #9: open, Backlog for November's integrated project.
+
+The workflow now uses `actions/checkout@v7` and `actions/setup-python@v7`, whose tagged action manifests use Node 24, replacing the older action runtimes. Sources: [checkout](https://github.com/actions/checkout), [setup-python](https://github.com/actions/setup-python). Workflow token access is limited to reading repository contents. A successful hosted run is required to verify these changes.

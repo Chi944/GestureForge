@@ -40,6 +40,8 @@ For the scripted setup path used by the release package, run:
 .\scripts\setup.ps1
 ```
 
+If Python 3.11 is installed without the Windows launcher, run `scripts/setup.ps1 -PythonExe "C:\path\to\python.exe"`. The script checks the interpreter version before installing dependencies.
+
 If PowerShell blocks activation, run:
 
 ```powershell
@@ -95,9 +97,9 @@ Expected assignment window:
 Human collection commands:
 
 ```powershell
-python -m gestureforge.collect --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
-python -m gestureforge.collect --split validation --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
-python -m gestureforge.collect --split validation_negative --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
+python -m gestureforge.collect --camera 1 --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
+python -m gestureforge.collect --camera 1 --split validation --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
+python -m gestureforge.collect --camera 1 --split validation_negative --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
 ```
 
 The command arguments set the participant pseudonym, hand and session type. The window prompts each label in sequence. Press Space for each trial, wait for the two-second countdown, hold the pose steadily, then relax during the release interval. Press Q to stop; completed trials remain saved. Only collect data after participant consent has been recorded.

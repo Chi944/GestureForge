@@ -1,6 +1,6 @@
 # GestureForge Assignment Design Report Draft
 
-Status: formal draft, not ready to submit. The assignment prototype, pilot comparison and participant-observed live NEXT hold/rearm check are verified. Assignment completion still requires the second-computer check, tutor/team review, marker access and retention agreement, final report review and signed declaration. Formal repeated-hold, live false-action, latency and held-out evaluation remain final-project deliverables.
+Status: formal draft, not ready to submit. The assignment prototype, pilot comparison and participant-observed live NEXT hold/rearm check are verified. Fresh-source setup and actual interface screenshot evidence are complete. Assignment completion depends on final report export/review, the required second-computer check, tutor/team review, marker access and retention agreement, AI-use guidance check, signed declaration, and LMS upload/download verification. Formal repeated-hold, live false-action, latency and held-out evaluation are final-project deliverables.
 
 ## Executive Summary
 
@@ -31,12 +31,12 @@ Implemented for the assignment prototype:
 - Clear assignment boundary text showing PREVIOUS and BOOKMARK as preview-only.
 - Local agile board, setup helper, source packaging helper, and documentation set.
 
-Still pending for assignment evidence:
+Still pending before assignment submission:
 
-- Formal twenty-hold duplicate-action evidence.
-- Live false-action and latency measurements.
-- Second Windows computer install check.
-- Marker access permission, retention agreement, signatures, and LMS evidence.
+- Final report export and human review.
+- Required second Windows computer install check.
+- Tutor/team review, team names, and contribution confirmation.
+- Marker access permission, data-sharing and retention agreement, and AI-use guidance check.
 - Signed group declaration and LMS upload/download verification.
 
 Excluded until the final project:
@@ -253,13 +253,13 @@ The validation-negative results show a serious open-set weakness. For all correc
 | Capture backend policy | Uses OpenCV default backend, preserves negotiated camera format, retries at most five missing frames 30 ms apart, and does not force DirectShow |
 | Final evidence file | `docs/evidence/verification.json` is the current software verification source of truth and may be refreshed by the root lane |
 
-## Remaining Human Gates
+## Remaining Assignment Gates
 
-- Formal twenty-hold duplicate-action run.
-- Live false-action and latency measurements.
+- Final report export and human review.
 - Second Windows computer installation check.
 - Tutor feedback on scope and marking-weight discrepancy.
 - Marker access permission and retention arrangement.
+- Team names, contribution confirmation, and AI-use guidance check.
 - Signed group declaration.
 - LMS upload and download verification.
 
@@ -287,7 +287,7 @@ The validation-negative results show a serious open-set weakness. For all correc
 | Camera index or backend opens the wrong device | Live demo or collection may silently use unusable video | Verify the device index with `python scripts/check_environment.py --camera --camera-index 1` before collection; recheck after unplugging or replugging cameras |
 | Open-set rejection accepts BOOKMARK on negative poses | Final full-command project would risk unintended bookmark actions | Keep BOOKMARK preview-only for the assignment; improve rejection before final full-command release |
 | Formal twenty-hold duplicate run is not complete | The final duplicate-action target needs more than the smoke check | Treat the two-hold result as smoke evidence only; run the formal series before claiming the final target |
-| Pilot data is collected late | Report lacks real AI performance evidence | Prioritise a connected webcam and one-participant collection before polish |
+| Report writing or final review is rushed | Evidence may be omitted or overstated | Use the checklist and audit to reconcile every claim against recorded evidence |
 | Overscoped assignment | Late or incomplete submission | Keep assignment to NEXT execution only |
 | Synthetic results are confused with participant results | Misleading evaluation claims | Label synthetic software tests clearly |
 | Missing declaration or upload verification | Marking penalty | Keep submission checklist and human gates visible |
