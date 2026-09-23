@@ -2,6 +2,8 @@
 
 Status: collection CLI implemented and software-tested; participant collection and consent remain pending.
 
+Observed samples store their actual monotonic capture time. Trial start times and the five scheduled offsets are stored in metadata, allowing sampling delay to be audited. A slot with no observed frame keeps its scheduled time as a placeholder and is explicitly invalid; it is never treated as an actual capture.
+
 ## Purpose
 
 The dataset supports a personal gesture recogniser for a bounded card-viewer prototype. It is not a general gesture dataset and must not be described as representative of the wider population.

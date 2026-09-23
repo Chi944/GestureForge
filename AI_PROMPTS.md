@@ -28,9 +28,9 @@ The current prompt archive should be reviewed manually before submission. Repres
 
 > remember to use agile development tools as well.
 
-> PLEASE IMPLEMENT THIS PLAN
+> No I do not have, create a new repo for me
 
-> Final documentation accuracy pass needed.
+> ensure all requirements are met in order to score the highest band and not be penalised
 
 ## Human Review Needed
 

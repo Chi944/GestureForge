@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-23T06:32:23.014558+00:00",
+  "timestamp_utc": "2026-09-23T06:51:31.716553+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,35 +13,35 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.597,
+      "seconds": 1.185,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts",
       "returncode": 0,
-      "seconds": 1.525,
+      "seconds": 2.476,
       "stdout": "Success: no issues found in 18 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 40.372,
-      "stdout": "..................................................                       [100%]\n50 passed in 38.68s\n",
+      "seconds": 30.349,
+      "stdout": "..................................................                       [100%]\n50 passed in 28.43s\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 2.586,
+      "seconds": 1.598,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments/synthetic-software-check.json",
       "returncode": 0,
-      "seconds": 5.213,
+      "seconds": 3.876,
       "stdout": "",
       "stderr": ""
     }

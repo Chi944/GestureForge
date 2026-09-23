@@ -34,6 +34,7 @@ def collect_trials(args):
     records = []
     features = []
     sessions = []
+    trial_start_times = {}
     if manifest.exists():
         existing = load_dataset(manifest)
         if any(record.participant_id != args.participant for record in existing.records):
@@ -45,6 +46,7 @@ def collect_trials(args):
         records = list(existing.records)
         features = list(existing.features)
         sessions = list(existing.metadata.get("sessions", []))
+        trial_start_times = dict(existing.metadata.get("trial_start_times", {}))
     session_id = f"{args.split}-{uuid4().hex[:12]}"
     sessions.append({"session_id": session_id, "split": args.split,
                      "collected_at": datetime.now(timezone.utc).isoformat(),
@@ -52,7 +54,9 @@ def collect_trials(args):
                      "consent_confirmed_by_operator": True})
     labels = ("UNKNOWN",) if args.split == "validation_negative" else LABELS
     metadata = {"provenance": "human", "chosen_hand": args.hand, "sessions": sessions,
-                "sampling_offsets_seconds": list(SAMPLE_OFFSETS), "raw_video_recorded": False}
+                "sampling_offsets_seconds": list(SAMPLE_OFFSETS), "raw_video_recorded": False,
+                "trial_start_times": trial_start_times,
+                "timestamp_policy": "Capture time when observed; scheduled time for missing slots"}
     completed = 0
     try:
         with HandCamera(args.asset, args.camera, session_id, args.participant) as camera:
@@ -70,6 +74,7 @@ def collect_trials(args):
                             break
                     start = time.monotonic() + 2.0
                     trial_id = f"{session_id}-{label}-{trial:02d}"
+                    trial_start_times[trial_id] = start
                     pending_records = []
                     pending_features: list[np.ndarray] = []
                     sample = 0
@@ -88,7 +93,7 @@ def collect_trials(args):
                                 pending_features.append(feature)
                             pending_records.append(SampleRecord(
                                 args.participant, session_id, trial_id, label, args.split,
-                                sample, due, feature is not None, index, reason,
+                                sample, observation.timestamp, feature is not None, index, reason,
                                 args.hand, "human",
                             ))
                             sample += 1

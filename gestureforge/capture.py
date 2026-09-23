@@ -71,6 +71,8 @@ class HandCamera:
                 [[point.x, point.y, point.z] for point in result.hand_world_landmarks[0]],
                 dtype=np.float32,
             )
+            # Tasks already uses Right/Left labels in the opposite order to
+            # legacy solutions.hands. Do not apply the legacy selfie swap here.
             handedness = result.handedness[0][0].category_name
         observation = Observation(
             self.session_id, self.profile_id, self.frame_id, timestamp,

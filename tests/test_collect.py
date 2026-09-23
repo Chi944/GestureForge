@@ -56,6 +56,7 @@ def test_collector_saves_complete_trials_and_appends_distinct_sessions(monkeypat
     from gestureforge.dataset import load_dataset
 
     clock = [100.0]
+    capture_times = []
 
     def monotonic():
         clock[0] += 0.02
@@ -72,7 +73,9 @@ def test_collector_saves_complete_trials_and_appends_distinct_sessions(monkeypat
             pass
 
         def read(self):
-            return np.zeros((8, 8, 3), dtype=np.uint8), _valid_observation(monotonic())
+            captured_at = monotonic()
+            capture_times.append(captured_at)
+            return np.zeros((8, 8, 3), dtype=np.uint8), _valid_observation(captured_at)
 
     monkeypatch.setattr(collection, "HandCamera", Camera)
     monkeypatch.setattr(collection.time, "monotonic", monotonic)
@@ -85,6 +88,10 @@ def test_collector_saves_complete_trials_and_appends_distinct_sessions(monkeypat
     original = load_dataset(tmp_path / "pilot")
     assert len(original.records) == 20
     assert all(record.valid for record in original.records)
+    assert all(record.timestamp in capture_times for record in original.records)
+    for record in original.records:
+        due = original.metadata["trial_start_times"][record.trial_id] + collection.SAMPLE_OFFSETS[record.sample_index]
+        assert 0 <= record.timestamp - due <= 0.2
     args.split = "validation"
     collection.collect_trials(args)
     combined = load_dataset(tmp_path / "pilot")
