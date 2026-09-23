@@ -8,7 +8,7 @@ GestureForge is a local Windows desktop prototype that recognises a small person
 
 The final project will extend this codebase with in-app enrolment, multiple profiles, PREVIOUS and BOOKMARK execution, JSON decks, saved state, held-out testing for two participants, and a final demo video. This assignment does not finish those final-project features.
 
-Current software evidence is summarised in `docs/evidence/verification.json`: Ruff passed, mypy passed, pytest passed, GUI smoke launch passed, and synthetic evaluation completed. The MediaPipe asset downloaded and initialised, and a blank-image MediaPipe smoke check returned zero hands. Current hardware blocker: the default camera opened but returned no frames, and DirectShow also stalled. Live webcam NEXT control therefore remains blocked until the camera path is fixed and demonstrated.
+Current software evidence is summarised in `docs/evidence/verification.json`: Ruff passed, mypy passed, pytest passed, GUI smoke launch passed, and synthetic evaluation completed. The MediaPipe asset downloaded and initialised, and a blank-image MediaPipe smoke check returned zero hands. The user confirmed that no webcam is connected. Earlier camera checks returned no frames or stalled; these are not evidence of a defective physical camera. Live webcam NEXT control remains unverified until a webcam is connected and the pilot is demonstrated.
 
 ## Problem and User Need
 
@@ -269,8 +269,8 @@ Synthetic fixtures may be used to test the software path, but the assignment rep
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Camera backend still returns no frames | Live demo cannot be completed | Continue alternate backend investigation and retain keyboard/smoke software path as partial evidence |
-| Pilot data is collected late | Report lacks real AI performance evidence | Prioritise camera fix and one-participant collection before polish |
+| No webcam connected yet | Live demo cannot be completed | Connect a webcam, run the camera check and collect consented pilot data |
+| Pilot data is collected late | Report lacks real AI performance evidence | Prioritise a connected webcam and one-participant collection before polish |
 | Overscoped assignment | Late or incomplete submission | Keep assignment to NEXT execution only |
 | Synthetic results are confused with participant results | Misleading evaluation claims | Label synthetic software tests clearly |
 | Missing declaration or upload verification | Marking penalty | Keep submission checklist and human gates visible |

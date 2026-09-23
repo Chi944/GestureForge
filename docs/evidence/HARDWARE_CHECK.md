@@ -2,6 +2,8 @@
 
 Date: 23 September 2026. This is same-computer evidence, not a second-device test.
 
+The user subsequently confirmed: "No webcam connected yet." The live check is therefore blocked by unavailable hardware; the backend observations below do not establish a fault with a physical camera.
+
 | Check | Observed result |
 | --- | --- |
 | Python environment | Python 3.11.16 installed under the project; dependencies pinned in requirements.lock |
@@ -15,4 +17,4 @@ Date: 23 September 2026. This is same-computer evidence, not a second-device tes
 
 No video or audio was recorded. The blank-image smoke check proves asset loading and a model inference call, not hand recognition or webcam operation. Automated capture/GUI tests use injected data and must not be labelled as participant results.
 
-Next hardware step: connect/enable a physical webcam or use the planned demo laptop, close other camera apps, then run the User Guide camera check. Collect separate training and validation sessions before enabling live gesture control. If a native driver stalls, close the application and resolve the device/driver before retrying; the window can close even when the daemon camera worker has not returned.
+Next hardware step: connect a webcam or use the planned demo laptop, then run the User Guide camera check. Collect separate training and validation sessions before enabling live gesture control. If a native driver stalls with a connected device, close the application and resolve the device/driver before retrying; the window can close even when the daemon camera worker has not returned.

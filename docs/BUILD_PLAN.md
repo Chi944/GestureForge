@@ -236,7 +236,7 @@ Use:
 - `python scripts/board.py` to render the local agile board from `docs/backlog.csv`.
 - `python scripts/package_release.py` to package tracked source files.
 
-The model download, Qt startup, 50 automated tests, lint, type checking and synthetic evaluation passed. The source archive also passed those checks in a fresh environment on this computer. See `docs/evidence/verification.json` and `docs/evidence/clean-install-verification.json`. Default camera 0 returned no frames; the alternate DirectShow open stalled and was stopped. The live camera gate remains open; see `docs/evidence/HARDWARE_CHECK.md`.
+The model download, Qt startup, 50 automated tests, lint, type checking and synthetic evaluation passed. The source archive also passed those checks in a fresh environment on this computer. See `docs/evidence/verification.json` and `docs/evidence/clean-install-verification.json`. Default camera 0 returned no frames; the alternate DirectShow open stalled and was stopped. The user confirmed no webcam is connected; the live camera gate remains open; see `docs/evidence/HARDWARE_CHECK.md`.
 
 The package created by `scripts/package_release.py` is a source archive, not a complete assignment submission. Participant results, report, permitted evidence, and signed declaration remain separate submission requirements.
 

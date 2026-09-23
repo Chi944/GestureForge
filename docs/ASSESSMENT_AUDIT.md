@@ -26,8 +26,8 @@ Status: evidence audit as of 23 September 2026. Software checks pass; the assign
 | Participant consent | Required before real gesture data is collected or submitted | Pending human gate |
 | Pilot train and validation sessions | Required for actual assignment AI results | Pending human collection |
 | Validation-negative sequence | Needed to assess false command acceptance | Pending human collection |
-| Live webcam NEXT action | Required to show integrated prototype behaviour | Pending; default camera no-frame issue unresolved |
-| Camera recovery | Default backend returned no image and DirectShow open stalled | Hardware gate remains open; see evidence/HARDWARE_CHECK.md |
+| Live webcam NEXT action | Required to show integrated prototype behaviour | Pending; user confirmed no webcam is connected |
+| Connected camera check | Previous checks had no physical webcam available | Hardware gate remains open; see evidence/HARDWARE_CHECK.md |
 | Second Windows computer install | Protects release reproducibility and marking risk | Pending human/hardware gate |
 | Tutor scope and marking-weight confirmation | Protects against criteria mismatch | Pending tutor gate |
 | Signed group declaration | Required administrative artifact | Pending human gate |
