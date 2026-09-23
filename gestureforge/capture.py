@@ -39,12 +39,12 @@ class HandCamera:
                 num_hands=2,
             )
             self.detector = mp.tasks.vision.HandLandmarker.create_from_options(options)
-            self.cap = cv2.VideoCapture(camera)
+            # Preserve the device's negotiated format. Forcing even its current
+            # resolution can break legacy drivers. The operator selects the
+            # camera index; backend device ordering is not interchangeable.
+            self.cap = cv2.VideoCapture(camera, cv2.CAP_ANY)
             if not self.cap.isOpened():
                 raise CameraError("Camera unavailable. Close other camera apps and check permissions.")
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         except Exception:
             self.close()
             raise
@@ -52,10 +52,17 @@ class HandCamera:
     def read(self):
         if self.cap is None or self.detector is None:
             raise CameraError("Camera is closed.")
-        ok, frame = self.cap.read()
-        timestamp = time.monotonic()
-        if not ok or frame is None:
+        # Some USB cameras drop a startup or occasional frame. Retry briefly;
+        # never reuse the previous image or hide a sustained disconnection.
+        for attempt in range(5):
+            ok, frame = self.cap.read()
+            if ok and frame is not None:
+                break
+            if attempt < 4:
+                time.sleep(0.03)
+        else:
             raise CameraError("Camera disconnected or returned no frame. Pause and reconnect.")
+        timestamp = time.monotonic()
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         stamp_ms = max(self.last_ms + 1, int(timestamp * 1000))
         self.last_ms = stamp_ms

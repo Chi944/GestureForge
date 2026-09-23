@@ -231,12 +231,16 @@ Use:
 
 - `.\scripts\setup.ps1` for locked Windows setup, editable install, model download, and environment verification.
 - `python scripts/check_environment.py` for dependency and environment checks.
-- `python scripts/check_environment.py --camera` when a webcam check is needed.
+- `python scripts/check_environment.py --camera --camera-index <n>` when a webcam check is needed.
 - `python scripts/download_model.py` to retrieve the MediaPipe Hand Landmarker asset described in `assets/model_manifest.json`.
 - `python scripts/board.py` to render the local agile board from `docs/backlog.csv`.
 - `python scripts/package_release.py` to package tracked source files.
 
-The model download, Qt startup, 50 automated tests, lint, type checking and synthetic evaluation passed. The source archive also passed those checks in a fresh environment on this computer. See `docs/evidence/verification.json` and `docs/evidence/clean-install-verification.json`. Default camera 0 returned no frames; the alternate DirectShow open stalled and was stopped. The user confirmed no webcam is connected; the live camera gate remains open; see `docs/evidence/HARDWARE_CHECK.md`.
+The model download, Qt startup, 51 automated tests, lint, type checking and synthetic evaluation passed. The source archive also passed those checks in a fresh environment on this computer. See `docs/evidence/verification.json` and `docs/evidence/clean-install-verification.json`.
+
+The current hardware evidence is better than the first webcam attempt but still incomplete. Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam`. Camera index 0 fails in current OpenCV checks; camera index 1 with the default OpenCV backend gives usable non-black video. A 60-frame capture run on index 1 completed with post-warmup mean 31.24 ms, about 32 fps, max 63 ms, and clean close. A later 20-second preview processed 304 frames. Both live runs detected zero hands, so live hand recognition and live NEXT remain pending. MediaPipe detected one hand in a clear user-supplied Windows Camera screenshot, which proves screenshot inference only. Camera indexes can change after replugging, so recheck the index before collection or demonstration.
+
+Production capture preserves the negotiated camera format, uses the default OpenCV backend, retries at most five missing-frame reads 30 ms apart, and does not force DirectShow. The live camera gate remains open until actual hand detections and consented personal data are available; see `docs/evidence/HARDWARE_CHECK.md`.
 
 The package created by `scripts/package_release.py` is a source archive, not a complete assignment submission. Participant results, report, permitted evidence, and signed declaration remain separate submission requirements.
 

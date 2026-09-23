@@ -31,6 +31,8 @@ python scripts\download_model.py
 python scripts\check_environment.py --camera
 ```
 
+If the default camera is unavailable or shows the wrong view, try `--camera --camera-index 1` for the check and `--camera 1` for the app/collector. Close other camera apps first. Index 1 currently returns usable video on the development computer; device indices can change after reconnecting hardware.
+
 ## Commands
 
 ```powershell

@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
 from gestureforge.contracts import Observation, Prediction
 
@@ -21,6 +22,7 @@ def test_hand_camera_reads_unmirrored_frame_and_releases_resources(monkeypatch, 
             self.index = index
             self.released = False
             self.settings = []
+            self.reads = 0
 
         def isOpened(self):
             return True
@@ -30,6 +32,9 @@ def test_hand_camera_reads_unmirrored_frame_and_releases_resources(monkeypatch, 
             return True
 
         def read(self):
+            self.reads += 1
+            if self.reads == 1:
+                return False, None
             return True, bgr_frame
 
         def release(self):
@@ -73,7 +78,11 @@ def test_hand_camera_reads_unmirrored_frame_and_releases_resources(monkeypatch, 
         Image=lambda image_format, data: SimpleNamespace(image_format=image_format, data=data),
     )
     monkeypatch.setitem(__import__("sys").modules, "mediapipe", fake_mp)
-    monkeypatch.setattr(capture.cv2, "VideoCapture", lambda index: fake_cap)
+    def open_camera(index, backend):
+        assert backend == capture.cv2.CAP_ANY
+        return fake_cap
+
+    monkeypatch.setattr(capture.cv2, "VideoCapture", open_camera)
     monkeypatch.setattr(capture.cv2, "cvtColor", lambda frame, code: frame)
 
     ticks = iter([1.000, 1.000])
@@ -100,6 +109,21 @@ def test_hand_camera_reads_unmirrored_frame_and_releases_resources(monkeypatch, 
     assert fake_detector.stamps == [1000, 1001]
     assert fake_detector.closed is True
     assert fake_cap.released is True
+    assert fake_cap.settings == []
+    assert fake_cap.reads == 3
+
+
+def test_camera_stops_after_bounded_missing_frame_retries(monkeypatch):
+    from gestureforge import capture
+
+    reads = []
+    camera = capture.HandCamera.__new__(capture.HandCamera)
+    camera.cap = SimpleNamespace(read=lambda: (reads.append(1) or False, None))
+    camera.detector = object()
+    monkeypatch.setattr(capture.time, "sleep", lambda _: None)
+    with pytest.raises(capture.CameraError, match="returned no frame"):
+        camera.read()
+    assert len(reads) == 5
 
 
 def test_capture_worker_mailbox_keeps_only_latest_packet() -> None:

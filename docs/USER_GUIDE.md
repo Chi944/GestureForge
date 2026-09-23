@@ -68,6 +68,17 @@ python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn
 
 Supported algorithm choices are `knn` and `svm`. Synthetic fixtures cannot enable live control.
 
+### Select the working camera
+
+Close Windows Camera, video-call apps and other camera previews before using GestureForge. Device indices can change after reconnecting cameras. On the development computer, index 1 returned usable video; index 0 did not. Verify the selected device on each computer:
+
+```powershell
+python scripts/check_environment.py --camera --camera-index 1
+python -m gestureforge --dataset data/local/pilot/manifest.json --camera 1
+```
+
+Use `--camera 1` on each collection command below when that is the working device. The camera check reports hand counts without saving images. A successful image read alone does not establish hand recognition or a working gesture command.
+
 Expected assignment window:
 
 - Webcam preview.

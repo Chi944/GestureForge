@@ -8,7 +8,7 @@ GestureForge is a local Windows desktop prototype that recognises a small person
 
 The final project will extend this codebase with in-app enrolment, multiple profiles, PREVIOUS and BOOKMARK execution, JSON decks, saved state, held-out testing for two participants, and a final demo video. This assignment does not finish those final-project features.
 
-Current software evidence is summarised in `docs/evidence/verification.json`: Ruff passed, mypy passed, pytest passed, GUI smoke launch passed, and synthetic evaluation completed. The MediaPipe asset downloaded and initialised, and a blank-image MediaPipe smoke check returned zero hands. The user confirmed that no webcam is connected. Earlier camera checks returned no frames or stalled; these are not evidence of a defective physical camera. Live webcam NEXT control remains unverified until a webcam is connected and the pilot is demonstrated.
+Current software evidence is summarised in `docs/evidence/verification.json`: Ruff passed, mypy passed, pytest passed, GUI smoke launch passed, and synthetic evaluation completed. The MediaPipe asset downloaded and initialised, and a blank-image MediaPipe smoke check returned zero hands. Early QuickCam checks produced black or slow frames, but wrong device selection, backend behaviour, and possible Windows Camera app contention confounded that evidence. After replacing the webcam, Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam`. Camera index 1 with OpenCV's default backend now provides usable non-black video: a 60-frame run completed with post-warmup mean 31.24 ms, about 32 fps, max 63 ms, and clean shutdown. That run and a later 20-second preview still detected zero live hands. MediaPipe did detect one hand in a clear user-supplied Windows Camera screenshot, which proves screenshot inference only. Live recognition and NEXT control remain unverified until actual live detections and personal data exist; see docs/evidence/HARDWARE_CHECK.md.
 
 ## Problem and User Need
 
@@ -72,7 +72,7 @@ Agile tracking is maintained through `docs/backlog.csv`, local board generation 
 | RQ-005 | The system shall reject no hand, multiple hands, wrong hand, non-finite landmarks, and degenerate scale. | Software verified | Automated tests and blank-image asset smoke reported |
 | RQ-006 | The assignment shall compare kNN and SVM using the same preprocessing policy. | Software verified | `python -m gestureforge.evaluate`; human pilot comparison pending |
 | RQ-007 | The controller shall require neutral arming and command hold before action dispatch. | Software verified | Controller tests reported passed |
-| RQ-008 | The assignment viewer shall execute NEXT only. | Software verified, live gate blocked | UI/controller code implements NEXT-only; live webcam blocked |
+| RQ-008 | The assignment viewer shall execute NEXT only. | Software verified, live gate pending | UI/controller code implements NEXT-only; usable camera-index 1 capture exists, but live hand detection and personal data are pending |
 | RQ-009 | The viewer shall avoid duplicate command execution from one continuous hold. | Software verified | Controller and viewer tests reported passed |
 | RQ-010 | PREVIOUS and BOOKMARK shall be displayed as recognition preview only in the assignment. | Implemented | UI boundary text present |
 | RQ-011 | Dataset manifests shall keep invalid detections rather than dropping them silently. | Software verified | Dataset tests reported passed |
@@ -233,13 +233,18 @@ Synthetic fixtures may be used to test the software path, but the assignment rep
 | GUI smoke | Passed; command output recorded in `docs/evidence/verification.json`; screenshot render inspected by implementation lane |
 | MediaPipe asset | Model downloaded, checksum verified, initialised |
 | Blank image landmark smoke | Returned zero hands, which is expected for blank input |
-| Default camera | Opened but returned no frames |
-| DirectShow camera backend | Stalled |
+| Camera enumeration | Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam` |
+| User-supplied clear hand screenshot | MediaPipe IMAGE mode detected one hand; this is not live camera evidence |
+| OpenCV camera index 0 | No usable capture in current checks |
+| OpenCV camera index 1 | Default backend produced usable non-black video; 60 frames processed; post-warmup mean 31.24 ms, about 32 fps; max 63 ms; clean close |
+| Live camera hand detection | Zero hands detected in the 60-frame run and zero hands detected in a 20-second, 304-frame preview; user framing confirmation pending |
+| Capture backend policy | Uses OpenCV default backend, preserves negotiated camera format, retries at most five missing frames 30 ms apart, and does not force DirectShow |
 | Final evidence file | `docs/evidence/verification.json` is the current software verification source of truth and may be refreshed by the root lane |
 
 ## Remaining Human Gates
 
 - Participant consent.
+- Actual live hand detections from the selected camera index.
 - Pilot train, validation, and validation-negative collection.
 - Human classifier comparison results.
 - Live webcam NEXT action.
@@ -269,7 +274,8 @@ Synthetic fixtures may be used to test the software path, but the assignment rep
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| No webcam connected yet | Live demo cannot be completed | Connect a webcam, run the camera check and collect consented pilot data |
+| Camera index or backend opens the wrong device | Live demo or collection may silently use unusable video | Verify the device index with `python scripts/check_environment.py --camera --camera-index 1` before collection; recheck after unplugging or replugging cameras |
+| MediaPipe still detects zero live hands despite usable video | Live NEXT cannot be completed | Confirm framing, lighting, hand size in view, and landmark detection before collecting pilot data |
 | Pilot data is collected late | Report lacks real AI performance evidence | Prioritise a connected webcam and one-participant collection before polish |
 | Overscoped assignment | Late or incomplete submission | Keep assignment to NEXT execution only |
 | Synthetic results are confused with participant results | Misleading evaluation claims | Label synthetic software tests clearly |

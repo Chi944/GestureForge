@@ -16,7 +16,7 @@ Status: evidence audit as of 23 September 2026. Software checks pass; the assign
 | Environment helpers | `scripts/check_environment.py` and `scripts/download_model.py` | Dependency check, model retrieval/checksum and blank-image inference passed; see evidence/HARDWARE_CHECK.md |
 | Locked setup and packaging | `scripts/setup.ps1` installs locked dependencies and asset; `scripts/package_release.py` creates tracked-source ZIP | Present; package is source only |
 | Assignment UI boundary | `gestureforge/app.py` labels NEXT active and PREVIOUS/BOOKMARK preview-only | Present |
-| Automated checks | Controller, viewer, data, features, classifiers, evaluation, capture, collection and GUI | 50 tests pass, lint/type checks pass; evidence/verification.json records exact output |
+| Automated checks | Controller, viewer, data, features, classifiers, evaluation, capture, collection and GUI | 51 tests pass, lint/type checks pass; evidence/verification.json records exact output |
 | Clean source installation | Extracted source ZIP installed into a new environment using requirements.lock and editable source | Same-computer checks passed; evidence/clean-install-verification.json; not a second-device test |
 
 ## Human and Hardware Requirements Still Open
@@ -26,8 +26,9 @@ Status: evidence audit as of 23 September 2026. Software checks pass; the assign
 | Participant consent | Required before real gesture data is collected or submitted | Pending human gate |
 | Pilot train and validation sessions | Required for actual assignment AI results | Pending human collection |
 | Validation-negative sequence | Needed to assess false command acceptance | Pending human collection |
-| Live webcam NEXT action | Required to show integrated prototype behaviour | Pending; user confirmed no webcam is connected |
-| Connected camera check | Previous checks had no physical webcam available | Hardware gate remains open; see evidence/HARDWARE_CHECK.md |
+| Live webcam NEXT action | Required to show integrated prototype behaviour | Pending; camera index 1 now gives usable non-black capture, but live hand detection and personal data remain pending |
+| Connected camera check | Connected-device capture is needed before real collection | Usable non-black capture on camera index 1 verified; zero live hands detected so far; device indexes can change after replug |
+| Live hand-detection framing | Needed before collecting training and validation examples | Pending; 20-second preview processed 304 frames with zero hands, and user framing confirmation is still needed |
 | Second Windows computer install | Protects release reproducibility and marking risk | Pending human/hardware gate |
 | Tutor scope and marking-weight confirmation | Protects against criteria mismatch | Pending tutor gate |
 | Signed group declaration | Required administrative artifact | Pending human gate |
@@ -35,4 +36,4 @@ Status: evidence audit as of 23 September 2026. Software checks pass; the assign
 
 ## High-Band Protection
 
-The documentation covers requirements, design, algorithm investigation, test planning, lifecycle, agile process, references, contribution tracking, data handling, and submission controls. Automated software evidence is recorded. Real participant results, a working live NEXT demo, independent installation, human report review and administrative artifacts remain necessary. No grade is guaranteed: the supplied files do not provide detailed highest-band descriptors, and the tutor must resolve the marking-weight discrepancy.
+The documentation covers requirements, design, algorithm investigation, test planning, lifecycle, agile process, references, contribution tracking, data handling, and submission controls. Automated software evidence is recorded, and usable camera-index 1 capture is now verified. Real hand detections from the live camera, participant results, a working live NEXT demo, independent installation, human report review and administrative artifacts remain necessary. No grade is guaranteed: the supplied files do not provide detailed highest-band descriptors, and the tutor must resolve the marking-weight discrepancy.
