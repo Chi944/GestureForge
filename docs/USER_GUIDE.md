@@ -46,7 +46,7 @@ python -m pip install --no-deps -e .
 python scripts/download_model.py
 ```
 
-If Python 3.11 is installed without the Windows launcher, run `setup.cmd -PythonExe "C:\path\to\python.exe"`. The script checks that the interpreter is 64-bit Python 3.11 before installing dependencies.
+If Python 3.11 is installed without the Windows launcher, run `.\setup.cmd -PythonExe "C:\path\to\python.exe"`. The script checks that the interpreter is 64-bit Python 3.11 before installing dependencies.
 
 If PowerShell blocks activation, run:
 
@@ -83,7 +83,7 @@ Close Windows Camera, video-call apps and other camera previews before using Ges
 
 ```powershell
 python scripts/check_environment.py --camera --camera-index 1
-run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
+.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
 ```
 
 Use `--camera 1` on each collection command below when that is the working device. The camera check reports hand counts without saving images. A successful image read alone does not establish hand recognition or a working gesture command.

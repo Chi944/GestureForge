@@ -1,0 +1,53 @@
+{
+  "timestamp_utc": "2026-09-23T08:55:39.622982+00:00",
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "versions": {
+    "numpy": "2.4.6",
+    "scikit-learn": "1.9.1",
+    "mediapipe": "1.0.1",
+    "PySide6": "6.11.2",
+    "opencv-contrib-python": "5.0.0.93"
+  },
+  "checks": [
+    {
+      "command": "python -m ruff check gestureforge tests scripts",
+      "returncode": 0,
+      "seconds": 0.964,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": "python -m mypy gestureforge scripts",
+      "returncode": 0,
+      "seconds": 13.421,
+      "stdout": "Success: no issues found in 18 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": "python -m pytest -q",
+      "returncode": 0,
+      "seconds": 17.559,
+      "stdout": ".......................................................                  [100%]\n55 passed in 16.78s\n",
+      "stderr": ""
+    },
+    {
+      "command": "python -m gestureforge --smoke-test",
+      "returncode": 0,
+      "seconds": 1.043,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments/synthetic-software-check.json",
+      "returncode": 0,
+      "seconds": 2.452,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "Synthetic evaluation is software evidence only.",
+    "This script does not verify live participant performance or a second computer; see the assessment audit."
+  ]
+}

@@ -153,6 +153,7 @@ Recorded local verification includes **55 passing tests**, Ruff, mypy, desktop s
 | :--- | :--- |
 | [Software checks](docs/evidence/verification.json) | Exact commands, versions and automated results |
 | [Clean-install checks](docs/evidence/CLEAN_INSTALL.md), [setup script check](docs/evidence/SETUP_CHECK.md) | Extracted-source verification, fresh setup and their limits |
+| [Windows laptop package check](docs/evidence/WINDOWS_LAPTOP_CHECK.md) | Fresh ZIP installation in a path with spaces, model inference and launcher verification |
 | [Hardware and live checks](docs/evidence/HARDWARE_CHECK.md) | Camera operation, personal collection and live NEXT observations |
 | [Pilot comparison](docs/evidence/PILOT_RESULTS.md) | Initial and corrected results, rejection trade-offs and reproduction command |
 | [Review record](docs/evidence/REVIEW.md) | Confirmed findings and follow-up review |
