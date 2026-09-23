@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "deck_id": "assignment-demo",
+  "title": "GestureForge Assignment Demo",
+  "cards": [
+    {
+      "id": "card-01",
+      "title": "Card 1: Start",
+      "body": "GestureForge shows one card at a time and advances only after a protected NEXT gesture."
+    },
+    {
+      "id": "card-02",
+      "title": "Card 2: Personal Setup",
+      "body": "The assignment prototype uses one local pilot profile and a small labelled gesture dataset."
+    },
+    {
+      "id": "card-03",
+      "title": "Card 3: Labels",
+      "body": "NEXT, PREVIOUS, BOOKMARK, and NEUTRAL are recognised labels; only NEXT controls this demo."
+    },
+    {
+      "id": "card-04",
+      "title": "Card 4: Neutral Arm",
+      "body": "A neutral hold is required before a command can arm the viewer."
+    },
+    {
+      "id": "card-05",
+      "title": "Card 5: Command Hold",
+      "body": "The controller requires a stable command hold before it creates a viewer event."
+    },
+    {
+      "id": "card-06",
+      "title": "Card 6: Repeat Protection",
+      "body": "One continuous hold produces one action and then latches until neutral is seen again."
+    },
+    {
+      "id": "card-07",
+      "title": "Card 7: Safe Preview",
+      "body": "PREVIOUS and BOOKMARK predictions can be shown in the interface without moving the deck."
+    },
+    {
+      "id": "card-08",
+      "title": "Card 8: Evidence",
+      "body": "The prototype records tests and experiment outputs so the report can separate evidence from plans."
+    },
+    {
+      "id": "card-09",
+      "title": "Card 9: Project Extension",
+      "body": "The final project can extend this viewer with all commands, profiles, deck loading, and persistence."
+    },
+    {
+      "id": "card-10",
+      "title": "Card 10: End",
+      "body": "The assignment deck stops at the final card instead of wrapping around."
+    }
+  ]
+}

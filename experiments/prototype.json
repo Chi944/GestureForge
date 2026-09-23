@@ -1,0 +1,10 @@
+{
+  "algorithms": ["knn", "svm"],
+  "rejection_multiplier": 1.5,
+  "synthetic_fixture": {
+    "seed": 304,
+    "samples_per_trial": 5,
+    "trials_per_label_per_split": 3,
+    "provenance": "SYNTHETIC software-test fixture only; replace with dataset_path for participant evidence."
+  }
+}

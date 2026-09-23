@@ -1,0 +1,172 @@
+"""Prototype activation controller for converting predictions into commands."""
+
+from __future__ import annotations
+
+import math
+import uuid
+from dataclasses import dataclass
+
+from .contracts import CommandEvent, Prediction
+
+
+NEUTRAL_HOLD_SECONDS = 0.300
+COMMAND_HOLD_SECONDS = 0.400
+MAX_PREDICTION_AGE_SECONDS = 0.200
+MAX_FRAME_GAP_SECONDS = 0.200
+
+EXECUTABLE_COMMANDS = {"NEXT"}
+
+
+@dataclass
+class _Candidate:
+    label: str
+    started_at: float
+
+
+class Controller:
+    """State machine that protects the viewer from accidental repeat actions."""
+
+    def __init__(self, session_id: str, profile_id: str = "pilot") -> None:
+        self.session_id = session_id
+        self.profile_id = profile_id
+        self.state = "PAUSED"
+        self.progress = 0.0
+        self.last_error = ""
+        self._last_timestamp: float | None = None
+        self._last_frame_id: int | None = None
+        self._neutral_started_at: float | None = None
+        self._candidate: _Candidate | None = None
+        self._event_counter = 0
+
+    def resume(self, session_id: str | None = None) -> None:
+        """Begin accepting predictions after a fresh neutral hold."""
+
+        self.session_id = session_id or f"session-{uuid.uuid4()}"
+        self.state = "WAIT_NEUTRAL"
+        self.progress = 0.0
+        self.last_error = ""
+        self._last_timestamp = None
+        self._last_frame_id = None
+        self._neutral_started_at = None
+        self._candidate = None
+
+    def pause(self) -> None:
+        self.state = "PAUSED"
+        self.progress = 0.0
+        self.last_error = ""
+        self._neutral_started_at = None
+        self._candidate = None
+
+    def fault(self, reason: str = "fault") -> None:
+        self.pause()
+        self.last_error = reason
+
+    def process(self, prediction: Prediction, now: float) -> CommandEvent | None:
+        """Consume a prediction and optionally emit one command event."""
+
+        if self.state == "PAUSED":
+            return None
+        if not self._matches_active_identity(prediction):
+            return None
+        if not self._prediction_is_fresh_and_ordered(prediction, now):
+            self._require_neutral("stale, future, or out-of-order prediction", reset_clock=True)
+            return None
+
+        self._last_timestamp = prediction.timestamp
+        self._last_frame_id = prediction.frame_id
+
+        if not prediction.accepted:
+            self._require_neutral(prediction.rejection_reason or "prediction rejected")
+            return None
+
+        label = prediction.label.upper()
+        if label == "NEUTRAL":
+            self._observe_neutral(prediction.timestamp)
+            return None
+
+        if self.state == "LATCHED":
+            self.progress = 1.0
+            return None
+
+        self._neutral_started_at = None
+        if label not in EXECUTABLE_COMMANDS:
+            self._cancel_candidate()
+            if self.state != "WAIT_NEUTRAL":
+                self.state = "READY"
+            self.progress = 0.0
+            return None
+
+        if self.state == "WAIT_NEUTRAL":
+            self.progress = 0.0
+            return None
+        if self.state == "LATCHED":
+            self.progress = 1.0
+            return None
+
+        if self._candidate is None or self._candidate.label != label:
+            self._candidate = _Candidate(label=label, started_at=prediction.timestamp)
+            self.state = "CANDIDATE"
+            self.progress = 0.0
+            return None
+
+        elapsed = prediction.timestamp - self._candidate.started_at
+        self.state = "CANDIDATE"
+        self.progress = min(1.0, max(0.0, elapsed / COMMAND_HOLD_SECONDS))
+        if elapsed < COMMAND_HOLD_SECONDS:
+            return None
+
+        self.state = "LATCHED"
+        self.progress = 1.0
+        self._event_counter += 1
+        return CommandEvent(
+            event_id=f"{self.session_id}:{self.profile_id}:{self._event_counter}",
+            session_id=self.session_id,
+            profile_id=self.profile_id,
+            frame_id=prediction.frame_id,
+            command=label,
+            timestamp=now,
+        )
+
+    def _matches_active_identity(self, prediction: Prediction) -> bool:
+        return prediction.session_id == self.session_id and prediction.profile_id == self.profile_id
+
+    def _prediction_is_fresh_and_ordered(self, prediction: Prediction, now: float) -> bool:
+        if not math.isfinite(now) or not math.isfinite(prediction.timestamp):
+            return False
+        if prediction.timestamp > now:
+            return False
+        if now - prediction.timestamp > MAX_PREDICTION_AGE_SECONDS:
+            return False
+        if self._last_timestamp is not None:
+            if prediction.timestamp <= self._last_timestamp:
+                return False
+            if prediction.timestamp - self._last_timestamp > MAX_FRAME_GAP_SECONDS:
+                return False
+        if self._last_frame_id is not None and prediction.frame_id <= self._last_frame_id:
+            return False
+        return True
+
+    def _observe_neutral(self, timestamp: float) -> None:
+        self._candidate = None
+        if self._neutral_started_at is None:
+            self._neutral_started_at = timestamp
+        elapsed = timestamp - self._neutral_started_at
+        self.progress = min(1.0, max(0.0, elapsed / NEUTRAL_HOLD_SECONDS))
+        if elapsed >= NEUTRAL_HOLD_SECONDS:
+            self.state = "READY"
+            self.progress = 1.0
+        else:
+            self.state = "WAIT_NEUTRAL"
+
+    def _cancel_candidate(self) -> None:
+        self._candidate = None
+
+    def _require_neutral(self, reason: str, *, reset_clock: bool = False) -> None:
+        self.state = "WAIT_NEUTRAL"
+        self.progress = 0.0
+        self.last_error = reason
+        self._neutral_started_at = None
+        self._candidate = None
+        if reset_clock:
+            self._last_timestamp = None
+            self._last_frame_id = None
