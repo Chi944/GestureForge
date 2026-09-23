@@ -45,7 +45,8 @@ def evaluate_algorithm(
     _validate_assignment_evaluation_bundle(bundle)
     if len(train_features) == 0:
         raise ValueError("dataset has no valid training samples")
-    model = train_model(train_features, train_labels, algorithm=algorithm, multiplier=multiplier)  # type: ignore[arg-type]
+    model = train_model(train_features, train_labels, algorithm=algorithm, multiplier=multiplier,  # type: ignore[arg-type]
+                        groups=[record.trial_id for record in train_records])
 
     validation_records = tuple(record for record in bundle.records if record.split == "validation")
     if not validation_records:

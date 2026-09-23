@@ -3,7 +3,7 @@ import pytest
 
 from gestureforge.contracts import LABELS
 from gestureforge.fixtures import synthetic_dataset
-from gestureforge.models import train_model
+from gestureforge.models import class_distance_thresholds, train_model
 
 
 def test_train_model_knn_predicts_synthetic_validation_samples() -> None:
@@ -14,7 +14,7 @@ def test_train_model_knn_predicts_synthetic_validation_samples() -> None:
     model = train_model(train_features, train_labels, algorithm="knn")
     predictions = [model.predict(feature) for feature in validation_features]
 
-    assert model.model_version == "prototype-v1"
+    assert model.model_version == "prototype-v2"
     assert [label for label, _, _ in predictions] == validation_labels.tolist()
     assert sum(accepted for _, accepted, _ in predictions) >= int(len(predictions) * 0.8)
 
@@ -81,3 +81,25 @@ def test_train_model_rejects_invalid_multiplier() -> None:
 
     with pytest.raises(ValueError, match="finite and positive"):
         train_model(train_features, train_labels, multiplier=0)
+
+
+def test_rejection_reference_excludes_all_frames_from_the_same_hold():
+    rows = np.asarray([[0.0], [0.01], [10.0], [10.01]])
+    labels = np.asarray(["NEXT"] * 4)
+    groups = ["hold-a", "hold-a", "hold-b", "hold-b"]
+    thresholds = class_distance_thresholds(rows, labels, 1.0, groups=groups)
+    assert thresholds["NEXT"] == pytest.approx(10.0)
+
+
+def test_grouped_training_requires_independent_trials_for_each_label():
+    bundle = synthetic_dataset(trials_per_label_per_split=1)
+    features, labels, records = bundle.training_data()
+    with pytest.raises(ValueError, match="at least 2 training trials"):
+        train_model(features, labels, groups=[r.trial_id for r in records])
+
+
+def test_training_rejects_misaligned_trial_ids():
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    features, labels, _ = bundle.training_data()
+    with pytest.raises(ValueError, match="groups must have one trial ID per sample"):
+        train_model(features, labels, groups=["one-id"])

@@ -40,7 +40,7 @@ def main():
                            ["numpy", "scikit-learn", "mediapipe", "PySide6", "opencv-contrib-python"]},
               "checks": results,
               "limitations": ["Synthetic evaluation is software evidence only.",
-                               "Live participant accuracy and second-computer checks are pending."]}
+                               "This script does not verify live participant performance or a second computer; see the assessment audit."]}
     output = ROOT / "docs" / "evidence" / "verification.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

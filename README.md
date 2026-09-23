@@ -6,7 +6,7 @@ The assignment release is deliberately scoped: recognise NEXT, PREVIOUS, BOOKMAR
 
 ## Current Status
 
-The software prototype is ready for pilot preparation: documentation, contracts, package metadata, helper scripts, assets, core modules, command entry points, tests, lint, type checking, GUI smoke, and synthetic evaluation evidence are in place. Live camera control, participant data, second-machine verification, and signed submission materials remain pending.
+The assignment prototype now works with a real webcam and personal gesture data. The pilot contains 32 training trials, 32 separate validation trials and eight unfamiliar-pose trials. Both classifiers reach preliminary validation macro-F1 0.969 after correcting rejection calibration. Real NEXT actions are logged through the camera-to-viewer path. Unfamiliar poses are still often accepted as preview-only BOOKMARK; this must improve before enabling it for the final project. See `docs/evidence/PILOT_RESULTS.md`. Second-machine verification and submission administration remain open.
 
 ## Setup
 
@@ -18,6 +18,7 @@ py -3.11 -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.lock
 python -m pip install --no-deps -e .
+python scripts/download_model.py
 ```
 
 For exact pinned package versions, see `requirements.lock`.
@@ -38,16 +39,17 @@ If the default camera is unavailable or shows the wrong view, try `--camera --ca
 ```powershell
 python -m gestureforge
 python -m gestureforge --smoke-test --screenshot docs\evidence\app-smoke.png
-python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn
+python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --camera 1
 python -m gestureforge.collect --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
 python -m gestureforge.evaluate --config experiments\prototype.json --output experiments\local\prototype-results.json
+python -m gestureforge.evaluate --config experiments\pilot.json --output experiments\local\pilot-results.json
 python -m gestureforge.fixtures data\local\synthetic
 python scripts\board.py
 python scripts\package_release.py
 python -m pytest
 ```
 
-Do not treat live camera control, participant data, or second-machine operation as verified until evidence is recorded.
+The pilot command requires the locally collected dataset, which is excluded from GitHub. The prototype config uses synthetic software fixtures. Neither development validation nor synthetic checks establish final held-out performance or second-machine operation.
 
 Current software verification is recorded in `docs\evidence\verification.json`; fresh-environment source archive results are in `docs\evidence\clean-install-verification.json`.
 

@@ -52,13 +52,15 @@ The agile board and issue bodies were updated to reflect the actual state of the
 | Issue | Board status | Current gate |
 |---|---|---|
 | #1 Set up prototype foundation and reproducible environment | Done | Keep post-push install/release evidence attached to release packaging. |
-| #2 Implement gesture collection, manifest, and feature pipeline | In review | Real participant collection and manifest review remain open. |
-| #3 Train and compare kNN and SVM prototype classifiers | In progress | Human pilot metrics and report-ready result values remain open. |
-| #4 Build assignment desktop prototype with NEXT-only viewer control | In progress | Live webcam evidence remains open because local camera smoke was blocked by no frames / DirectShow stall. |
+| #2 Implement gesture collection, manifest, and feature pipeline | Done | Consented local TRAIN, VALIDATION and negative collection completed; feature data stays off GitHub. |
+| #3 Train and compare kNN and SVM prototype classifiers | In review | Real pilot comparison and limitations recorded in evidence/PILOT_RESULTS.md. |
+| #4 Build assignment desktop prototype with NEXT-only viewer control | In review | Genuine NEXT actions verified; participant confirmed hold/rearm smoke behaviour. |
 | #5 Implement activation controller and assignment safety tests | Done | Scoped controller and viewer safety tests passed locally. |
-| #6 Collect pilot validation evidence and package assignment release | Backlog | Blocked by participant data, live-demo evidence, and second-device install evidence. |
+| #6 Collect pilot validation evidence and package assignment release | In progress | Pilot and live NEXT evidence complete; second-device installation and submission gates remain open. |
 | #7 Complete assignment report, traceability, and declaration support | In progress | Final report wording, evidence reconciliation, and signed declaration remain open. |
 | #8 Add final project enrolment, profiles, and full command workflow | Backlog | Reserved for the final project stage after assignment freeze. |
 | #9 Add final project deck loading, saved state, and evaluation package | Backlog | Reserved for the final project stage after assignment freeze. |
 
 No GitHub comments or messages were posted during the board update.
+
+The table reflects the subsequent 23 September pilot update: project status fields were changed and verified in GitHub. Source commit `b5aea04` also passed [Assignment checks #4](https://github.com/Chi944/gestureforge-ict304/actions/runs/35832253894). Later commit checks are reported separately.

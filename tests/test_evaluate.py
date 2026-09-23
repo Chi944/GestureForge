@@ -35,6 +35,19 @@ def test_evaluate_config_reports_both_algorithms_for_synthetic_fixture() -> None
     assert all(entry["metrics"]["macro_f1"] == 1.0 for entry in result["results"])
 
 
+def test_validation_changes_cannot_change_fitted_rejection_thresholds():
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    baseline = evaluate_algorithm(bundle)
+    changed_features = bundle.features.copy()
+    for record in bundle.records:
+        if record.split != "train" and record.feature_index is not None:
+            changed_features[record.feature_index] += 100
+    changed = evaluate_algorithm(replace(bundle, features=changed_features))
+    assert baseline["model"]["rejection_reference"] == "leave_one_trial_out"
+    assert baseline["model"]["thresholds"] == changed["model"]["thresholds"]
+    assert changed["metrics"]["macro_f1"] == 0
+
+
 def test_trial_majority_marks_ties_unknown() -> None:
     records = []
     predictions = []
@@ -91,7 +104,7 @@ def test_evaluate_cli_writes_json(tmp_path) -> None:
             {
                 "algorithm": "knn",
                 "synthetic_fixture": {
-                    "trials_per_label_per_split": 1,
+                    "trials_per_label_per_split": 2,
                     "samples_per_trial": 5,
                     "seed": 304,
                 },

@@ -8,9 +8,9 @@ Status: draft. Check off only after evidence exists.
 
 - [x] Source code is under `code`.
 - [x] `python -m gestureforge` launches the prototype.
-- [ ] `python -m gestureforge.collect` works or the report clearly states the implemented collection method.
+- [x] `python -m gestureforge.collect` works; real TRAIN and VALIDATION sessions completed.
 - [x] `python -m gestureforge.evaluate --config experiments\prototype.json --output experiments\local\prototype-results.json` reproduces synthetic classifier comparison.
-- [ ] `python -m gestureforge.evaluate --config <human-pilot-config>` reproduces participant classifier comparison after consented collection.
+- [x] `python -m gestureforge.evaluate --config experiments/pilot.json` reproduces participant classifier comparison after consented collection.
 - [x] `python -m pytest` passes for implemented assignment parts.
 - [x] Dependencies are pinned or documented with verified versions.
 - [x] `requirements.lock` is included and matches the tested environment.
@@ -18,18 +18,18 @@ Status: draft. Check off only after evidence exists.
 - [x] `scripts/check_environment.py` output is saved.
 - [x] `scripts/download_model.py` retrieves the expected MediaPipe model asset.
 - [ ] `python -m gestureforge --smoke-test --screenshot docs\evidence\app-smoke.png` starts the Qt app.
-- [ ] `python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn` launches live control after human data exists.
+- [x] `python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --camera 1` launches live control with the pilot dataset.
 - [x] PREVIOUS and BOOKMARK are marked recognition preview only.
-- [ ] NEXT advances the fixed deck once per deliberate hold.
-- [ ] Camera releases cleanly after closing.
+- [x] NEXT advances once per deliberate hold in the participant-observed smoke retest; formal final-system hold testing remains planned.
+- [x] Camera releases cleanly after closing; the next live session opened successfully.
 
 ## Evidence
 
-- [ ] Pilot consent is recorded.
-- [ ] Pilot train and validation manifests exist.
+- [x] Pilot consent is recorded for local numeric data; submission permission and retention agreement remain open.
+- [x] Pilot train and validation manifests exist locally, with distinct sessions and no shared trials.
 - [ ] Invalid detections are retained.
-- [ ] kNN and SVM results are saved.
-- [ ] Report includes real metrics and limitations.
+- [x] kNN and SVM results are saved locally, preserving the initial baseline and corrected comparison.
+- [x] Report includes real metrics and limitations.
 - [ ] Screenshot or recording shows the working prototype.
 - [ ] Second Windows computer installation is tested.
 

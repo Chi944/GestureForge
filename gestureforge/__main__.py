@@ -36,14 +36,17 @@ def main():
                 raise ValueError("Live control requires exactly one participant's dataset.")
             profile = next(iter(participants))
             hand = bundle.metadata.get("chosen_hand", "Right")
-            features, labels, _ = bundle.training_data()
-            model = train_model(features, labels, args.algorithm, args.multiplier)
+            features, labels, records = bundle.training_data()
+            model = train_model(features, labels, args.algorithm, args.multiplier,
+                                groups=[record.trial_id for record in records])
             note = f"Personal dataset: {profile} • {hand} hand • {args.algorithm.upper()} • local processing"
         except (OSError, ValueError, KeyError) as exc:
             parser.exit(1, f"Cannot load gesture dataset: {exc}\n")
     app = QApplication(sys.argv[:1])
     window = Window(model, extract_feature_vector, hand, args.camera, DEFAULT_ASSET, profile, note)
     window.show()
+    window.raise_()
+    window.activateWindow()
     if args.smoke_test:
         def finish():
             if args.screenshot:

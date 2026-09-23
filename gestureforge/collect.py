@@ -130,6 +130,8 @@ def show(frame, title, instruction):
     cv2.putText(preview, title, (16, 32), cv2.FONT_HERSHEY_SIMPLEX, .75, (110, 235, 185), 2)
     cv2.putText(preview, instruction, (16, 64), cv2.FONT_HERSHEY_SIMPLEX, .45, (245, 245, 245), 1)
     cv2.imshow("GestureForge | data collection (commands disabled)", preview)
+    cv2.setWindowProperty("GestureForge | data collection (commands disabled)",
+                          cv2.WND_PROP_TOPMOST, 1)
 
 
 def main():

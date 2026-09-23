@@ -47,7 +47,7 @@ The current pinned dependency file is `requirements.lock`. The helper scripts ar
 The codebase provides these entry points:
 
 - `python -m gestureforge` launches the desktop prototype. Use `--dataset <manifest.json>` to enable live gesture control from a human collection manifest, and `--algorithm knn|svm` to choose the classifier.
-- `python -m gestureforge.collect` records labelled trials and appends sessions into one manifest.
+- `python -m gestureforge.collect` records labelled trials and appends sessions into one manifest. On the current development machine, use `--camera 1`; the camera index may vary after replugging or on another computer.
 - `python -m gestureforge.evaluate --config <path>` reproduces classifier comparisons.
 - `python -m gestureforge.fixtures <path>` creates synthetic software-test data that must not be used as participant evidence.
 - `python -m pytest` runs automated tests.
@@ -115,7 +115,7 @@ The final project adds bounded search:
 - kNN: `k` in `{3, 5, 7}`, weights in `{uniform, distance}`.
 - SVM: `C` in `{0.1, 1, 10}`, `gamma` in `{scale, 0.1}`.
 
-The rejection rule is based on distance to training examples of the predicted class. Class-specific reference distances are computed from training data. A multiplier is chosen from `{1, 1.5, 2}` using validation positives and negatives.
+The rejection rule is based on distance to training examples of the predicted class. Class-specific reference distances are computed from training data. The corrected prototype-v2 reference calculation excludes the whole originating training trial when estimating same-class training distances, rather than excluding only the exact sample. A multiplier is chosen from `{1, 1.5, 2}` using validation positives and negatives.
 
 Selection uses validation macro-F1 subject to the false-action target. Ties are broken by fewer false actions, then lower inference time. If kNN and SVM are effectively equivalent, prefer kNN for explainability and simpler persistence.
 
@@ -152,6 +152,10 @@ The assignment pilot should use one consenting participant with separate train a
 - One short separate validation-negative sequence.
 
 Invalid detections must stay in the manifest and count as UNKNOWN during scoring. Preliminary results are development evidence, not final generalisation claims.
+
+Current evidence: the user consented to local numeric P01 collection using the right hand, with no raw frames and GitHub exclusion. TRAIN and VALIDATION are complete: 32 trials each, eight each for NEXT, PREVIOUS, BOOKMARK, and NEUTRAL, with 160 of 160 scheduled samples valid in each split. The validation-negative session is also complete with 8 trials and 40 valid samples. Aggregate pilot metrics are recorded in `docs/evidence/PILOT_RESULTS.md`; individual feature rows, trial IDs, thresholds, raw images, raw video, and raw event logs are not published in the docs.
+
+The corrected prototype-v2 results provisionally select kNN with rejection multiplier 2.0 for the assignment NEXT-only demonstration. kNN and SVM tie on the aggregate development-validation metrics; kNN is simpler to explain and persist. This is not a frozen final-project choice. Validation-negative data shows a serious open-set weakness for BOOKMARK, which remains preview-only in the assignment and must be addressed before final full-command safety can be claimed.
 
 ## Final Evaluation Plan
 
@@ -216,11 +220,12 @@ Sprint reviews should reconcile promised scope against working software and reco
 
 These items need real human action or confirmation before they can be claimed complete:
 
-- Participant consent.
-- Live pilot data collection.
+- Formal twenty-hold duplicate-action run.
+- Live false-action and latency measurements.
 - Second Windows computer installation test.
 - Tutor confirmation of assignment marking-weight discrepancy.
 - Tutor review of scope if available.
+- Marker access permission and retention arrangement.
 - Signed group declaration.
 - Final demo video recording.
 - LMS upload and download verification.
@@ -236,11 +241,11 @@ Use:
 - `python scripts/board.py` to render the local agile board from `docs/backlog.csv`.
 - `python scripts/package_release.py` to package tracked source files.
 
-The model download, Qt startup, 51 automated tests, lint, type checking and synthetic evaluation passed. The source archive also passed those checks in a fresh environment on this computer. See `docs/evidence/verification.json` and `docs/evidence/clean-install-verification.json`.
+The model download, Qt startup, 55 automated tests, lint, type checking and synthetic evaluation passed. The source archive also passed those checks in a fresh environment on this computer. See `docs/evidence/verification.json` and `docs/evidence/clean-install-verification.json`.
 
-The current hardware evidence is better than the first webcam attempt but still incomplete. Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam`. Camera index 0 fails in current OpenCV checks; camera index 1 with the default OpenCV backend gives usable non-black video. A 60-frame capture run on index 1 completed with post-warmup mean 31.24 ms, about 32 fps, max 63 ms, and clean close. A later 20-second preview processed 304 frames. Both live runs detected zero hands, so live hand recognition and live NEXT remain pending. MediaPipe detected one hand in a clear user-supplied Windows Camera screenshot, which proves screenshot inference only. Camera indexes can change after replugging, so recheck the index before collection or demonstration.
+The current hardware evidence is better than the first webcam attempt. Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam`. Camera index 0 fails in current OpenCV checks; camera index 1 with the default OpenCV backend gives usable non-black video. A 60-frame capture run on index 1 completed with post-warmup mean 31.24 ms, about 32 fps, max 63 ms, and clean close. An earlier 20-second preview processed 304 frames and detected zero hands, but that check was later found to be confounded because the user did not see the preview window. A visible/topmost 60-second preview then processed 1,145 frames, detected one hand in 338 frames, reported Left and Right handedness labels, and closed cleanly. These preview counts verify live detector activity, not gesture-recognition accuracy. MediaPipe also detected one hand in a clear user-supplied Windows Camera screenshot. Camera indexes can change after replugging, so recheck the index before collection or demonstration.
 
-Production capture preserves the negotiated camera format, uses the default OpenCV backend, retries at most five missing-frame reads 30 ms apart, and does not force DirectShow. The live camera gate remains open until actual hand detections and consented personal data are available; see `docs/evidence/HARDWARE_CHECK.md`.
+Production capture preserves the negotiated camera format, uses the default OpenCV backend, retries at most five missing-frame reads 30 ms apart, and does not force DirectShow. The live hand-tracking gate has passed. P01 right-hand pilot collection and aggregate development validation have passed. A local live event log records genuine gesture NEXT events advancing the viewer to positions 1, 2, and 3 through the webcam-to-viewer path. The participant-observed hold smoke check advanced exactly once for each of two deliberate fist holds after open-palm rearm, and both live application instances closed cleanly with exit code 0. The formal final-project twenty-hold run, live false-action rate, latency targets, and final full-command safety remain open; see `docs/evidence/HARDWARE_CHECK.md` and `docs/evidence/PILOT_RESULTS.md`.
 
 The package created by `scripts/package_release.py` is a source archive, not a complete assignment submission. Participant results, report, permitted evidence, and signed declaration remain separate submission requirements.
 

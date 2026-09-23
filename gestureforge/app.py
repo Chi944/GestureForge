@@ -73,6 +73,7 @@ class CaptureWorker(Thread):
                     prediction = Prediction(
                         observation.session_id, observation.profile_id, observation.frame_id,
                         observation.timestamp, label, accepted, rejection_reason=reason,
+                        model_version=getattr(self.model, "model_version", "unversioned"),
                     )
                     with self._lock:
                         self._latest = (frame, prediction)
@@ -241,7 +242,9 @@ class Window(QMainWindow):
         self.worker.start()
         self.start_button.setEnabled(False)
         self.state.setText("Opening camera • show your enrolled neutral pose")
-        self.log({"type": "start", "session": session, "timestamp": time.monotonic()})
+        self.log({"type": "start", "session": session, "timestamp": time.monotonic(),
+                  "camera_index": self.camera_index, "chosen_hand": self.chosen_hand,
+                  "model": self.model.to_config() if hasattr(self.model, "to_config") else None})
 
     def pause(self):
         self.controller.pause()

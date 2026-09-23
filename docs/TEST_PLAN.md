@@ -1,6 +1,6 @@
 # GestureForge Test Plan and Requirement Traceability
 
-Status: draft with software verification recorded in `docs/evidence/verification.json`. Live camera, participant data, second-machine verification, and signed submission evidence remain pending.
+Status: software verification is recorded in `docs/evidence/verification.json`; live camera, participant pilot, real NEXT actions, and a two-hold live smoke check are recorded in `docs/evidence/PILOT_RESULTS.md`. Formal twenty-hold run, live false-action and latency measurements, second-machine verification and signed submission evidence remain open.
 
 ## Test Strategy
 
@@ -18,13 +18,13 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | --- | --- | --- | --- |
 | RQ-001 Local Windows Python 3.11 run | Environment check and launch smoke test | Second-machine release test | Software verified; second-machine pending |
 | RQ-002 Work under `code` | File layout review | File layout review | Implemented |
-| RQ-003 Labelled collection | CLI collection smoke test and manifest check | GUI enrolment tests | Software verified; human data pending |
+| RQ-003 Labelled collection | CLI collection smoke test and manifest check; P01 TRAIN, VALIDATION and validation-negative sessions collected | GUI enrolment tests | Assignment pilot collected |
 | RQ-004 60-feature extraction | Unit test for shape and wrist removal | Same | Software verified |
 | RQ-005 Invalid hand rejection | Unit tests for no hand, multiple hands, wrong hand, non-finite values, degenerate scale | Same with UI recovery | Software verified |
-| RQ-006 kNN/SVM comparison | Reproducible evaluate command output | Bounded search evidence | Software verified; human metrics pending |
+| RQ-006 kNN/SVM comparison | Reproducible evaluate command output; aggregate pilot metrics in `docs/evidence/PILOT_RESULTS.md` | Bounded search evidence | Development validation complete; held-out final pending |
 | RQ-007 Hold/rearm controller | State-machine unit tests | Live replay and system tests | Software verified |
-| RQ-008 Assignment NEXT only | Viewer/controller integration test | Superseded by all-command tests | Software verified; live camera blocked |
-| RQ-009 Exactly-once actions | Duplicate event and long-hold tests | Twenty five-second holds per profile | Software verified |
+| RQ-008 Assignment NEXT only | Viewer/controller integration test; live NEXT event log | Superseded by all-command tests | Verified for assignment live path |
+| RQ-009 Exactly-once actions | Duplicate event and long-hold tests; two live five-second holds advanced once each | Twenty five-second holds per profile | Software verified plus live smoke check; formal run pending |
 | RQ-010 Preview-only PREVIOUS/BOOKMARK | UI smoke check | Replaced by command execution | Software verified |
 | RQ-011 Manifest retains invalid detections | Manifest validation test | Same | Software verified |
 | RQ-012 Metrics include UNKNOWN | Evaluation unit test with known confusion matrix | Final held-out report | Software verified |
@@ -68,14 +68,14 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | --- | --- | --- |
 | Environment check | `python scripts/check_environment.py` | Terminal output or evidence note |
 | Locked setup | `.\scripts\setup.ps1` | Terminal output from a clean or release setup |
-| Camera check | `python scripts/check_environment.py --camera` | Terminal output and camera notes |
+| Camera check | `python scripts/check_environment.py --camera --camera-index 1` on current machine; index may vary elsewhere | Terminal output and camera notes |
 | Model asset download | `python scripts/download_model.py` | Asset path and checksum note |
 | App launch | `python -m gestureforge --smoke-test --screenshot docs/evidence/app-smoke.png` | Screenshot or terminal output |
-| Live app with human dataset | `python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn` | Screenshot, event log, and camera notes |
-| Collection path | `python -m gestureforge.collect --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot` | Manifest and data sample |
+| Live app with human dataset | `python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn` | Screenshot, local event log, and camera notes; do not publish raw event log if it contains local identifiers |
+| Collection path | `python -m gestureforge.collect --camera 1 --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot` | Manifest and aggregate data summary; do not publish feature rows |
 | Evaluation path | `python -m gestureforge.evaluate --config <path>` | JSON or CSV result |
 | UI launch | `python -m gestureforge` | Screenshot and notes |
-| Live NEXT | Webcam NEXT advances fixed deck once | Short screen recording or event log |
+| Live NEXT | Webcam NEXT advances fixed deck; two five-second holds advance exactly once each after rearm | Short screen recording, participant-observed note, or local event log |
 | Tests | `python -m pytest` | Test output |
 | Board render | `python scripts/board.py` | `docs/SPRINT_BOARD.html` and optional `docs/sprint_events.jsonl` |
 | Source package | `python scripts/package_release.py` | ZIP manifest JSON and note that it is source only |

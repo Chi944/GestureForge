@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 from .contracts import LABELS
 
 Algorithm = Literal["knn", "svm"]
-MODEL_VERSION = "prototype-v1"
+MODEL_VERSION = "prototype-v2"
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,7 @@ class ModelConfig:
     algorithm: Algorithm = "knn"
     multiplier: float = 1.5
     model_version: str = MODEL_VERSION
+    rejection_reference: str = "leave_one_sample_out"
 
 
 @dataclass(frozen=True)
@@ -89,6 +90,7 @@ class PrototypeGestureModel:
             "algorithm": self.config.algorithm,
             "multiplier": self.config.multiplier,
             "model_version": self.model_version,
+            "rejection_reference": self.config.rejection_reference,
             "labels": sorted(set(str(label) for label in self.train_labels)),
             "thresholds": self.thresholds,
             "fit_seconds": self.fit_seconds,
@@ -107,12 +109,16 @@ def train_model(
     labels: np.ndarray | list[str],
     algorithm: Algorithm = "knn",
     multiplier: float = 1.5,
+    *,
+    groups: list[str] | np.ndarray | None = None,
 ) -> PrototypeGestureModel:
     """Train the assignment's default kNN or SVM model.
 
     The scaler is fitted on training data only. The distance rejection thresholds
     are class-conditional 95th-percentile nearest-neighbour distances from the
     same scaled training data, multiplied by the configured prototype multiplier.
+    When trial IDs are supplied, all samples from the query's own trial are
+    excluded from reference neighbours. Neither validation nor test data is used.
     """
 
     feature_matrix = _coerce_feature_matrix(features)
@@ -146,7 +152,7 @@ def train_model(
     estimator.fit(scaled, label_vector)
     estimator_fit_seconds = perf_counter() - fit_start
     threshold_start = perf_counter()
-    thresholds = class_distance_thresholds(scaled, label_vector, multiplier)
+    thresholds = class_distance_thresholds(scaled, label_vector, multiplier, groups=groups)
     threshold_seconds = perf_counter() - threshold_start
     fit_seconds = perf_counter() - total_start
     return PrototypeGestureModel(
@@ -155,7 +161,9 @@ def train_model(
         train_features_scaled=scaled,
         train_labels=label_vector,
         thresholds=thresholds,
-        config=ModelConfig(algorithm=algorithm, multiplier=multiplier),
+        config=ModelConfig(algorithm=algorithm, multiplier=multiplier,
+                           rejection_reference="leave_one_trial_out" if groups is not None
+                           else "leave_one_sample_out"),
         fit_seconds=fit_seconds,
         estimator_fit_seconds=estimator_fit_seconds,
         threshold_seconds=threshold_seconds,
@@ -163,18 +171,28 @@ def train_model(
 
 
 def class_distance_thresholds(
-    scaled_features: np.ndarray, labels: np.ndarray, multiplier: float = 1.5
+    scaled_features: np.ndarray, labels: np.ndarray, multiplier: float = 1.5,
+    *, groups: list[str] | np.ndarray | None = None,
 ) -> dict[str, float]:
     if not np.isfinite(multiplier) or multiplier <= 0:
         raise ValueError("rejection multiplier must be finite and positive")
+    group_ids = None if groups is None else np.asarray(groups)
+    if group_ids is not None and (
+        group_ids.ndim != 1 or len(group_ids) != len(scaled_features)
+    ):
+        raise ValueError("groups must have one trial ID per sample")
     thresholds: dict[str, float] = {}
     for label in sorted(set(str(value) for value in labels)):
         class_rows = scaled_features[labels == label]
+        class_groups = None if group_ids is None else group_ids[labels == label]
+        if class_groups is not None and len(set(class_groups.tolist())) < 2:
+            raise ValueError(f"{label} needs at least 2 training trials for rejection calibration")
         if len(class_rows) <= 1:
             raise ValueError(f"cannot derive rejection threshold for {label} with fewer than 2 samples")
         distances: list[float] = []
         for index, row in enumerate(class_rows):
-            others = np.delete(class_rows, index, axis=0)
+            others = (np.delete(class_rows, index, axis=0) if class_groups is None else
+                      class_rows[class_groups != class_groups[index]])
             distances.append(float(np.min(np.linalg.norm(others - row, axis=1))))
         thresholds[label] = float(np.quantile(distances, 0.95) * multiplier)
     return thresholds

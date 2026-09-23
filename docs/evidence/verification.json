@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-23T07:28:20.047192+00:00",
+  "timestamp_utc": "2026-09-23T08:02:18.833474+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,41 +13,41 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.2,
+      "seconds": 0.444,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts",
       "returncode": 0,
-      "seconds": 0.822,
+      "seconds": 1.616,
       "stdout": "Success: no issues found in 18 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 11.56,
-      "stdout": "...................................................                      [100%]\n51 passed in 10.67s\n",
+      "seconds": 30.119,
+      "stdout": ".......................................................                  [100%]\n55 passed in 28.46s\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 1.129,
+      "seconds": 1.199,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments/synthetic-software-check.json",
       "returncode": 0,
-      "seconds": 2.859,
+      "seconds": 4.233,
       "stdout": "",
       "stderr": ""
     }
   ],
   "limitations": [
     "Synthetic evaluation is software evidence only.",
-    "Live participant accuracy and second-computer checks are pending."
+    "This script does not verify live participant performance or a second computer; see the assessment audit."
   ]
 }

@@ -1,6 +1,6 @@
 # GestureForge User Guide
 
-Status: draft aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; live hardware and human pilot evidence remain pending.
+Status: assignment guide aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; measured pilot results and limitations are in `docs/evidence/PILOT_RESULTS.md`. Second-computer verification remains open.
 
 ## Purpose
 
@@ -31,6 +31,7 @@ py -3.11 -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.lock
 python -m pip install --no-deps -e .
+python scripts/download_model.py
 ```
 
 For the scripted setup path used by the release package, run:
@@ -63,10 +64,10 @@ python -m gestureforge --smoke-test --screenshot docs\evidence\app-smoke.png
 Live gesture control after collecting a human dataset:
 
 ```powershell
-python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn
+python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --camera 1
 ```
 
-Supported algorithm choices are `knn` and `svm`. Synthetic fixtures cannot enable live control.
+Supported algorithm choices are `knn` and `svm`. The shown kNN multiplier 2 configuration is the provisional P01 pilot setting; other participants need their own collection and validation. Synthetic fixtures cannot enable live control. Version 2 calibration requires at least two valid training trials per label; the planned pilot uses eight.
 
 ### Select the working camera
 
@@ -74,7 +75,7 @@ Close Windows Camera, video-call apps and other camera previews before using Ges
 
 ```powershell
 python scripts/check_environment.py --camera --camera-index 1
-python -m gestureforge --dataset data/local/pilot/manifest.json --camera 1
+python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
 ```
 
 Use `--camera 1` on each collection command below when that is the working device. The camera check reports hand counts without saving images. A successful image read alone does not establish hand recognition or a working gesture command.
@@ -99,7 +100,7 @@ python -m gestureforge.collect --split validation --participant P01 --hand Right
 python -m gestureforge.collect --split validation_negative --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
 ```
 
-The collection flow should ask for participant pseudonym, selected hand, session type, and label sequence. Only collect data after participant consent has been recorded.
+The command arguments set the participant pseudonym, hand and session type. The window prompts each label in sequence. Press Space for each trial, wait for the two-second countdown, hold the pose steadily, then relax during the release interval. Press Q to stop; completed trials remain saved. Only collect data after participant consent has been recorded.
 
 Assignment labels:
 
@@ -206,10 +207,10 @@ The current software verification summary is recorded in `docs\evidence\verifica
 
 ## Assignment Demo Script
 
-1. Launch the prototype.
-2. Confirm the webcam preview appears.
-3. Select or load the assignment profile.
-4. Start recognition.
+1. Launch with the human dataset path, selected algorithm, rejection multiplier and working camera index shown above.
+2. Confirm the notice identifies the intended participant and hand.
+3. Click **Start camera control**.
+4. Confirm the webcam preview appears.
 5. Hold NEUTRAL until the controller is ready.
 6. Hold NEXT until one card advance occurs.
 7. Continue holding NEXT and show that no duplicate action occurs.
