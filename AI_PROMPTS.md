@@ -47,4 +47,6 @@ Before submission:
 
 ## Current Limitation
 
+Additional user request on 23 September: "I want you to remove or merge the codex branch into main and ensure that this proiect can be run and used on a separate windows laptop". The user confirmed that the Intel/AMD Windows laptop is not available yet. AI assistance checked branch ancestry before removing the redundant branch, prepared Windows launchers and laptop instructions, and extended archive/install/native-model verification. Physical second-laptop checks were not invented or marked passed.
+
 This file is not a complete transcript. It is a faithful working record of representative current prompts and AI use categories.

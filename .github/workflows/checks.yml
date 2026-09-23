@@ -15,9 +15,22 @@ jobs:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: requirements.lock
-      - run: python -m pip install -r requirements.lock
-      - run: python -m pip install --no-deps -e .
-      - run: python -m ruff check gestureforge tests scripts
-      - run: python -m mypy gestureforge scripts
-      - run: python -m pytest -q
-      - run: python -m gestureforge --smoke-test
+      - name: Build and extract the laptop source package
+        run: |
+          python scripts/package_release.py
+          Expand-Archive -LiteralPath releases/gestureforge-assignment-source.zip -DestinationPath '.cache/Windows Laptop Smoke'
+      - name: Set up the extracted package with Windows PowerShell
+        working-directory: .cache/Windows Laptop Smoke/gestureforge
+        run: |
+          $pythonExe = (Get-Command python).Source
+          .\setup.cmd -PythonExe "$pythonExe"
+      - name: Verify dependencies, model, software and launcher from the archive
+        working-directory: .cache/Windows Laptop Smoke/gestureforge
+        run: |
+          .\.venv\Scripts\python.exe -m pip check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\.venv\Scripts\python.exe scripts/check_environment.py --model
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\.venv\Scripts\python.exe scripts/verify.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\run.cmd --smoke-test

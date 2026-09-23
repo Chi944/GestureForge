@@ -1,8 +1,10 @@
 """Report dependency versions; optional live camera check never saves frames."""
 
 import argparse
+import hashlib
 import importlib.metadata
 import json
+from pathlib import Path
 import platform
 
 
@@ -10,10 +12,36 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--camera", action="store_true", help="Open camera for five frames")
     parser.add_argument("--camera-index", type=int, default=0, help="Camera index for --camera")
+    parser.add_argument("--model", action="store_true", help="Verify model and run blank-image inference without opening a camera")
     args = parser.parse_args()
     report: dict[str, object] = {"python": platform.python_version(), "platform": platform.platform()}
     for name in ["numpy", "scikit-learn", "mediapipe", "opencv-contrib-python", "PySide6"]:
         report[name] = importlib.metadata.version(name)
+    if args.model:
+        import mediapipe as mp
+        import numpy as np
+
+        assets = Path(__file__).resolve().parent.parent / "assets"
+        asset = assets / "hand_landmarker.task"
+        expected = json.loads((assets / "model_manifest.json").read_text(encoding="utf-8"))
+        if not asset.is_file():
+            raise SystemExit("Missing model. Run setup.cmd while connected to the internet.")
+        digest = hashlib.sha256(asset.read_bytes()).hexdigest()
+        if digest != expected["sha256"]:
+            raise SystemExit("Model checksum mismatch. Replace the model through verified setup.")
+        options = mp.tasks.vision.HandLandmarkerOptions(
+            base_options=mp.tasks.BaseOptions(model_asset_path=str(asset)),
+            running_mode=mp.tasks.vision.RunningMode.VIDEO,
+            num_hands=2,
+        )
+        with mp.tasks.vision.HandLandmarker.create_from_options(options) as detector:
+            result = detector.detect_for_video(
+                mp.Image(image_format=mp.ImageFormat.SRGB,
+                         data=np.zeros((256, 256, 3), dtype=np.uint8)), 1
+            )
+        if result.hand_landmarks:
+            raise SystemExit("Unexpected hand detection in blank-image model check.")
+        report["model"] = {"sha256": digest, "blank_image_hands": 0, "camera_opened": False}
     if args.camera:
         from gestureforge.capture import HandCamera
         with HandCamera(camera=args.camera_index) as camera:

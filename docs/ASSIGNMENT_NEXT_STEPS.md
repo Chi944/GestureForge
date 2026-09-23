@@ -6,7 +6,7 @@ The prototype evidence is in place: software verification passes, pilot data and
 
 ## Priority order
 
-1. Run the required second Windows computer install check before submission, using only the release archive and its instructions.
+1. Run the required second Windows computer install check before submission, using only the release archive and [Windows laptop guide](WINDOWS_LAPTOP.md). The user confirmed the Intel/AMD laptop is not available yet; its physical acceptance checks remain pending.
 2. Confirm tutor-facing questions and record any reply without inventing approval.
 3. Record team member names, tutorial membership, contribution details, and final responsibilities.
 4. Confirm AI-use guidance from the unit and reconcile it with the AI assistance declaration.

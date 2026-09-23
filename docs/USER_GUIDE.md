@@ -17,13 +17,25 @@ The final submitted package should also work offline after dependencies and mode
 
 ## Setup
 
-Open PowerShell in:
+Open the extracted `gestureforge` folder or your cloned repository in File Explorer. You can double-click:
 
-```powershell
-C:\Users\Desto\Desktop\Murdoch\ICT304\Assignment\code
+```text
+setup.cmd
+run.cmd
 ```
 
-Create and activate a virtual environment:
+For terminal setup, open PowerShell in that folder, wherever you saved it. The developer's original directory layout is not required. Follow the [Windows laptop guide](WINDOWS_LAPTOP.md) for installation and personal enrolment on another computer.
+
+Then run:
+
+```powershell
+.\setup.cmd
+.\run.cmd
+```
+
+`setup.cmd` uses process-scoped PowerShell execution bypass for this project script only. It does not change the computer's execution policy.
+
+Manual setup commands, if needed:
 
 ```powershell
 py -3.11 -m venv .venv
@@ -34,13 +46,7 @@ python -m pip install --no-deps -e .
 python scripts/download_model.py
 ```
 
-For the scripted setup path used by the release package, run:
-
-```powershell
-.\scripts\setup.ps1
-```
-
-If Python 3.11 is installed without the Windows launcher, run `scripts/setup.ps1 -PythonExe "C:\path\to\python.exe"`. The script checks the interpreter version before installing dependencies.
+If Python 3.11 is installed without the Windows launcher, run `setup.cmd -PythonExe "C:\path\to\python.exe"`. The script checks that the interpreter is 64-bit Python 3.11 before installing dependencies.
 
 If PowerShell blocks activation, run:
 
@@ -54,19 +60,19 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 Keyboard-only viewer:
 
 ```powershell
-python -m gestureforge
+.\run.cmd
 ```
 
 Smoke-test startup with screenshot:
 
 ```powershell
-python -m gestureforge --smoke-test --screenshot docs\evidence\app-smoke.png
+.\run.cmd --smoke-test --screenshot docs\evidence\app-smoke.png
 ```
 
 Live gesture control after collecting a human dataset:
 
 ```powershell
-python -m gestureforge --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --camera 1
+.\run.cmd --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --camera 1
 ```
 
 Supported algorithm choices are `knn` and `svm`. The shown kNN multiplier 2 configuration is the provisional P01 pilot setting; other participants need their own collection and validation. Synthetic fixtures cannot enable live control. Version 2 calibration requires at least two valid training trials per label; the planned pilot uses eight.
@@ -77,7 +83,7 @@ Close Windows Camera, video-call apps and other camera previews before using Ges
 
 ```powershell
 python scripts/check_environment.py --camera --camera-index 1
-python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
+run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
 ```
 
 Use `--camera 1` on each collection command below when that is the working device. The camera check reports hand counts without saving images. A successful image read alone does not establish hand recognition or a working gesture command.

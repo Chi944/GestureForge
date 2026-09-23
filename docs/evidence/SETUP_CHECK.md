@@ -7,8 +7,10 @@ Result: PASS on the current Windows computer. This is not the required second-co
 ## What changed
 
 - `scripts/setup.ps1` accepts an optional `-PythonExe` argument.
+- `setup.cmd` launches the PowerShell setup script with process-scoped execution bypass for easier Windows handoff.
+- `run.cmd` launches the installed app from the repository's own `.venv`.
 - The script still defaults to `py -3.11` when `-PythonExe` is not provided.
-- The selected interpreter and resulting `.venv` interpreter are validated as Python 3.11 before dependency installation.
+- The selected interpreter and resulting `.venv` interpreter are validated as 64-bit Python 3.11 before dependency installation.
 - Pip cache is kept under the checkout at `.cache\pip`.
 - Command failures are checked through a shared PowerShell helper with actionable error messages.
 

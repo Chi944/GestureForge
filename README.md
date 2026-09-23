@@ -67,13 +67,15 @@ Requirements: **Windows**, **Python 3.11**, and internet access for initial depe
 Open PowerShell in the repository folder:
 
 ```powershell
-.\scripts\setup.ps1
-.\.venv\Scripts\python.exe -m gestureforge
+.\setup.cmd
+.\run.cmd
 ```
 
-Setup installs the pinned dependencies and verifies the pretrained hand-landmark asset. If Python is not registered with the Windows launcher, supply its path with `-PythonExe`; see the [user guide](docs/USER_GUIDE.md).
+Setup installs the pinned dependencies and verifies the pretrained hand-landmark asset. If Python is not registered with the Windows launcher, supply its path with `-PythonExe`, for example `.\setup.cmd -PythonExe "C:\Path\To\python.exe"`; see the [user guide](docs/USER_GUIDE.md).
 
 A fresh clone opens the **manual card viewer**. Live recognition requires a personal dataset. Participant features are excluded from GitHub and the source archive; the [collection guide](docs/DATA_COLLECTION.md) explains how to record them.
+
+For another Intel/AMD Windows laptop, extract the source ZIP, install **64-bit Python 3.11**, then double-click `setup.cmd` and `run.cmd`. Follow the [Windows laptop guide](docs/WINDOWS_LAPTOP.md) for camera selection, personal enrolment and physical-device acceptance checks. Git is not required to use the ZIP. Create a new environment on each computer; do not copy `.venv`.
 
 ### 2. Check the camera and launch the local pilot
 
@@ -81,7 +83,7 @@ After the P01 dataset has been collected on this computer:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/check_environment.py --camera --camera-index 1
-.\.venv\Scripts\python.exe -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
+.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
 ```
 
 Index `1` is the verified device on the development computer. Indices can change; select the working index on your machine and close other camera applications first. The shown rejection setting is provisional for P01, not automatically suitable for another participant.

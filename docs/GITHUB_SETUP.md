@@ -76,4 +76,10 @@ At the user's request, `main` was created from verified prototype commit `c55555
 - Issue #7: open, In progress for report and declaration completion.
 - Issues #8 and #9: open, Backlog for November's integrated project.
 
-The workflow now uses `actions/checkout@v7` and `actions/setup-python@v7`, whose tagged action manifests use Node 24, replacing the older action runtimes. Sources: [checkout](https://github.com/actions/checkout), [setup-python](https://github.com/actions/setup-python). Workflow token access is limited to reading repository contents. A successful hosted run is required to verify these changes.
+The workflow now uses `actions/checkout@v7` and `actions/setup-python@v7`, whose tagged action manifests use Node 24, replacing the older action runtimes. Sources: [checkout](https://github.com/actions/checkout), [setup-python](https://github.com/actions/setup-python). Workflow token access is limited to reading repository contents. [Run #7](https://github.com/Chi944/GestureForge_304/actions/runs/35837972991) passed for `2bb9c08` on `main`.
+
+## Redundant branch removal and laptop handoff, 2026-09-23
+
+The user subsequently requested removal or merging of the Codex branch. After fetching, `git merge-base --is-ancestor origin/codex/assignment-prototype origin/main` returned success and the Codex branch had no unique commits. It was safely deleted remotely and locally. `main` remains the default and `origin/HEAD` now points to it. No history was rewritten.
+
+The Windows CI workflow now verifies the actual source archive: it extracts into a path containing spaces, runs `setup.cmd` with Windows PowerShell, checks dependencies and native-model inference, runs software verification and launches through `run.cmd`. This is separate-host software verification, not a physical-laptop webcam result.
