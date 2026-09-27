@@ -1,10 +1,12 @@
 # GestureForge User Guide
 
-Status: assignment guide aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; measured pilot results and limitations are in `docs/evidence/PILOT_RESULTS.md`. Second-computer verification remains open.
+Status: assignment guide aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; measured pilot results and limitations are in `docs/evidence/PILOT_RESULTS.md`. P02 reported the core second-laptop workflow working; pause/restart, offline use and guide-only setup remain unverified.
 
 ## Purpose
 
 GestureForge is a local desktop prototype for recognising a small personal set of static hand gestures from a webcam and controlling a card viewer. The assignment release executes NEXT only. PREVIOUS and BOOKMARK may appear as recognised labels but are preview-only until the final project release.
+
+GestureForge controls its own fixed ten-card deck. It is not connected to Microsoft PowerPoint; PowerPoint/OS control is outside the agreed scope.
 
 ## Requirements
 
@@ -240,7 +242,7 @@ The current software verification summary is recorded in `docs\evidence\verifica
 | --- | --- |
 | Python version is wrong | Run `py -3.11 --version` and recreate `.venv` with Python 3.11 |
 | Camera does not open | Close other camera apps and restart GestureForge |
-| No hand detected | Improve lighting, keep hand in frame, use selected hand |
+| No hand detected or pose repeatedly rejected | Keep the full enrolled hand in frame, face the camera as during training, use similar distance and lighting, settle the pose, then hold NEUTRAL until READY. Removing the hand is not required by the controller. |
 | Many rejections | Recheck distance, lighting, hand choice, and enrolment consistency |
 | Action repeats | Stop using the prototype and record a controller defect; the state machine must prevent repeats |
 | Import error | Re-run `python -m pip install -r requirements.lock` and `python -m pip install --no-deps -e .` in the active `.venv` |

@@ -1,6 +1,6 @@
 # GestureForge Test Plan and Requirement Traceability
 
-Status: software verification is recorded in `docs/evidence/verification.json`; live camera, participant pilot, real NEXT actions, and a two-hold live smoke check are recorded in `docs/evidence/PILOT_RESULTS.md`. Fresh-source setup and an actual Windows interface screenshot are also recorded. The required second-machine verification remains open for the assignment. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
+Status: software verification is recorded in `docs/evidence/verification.json`; live camera, participant pilot, real NEXT actions, and a two-hold live smoke check are recorded in `docs/evidence/PILOT_RESULTS.md`. Fresh-source setup and an actual Windows interface screenshot are also recorded. P02 independently reported the core laptop workflow working on 26 September; see `docs/evidence/P02_LAPTOP_TEST.md`. Pause/restart, offline use and guide-only installation remain unverified. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
 
 ## Test Strategy
 
@@ -16,7 +16,7 @@ The assignment only executes tests for implemented prototype parts. The final pr
 
 | Requirement | Assignment test evidence | Final project test evidence | Current status |
 | --- | --- | --- | --- |
-| RQ-001 Local Windows Python 3.11 run | Environment check and launch smoke test | Second-machine release test | Software verified; second-machine pending |
+| RQ-001 Local Windows Python 3.11 run | Environment check and launch smoke test | Second-machine release test | Software verified; P02 laptop use reported, remaining release checks pending |
 | RQ-002 Work under `code` | File layout review | File layout review | Implemented |
 | RQ-003 Labelled collection | CLI collection smoke test and manifest check; P01 TRAIN, VALIDATION and validation-negative sessions collected | GUI enrolment tests | Assignment pilot collected |
 | RQ-004 60-feature extraction | Unit test for shape and wrist removal | Same | Software verified |
@@ -75,7 +75,7 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | Collection path | `python -m gestureforge.collect --camera 1 --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot` | Manifest and aggregate data summary; do not publish feature rows |
 | Evaluation path | `python -m gestureforge.evaluate --config <path>` | JSON or CSV result |
 | UI launch | `python -m gestureforge` | Screenshot and notes |
-| Live NEXT | Webcam NEXT advances fixed deck; two five-second holds advance exactly once each after rearm | Short screen recording, participant-observed note, or local event log |
+| Live NEXT | Webcam NEXT advances fixed deck; P01 deliberate holds and P02 reported five-second hold advance once after rearm | Short screen recording, participant-observed note, or local event log |
 | Tests | `python -m pytest` | Test output |
 | Board render | `python scripts/board.py` | `docs/SPRINT_BOARD.html` and optional `docs/sprint_events.jsonl` |
 | Source package | `python scripts/package_release.py` | ZIP manifest JSON and note that it is source only |

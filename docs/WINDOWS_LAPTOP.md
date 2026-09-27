@@ -1,6 +1,6 @@
 # Run GestureForge on another Windows laptop
 
-Target: Intel/AMD Windows 10/11 with **64-bit Python 3.11**, a webcam and internet for first setup. The user confirmed that the second laptop is not available yet. Its physical camera and live control checks remain pending. Do not copy a `.venv` from another computer.
+Target: Intel/AMD Windows 10/11 with **64-bit Python 3.11**, a webcam and internet for first setup. [P02 feedback recorded on 26 September](evidence/P02_LAPTOP_TEST.md) reports successful assisted ZIP use with a personal right-hand dataset on another laptop. Exact package/environment details, guide-only installation, pause/restart, camera release/reopen and disconnected-network checks remain open. Do not copy a `.venv` from another computer.
 
 ## 1. Transfer and extract
 
@@ -84,7 +84,7 @@ Multiplier 2 is the original P01 prototype setting, not an accuracy guarantee fo
 
 ## 6. Physical laptop acceptance record
 
-Record actual observations here or in a copy of this table. Do not mark these passed from the development computer or CI.
+Record actual observations here or in a copy of this table against the exact package being accepted. [P02's assisted-use report](evidence/P02_LAPTOP_TEST.md) is separate qualitative evidence; it lacks the package/environment details needed to complete this acceptance record. Do not mark these passed from the development computer or CI.
 
 | Check | Observed result / date / tester |
 | --- | --- |

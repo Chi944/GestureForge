@@ -41,7 +41,7 @@ This follow-up used AI assistance to prepare the README, audit stale submission 
 Before submission:
 
 - Confirm the unit's AI-use wording requirements.
-- Decide whether a full prompt transcript is required or whether representative prompts are enough.
+- Include the prompts used, as required by the course specification. Review the [recovered user-prompt appendix](docs/AI_PROMPT_APPENDIX.md), add missing earlier and other-tool conversations, and check the unit's detailed formatting guidance. Representative excerpts alone do not establish complete coverage.
 - Remove any private information that should not be submitted.
 - Ensure the declaration matches actual AI use, not planned AI use.
 
@@ -50,3 +50,5 @@ Before submission:
 Additional user request on 23 September: "I want you to remove or merge the codex branch into main and ensure that this proiect can be run and used on a separate windows laptop". The user confirmed that the Intel/AMD Windows laptop is not available yet. AI assistance checked branch ancestry before removing the redundant branch, prepared Windows launchers and laptop instructions, and extended archive/install/native-model verification. Physical second-laptop checks were not invented or marked passed.
 
 This file is not a complete transcript. It is a faithful working record of representative current prompts and AI use categories.
+
+On 26 September, AI assistance incorporated the user's P02 qualitative laptop feedback, audited the assessment documents, refined the report and evidence, and added a private marker archive option for the authorised P01 numeric data. The report and recovered prompt appendix still require human review; no team identities, signatures, tutor approvals or unperformed hardware tests were invented.

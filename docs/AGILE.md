@@ -85,7 +85,7 @@ An issue is done when:
 
 ## GitHub Status
 
-The private [repository](https://github.com/Chi944/gestureforge-ict304), [nine issues](https://github.com/Chi944/gestureforge-ict304/issues), two dated milestones, and [GestureForge Agile Board](https://github.com/users/Chi944/projects/1) were created on 23 September 2026. See `GITHUB_SETUP.md` for the setup record. Keep GitHub parent issues aligned with the detailed local backlog; a parent remains open until all acceptance evidence exists. Creating these tools is not evidence of human peer review or weekly tutor meetings.
+The private [repository](https://github.com/Chi944/GestureForge_304), [nine issues](https://github.com/Chi944/GestureForge_304/issues), two dated milestones, and [GestureForge Agile Board](https://github.com/users/Chi944/projects/1) were created on 23 September 2026. See `GITHUB_SETUP.md` for the setup record. Keep GitHub parent issues aligned with the detailed local backlog; a parent remains open until all acceptance evidence exists. Creating these tools is not evidence of human peer review or weekly tutor meetings.
 
 ## Status Rules
 

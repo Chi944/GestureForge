@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from typing import Any, cast
 
 import numpy as np
 import pytest
@@ -118,7 +119,11 @@ def test_camera_stops_after_bounded_missing_frame_retries(monkeypatch):
 
     reads = []
     camera = capture.HandCamera.__new__(capture.HandCamera)
-    camera.cap = SimpleNamespace(read=lambda: (reads.append(1) or False, None))
+    def read_missing_frame():
+        reads.append(1)
+        return False, None
+
+    camera.cap = cast(Any, SimpleNamespace(read=read_missing_frame))
     camera.detector = object()
     monkeypatch.setattr(capture.time, "sleep", lambda _: None)
     with pytest.raises(capture.CameraError, match="returned no frame"):

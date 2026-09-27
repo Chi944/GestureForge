@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def main():
     commands = [
         ["-m", "ruff", "check", "gestureforge", "tests", "scripts"],
-        ["-m", "mypy", "gestureforge", "scripts"],
+        ["-m", "mypy", "gestureforge", "scripts", "tests"],
         ["-m", "pytest", "-q"],
         ["-m", "gestureforge", "--smoke-test"],
         ["-m", "gestureforge.evaluate", "--config", "experiments/prototype.json",

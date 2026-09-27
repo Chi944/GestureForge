@@ -2,7 +2,7 @@
 
 Deadline: 7 November 2026.
 
-Status: future checklist.
+Status: future checklist. These November features and formal evaluation gates remain open; they do not expand the [assignment submission checklist](SUBMISSION_CHECKLIST_ASSIGNMENT.md). [P01 development validation and live smoke checks](evidence/PILOT_RESULTS.md), [P02 qualitative assisted use](evidence/P02_LAPTOP_TEST.md) and [same-computer ZIP verification](evidence/WINDOWS_LAPTOP_CHECK.md) do not satisfy the final held-out, full-system or complete physical-laptop acceptance requirements below.
 
 ## System Features
 
@@ -12,7 +12,7 @@ Status: future checklist.
 - [ ] NEXT executes safely.
 - [ ] PREVIOUS executes safely.
 - [ ] BOOKMARK executes safely and idempotently.
-- [ ] JSON decks load after validation.
+- [ ] User-selected JSON decks load after validation; the assignment's fixed bundled JSON deck does not complete this feature.
 - [ ] Malformed decks show clear errors.
 - [ ] Deck position and bookmarks reload.
 - [ ] Profile and model switching invalidate pending actions.

@@ -26,6 +26,7 @@ def test_save_and_load_dataset_preserves_invalid_records(tmp_path) -> None:
     records = [_record("T1", "train"), _record("T2", "validation", valid=False), _record("T3", "validation")]
 
     saved = save_dataset(tmp_path / "manifest.json", records, features, {"provenance": "human"})
+    assert saved.manifest_path is not None
     loaded = load_dataset(saved.manifest_path)
 
     assert loaded.metadata["provenance"] == "human"
@@ -72,6 +73,7 @@ def test_dataset_allows_validation_negative_unknown_records(tmp_path) -> None:
     )
 
     saved = save_dataset(tmp_path / "manifest.json", [record], np.ones((1, 60)))
+    assert saved.manifest_path is not None
 
     assert load_dataset(saved.manifest_path).records[0].intended_label == "UNKNOWN"
 

@@ -1,20 +1,28 @@
 # GestureForge Assignment Design Report Draft
 
-Status: formal draft, not ready to submit. The assignment prototype, pilot comparison and participant-observed live NEXT hold/rearm check are verified. Fresh-source setup and actual interface screenshot evidence are complete. Assignment completion depends on final report export/review, the required second-computer check, tutor/team review, marker access and retention agreement, AI-use guidance check, signed declaration, and LMS upload/download verification. Formal repeated-hold, live false-action, latency and held-out evaluation are final-project deliverables.
+Status: formal draft, not ready to submit. Documentation audited against the repository and recorded evidence on 27 September 2026; the recorded hardware and pilot runs are dated 23 September. The prototype has software checks, a development-validation comparison and a participant-observed two-hold NEXT smoke check. Fresh-source setup was tested on the development computer only. Assignment completion depends on the open [assignment checklist](SUBMISSION_CHECKLIST_ASSIGNMENT.md) gates: final report review, second-computer acceptance, tutor/team review, private P01 package retention notes, AI-use guidance check, signed declaration, and LMS upload/download verification. Formal repeated-hold, live false-action, latency and held-out evaluation remain [final-project deliverables](SUBMISSION_CHECKLIST_FINAL.md).
 
 ## Executive Summary
 
-GestureForge is a local Windows desktop prototype that recognises a small personal set of static webcam hand gestures and uses a conservative activation controller to advance a card viewer. The assignment release implements the AI prototype and integration shell while keeping scope deliberately narrow: NEXT is the only gesture that executes a viewer command. PREVIOUS and BOOKMARK are recognised labels for preview and evaluation only.
+GestureForge is a local Windows desktop AI prototype for controlling a small card deck with personal static hand gestures. The assignment release proves the core AI subsystem and one real product workflow: webcam input is converted to MediaPipe hand landmarks, normalised into 60 numeric features, classified by both kNN and RBF SVM for comparison, filtered through distance-based rejection, and passed to a hold-and-rearm controller that executes NEXT once per deliberate hold.
 
-The final project will extend this codebase with in-app enrolment, multiple profiles, PREVIOUS and BOOKMARK execution, JSON decks, saved state, held-out testing for two participants, and a final demo video. This assignment does not finish those final-project features.
+The assignment scope is deliberately narrow so it can be demonstrated and defended. NEXT is the only gesture that performs a viewer action. PREVIOUS and BOOKMARK are recognised and displayed as preview-only labels, leaving meaningful implementation work for the 7 November final project: in-app enrolment, multiple profiles, PREVIOUS and BOOKMARK execution, user-selected validated JSON decks, saved state, held-out testing for two participants, and a final demo video.
 
-Current software evidence is summarised in `docs/evidence/verification.json`: Ruff passed, mypy passed, pytest passed, GUI smoke launch passed, and synthetic evaluation completed. The MediaPipe asset downloaded and initialised, and a blank-image MediaPipe smoke check returned zero hands. Early QuickCam checks produced black or slow frames, but wrong device selection, backend behaviour, and possible Windows Camera app contention confounded that evidence. After replacing the webcam, Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam`. Camera index 1 with OpenCV's default backend now provides usable non-black video: a 60-frame run completed with post-warmup mean 31.24 ms, about 32 fps, max 63 ms, and clean shutdown. A later visible/topmost 60-second preview processed 1,145 frames, detected one hand in 338 frames, reported Left and Right handedness labels, and closed cleanly. These are detector-activity counts from an interactive preview, not gesture-recognition accuracy. The user consented to local numeric P01 data collection with the right hand, no raw frames, and GitHub exclusion. TRAIN and VALIDATION each completed 32 trials and 160 of 160 valid scheduled samples; validation-negative completed 8 trials and 40 valid samples. Corrected development validation reached macro-F1 0.9686 at multiplier 2.0 for both kNN and SVM, with 31 of 32 validation trials correct. A local live event log records genuine webcam gesture NEXT events advancing the viewer to positions 1, 2, and 3 through the personal kNN prototype-v2 multiplier 2.0 path. The participant then confirmed that two deliberate fist holds advanced exactly once each, with open-palm rearm between holds. This verifies the assignment NEXT path and provides a live hold smoke check, but the formal final-project twenty-hold run, live false-action rate, and latency targets remain pending; see docs/evidence/PILOT_RESULTS.md.
+The prototype is strong enough for a near-final assignment build but not ready to submit until the remaining human and packaging gates are closed. Software verification currently passes Ruff, mypy, pytest, GUI smoke launch and synthetic evaluation. The P01 right-hand pilot collected separate TRAIN and VALIDATION sessions with 32 trials and 160 valid scheduled samples each, plus 40 valid validation-negative samples. Corrected development validation reached macro-F1 0.9686 for both kNN and SVM at rejection multiplier 2.0, with 31 of 32 validation trials correct. Live P01 testing advanced cards through the full webcam-to-viewer NEXT path and confirmed two sustained NEXT holds each fired exactly once after NEUTRAL rearming.
+
+[P02 laptop feedback recorded on 26 September](evidence/P02_LAPTOP_TEST.md) reports successful ZIP use with Codex assistance and a separately collected right-hand dataset: NEXT advanced Card 1 to Card 10, a five-second NEXT hold produced one action, NEUTRAL rearm was required, and PREVIOUS/BOOKMARK remained preview-only. The participant reported reduced reliability with motion, tilt, back-of-hand orientation, lateral position and excessive distance. These are qualitative observations, not isolated root causes or a formal guide-only installation, disconnected-network, pause/reopen or quantitative P02 accuracy result.
 
 ## Problem and User Need
 
 The target user is a presenter, learner, or demonstrator who wants to move through a small deck without touching the keyboard or mouse. The problem is not general sign-language recognition. The problem is a bounded human-computer interaction task: recognise a small personal command set while avoiding accidental navigation.
 
 The prototype uses personal examples rather than a universal gesture model. That keeps the assignment feasible because the classifier only needs to distinguish one enrolled user's static labels under documented camera, lighting, hand, and distance conditions.
+
+## Innovation and AI Contribution
+
+Common low-risk alternatives for this workflow are keyboard shortcuts, clickers, touch screens, voice commands, or fixed rule-based hand-pose thresholds. GestureForge's innovation is the combination of personal gesture enrolment, a small explainable classifier comparison, open-set rejection, and deliberate activation control. The aim is not to replace high-accuracy sign-language systems; it is to make a small touch-free viewer that can be trained quickly for one user and made safer against accidental repeated actions.
+
+MediaPipe supplies the pretrained hand landmarks. The project's AI contribution is the system built around those landmarks: the dataset and manifest design, 60-feature normalisation, train-only scaling, kNN and SVM comparison, class-distance rejection, validation-negative analysis, and controller integration with hold/rearm safeguards. A real webcam NEXT gesture advances a card in the application; this integration result does not establish general live safety. AI assistance and verified human contributions must be disclosed separately.
 
 ## Assignment Scope
 
@@ -33,10 +41,10 @@ Implemented for the assignment prototype:
 
 Still pending before assignment submission:
 
-- Final report export and human review.
-- Required second Windows computer install check.
+- Human review of the exported report draft; regenerate after any content changes.
+- Second Windows computer acceptance check from the [laptop guide](WINDOWS_LAPTOP.md#6-physical-laptop-acceptance-record); same-computer archive checks do not close it.
 - Tutor/team review, team names, and contribution confirmation.
-- Marker access permission, data-sharing and retention agreement, and AI-use guidance check.
+- Private P01 package retention note and AI-use guidance check.
 - Signed group declaration and LMS upload/download verification.
 
 Excluded until the final project:
@@ -44,9 +52,11 @@ Excluded until the final project:
 - In-app enrolment and practice.
 - Profile create, reload, and delete.
 - PREVIOUS and BOOKMARK execution.
-- JSON deck loading.
+- User-selected, validated JSON deck loading; the assignment already loads its fixed ten-card deck from JSON.
 - Saved deck position and bookmarks.
 - Two-participant held-out final evaluation.
+
+Not in agreed scope: PowerPoint control, operating-system control, dynamic gestures, two-handed gestures, sign-language translation, cloud accounts, mobile apps, deep-network training, or an installer executable.
 
 ## Systems Engineering Approach
 
@@ -60,11 +70,34 @@ The project uses a tailored lifecycle. NASA's lifecycle model separates concept,
 
 Agile tracking is maintained through `docs/backlog.csv`, local board generation with `python scripts/board.py`, and the private GitHub repository and project board recorded in `docs/GITHUB_SETUP.md`.
 
+## Milestones
+
+The schedule keeps the assignment prototype and final project clearly separated.
+
+| Date range | Assignment milestone | Exit gate |
+| --- | --- | --- |
+| 23-24 Sep | Repository layout, dependency check, camera/landmark feasibility and requirements draft | Development machine can run the stack and capture usable webcam input |
+| 25-26 Sep | Collection CLI, feature pipeline, manifest, P01 pilot data and default training | Saved numeric data and first classifier outputs exist |
+| 27-28 Sep | Fixed viewer, controller and live prediction integration | Real webcam NEXT advances one card once |
+| 29-30 Sep | Classifier comparison, rejection tuning, tests and measured outputs | Preliminary results are reproducible and limitations are recorded |
+| 1 Oct | Prototype freeze, install instructions and report reconciliation | Report claims match code and evidence |
+| 2 Oct | Package review, declaration and LMS upload check | Downloaded submission package is rechecked |
+| 3 Oct | Deadline buffer | Fixes and packaging corrections only |
+
+| Date range | Final project milestone | Exit gate |
+| --- | --- | --- |
+| 4-11 Oct | In-app enrolment, practice, profile lifecycle and validation | Profiles can be created and reloaded |
+| 12-18 Oct | PREVIOUS, BOOKMARK, JSON decks, saved state and recovery | Feature freeze |
+| 19-25 Oct | Bounded validation search, frozen candidates, held-out data and live tasks | Final evaluation data collected |
+| 26 Oct-1 Nov | Defect fixes, second-machine release test and stability run | Release candidate |
+| 2-6 Nov | Final report, guide, video, slides and rehearsal | Submission ready |
+| 7 Nov | Deadline buffer | No new features |
+
 ## Requirements and Current Status
 
 | ID | Requirement | Assignment status | Evidence or blocker |
 | --- | --- | --- | --- |
-| RQ-001 | The system shall run locally on Windows with Python 3.11. | Software verified | Python 3.11.16 environment reported; second-machine check pending |
+| RQ-001 | The system shall run locally on Windows with Python 3.11. | Software verified; assisted laptop use reported | Python 3.11.16 development environment recorded; P02 package/version details and full release acceptance remain pending |
 | RQ-002 | The system shall store project work under `code`. | Implemented | Repository and artifacts are under `code` |
 | RQ-003 | The prototype shall collect labelled examples for NEXT, PREVIOUS, BOOKMARK, and NEUTRAL. | Implemented, pilot collected | `python -m gestureforge.collect`; P01 right-hand TRAIN and VALIDATION each have 32 trials and 160/160 valid scheduled samples; validation-negative has 40 valid samples |
 | RQ-004 | The feature extractor shall produce 60 normalised landmark features from one selected hand. | Software verified | Automated tests reported passed |
@@ -77,7 +110,7 @@ Agile tracking is maintained through `docs/backlog.csv`, local board generation 
 | RQ-011 | Dataset manifests shall keep invalid detections rather than dropping them silently. | Software verified | Dataset tests reported passed |
 | RQ-012 | Evaluation shall report macro-F1, per-class precision and recall, and confusion including UNKNOWN. | Development validation complete | Aggregate pilot metrics recorded in `docs/evidence/PILOT_RESULTS.md`; not held-out final test evidence |
 | RQ-013 | The final project shall support profile persistence and reload. | Future | Not assignment scope |
-| RQ-014 | The final project shall support validated JSON decks. | Future | Not assignment scope |
+| RQ-014 | The final project shall support user-selected, validated JSON decks. | Future | Assignment uses only the fixed bundled JSON deck |
 | RQ-015 | The final project shall include complete guide, video, and presentation evidence. | Future | Not assignment scope |
 
 ## Architecture
@@ -109,11 +142,11 @@ The camera and inference worker run away from direct widget updates. The UI cons
 | Evaluation | JSON config and dataset | Metrics, confusion matrix, predictions, timing | UNKNOWN accounting and trial-level majority |
 | Controller | Accepted predictions and current time | Zero or one command event | Neutral arm, command hold, stale-frame rejection, latch |
 | Viewer | Command event or keyboard input | Updated fixed deck position | No wrap and duplicate event rejection |
-| Release tooling | Tracked Git files | Source ZIP and manifest | Excludes private local data and environments |
+| Release tooling | Tracked Git files; optional authorised P01 data | Source ZIP or separate private marker ZIP and checksum | Default excludes private data; explicit option validates and adds only the P01 manifest and numeric sidecar |
 
 ## Data Contracts
 
-The code defines `Observation`, `Prediction`, and `CommandEvent` dataclasses in `gestureforge/contracts.py`. Dataset records are stored as reviewable JSON records with a compressed NumPy feature sidecar. Every prediction can be traced back to an observation, and every command event can be traced back to the prediction that caused it.
+The code defines `Observation`, `Prediction`, and `CommandEvent` dataclasses in [contracts.py](../gestureforge/contracts.py). Dataset records are stored as reviewable JSON records with a compressed NumPy feature sidecar. The live path carries session, profile and frame IDs from observations through predictions to gesture events. This is runtime identity linkage, not a persisted history of every observation or prediction; manual navigation is logged separately with source `keyboard`.
 
 The assignment does not persist trained pickle or joblib models. It saves numeric training data and JSON configuration, then rebuilds the small classifiers when needed. This avoids accepting arbitrary executable model files.
 
@@ -138,12 +171,14 @@ Both classifiers use the same train-only scaling:
 z = (x - mean_train) / std_train
 ```
 
-The assignment defaults for the implemented prototype path are:
+The classifier settings and selected pilot configuration are:
 
 - kNN: `KNeighborsClassifier(n_neighbors=5, weights="distance")`.
 - SVM: `SVC(C=1, gamma="scale", kernel="rbf")`.
 - Provisional assignment demonstration choice: kNN with rejection multiplier `2.0`.
 - Model version: `prototype-v2`.
+
+The app CLI and model API still default to multiplier `1.5`; the selected P01 demonstration explicitly uses `--multiplier 2`, and [experiments/pilot.json](../experiments/pilot.json) sets `2.0` for evaluation.
 
 For a predicted class `c`, the model computes the distance from the scaled live feature vector `z` to the nearest scaled training example in class `c`:
 
@@ -151,7 +186,7 @@ For a predicted class `c`, the model computes the distance from the scaled live 
 d(z, c) = min ||z - z_i|| for all training examples z_i with label c
 ```
 
-For each class, the rejection threshold is the 95th percentile of leave-one-out nearest-neighbour distances inside that class, multiplied by the configured multiplier. The original `prototype-v1` implementation excluded only the exact sample being scored while estimating this reference distance. In the corrected `prototype-v2` implementation, the reference calculation excludes the whole originating training trial when trial IDs are available:
+For each class, the rejection threshold is the 95th percentile of same-class reference distances, multiplied by the configured multiplier. The original `prototype-v1` implementation excluded only the exact sample being scored. In `prototype-v2`, the evaluation and live training paths supply trial IDs, so reference neighbours exclude the whole originating training trial. Direct model calls without trial IDs retain sample-level exclusion:
 
 ```text
 reference_distance_i = nearest_same_class_distance(training_sample_i, excluding same trial)
@@ -195,75 +230,129 @@ python -m gestureforge.collect --camera 1 --split validation --participant P01 -
 python -m gestureforge.collect --camera 1 --split validation_negative --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot
 ```
 
-Each standard session uses four labels, eight trials per label by default, a two-second stable pose interval, and five scheduled samples per trial. Validation-negative uses UNKNOWN records to measure false command acceptance during non-command activity.
+Each standard session uses four labels, eight trials per label by default, a two-second stable pose interval, and five scheduled samples per trial. Validation-negative uses UNKNOWN-labelled records to measure offline classifier acceptance of unenrolled poses. It does not measure live controller actions or an actions-per-minute rate; see the [collection protocol](DATA_COLLECTION.md).
 
-The completed TRAIN and VALIDATION sessions each contain 32 trials, eight per label, and 160 of 160 scheduled samples were valid. The validation-negative session contains 8 trials and 40 valid scheduled samples from unenrolled poses. Participant identity remains pseudonymous. Marker access permission, retention arrangements, and signed declarations are not yet granted. This report does not publish individual feature vectors, trial IDs, thresholds, raw images, raw video, or raw event logs.
+The completed TRAIN and VALIDATION sessions each contain 32 trials, eight per label, and 160 of 160 scheduled samples were valid. The validation-negative session contains 8 trials and 40 valid scheduled samples from unenrolled poses. Participant identity remains pseudonymous. Consent for private marker inclusion of P01 numeric feature data has been granted and the private package option has been implemented; retention wording still needs to be recorded before final submission. This report does not publish individual feature vectors, trial IDs, thresholds, raw images, raw video, or raw event logs.
 
 ## Evaluation Plan
 
-Evaluation is run from JSON config:
+Run from the repository root with the retained, consented P01 dataset. The selected-setting config is [experiments/pilot.json](../experiments/pilot.json):
 
 ```json
 {
   "dataset_path": "data/local/pilot/manifest.json",
   "algorithms": ["knn", "svm"],
-  "rejection_multiplier": 1.5
+  "rejection_multiplier": 2.0
 }
 ```
 
+```powershell
+.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
+```
+
+The dataset and full result JSON are private local artifacts, absent from the source ZIP and GitHub. Recollecting data produces a new experiment, not a reproduction of the recorded P01 scores. Marker reproduction should use the private P01 package, with retention wording and final package location recorded before submission.
+
 The evaluation reports:
 
-- Trial-level majority prediction from the five scheduled samples.
-- UNKNOWN when no majority exists.
-- Macro-F1 across the four enrolled labels.
+- Trial-level prediction requiring at least three matching labels across five scheduled slots.
+- Missing, invalid and rejected slots count as UNKNOWN; a trial without a majority is UNKNOWN.
+- Macro-F1 across the four enrolled labels on VALIDATION trials; negative samples are evaluated separately.
 - Per-class precision, recall, and F1.
 - Confusion matrix including UNKNOWN predictions.
-- Rejection counts and validation-negative accepted command rate.
+- Per-sample acceptance/rejection records from which counts can be derived, plus the validation-negative accepted command-label fraction for NEXT, PREVIOUS and BOOKMARK. This fraction is not a live action rate.
 - Fit and prediction timing.
 
 Synthetic fixtures may be used to test the software path, but the assignment report must label them separately and not present them as participant results.
 
-Pilot aggregate results are recorded in `docs/evidence/PILOT_RESULTS.md`. The original sample-level leave-one-out baseline reached best macro-F1 0.5667 at multiplier 2.0. After the prototype-v2 whole-trial exclusion correction, kNN and SVM both reached macro-F1 0.8443 at multiplier 1.0, 0.9496 at multiplier 1.5, and 0.9686 at multiplier 2.0. At multiplier 2.0, 31 of 32 validation trials were correct, with one NEUTRAL trial predicted as PREVIOUS and no UNKNOWN validation trials.
+Pilot aggregate results and local artifact paths are recorded in [PILOT_RESULTS.md](evidence/PILOT_RESULTS.md). The original sample-level leave-one-out baseline reached best macro-F1 0.5667 at multiplier 2.0, where 16 of 32 genuine validation trials scored UNKNOWN. The corrected prototype-v2 whole-trial exclusion raised validation performance substantially:
 
-The validation-negative results show a serious open-set weakness. For all corrected settings, 25 of 40 negative samples were accepted as BOOKMARK, while zero were accepted as NEXT or PREVIOUS. At multipliers 1.5 and 2.0, 10 of 40 negative samples were also accepted as NEUTRAL. Because BOOKMARK is recognition-preview-only in the assignment, this does not execute a command in the current prototype, but it means final full-command safety is not met or claimed.
+| Multiplier | kNN macro-F1 | SVM macro-F1 | Validation trials correct | UNKNOWN validation trials | Validation-negative accepted labels |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| 1.0 | 0.8443 | 0.8443 | 25/32 | 6 | 25/40 BOOKMARK; 0 NEXT; 0 PREVIOUS |
+| 1.5 | 0.9496 | 0.9496 | 30/32 | 1 | 25/40 BOOKMARK and 10/40 NEUTRAL; 0 NEXT; 0 PREVIOUS |
+| 2.0 | 0.9686 | 0.9686 | 31/32 | 0 | 25/40 BOOKMARK and 10/40 NEUTRAL; 0 NEXT; 0 PREVIOUS |
+
+At multiplier 2.0, both classifiers produced the same trial-level confusion matrix. Rows are intended labels; columns are predictions.
+
+| Intended | NEXT | PREVIOUS | BOOKMARK | NEUTRAL | UNKNOWN |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| NEXT | 8 | 0 | 0 | 0 | 0 |
+| PREVIOUS | 0 | 8 | 0 | 0 | 0 |
+| BOOKMARK | 0 | 0 | 8 | 0 | 0 |
+| NEUTRAL | 0 | 1 | 0 | 7 | 0 |
+
+| Label | Precision | Recall | F1 |
+| --- | ---: | ---: | ---: |
+| NEXT | 1.0000 | 1.0000 | 1.0000 |
+| PREVIOUS | 0.8889 | 1.0000 | 0.9412 |
+| BOOKMARK | 1.0000 | 1.0000 | 1.0000 |
+| NEUTRAL | 1.0000 | 0.8750 | 0.9333 |
+
+| Classifier | Fit including scaler/rejection (s) | Mean offline prediction per sample (ms) |
+| --- | ---: | ---: |
+| kNN | 0.0121 | 2.730 |
+| SVM | 0.0080 | 0.548 |
+
+kNN and SVM tied on trial-level validation metrics for this dataset. SVM was faster per saved sample and is a standard nonlinear boundary method, but its decision values are harder to explain to a marker and are not used as confidence percentages. kNN is slower here but still only 2.730 ms per saved feature vector, is simple to rebuild from numeric features without executable model persistence, and is easier to explain for a personal enrolment prototype. Both classifiers rebuild from numeric data without executable model files. These timings exclude camera processing and the controller hold, and do not measure end-to-end latency. The assignment demonstration therefore uses kNN with multiplier 2.0; this is a provisional assignment choice, not a frozen final-project model decision.
+
+The validation-negative results show a serious open-set weakness. For all corrected settings, 25 of 40 negative samples were accepted as BOOKMARK, while zero were accepted as NEXT or PREVIOUS. Because BOOKMARK is recognition-preview-only in the assignment, this does not execute a command in the current prototype, but it means final full-command safety is not met or claimed.
+
+## Subsystem Test Plan
+
+The assignment executes tests for implemented prototype subsystems and keeps the final-project checks planned rather than claiming them early.
+
+| Subsystem | Assignment test status | Final-project extension |
+| --- | --- | --- |
+| Capture and landmarks | Model asset smoke, blank-image check, live camera checks and P01/P02 qualitative operation | Repeat on final release laptop, include camera unavailable and recovery messages |
+| Feature extraction | Automated tests for 60-feature shape, invalid scale, wrong/multiple hands and non-finite values | Re-run unchanged against final profile workflow |
+| Dataset and manifest | Collection CLI, split integrity and P01 aggregate data summary | Add GUI enrolment data, corrupt/version-incompatible profile handling |
+| Classifiers | kNN/SVM comparison on same features and scaling; macro-F1, confusion and timing reported | Bounded parameter search, frozen configuration, untouched TEST split for two profiles |
+| Rejection | Validation-negative analysis reports accepted unfamiliar poses | Improve BOOKMARK open-set rejection before enabling it as an action |
+| Controller | Unit tests for neutral arm, hold, latch, stale frames, gaps, pause and tracking loss; P01/P02 hold evidence | Formal twenty five-second holds per profile and replay comparison with/without protection |
+| Viewer | Fixed ten-card deck, no wrap, duplicate event rejection and manual fallback | PREVIOUS, BOOKMARK, saved position/bookmarks and validated custom decks |
+| Release | Same-computer source archive/setup checks and P02 assisted qualitative use; guide-only setup, offline/pause/reopen checks and LMS verification remain assignment gates | Repeat acceptance against the final full-system release |
 
 ## Current Verification Evidence
 
-| Check | Current evidence |
-| --- | --- |
-| Automated tests | Passed; exact count recorded in `docs/evidence/verification.json` |
-| Ruff | Passed; exact command output recorded in `docs/evidence/verification.json` |
-| mypy | Passed; exact source-file count recorded in `docs/evidence/verification.json` |
-| GUI smoke | Passed; command output recorded in `docs/evidence/verification.json`; screenshot render inspected by implementation lane |
-| MediaPipe asset | Model downloaded, checksum verified, initialised |
-| Blank image landmark smoke | Returned zero hands, which is expected for blank input |
-| Camera enumeration | Windows lists `Slim1322AF` and `USB2.0 HD UVC WebCam` |
-| User-supplied clear hand screenshot | MediaPipe IMAGE mode detected one hand; this is not live camera evidence |
-| OpenCV camera index 0 | No usable capture in current checks |
-| OpenCV camera index 1 | Default backend produced usable non-black video; 60 frames processed; post-warmup mean 31.24 ms, about 32 fps; max 63 ms; clean close |
-| Earlier live camera hand detection | Zero hands detected in the 60-frame run and in an earlier 20-second, 304-frame preview; later found to be confounded because the user did not see the preview window |
-| Visible/topmost live camera hand detection | 60-second camera-index 1 preview processed 1,145 frames, detected one hand in 338 frames, reported Left and Right handedness labels, and closed cleanly; this is detector activity, not recognition accuracy |
-| P01 pilot collection | User consented to local numeric right-hand data with no raw frames and GitHub exclusion; TRAIN and VALIDATION each completed 32 trials with 160/160 valid scheduled samples; validation-negative completed 8 trials with 40 valid samples |
-| Pilot classifier results | Corrected prototype-v2 kNN and SVM both reached macro-F1 0.9686 at multiplier 2.0 on development validation; not held-out final test evidence |
-| Validation-negative result | Corrected settings accepted 25/40 negatives as BOOKMARK and 0/40 as NEXT or PREVIOUS; m1.5 and m2 also accepted 10/40 as NEUTRAL |
-| Provisional assignment model | kNN prototype-v2 multiplier 2.0 selected for assignment NEXT-only demo because kNN and SVM tied on aggregate metrics and kNN is simpler to explain |
-| Live NEXT path | Local live event log records genuine source=`gesture` NEXT events advancing viewer positions 1, 2, and 3 through webcam, landmarks, personal kNN, controller, and viewer |
-| Hold smoke check | Participant confirmed two deliberate fist holds advanced exactly once each after open-palm rearm; this is not the formal final-project twenty-hold run |
-| Live app shutdown | Both live application instances closed cleanly with exit code 0; the second opened the camera; no raw frames were saved |
-| Capture backend policy | Uses OpenCV default backend, preserves negotiated camera format, retries at most five missing frames 30 ms apart, and does not force DirectShow |
-| Final evidence file | `docs/evidence/verification.json` is the current software verification source of truth and may be refreshed by the root lane |
+The following combines recorded 23 September hardware checks, the 27 September software verification (60 tests, lint, type checking across application, scripts and tests, GUI smoke and synthetic evaluation passed), and P02 qualitative feedback recorded on 26 September. Software passes do not certify physical-laptop or final-project performance.
+
+| Evidence area | Outcome | Limit |
+| --- | --- | --- |
+| Software verification | Ruff, mypy, pytest, GUI smoke launch and synthetic evaluation passed; exact outputs are in [verification.json](evidence/verification.json) | Synthetic evaluation is software evidence, not participant performance |
+| Setup/package checks | Source archive setup and model checks passed on the development computer; see [CLEAN_INSTALL.md](evidence/CLEAN_INSTALL.md), [SETUP_CHECK.md](evidence/SETUP_CHECK.md) and [WINDOWS_LAPTOP_CHECK.md](evidence/WINDOWS_LAPTOP_CHECK.md) | Guide-only second-laptop acceptance is still open |
+| Camera and landmarks | Camera index 1 produced usable non-black video; visible/topmost preview detected a single hand in 338 of 1,145 frames and closed cleanly | Detector activity is not gesture-classification accuracy |
+| P01 data | TRAIN and VALIDATION each completed 32 trials with 160/160 valid scheduled samples; validation-negative completed 8 trials with 40 valid samples | One consenting right-hand profile only |
+| P01 classifier comparison | kNN and SVM both reached macro-F1 0.9686 at multiplier 2.0; selected-setting tables are included above | Development validation only, not untouched held-out testing |
+| Open-set rejection | Validation-negative accepted 0/40 as NEXT and 0/40 as PREVIOUS | 25/40 were accepted as BOOKMARK, so full-command safety is not claimed |
+| Live NEXT path | Local event log records genuine gesture NEXT events advancing viewer positions 1, 2 and 3 through webcam, landmarks, kNN, controller and viewer | Formal latency, false-action and twenty-hold runs are final-project checks |
+| Hold/rearm behaviour | P01 confirmed two sustained NEXT holds each advanced exactly once after NEUTRAL rearm; P02 reported a five-second hold fired once | P02 result is participant-reported and not quantitative |
+| P02 laptop feedback | [P02_LAPTOP_TEST.md](evidence/P02_LAPTOP_TEST.md) records assisted ZIP use, P02 right-hand data, Card 1 to Card 10 NEXT traversal, NEUTRAL rearm and preview-only labels | Exact package/environment, guide-only setup, pause/reopen and disconnected-network checks remain open |
+| Review status | [REVIEW.md](evidence/REVIEW.md) records a bounded review | Tutor approval, final human report review and signed declaration are not complete |
 
 ## Remaining Assignment Gates
 
-- Final report export and human review.
-- Second Windows computer installation check.
-- Tutor feedback on scope and marking-weight discrepancy.
-- Marker access permission and retention arrangement.
-- Team names, contribution confirmation, and AI-use guidance check.
+Track completion in the [assignment checklist](SUBMISSION_CHECKLIST_ASSIGNMENT.md) and [next steps](ASSIGNMENT_NEXT_STEPS.md). The generated archive contains source and draft documentation, not the complete reviewed submission.
+
+- Human review of the exported report draft; regenerate after any content changes.
+- Complete [remaining P02 laptop checks](evidence/P02_LAPTOP_TEST.md#short-remaining-laptop-check): exact package/environment and test date, guide-only setup, pause/restart, camera release/reopen and disconnected-network use. Retain the assisted-use observations separately from complete release acceptance.
+- Tutor feedback on scope, marking weights, evidence format and AI-use questions in [TUTOR_REVIEW.md](TUTOR_REVIEW.md).
+- Private marker inclusion of P01 numeric feature data is permitted and the private package option has been implemented; record retention wording and final package location before upload.
+- Team registration/tutorial membership, real names and verified contributions in [CONTRIBUTIONS.md](CONTRIBUTIONS.md), plus unit AI-use guidance and review of [AI_PROMPT_APPENDIX.md](AI_PROMPT_APPENDIX.md).
 - Signed group declaration.
 - LMS upload and download verification.
 
-## Tools Used
+## Mandatory Development Tools
+
+The assignment sheet says the submission will not be marked if project management, version control, collaboration and communication tools are not reported. Current evidence is:
+
+| Required category | Actual use | Remaining gap |
+| --- | --- | --- |
+| Project management | Agile backlog in [backlog.csv](backlog.csv), rendered sprint board, assignment/final checklists and issue-style acceptance criteria | Tutor updates and final sprint review need human completion notes |
+| Version control | Git repository under `code`, private GitHub repository on `main`, redundant Codex branch removed after merge | Include the repository URL or source archive in the final submission as allowed |
+| Collaboration | GitHub repository/project board and contribution record in [CONTRIBUTIONS.md](CONTRIBUTIONS.md) | Real team member names, verified responsibilities and signed contribution percentages are pending |
+| Communication | Tutor questions are tracked in [TUTOR_REVIEW.md](TUTOR_REVIEW.md); team communication platform has not been evidenced in the repository | Name the actual team communication channel before submission, for example tutorial meetings, email, Teams, Discord or another tool actually used |
+
+## Software Tools Used
 
 | Tool | Actual project use |
 | --- | --- |
@@ -302,4 +391,4 @@ The validation-negative results show a serious open-set weakness. For all correc
 
 ## AI Assistance Declaration Draft
 
-AI assistance was used to plan scope, implement prototype code, write automated tests, draft documentation, identify risks, and prepare report scaffolding. The team remains responsible for checking the code, running and preserving verification evidence, validating citations, collecting consented data, and ensuring every submitted claim is accurate. The full prompt archive is pending human review and should be included only after checking that it accurately represents the work performed.
+AI assistance was used to plan scope, implement prototype code, write automated tests, draft documentation, identify risks, and prepare report scaffolding. The team remains responsible for checking the code, running and preserving verification evidence, validating citations, collecting consented data, and ensuring every submitted claim is accurate. The recovered user-message appendix is in [AI_PROMPT_APPENDIX.md](AI_PROMPT_APPENDIX.md); it is incomplete for external or earlier-system history and still needs human review before submission.

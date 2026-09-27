@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 import numpy as np
 import pytest
 
@@ -25,7 +27,7 @@ def test_train_model_svm_uses_supported_labels() -> None:
 
     model = train_model(train_features, train_labels, algorithm="svm")
 
-    config = model.to_config()
+    config = cast(dict[str, Any], model.to_config())
     assert config["algorithm"] == "svm"
     assert set(config["labels"]) == set(LABELS)
     assert config["estimator_params"]["C"] == 1

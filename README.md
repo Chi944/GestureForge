@@ -31,9 +31,9 @@ and advances a card viewer through intentional gesture holds.
 | **Final project deadline** | 7 November 2026 |
 | **Assignment deliverable** | Personal gesture-recognition subsystem and NEXT-only card viewer |
 | **AI techniques** | k-nearest neighbours and RBF support vector machine, compared with identical features and scaling |
-| **Verified behaviour** | Real webcam-to-NEXT integration; participant-confirmed one action per hold with neutral rearming |
+| **Verified behaviour** | Real webcam-to-NEXT integration; participant-confirmed two-hold smoke check with neutral rearming |
 | **Pilot evidence** | One participant, 72 trials and 360 valid samples across separate training, validation and negative sessions |
-| **Submission status** | Prototype verified; second-computer testing, tutor/team review and submission administration remain open |
+| **Submission status** | Prototype evidence recorded; report remains a draft and [assignment submission gates](docs/SUBMISSION_CHECKLIST_ASSIGNMENT.md) remain open |
 
 The assignment and final project are two releases of this codebase. The final project adds substantial functionality and broader evaluation; its features are not claimed as implemented here.
 
@@ -62,7 +62,7 @@ These are personal example poses, not a universal gesture vocabulary or sign-lan
 
 ### 1. Install and open the viewer
 
-Requirements: **Windows**, **Python 3.11**, and internet access for initial dependency and model setup. A webcam is needed for collection and live recognition.
+Requirements: **Intel/AMD Windows**, **64-bit Python 3.11**, and internet access for initial dependency and model setup. A webcam is needed for collection and live recognition.
 
 Open PowerShell in the repository folder:
 
@@ -116,7 +116,7 @@ MediaPipe supplies the pretrained hand tracker. The project's AI work is feature
 
 - **Features:** wrist-relative world landmarks, scaled by wrist-to-middle-knuckle distance; 60 values per valid observation.
 - **Training:** `StandardScaler` fitted only on TRAIN data, then kNN or RBF SVM. Neighbouring frames are never randomly split across training and validation.
-- **Rejection:** class-specific distances calibrated from other training trials. Version 2 excludes the entire originating trial from reference neighbours.
+- **Rejection:** class-specific distances calibrated from other training trials. The evaluation and live training paths pass trial IDs, so version 2 excludes the entire originating trial from reference neighbours.
 - **Storage:** numeric arrays and JSON configurations. Models are rebuilt on load; no pickle/joblib model loading.
 - **Responsiveness:** camera processing outside the GUI thread, with a single latest-result mailbox.
 
@@ -135,11 +135,13 @@ Training and validation were separate recording sessions from **one consenting p
 
 These are development results: validation feedback informed the rejection correction. They do not establish untouched test performance, performance on unenrolled users, or the final project's live false-action target.
 
-**Known limitation:** 25 of 40 unfamiliar-pose samples were accepted as BOOKMARK. None were accepted as NEXT, but that small sample does not prove zero unintended actions. BOOKMARK remains preview-only. The earlier over-rejecting baseline, correction, confusion matrix and per-class results are preserved in the [pilot evidence](docs/evidence/PILOT_RESULTS.md).
+Trial scores require at least three matching predictions from five scheduled slots; missing, invalid and rejected samples count as UNKNOWN. Macro-F1 averages the four enrolled labels; unfamiliar-pose samples are measured separately.
+
+**Known limitation:** 25 of 40 unfamiliar-pose samples were accepted as BOOKMARK; another 10 were accepted as NEUTRAL at multiplier 2.0. None were accepted as NEXT, but those offline sample counts do not measure live actions or prove zero unintended actions. BOOKMARK remains preview-only. The earlier over-rejecting baseline, correction, confusion matrix and per-class results are preserved in the [pilot evidence](docs/evidence/PILOT_RESULTS.md).
 
 ## Verification and reproducibility
 
-Recorded local verification includes **55 passing tests**, Ruff, mypy, desktop startup/shutdown and synthetic evaluation. The extracted source copy also passed in a separate environment on the same computer. A second Windows computer remains an independent release gate.
+The recorded 27 September verification includes **60 passing tests**, Ruff, mypy across application, scripts and tests, offscreen GUI startup/shutdown without a camera, and synthetic evaluation. The extracted source copy also passed in a separate environment on the same computer. These software checks do not establish live gesture performance. [P02 feedback recorded on 26 September](docs/evidence/P02_LAPTOP_TEST.md) reports successful ZIP use with Codex assistance and a separate personal dataset; version details, guide-only installation, pause/restart and disconnected-network checks remain open in the [physical-laptop acceptance record](docs/WINDOWS_LAPTOP.md#6-physical-laptop-acceptance-record).
 
 ```powershell
 # Software checks; synthetic results are software evidence only
@@ -151,9 +153,10 @@ Recorded local verification includes **55 passing tests**, Ruff, mypy, desktop s
 
 | Evidence | What it establishes |
 | :--- | :--- |
-| [Software checks](docs/evidence/verification.json) | Exact commands, versions and automated results |
+| [Software checks](docs/evidence/verification.json) | Dated commands, runtime/library versions and automated results |
 | [Clean-install checks](docs/evidence/CLEAN_INSTALL.md), [setup script check](docs/evidence/SETUP_CHECK.md) | Extracted-source verification, fresh setup and their limits |
-| [Windows laptop package check](docs/evidence/WINDOWS_LAPTOP_CHECK.md) | Fresh ZIP installation in a path with spaces, model inference and launcher verification |
+| [Windows laptop package check](docs/evidence/WINDOWS_LAPTOP_CHECK.md) | Same-computer fresh ZIP installation in a path with spaces, model inference and launcher verification |
+| [P02 laptop feedback](docs/evidence/P02_LAPTOP_TEST.md) | Participant-reported assisted use on another laptop; qualitative evidence with remaining release checks |
 | [Hardware and live checks](docs/evidence/HARDWARE_CHECK.md) | Camera operation, personal collection and live NEXT observations |
 | [Pilot comparison](docs/evidence/PILOT_RESULTS.md) | Initial and corrected results, rejection trade-offs and reproduction command |
 | [Review record](docs/evidence/REVIEW.md) | Confirmed findings and follow-up review |
@@ -177,11 +180,11 @@ Recorded local verification includes **55 passing tests**, Ruff, mypy, desktop s
 | :--- | :--- |
 | CLI enrolment for one participant | Guided in-app enrolment and practice |
 | Four recognised labels; NEXT executes | PREVIOUS and BOOKMARK also execute |
-| One fixed ten-card deck | Validated JSON decks and saved bookmarks/position |
+| One fixed ten-card deck stored as JSON | User-selected, validated JSON decks and saved bookmarks/position |
 | Local dataset and configurations | Multiple local profiles with create/reload/delete |
 | Preliminary comparison and live smoke checks | Refined rejection, two personal profiles, held-out and full-system evaluation |
 
-**Next:** complete the second-computer release test, resolve tutor/team and data-sharing details, review/export the report, obtain the signed declaration, and verify the LMS upload. The [next-steps checklist](docs/ASSIGNMENT_NEXT_STEPS.md) distinguishes repository work from tasks needing people or another device.
+**Next:** finish the remaining laptop checks, confirm tutor/team and retention details, review the report, obtain the signed declaration, and verify the LMS upload. The [next-steps checklist](docs/ASSIGNMENT_NEXT_STEPS.md) distinguishes repository work from tasks needing people or another device.
 
 Dynamic gestures, two-handed commands, OS/PowerPoint control, cloud accounts, mobile apps and an executable installer are outside the committed scope.
 
