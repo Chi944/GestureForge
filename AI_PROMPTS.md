@@ -1,6 +1,6 @@
 # GestureForge AI assistance declaration and prompt index
 
-Updated 27 September 2026. This record describes actual AI assistance and verification. It does not claim human signoff or compliance with unit-specific guidance that has not been supplied. The user confirmed **Codex** as the AI tool used so far.
+Updated 28 September 2026. This record describes actual AI assistance and verification. It does not claim human signoff or compliance with unit-specific guidance that has not been supplied. The user confirmed **Codex** as the AI tool used so far.
 
 ## Declaration for human review
 
@@ -22,6 +22,7 @@ The [user prompt log](docs/AI_PROMPT_APPENDIX.md) replaces the earlier represent
 | PR-021 to PR-025 | P02 feedback, private P01 sharing, local operation and gesture scope | [P02 evidence](docs/evidence/P02_LAPTOP_TEST.md), [user guide](docs/USER_GUIDE.md), [private package check](docs/evidence/MARKER_PACKAGE_CHECK.md) |
 | PR-026 to PR-027 | Continue packaging and tighten records without assumptions | Report, [decision log](docs/DECISIONS_AND_RISKS.md), [submission inventory](docs/SUBMISSION_README.md) |
 | PR-028 to PR-030 | Confirm names/tools and pending team, retention and laptop facts | [Contributions](docs/CONTRIBUTIONS.md), [checklist](docs/SUBMISSION_CHECKLIST_ASSIGNMENT.md) |
+| PR-031 | Audit the repository and remove redundant code/files | [Cleanup audit](docs/evidence/CLEANUP_AUDIT.md); unused dataset helpers and duplicate controller guard removed; generated artifacts cleaned |
 
 This index identifies related artifacts, not proof that every requested result is complete. Each artifact states its evidence status.
 
@@ -29,7 +30,7 @@ This index identifies related artifacts, not proof that every requested result i
 
 | Work | Verification recorded | Limit |
 | --- | --- | --- |
-| Source and tests | 27 September verification: 60 tests, Ruff, mypy, GUI smoke and synthetic comparison passed | Automated checks do not replace human understanding or live hardware tests |
+| Source and tests | 28 September verification: 60 tests, Ruff, mypy, GUI smoke and synthetic comparison passed | Automated checks do not replace human understanding or live hardware tests |
 | AI comparison | Private archive reproduced P01 kNN/SVM macro-F1 0.9686 | Development validation, not held-out generalisation; 25/40 negative samples accepted as BOOKMARK |
 | Live prototype | P01 participant-observed hold/rearm check and P02 assisted laptop report | Qualitative smoke evidence; final-project performance targets remain untested |
 | Documentation | Checked against assessment files, code and recorded evidence | Human approval, administrative facts and external AI-history coverage remain pending |

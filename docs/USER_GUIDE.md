@@ -148,8 +148,6 @@ Expected assignment output:
 - Confusion matrix including UNKNOWN.
 - Notes on invalid detections.
 
-The repository also includes `experiments/prototype.json`, a synthetic software-test fixture configuration. It can help verify the evaluation path, but it is not participant evidence.
-
 To create a saved synthetic fixture manifest before testing `dataset_path` loading:
 
 ```powershell

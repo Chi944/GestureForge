@@ -1,6 +1,6 @@
 # GestureForge user prompt log
 
-Updated 27 September 2026. This appendix preserves the user-message text recovered for this Codex task. Wording, including spelling and the full implementation-plan prompt, is retained. Clarification wrappers are presented as question/answer pairs; technical message IDs are omitted. Attachment references are retained, but the camera image itself is not copied into this log or published.
+Updated 28 September 2026. This appendix preserves the user-message text recovered for this Codex task. Wording, including spelling and the full implementation-plan prompt, is retained. Clarification wrappers are presented as question/answer pairs; technical message IDs are omitted. Attachment references are retained, but the camera image itself is not copied into this log or published.
 
 Timestamps labelled UTC come from the retained session record. Messages obtained only from the task-history API have no recovered exact timestamp and are labelled accordingly. No dates or conversation completeness have been inferred. Each hash covers the original UTF-8 message text before display formatting.
 
@@ -40,6 +40,7 @@ Coverage: the retained record includes the original planning requests and implem
 | PR-028 | 2026-09-27 12:07:28.705 UTC | Clarification reply |
 | PR-029 | 2026-09-27 12:09:08.654 UTC | Clarification reply |
 | PR-030 | 2026-09-27 12:09:13.313 UTC | Clarification reply |
+| PR-031 | 2026-09-27 18:12:46.571 UTC | User instruction |
 
 ## PR-001
 
@@ -614,3 +615,12 @@ Original-message SHA256: `d8ae0a676e5be0bf1f692cd41d53883c39d6eddf16bba9e5fb8f88
 > Question: What retention/deletion arrangement has been agreed for your P01 numeric gesture data, and have any of the outstanding second-laptop pause/restart, offline, or guide-only setup checks now been completed?
 >
 > User answer: pending
+
+
+## PR-031
+
+Recorded time: 2026-09-27 18:12:46.571 UTC. Source: Retained task session record. Type: User instruction.
+
+Original-message SHA256: `0da9caac78076bfca9143f96afc2e390864fc3fac916bff7f0c6a12416453354`
+
+> Go through the whole repo and do an audit sweep and delete any redundant code or files that are not related to my submission

@@ -45,3 +45,7 @@ Jameson and Deston, GitHub, WhatsApp and Codex are confirmed as supplied. Full n
 - `docs/submission/Group_Declaration_TO_COMPLETE.docx`
 - `output/pdf/GestureForge_Assignment_Report.pdf`
 - `releases/README.md`
+
+## Later cleanup - 28 September 2026
+
+The temporary extracted source was removed after its unique reproduction output was retained under `.cache/retained-evidence/Documentation Release 20260927/experiments/local`. The dated checks above describe the 27 September pass. Current software verification and archive metadata have since been refreshed; see [CLEANUP_AUDIT.md](CLEANUP_AUDIT.md). The prior archive verification JSON is retained locally under `.cache/retained-evidence/final-package-verification-b91765b.json`.

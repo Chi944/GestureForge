@@ -71,3 +71,5 @@ P01 is a personal dataset. Another demonstrator must follow the separate enrolme
 Current unanswered facts are intentionally pending, not assumptions: full names/IDs/emails, group name, tutorial/registration, actual contributions and percentages, tutor responses, unit AI-use instructions/other prompt history, retention, remaining laptop tests, final signatures and LMS confirmation.
 
 See the [documentation verification and changed-file record](evidence/DOCUMENTATION_CHECK.md) for this preparation pass.
+
+The [28 September cleanup audit](evidence/CLEANUP_AUDIT.md) records removed dead code and temporary artifacts, retained evidence, and fresh verification.

@@ -99,9 +99,6 @@ class Controller:
         if self.state == "WAIT_NEUTRAL":
             self.progress = 0.0
             return None
-        if self.state == "LATCHED":
-            self.progress = 1.0
-            return None
 
         if self._candidate is None or self._candidate.label != label:
             self._candidate = _Candidate(label=label, started_at=prediction.timestamp)

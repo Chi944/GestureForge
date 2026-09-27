@@ -64,10 +64,6 @@ class DatasetBundle:
     features: np.ndarray
     metadata: dict[str, Any]
 
-    @property
-    def labels(self) -> np.ndarray:
-        return np.asarray([record.intended_label for record in self.valid_records()], dtype=object)
-
     def valid_records(self, split: str | None = None) -> tuple[SampleRecord, ...]:
         return tuple(
             record
@@ -87,26 +83,6 @@ class DatasetBundle:
 
     def validation_data(self) -> tuple[np.ndarray, np.ndarray, tuple[SampleRecord, ...]]:
         return self.split_data(VALIDATION_SPLIT)
-
-
-def append_dataset(
-    path: str | Path,
-    records: Iterable[SampleRecord | dict[str, Any]],
-    features: np.ndarray,
-    metadata: dict[str, Any] | None = None,
-) -> DatasetBundle:
-    """Append a separately collected session to an existing manifest."""
-
-    manifest_path = _manifest_path(path)
-    if not manifest_path.exists():
-        return save_dataset(manifest_path, records, features, metadata)
-    existing = load_dataset(manifest_path)
-    incoming = _assign_feature_indices(records, len(_coerce_feature_matrix(features)))
-    merged_records, merged_features = _merge_records_and_features(
-        [existing.records, incoming], [existing.features, _coerce_feature_matrix(features)]
-    )
-    merged_metadata = {**existing.metadata, **(metadata or {})}
-    return save_dataset(manifest_path, merged_records, merged_features, merged_metadata)
 
 
 def save_dataset(
