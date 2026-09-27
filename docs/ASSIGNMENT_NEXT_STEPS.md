@@ -8,7 +8,7 @@ The prototype evidence is in place: [software verification](evidence/verificatio
 
 1. Finish the short [remaining laptop check](evidence/P02_LAPTOP_TEST.md): pause/restart, disconnected-network use, version details and instructions-only setup. P02 has already reported successful ZIP-based navigation with Codex assistance.
 2. Resolve scope, marking-weight, evidence and AI-use questions in [TUTOR_REVIEW.md](TUTOR_REVIEW.md), recording actual replies.
-3. Confirm team registration/tutorial membership and record real names, verified contributions and final responsibilities in [CONTRIBUTIONS.md](CONTRIBUTIONS.md).
+3. Confirm team registration/tutorial membership and complete identifiers for the supplied names Jameson and Deston, verified contributions and final responsibilities in [CONTRIBUTIONS.md](CONTRIBUTIONS.md).
 4. Confirm unit AI-use guidance and review the declaration and [AI-use record](../AI_PROMPTS.md). The specification requires prompts: review the [recovered appendix](AI_PROMPT_APPENDIX.md) and add missing conversations before claiming completeness.
 5. Confirm the retention arrangement. Private tutor/marker submission of P01 numeric samples is authorised; they remain excluded from GitHub and the source-only ZIP.
 6. Review the [exported draft report](../output/pdf/GestureForge_Assignment_Report.pdf) against its [editable source](ASSIGNMENT_REPORT.md), validate citations and reconcile claims with evidence. After final edits, regenerate the PDF and [packages](../releases/README.md), verify checksums/contents, and tie the [laptop acceptance record](WINDOWS_LAPTOP.md#6-physical-laptop-acceptance-record) to that exact package.

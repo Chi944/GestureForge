@@ -23,3 +23,5 @@ The marker can extract it, run `setup.cmd` while online, then reproduce the pilo
 Expected selected-setting development macro-F1: approximately 0.9686 for both classifiers. Reproduction uses P01's saved samples; a different user's live hand needs separate enrolment. Do not overwrite the retained P01 dataset with new collection. See `docs/evidence/PILOT_RESULTS.md` for limitations and `docs/WINDOWS_LAPTOP.md` for setup and new-enrolment instructions.
 
 Both archives are preparation artifacts until the report is reviewed and the signed declaration and other open submission gates are completed. The private archive contains the draft PDF when it has been staged. Agree and record retention before submission; sharing permission does not establish a retention period.
+
+The [submission inventory](../docs/SUBMISSION_README.md) lists the report, logs, guides, evidence and unchanged unsigned declaration template, with remaining human signoffs.

@@ -2,6 +2,8 @@
 
 Status: formal draft, not ready to submit. Documentation audited against the repository and recorded evidence on 27 September 2026; the recorded hardware and pilot runs are dated 23 September. The prototype has software checks, a development-validation comparison and a participant-observed two-hold NEXT smoke check. Fresh-source setup was tested on the development computer only. Assignment completion depends on the open [assignment checklist](SUBMISSION_CHECKLIST_ASSIGNMENT.md) gates: final report review, second-computer acceptance, tutor/team review, private P01 package retention notes, AI-use guidance check, signed declaration, and LMS upload/download verification. Formal repeated-hold, live false-action, latency and held-out evaluation remain [final-project deliverables](SUBMISSION_CHECKLIST_FINAL.md).
 
+Names supplied by the user: **Jameson and Deston**. Full names, student IDs, university emails, group name, tutorial/registration, verified individual work and agreed percentages remain pending. GitHub and WhatsApp use was confirmed on 27 September; no tutor approval or signed declaration is recorded.
+
 ## Executive Summary
 
 GestureForge is a local Windows desktop AI prototype for controlling a small card deck with personal static hand gestures. The assignment release proves the core AI subsystem and one real product workflow: webcam input is converted to MediaPipe hand landmarks, normalised into 60 numeric features, classified by both kNN and RBF SVM for comparison, filtered through distance-based rejection, and passed to a hold-and-rearm controller that executes NEXT once per deliberate hold.
@@ -43,7 +45,7 @@ Still pending before assignment submission:
 
 - Human review of the exported report draft; regenerate after any content changes.
 - Second Windows computer acceptance check from the [laptop guide](WINDOWS_LAPTOP.md#6-physical-laptop-acceptance-record); same-computer archive checks do not close it.
-- Tutor/team review, team names, and contribution confirmation.
+- Tutor/team review, full student identifiers, and contribution confirmation.
 - Private P01 package retention note and AI-use guidance check.
 - Signed group declaration and LMS upload/download verification.
 
@@ -67,6 +69,8 @@ The project uses a tailored lifecycle. NASA's lifecycle model separates concept,
 - Detailed design and build: collection CLI, dataset persistence, training and evaluation, UI shell, controller, viewer, and helper scripts.
 - Integration and verification: unit tests, static checks, GUI smoke test, model asset smoke test, live camera check, and release packaging.
 - Operation and closeout: user guide, AI-use record, contribution record, signed declaration, release package, and final-project handover notes.
+
+Decisions D-001 to D-007 and risks R-001 to R-006 in [DECISIONS_AND_RISKS.md](DECISIONS_AND_RISKS.md) connect scope, calibration, privacy and release choices to their evidence. Pending tutor gates are not presented as completed lifecycle reviews.
 
 Agile tracking is maintained through `docs/backlog.csv`, local board generation with `python scripts/board.py`, and the private GitHub repository and project board recorded in `docs/GITHUB_SETUP.md`.
 
@@ -337,7 +341,7 @@ Track completion in the [assignment checklist](SUBMISSION_CHECKLIST_ASSIGNMENT.m
 - Complete [remaining P02 laptop checks](evidence/P02_LAPTOP_TEST.md#short-remaining-laptop-check): exact package/environment and test date, guide-only setup, pause/restart, camera release/reopen and disconnected-network use. Retain the assisted-use observations separately from complete release acceptance.
 - Tutor feedback on scope, marking weights, evidence format and AI-use questions in [TUTOR_REVIEW.md](TUTOR_REVIEW.md).
 - Private marker inclusion of P01 numeric feature data is permitted and the private package option has been implemented; record retention wording and final package location before upload.
-- Team registration/tutorial membership, real names and verified contributions in [CONTRIBUTIONS.md](CONTRIBUTIONS.md), plus unit AI-use guidance and review of [AI_PROMPT_APPENDIX.md](AI_PROMPT_APPENDIX.md).
+- Team registration/tutorial membership, full identifiers and verified contributions in [CONTRIBUTIONS.md](CONTRIBUTIONS.md), plus unit AI-use guidance and review of [AI_PROMPT_APPENDIX.md](AI_PROMPT_APPENDIX.md).
 - Signed group declaration.
 - LMS upload and download verification.
 
@@ -349,8 +353,8 @@ The assignment sheet says the submission will not be marked if project managemen
 | --- | --- | --- |
 | Project management | Agile backlog in [backlog.csv](backlog.csv), rendered sprint board, assignment/final checklists and issue-style acceptance criteria | Tutor updates and final sprint review need human completion notes |
 | Version control | Git repository under `code`, private GitHub repository on `main`, redundant Codex branch removed after merge | Include the repository URL or source archive in the final submission as allowed |
-| Collaboration | GitHub repository/project board and contribution record in [CONTRIBUTIONS.md](CONTRIBUTIONS.md) | Real team member names, verified responsibilities and signed contribution percentages are pending |
-| Communication | Tutor questions are tracked in [TUTOR_REVIEW.md](TUTOR_REVIEW.md); team communication platform has not been evidenced in the repository | Name the actual team communication channel before submission, for example tutorial meetings, email, Teams, Discord or another tool actually used |
+| Collaboration | GitHub repository/project board and contribution record in [CONTRIBUTIONS.md](CONTRIBUTIONS.md) | Jameson and Deston are the supplied names; full identifiers, verified responsibilities and agreed contribution percentages remain pending |
+| Communication | WhatsApp, confirmed by the user on 27 September; tutor questions are tracked in [TUTOR_REVIEW.md](TUTOR_REVIEW.md) | Actual team activity summaries and tutor replies remain pending; no meeting or message content is invented |
 
 ## Software Tools Used
 
@@ -367,7 +371,8 @@ The assignment sheet says the submission will not be marked if project managemen
 | mypy | Static type checking |
 | Git | Local version control |
 | GitHub | Private repository, milestones, issues, and project board |
-| AI assistance | Planning, code generation, tests, documentation, and review support under human responsibility |
+| WhatsApp | Team communication confirmed by the user; activity details pending |
+| OpenAI Codex | Planning, code generation, tests, documentation, and review support under human responsibility |
 
 ## Risks
 
@@ -391,4 +396,4 @@ The assignment sheet says the submission will not be marked if project managemen
 
 ## AI Assistance Declaration Draft
 
-AI assistance was used to plan scope, implement prototype code, write automated tests, draft documentation, identify risks, and prepare report scaffolding. The team remains responsible for checking the code, running and preserving verification evidence, validating citations, collecting consented data, and ensuring every submitted claim is accurate. The recovered user-message appendix is in [AI_PROMPT_APPENDIX.md](AI_PROMPT_APPENDIX.md); it is incomplete for external or earlier-system history and still needs human review before submission.
+AI assistance was used to plan scope, implement prototype code, write automated tests, draft documentation, identify risks, and prepare report scaffolding. The team remains responsible for checking the code, running and preserving verification evidence, validating citations, collecting consented data, and ensuring every submitted claim is accurate. The recovered user-message appendix is in [AI_PROMPT_APPENDIX.md](AI_PROMPT_APPENDIX.md); the original planning requests and full implementation-plan prompt have now been recovered for this task. The user confirmed Codex use, but coverage of other Codex conversations, including the assisted P02 setup, remains unconfirmed. The log preserves user wording and separates original prompts from the summarised usage index. Unit-specific AI guidance and human review remain pending.

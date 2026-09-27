@@ -96,3 +96,7 @@ The private [repository](https://github.com/Chi944/GestureForge_304), [nine issu
 - `Done`: evidence exists and is referenced.
 
 Do not use `Done` for planned work without evidence.
+
+## Team confirmation - 27 September 2026
+
+The user confirmed Jameson and Deston as the supplied team names, with GitHub and WhatsApp used so far. Individual tasks, contribution percentages, full identifiers, tutor feedback and registration remain pending. This confirms the named tools, not specific peer reviews or meeting attendance. See [CONTRIBUTIONS.md](CONTRIBUTIONS.md).

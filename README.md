@@ -201,6 +201,8 @@ data/local/     Private participant features; ignored by Git
 releases/       Locally generated source archives; ignored by Git
 ```
 
-Team names, verified responsibilities and signatures must be completed from actual contributions in [CONTRIBUTIONS.md](docs/CONTRIBUTIONS.md). AI-assisted implementation and documentation are disclosed in [AI_PROMPTS.md](AI_PROMPTS.md). MediaPipe, OpenCV, PySide6, NumPy and scikit-learn provide the underlying libraries; their sources and licences are recorded in [LICENSES.md](LICENSES.md).
+Jameson and Deston are the supplied names. Full identifiers, verified responsibilities and signatures must be completed from actual contributions in [CONTRIBUTIONS.md](docs/CONTRIBUTIONS.md). AI-assisted implementation and documentation are disclosed in [AI_PROMPTS.md](AI_PROMPTS.md). MediaPipe, OpenCV, PySide6, NumPy and scikit-learn provide the underlying libraries; their sources and licences are recorded in [LICENSES.md](LICENSES.md).
 
 The generated source archive is **not the complete assignment submission**. Participant evidence may be included only with appropriate permission, and the reviewed report and signed declaration must be packaged separately.
+
+The [submission inventory](docs/SUBMISSION_README.md) lists the report, logs, guides, evidence and unchanged unsigned declaration template, with remaining human signoffs.

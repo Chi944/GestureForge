@@ -83,3 +83,7 @@ The workflow now uses `actions/checkout@v7` and `actions/setup-python@v7`, whose
 The user subsequently requested removal or merging of the Codex branch. After fetching, `git merge-base --is-ancestor origin/codex/assignment-prototype origin/main` returned success and the Codex branch had no unique commits. It was safely deleted remotely and locally. `main` remains the default and `origin/HEAD` now points to it. No history was rewritten.
 
 The Windows CI workflow now verifies the actual source archive: it extracts into a path containing spaces, runs `setup.cmd` with Windows PowerShell, checks dependencies and native-model inference, runs software verification and launches through `run.cmd`. This is separate-host software verification, not a physical-laptop webcam result.
+
+## Team confirmation - 27 September 2026
+
+The user confirmed Jameson and Deston as the supplied team names, with GitHub and WhatsApp used so far. Individual tasks, contribution percentages, full identifiers, tutor feedback and registration remain pending. This confirms the named tools, not specific peer reviews or meeting attendance. See [CONTRIBUTIONS.md](CONTRIBUTIONS.md).

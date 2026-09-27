@@ -48,7 +48,7 @@ Commands below run from the repository root with the project environment active.
 - [x] Test plan covers assignment and planned final system.
 - [x] AI assistance declaration draft exists.
 - [x] Report, README, pilot/package evidence and checklists were reconciled against implemented code and recorded evidence on 27 September; this is not human approval or final-project verification.
-- [x] Review PDF exported to [GestureForge_Assignment_Report.pdf](../output/pdf/GestureForge_Assignment_Report.pdf), including the partial recovered prompt appendix.
+- [x] Review PDF exported to [GestureForge_Assignment_Report.pdf](../output/pdf/GestureForge_Assignment_Report.pdf), including the recovered original planning and full implementation-plan prompts for this task. Other Codex conversation coverage remains unconfirmed.
 - [ ] Final report human review is complete; regenerate the PDF after any content changes.
 - [ ] Unit AI-use guidance is checked against the final declaration and [AI_PROMPTS.md](../AI_PROMPTS.md); confirm required transcript/appendix coverage, review actual AI use and remove private material.
 
@@ -56,8 +56,10 @@ Commands below run from the repository root with the project environment active.
 
 - [ ] Team registration and tutorial membership are confirmed.
 - [ ] [Contribution record](CONTRIBUTIONS.md) is updated with real names, verified work and required identifiers/percentages; all members have reviewed the submission.
-- [ ] Actual team collaboration and communication tools/activities are recorded; a repository, proposed roles or unanswered tutor questions alone do not establish team participation.
-- [ ] Group declaration sheet is signed.
+- [x] User confirmed GitHub and WhatsApp use on 27 September; the report names all four required tool categories.
+- [ ] Actual team activity summaries and individual contributions are recorded; tool confirmation alone does not establish who performed each task.
+- [x] Unchanged official [declaration template](submission/Group_Declaration_TO_COMPLETE.docx) is included for completion.
+- [ ] Group declaration sheet is completed and signed by every member.
 - [x] Pending questions are recorded in [TUTOR_REVIEW.md](TUTOR_REVIEW.md); tutor approval or reply is not yet recorded.
 - [ ] Tutor questions about scope, marking weights, participant evidence, agile evidence and AI-use requirements are resolved and actual replies recorded.
 - [x] `python scripts\board.py` has generated the local sprint board.

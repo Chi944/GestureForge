@@ -1,41 +1,33 @@
-# GestureForge Contribution Record
+# GestureForge team and contribution record
 
-Status: draft. Replace placeholders with actual team member names and verified work before submission.
+Updated 27 September 2026. The user confirmed the names **Jameson** and **Deston**, and use of **GitHub** and **WhatsApp**. The user explicitly left the remaining team details pending. Names are recorded as supplied; surnames, legal/full names and participant identities are not inferred.
 
-## Rules
+## Team details awaiting confirmation
 
-- Record real contributions only.
-- Do not invent approvals, signatures, participant work, tutor feedback, or test results.
-- Keep evidence links or file paths for substantial contributions.
-- Reconcile this file with the official group declaration sheet before submission.
+| Name as supplied | Full name and surname | Student ID and university email | Actual work and evidence | Agreed percentage | Approval and signature |
+| --- | --- | --- | --- | --- | --- |
+| Jameson | Pending | Pending | Pending | Pending | Pending |
+| Deston | Pending | Pending | Pending | Pending | Pending |
 
-## Team Members
+Group name, tutorial membership, team registration and tutor feedback are pending. Do not infer that Jameson is P02, or Deston is P01. No individual contribution or equal 50/50 split has been assigned.
 
-| Member | Proposed role | Planned responsibility (not a completed contribution claim) | Evidence |
-| --- | --- | --- | --- |
-| Member 1 | Developer and technical lead | Project scope, implementation, report technical review | Pending actual names and evidence |
-| Member 2 | Documentation and evaluation support | Report drafting, data collection support, installation testing | Pending actual names and evidence |
+## Tools and coordination
 
-## Contribution Log
+| Category | Established use | Evidence and remaining detail |
+| --- | --- | --- |
+| Project management | GitHub Issues/Projects and local sprint backlog | [Agile record](AGILE.md), [GitHub setup](GITHUB_SETUP.md), [local board](SPRINT_BOARD.html); human sprint reviews and ownership pending |
+| Version control | Git and private GitHub repository on main | Git history/source package; distinguish substantial AI assistance from human authorship |
+| Collaboration | GitHub, confirmed by user on 27 September | Member-specific edits, reviews and coordination examples pending |
+| Communication | WhatsApp, confirmed by user on 27 September | Discussion dates, participants and factual summaries pending; no chat transcript or meeting is claimed |
 
-| Date | Person | Work | Evidence |
-| --- | --- | --- | --- |
-| 23 Sep 2026 | AI assistance under user direction | Created documentation scaffolds for plan, report draft, test plan, guide, agile backlog, contribution record, tutor review, data collection, and submission controls | `docs/`, `README.md`, `AI_PROMPTS.md`, `LICENSES.md` |
-| 23 Sep 2026 | Codex AI assistance under user direction | Implemented prototype Python source, automated tests, dependency setup, model download, packaging, verification helpers and CI; ran software checks and same-computer clean installation; created the private repository and agile tracking | `gestureforge/`, `tests/`, `scripts/`, `.github/`, `docs/evidence/`, `docs/GITHUB_SETUP.md` |
+## Recorded assistance and observations
 
-The code was generated with substantial AI assistance. Human authors must review, understand and verify it before submission, and describe their actual subsequent work separately. The proposed member roles above do not establish that either member has already performed those responsibilities.
+- Codex assisted substantially with planning, source, tests, troubleshooting, documentation, release checks and GitHub/agile setup. See [AI assistance record](../AI_PROMPTS.md). These are tool-use records, not completed student contributions.
+- P01 provided numeric right-hand samples and confirmed the two-hold NEXT retest. P02 supplied the qualitative laptop-use report. Linking those pseudonyms to named team members requires confirmation.
+- The user supplied directions and confirmations in the [prompt log](AI_PROMPT_APPENDIX.md). The identity and division of named team members' work remain unconfirmed.
 
-## Declaration Preparation
+## Complete before signing
 
-Before assignment submission:
+Use the unchanged official [group declaration template](submission/Group_Declaration_TO_COMPLETE.docx). Enter full names, student numbers, emails, group name, actual task descriptions and report/code responsibilities, agreed percentages totalling 100%, dates and every member's signature. Each member must verify their entry and the declaration statements. Do not sign, tick confirmations or allocate percentages on someone else's behalf.
 
-- Confirm team registration and same tutorial membership.
-- Fill in actual names, student IDs if required, and contribution percentages.
-- Ensure every member has reviewed the submitted work.
-- Sign the official group declaration sheet.
-- Keep a copy of the signed declaration in the release package if permitted.
-
-Before final project submission:
-
-- Update contribution records with final coding, testing, report, guide, slides, video, and presentation work.
-- Resolve any mismatch between claimed work and Git history or documented evidence.
+Keep identifying details and the signed form in the private submission rather than publishing them as general project documentation. Reconcile the form with this record and actual evidence. No submission signoff is recorded yet.

@@ -40,3 +40,5 @@ Status: evidence audit as of 27 September 2026. Software checks pass and the ass
 ## High-Band Protection
 
 The documentation covers requirements, design, algorithm investigation, test planning, lifecycle, agile process, references, contribution tracking, data handling, and submission controls. Automated software evidence is recorded, usable camera-index 1 capture with live hand tracking is verified, P01 right-hand pilot data is complete, pilot metrics are recorded, and a real webcam NEXT path has advanced the viewer. A participant-observed two-hold smoke check advanced exactly once per hold. Fresh-source setup and screenshot evidence are complete. P02 supplies independent qualitative laptop-use evidence. Remaining release checks, final report review and administrative artifacts remain necessary. No grade is guaranteed: the supplied files do not provide detailed highest-band descriptors, and the tutor must resolve the marking-weight discrepancy.
+
+The [submission inventory](SUBMISSION_README.md) lists the report, logs, guides, evidence and unchanged unsigned declaration template, with remaining human signoffs.

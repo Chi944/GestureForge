@@ -71,7 +71,7 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | Camera check | `python scripts/check_environment.py --camera --camera-index 1` on current machine; index may vary elsewhere | Terminal output and camera notes |
 | Model asset download | `python scripts/download_model.py` | Asset path and checksum note |
 | App launch | `python -m gestureforge --smoke-test --screenshot docs/evidence/app-smoke.png` | Screenshot or terminal output |
-| Live app with human dataset | `python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn` | Screenshot, local event log, and camera notes; do not publish raw event log if it contains local identifiers |
+| Live app with human dataset | `python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1` | Screenshot, local event log, and camera notes; do not publish raw event log if it contains local identifiers |
 | Collection path | `python -m gestureforge.collect --camera 1 --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot` | Manifest and aggregate data summary; do not publish feature rows |
 | Evaluation path | `python -m gestureforge.evaluate --config <path>` | JSON or CSV result |
 | UI launch | `python -m gestureforge` | Screenshot and notes |
@@ -99,14 +99,14 @@ The latest software verification summary is stored in `docs/evidence/verificatio
 
 ## Evidence Naming
 
-Use predictable paths:
+Use the implemented local/private paths:
 
-- `data/raw/<participant>/<session>/manifest.json`
-- `data/features/<profile>/<session>.npz`
-- `experiments/assignment/<date>-comparison.json`
-- `experiments/final/<date>-heldout-results.json`
-- `docs/evidence/<date>-<check>.md`
-- `releases/<release-name>/`
+- `data/local/<dataset>/manifest.json` and its referenced numeric `.npz` sidecar: participant samples, excluded from Git.
+- `experiments/local/<comparison>.json`: full outputs, excluded from Git.
+- `docs/evidence/<check>.md` or `.json`: reviewed aggregate verification suitable for source distribution.
+- `releases/`: generated ZIPs and checksum companions, excluded from Git.
+
+Keep the retained P01 dataset unchanged; collect new people or experiments into separate folders. Camera index 1 is verified only on the development machine. Final held-out artifacts will use the same privacy boundary, with names recorded when collected.
 
 Synthetic fixtures, including `experiments/prototype.json`, may be used for software tests. They must be labelled separately from participant pilot or held-out results.
 
@@ -148,7 +148,7 @@ Config for collected human pilot data:
 {
   "dataset_path": "data/local/pilot/manifest.json",
   "algorithms": ["knn", "svm"],
-  "rejection_multiplier": 1.5
+  "rejection_multiplier": 2.0
 }
 ```
 

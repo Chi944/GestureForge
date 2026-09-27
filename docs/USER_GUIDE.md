@@ -102,6 +102,8 @@ Expected assignment window:
 
 ## Collect Assignment Data
 
+The submitted P01 pilot already exists. Preserve it unchanged. For another person or a new experiment, use a new pseudonym and separate output folder, following [Windows enrolment instructions](WINDOWS_LAPTOP.md). The commands below document the original P01 protocol; do not rerun them into the retained submission dataset. Commands using `python` require the activated project environment from Manual setup above.
+
 Human collection commands:
 
 ```powershell
@@ -128,11 +130,13 @@ Assignment collection target:
 
 ## Run Evaluation
 
-Run evaluation with a JSON config:
+Reproduce the recorded human pilot using the private marker package or the retained local P01 dataset:
 
 ```powershell
-python -m gestureforge.evaluate --config experiments\prototype.json --output experiments\local\prototype-results.json
+.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
 ```
+
+The source ZIP alone excludes P01 data. For a synthetic software check without participant data, use `experiments/prototype.json` instead; its scores are not human recognition evidence.
 
 Expected assignment output:
 
@@ -158,7 +162,7 @@ Example config using a collected human manifest:
 {
   "dataset_path": "data/local/pilot/manifest.json",
   "algorithms": ["knn", "svm"],
-  "rejection_multiplier": 1.5
+  "rejection_multiplier": 2.0
 }
 ```
 
