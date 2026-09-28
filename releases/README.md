@@ -27,4 +27,4 @@ To reproduce the saved P01 comparison after extracting the private marker packag
 
 Consult the [results and configuration history](../docs/evidence/RESULTS.md) for the expected scores and limits of each model version. Live recognition on another person's hand needs separate enrolment. Keep the retained P01 samples unchanged.
 
-Before upload, verify the exact archive on the second computer using the [Windows guide](../docs/WINDOWS_LAPTOP.md). After upload, download and check the actual LMS files. Outstanding human details are recorded in [contributions](../docs/CONTRIBUTIONS.md) and the report.
+Before upload, verify the exact archive on the second computer using the [Windows guide](../docs/WINDOWS_LAPTOP.md). After upload, download and check the actual LMS files. Required personal details belong in the local report and declaration.

@@ -101,6 +101,8 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
 ```
 
+CI runs locally with `scripts/verify.py`; release scripts produce the transferable ZIPs. GitHub Actions is disabled while hosted usage is unavailable, and the workflow is retained for manual use only. No deployment service is required for this desktop app.
+
 [Recorded software checks](docs/evidence/verification.json) distinguish automated verification from live hardware evidence. Synthetic fixtures test the software; they are not human recognition results.
 
 ## Submission map
@@ -114,12 +116,12 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 | AI assistance declaration and preserved prompts | [prompt_log.md](prompt_log.md) |
 | Decisions, alternatives, risks and scope boundaries | [decision_log.md](decision_log.md) |
 | Agile tools and progress | [Agile record](docs/AGILE.md), [backlog snapshot](docs/backlog.csv) |
-| Team contributions and required declaration | [Contribution record](docs/CONTRIBUTIONS.md), [official unsigned form](docs/submission/Group_Declaration_TO_COMPLETE.docx) |
+| Tools record and required declaration | [Tools and coordination](docs/CONTRIBUTIONS.md), [official unsigned form](docs/submission/Group_Declaration_TO_COMPLETE.docx) |
 | Dependencies, sources and reproducibility | [Licences and references](LICENSES.md), [requirements.lock](requirements.lock), [model manifest](assets/model_manifest.json) |
 
 The technical report, `Prompt_Log.docx` and `Decision_Log.docx` are separate local Word deliverables in `docs/submission/`, excluded from GitHub and both code ZIPs. Submit all three alongside the code and completed declaration. The Markdown logs above remain the source records; the technical report contains a concise AI-assistance declaration, not the full logs.
 
-**Before submission:** complete full team identifiers, actual contributions and agreed percentages, tutor/AI-use review, retention arrangements, remaining laptop checks, report review and signatures. Keep the signed declaration and private data in the private LMS package. Verify the downloaded LMS upload. These human steps have not been completed by automated software checks.
+**Before submission:** complete full team identifiers, actual contributions and agreed percentages, AI-use review, retention arrangements, remaining laptop checks, report review and signatures. Keep the signed declaration and private data in the private LMS package. Verify the downloaded LMS upload. These human steps have not been completed by automated software checks.
 
 BOOKMARK will mark the current card for later review in the final project, with bookmarks saved and restored with the deck state. Repeating BOOKMARK on the same card will not create duplicates. It does not advance a card; in this assignment it only displays recognition.
 

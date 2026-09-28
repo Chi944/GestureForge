@@ -75,7 +75,7 @@ An issue is done when:
 
 The private GitHub repository is <https://github.com/Chi944/GestureForge_304>. The private Trello sprint board was created on 28 September 2026: <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
 
-The Trello board contains 33 open cards: 27 cards migrated from `docs/backlog.csv` plus six current improvement cards for the Word report, unknown-gesture handling, UI clarity, submission documentation cleanup, Trello setup, and the live NEXT transition correction. Creating these tools is not evidence of human peer review, ownership allocation, tutor approval, or weekly tutor meetings.
+The Trello board contains 32 open cards after archiving the tutor-question task: 26 original backlog cards plus six current improvement cards for the Word report, unknown-gesture handling, UI clarity, submission documentation cleanup, Trello setup, and the live NEXT transition correction. Creating these tools is not evidence of human peer review, ownership allocation, tutor approval, or weekly tutor meetings.
 
 ## Status Rules
 
@@ -86,7 +86,3 @@ The Trello board contains 33 open cards: 27 cards migrated from `docs/backlog.cs
 - `Done`: evidence exists and is referenced.
 
 Do not use `Done` for planned work without evidence.
-
-## Team confirmation - 27 September 2026
-
-The user confirmed Jameson and Deston as the supplied team names, with GitHub and WhatsApp used so far. Individual tasks, contribution percentages, full identifiers, tutor feedback and registration remain pending. This confirms the named tools, not specific peer reviews or meeting attendance. See [CONTRIBUTIONS.md](CONTRIBUTIONS.md).

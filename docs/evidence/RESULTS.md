@@ -110,7 +110,7 @@ Unrecognisable gestures should be rejected as UNKNOWN. The current classifier so
 
 The current verification summary lives in `verification.json`. Earlier package checks recorded:
 
-GitHub Actions run `36413668556` did not start its test job: GitHub reported an account payment/spending-limit block. This is not a remote test pass or a code-test failure. Fresh local verification remains available in `verification.json`; the account owner must resolve the GitHub setting before remote CI can execute.
+GitHub Actions run `36413668556` did not start its test job: GitHub reported an account payment/spending-limit block. This is not a remote test pass or a code-test failure. The user requested local CI instead. Hosted runs are now disabled; quota-blocked runs were removed after their metadata was retained locally. Fresh local verification remains available in `verification.json`; no remote pass is claimed.
 
 - Fresh extracted source setup on the development computer passed with Python 3.11.16 and the expected `hand_landmarker.task` SHA256 `fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1`.
 - Same-computer source archive verification passed pip checks, model checks, launcher smoke and synthetic verification from an extracted folder with spaces in its path.
@@ -126,7 +126,7 @@ This supports the assignment claim that a separately enrolled user could operate
 
 ## Open Gates
 
-- Record full team names, student IDs, contribution percentages, tutor feedback and signatures.
+- Record full team names, student IDs, contribution percentages and signatures.
 - Confirm P01 retention period and final private submission location.
 - Complete or clearly mark pending guide-only second-laptop checks: exact package/version, Windows/Python/camera details, pause/restart, camera release/reopen and offline runtime use.
 - Rebuild and verify the final submission archive after the current documentation and UI changes.
