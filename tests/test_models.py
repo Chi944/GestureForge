@@ -48,6 +48,32 @@ def test_model_rejects_far_pose_by_distance() -> None:
     assert reason == "distance_rejection"
 
 
+def test_model_rejects_ambiguous_pose_by_margin() -> None:
+    features = []
+    labels = []
+    for label, base in (("NEXT", 0.0), ("PREVIOUS", 10.0), ("BOOKMARK", 0.3), ("NEUTRAL", 20.0)):
+        for offset in (0.0, 0.03, 0.06):
+            row = np.zeros(60, dtype=np.float32)
+            row[0] = base + offset
+            features.append(row)
+            labels.append(label)
+    model = train_model(
+        np.asarray(features),
+        np.asarray(labels, dtype=object),
+        multiplier=10.0,
+        margin=1.2,
+    )
+    ambiguous = np.zeros(60, dtype=np.float32)
+    ambiguous[0] = 0.18
+
+    label, accepted, reason = model.predict(ambiguous)
+
+    assert model.model_version == "prototype-v3"
+    assert label in {"NEXT", "BOOKMARK"}
+    assert not accepted
+    assert reason == "margin_rejection"
+
+
 def test_train_model_requires_all_four_labels() -> None:
     features = np.ones((5, 60), dtype=np.float32)
     labels = np.asarray(["NEXT", "NEXT", "PREVIOUS", "PREVIOUS", "BOOKMARK"], dtype=object)
@@ -83,6 +109,14 @@ def test_train_model_rejects_invalid_multiplier() -> None:
 
     with pytest.raises(ValueError, match="finite and positive"):
         train_model(train_features, train_labels, multiplier=0)
+
+
+def test_train_model_rejects_invalid_margin() -> None:
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    train_features, train_labels, _ = bundle.training_data()
+
+    with pytest.raises(ValueError, match="at least 1.0"):
+        train_model(train_features, train_labels, margin=0.99)
 
 
 def test_rejection_reference_excludes_all_frames_from_the_same_hold():

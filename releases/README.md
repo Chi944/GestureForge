@@ -1,27 +1,30 @@
 # Release packages
 
-Run `python scripts/package_release.py` after staging the reviewed source. It creates a source archive and SHA256 manifest here. Environments and private participant data are excluded.
+The graded source contains the application, tests, guides, final Word report, prompt and decision logs, traceability, measured evidence and unsigned declaration template. Participant samples, environments, working drafts and archived checklists stay out of GitHub and the source ZIP.
 
-This source archive is not a complete assignment submission. Add the reviewed report, permitted pilot data/results, and signed declaration only after the submission checklist is complete. Verify the final submitted package on the second computer.
-
-## Private marker archive
-
-The user authorised private tutor/marker inclusion of P01 numeric data on 26 September 2026. From the project root, use the project environment:
+After staging only reviewed submission files:
 
 ```powershell
+.\.venv\Scripts\python.exe scripts/package_release.py
 .\.venv\Scripts\python.exe scripts/package_release.py --include-pilot
 ```
 
-This creates `gestureforge-assignment-private-marker.zip` and its SHA256 JSON companion. It includes tracked source/documentation plus the validated P01 manifest and its numeric NPZ sidecar. It excludes raw images, video, local event logs, environments and downloaded model assets. Keep this ZIP private; do not attach it to GitHub. The default source ZIP continues to exclude participant data.
+| Package | Contents | Use |
+| --- | --- | --- |
+| `gestureforge-assignment-source.zip` | Tracked submission files; no participant dataset | Source transfer and new personal enrolment |
+| `gestureforge-assignment-private-marker.zip` | Source plus authorised P01 numeric manifest and NPZ sidecar | Private tutor or marker reproduction |
+| Matching JSON manifest | SHA256, file count and creation time | Verify the exact transferred archive |
 
-The marker can extract it, run `setup.cmd` while online, then reproduce the pilot comparison:
+The private archive must not be attached to GitHub. P01 private marker sharing was authorised; the retention arrangement remains pending. No raw video or images are included. The downloaded landmark model is verified during online setup rather than redistributed in the archive. Create a new environment on each laptop; do not copy `.venv`.
+
+The Word report is [GestureForge Technical Report](../docs/submission/GestureForge_Technical_Report.docx). The official form is an **unsigned template**, not a completed declaration. Complete report review, team details and signatures before submitting. Local package verification does not verify an LMS upload or second-laptop guide-only operation.
+
+To reproduce the saved P01 comparison after extracting the private marker package and running `setup.cmd`:
 
 ```powershell
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
 ```
 
-Expected selected-setting development macro-F1: approximately 0.9686 for both classifiers. Reproduction uses P01's saved samples; a different user's live hand needs separate enrolment. Do not overwrite the retained P01 dataset with new collection. See `docs/evidence/PILOT_RESULTS.md` for limitations and `docs/WINDOWS_LAPTOP.md` for setup and new-enrolment instructions.
+Consult the [results and configuration history](../docs/evidence/RESULTS.md) for the expected scores and limits of each model version. Live recognition on another person's hand needs separate enrolment. Keep the retained P01 samples unchanged.
 
-Both archives are preparation artifacts until the report is reviewed and the signed declaration and other open submission gates are completed. The private archive contains the draft PDF when it has been staged. Agree and record retention before submission; sharing permission does not establish a retention period.
-
-The [submission inventory](../docs/SUBMISSION_README.md) lists the report, logs, guides, evidence and unchanged unsigned declaration template, with remaining human signoffs.
+Before upload, verify the exact archive on the second computer using the [Windows guide](../docs/WINDOWS_LAPTOP.md). After upload, download and check the actual LMS files. Outstanding human details are recorded in [contributions](../docs/CONTRIBUTIONS.md) and the report.

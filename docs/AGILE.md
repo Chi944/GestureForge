@@ -1,19 +1,19 @@
 # GestureForge Agile Working Method
 
-Status: active local backlog and live GitHub issue/project tracking.
+Status: active Trello sprint board plus local submission backlog snapshot.
 
 ## Agile Setup
 
-Use short, evidence-focused sprints. Detailed acceptance work is tracked in `docs/backlog.csv`; nine parent issues group that work on the GitHub project board.
+Use short, evidence-focused sprints. Detailed acceptance work is tracked in `docs/backlog.csv`; the live Kanban board is the private Trello board at <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
 
-Recommended columns:
+Trello columns:
 
 - Backlog
-- Ready
-- In progress
-- Review
-- Done
+- To Do
+- In Progress
+- Review-Test
 - Blocked
+- Done
 
 Every issue should have:
 
@@ -23,21 +23,9 @@ Every issue should have:
 - Evidence path.
 - Actual status.
 
-The local board generator is:
+`docs/backlog.csv` is the submission snapshot. `docs/sprint_events.jsonl` records factual status changes made during development. The archived local HTML board and generator are no longer part of the submitted repo.
 
-```powershell
-python scripts\board.py
-```
-
-It writes `docs/SPRINT_BOARD.html` from `docs/backlog.csv`. Evidence-based status updates use:
-
-```powershell
-python scripts\board.py --id GF-A1-002 --status "Done" --note "Evidence path or command result summary"
-```
-
-Those updates append records to `docs/sprint_events.jsonl`. The root implementation lane owns backlog status changes after this documentation pass.
-
-## Sprint Cadence
+## Planned Sprint Cadence
 
 | Sprint | Dates | Goal |
 | --- | --- | --- |
@@ -83,16 +71,18 @@ An issue is done when:
 | Final release candidate | 1 Nov | Can another machine run the package from instructions? |
 | Final submission | 7 Nov | Are all required artifacts uploaded and downloaded for verification? |
 
-## GitHub Status
+## Board Status
 
-The private [repository](https://github.com/Chi944/GestureForge_304), [nine issues](https://github.com/Chi944/GestureForge_304/issues), two dated milestones, and [GestureForge Agile Board](https://github.com/users/Chi944/projects/1) were created on 23 September 2026. See `GITHUB_SETUP.md` for the setup record. Keep GitHub parent issues aligned with the detailed local backlog; a parent remains open until all acceptance evidence exists. Creating these tools is not evidence of human peer review or weekly tutor meetings.
+The private GitHub repository is <https://github.com/Chi944/GestureForge_304>. The private Trello sprint board was created on 28 September 2026: <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
+
+The Trello board contains 32 open cards: 27 cards migrated from `docs/backlog.csv` plus five current assignment-improvement cards for the Word report, unknown-gesture handling, UI clarity, submission documentation cleanup, and Trello setup. Creating these tools is not evidence of human peer review, ownership allocation, tutor approval, or weekly tutor meetings.
 
 ## Status Rules
 
-- `Not started`: no implementation work yet.
-- `In progress`: active code or documentation work exists.
+- `Backlog`: planned work not yet selected; `To Do`: selected and ready to start.
+- `In Progress`: active code or documentation work exists.
 - `Blocked`: needs human consent, tutor input, hardware, or credentials.
-- `Review`: implementation exists and needs checking.
+- `Review-Test`: implementation exists and needs final checking or human acceptance.
 - `Done`: evidence exists and is referenced.
 
 Do not use `Done` for planned work without evidence.

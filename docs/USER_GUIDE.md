@@ -1,6 +1,6 @@
 # GestureForge User Guide
 
-Status: assignment guide aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; measured pilot results and limitations are in `docs/evidence/PILOT_RESULTS.md`. P02 reported the core second-laptop workflow working; pause/restart, offline use and guide-only setup remain unverified.
+Status: assignment guide aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; measured pilot results, setup/package checks, P02 qualitative feedback and limitations are consolidated in `docs/evidence/RESULTS.md`. P02 reported the core second-laptop workflow working; pause/restart, offline use and guide-only setup remain unverified.
 
 ## Purpose
 
@@ -74,10 +74,12 @@ Smoke-test startup with screenshot:
 Live gesture control after collecting a human dataset:
 
 ```powershell
-.\run.cmd --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --camera 1
+.\run.cmd --dataset data\local\pilot\manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1
 ```
 
-Supported algorithm choices are `knn` and `svm`. The shown kNN multiplier 2 configuration is the provisional P01 pilot setting; other participants need their own collection and validation. Synthetic fixtures cannot enable live control. Version 2 calibration requires at least two valid training trials per label; the planned pilot uses eight.
+Supported algorithm choices are `knn` and `svm`. The shown kNN multiplier 2 and margin 1.5 configuration is the revised P01 development setting. The margin rejects predictions too similar to another enrolled class; it does not eliminate all unknown-pose errors. Other participants need their own collection and validation. Synthetic fixtures cannot enable live control. Version 2 calibration requires at least two valid training trials per label; the planned pilot uses eight.
+
+If **Start camera control** is disabled immediately after launch, no personal gesture dataset was loaded. Double-clicking `run.cmd` opens the keyboard-only viewer even when a webcam is connected. Close that window and use the live command above with your saved dataset. Existing P01 users do not need to collect more data just to enable the button.
 
 ### Select the working camera
 
@@ -85,7 +87,7 @@ Close Windows Camera, video-call apps and other camera previews before using Ges
 
 ```powershell
 python scripts/check_environment.py --camera --camera-index 1
-.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
+.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1
 ```
 
 Use `--camera 1` on each collection command below when that is the working device. The camera check reports hand counts without saving images. A successful image read alone does not establish hand recognition or a working gesture command.
@@ -179,23 +181,11 @@ For a live camera check, run:
 python scripts\check_environment.py --camera
 ```
 
-Save the output as release evidence when preparing a submission.
+Save the output as release evidence when preparing a submission. Summarise accepted release evidence in `docs\evidence\RESULTS.md`.
 
 ## Agile Board
 
-Generate the local sprint board:
-
-```powershell
-python scripts\board.py
-```
-
-This writes `docs\SPRINT_BOARD.html` from `docs\backlog.csv`. Status updates should be evidence-based and can be recorded by the implementation lead with:
-
-```powershell
-python scripts\board.py --id GF-A1-002 --status "Done" --note "Evidence path or command result summary"
-```
-
-The update also appends an event to `docs\sprint_events.jsonl`.
+The live sprint board is [GestureForge Assignment and Project on Trello](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project). Move cards according to actual evidence and keep their acceptance criteria and release target visible. `docs/backlog.csv` is the submission snapshot; `docs/sprint_events.jsonl` preserves development status events. See [the Agile record](AGILE.md) for the sprint schedule and definition of done.
 
 ## Source Package
 
@@ -215,7 +205,7 @@ Run the automated tests:
 python -m pytest
 ```
 
-The current software verification summary is recorded in `docs\evidence\verification.json`. Re-run tests before packaging each release and refresh that evidence file when results change.
+The current software verification summary is recorded in `docs\evidence\verification.json`. Consolidated measured results and limitations are recorded in `docs\evidence\RESULTS.md`. Re-run tests before packaging each release and refresh those evidence files when results change.
 
 ## Assignment Demo Script
 
@@ -252,3 +242,9 @@ The current software verification summary is recorded in `docs\evidence\verifica
 ## Final Project Preview
 
 The final project guide will add profile creation, in-app practice, PREVIOUS and BOOKMARK execution, custom JSON deck loading, saved state, and recovery from corrupted files.
+
+## Rejection settings and historical results
+
+The live app defaults to ambiguity margin 1.5. For the revised P01 setting, pass both `--multiplier 2 --margin 1.5`. Accepted unfamiliar poses are recognition errors, not default PREVIOUS/BOOKMARK behaviour. Rejected poses display Unrecognised and cannot dispatch actions.
+
+The new `experiments/pilot-rejection.json` reproduces prototype-v3 macro-F1 0.9667 for both classifiers on P01 development validation. Historical `experiments/pilot.json` intentionally retains distance-only prototype-v2 (margin 1.0), macro-F1 0.9686. For exact historical live configuration pass `--margin 1`. The balanced update reduces unfamiliar command-label accepts from 25/40 to 5/40 but requires a fresh physical-camera retest. See the [result comparison](evidence/RESULTS.md).

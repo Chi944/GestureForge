@@ -52,7 +52,8 @@ def _tracked_source_files(root: Path) -> list[Path]:
     files = [name for name in files if name and (root / name).is_file()]
     if not files:
         raise SystemExit("Stage the reviewed release files before packaging.")
-    forbidden = (".venv/", ".tools/", ".python/", "data/local/", "experiments/local/")
+    forbidden = (".venv/", ".tools/", ".python/", ".cache/", ".local/",
+                 "data/local/", "experiments/local/")
     if any(name.startswith(forbidden) for name in files):
         raise SystemExit("Private data or environment files are tracked; review before packaging.")
     return [Path(name) for name in sorted(files)]

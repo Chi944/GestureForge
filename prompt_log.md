@@ -1,10 +1,29 @@
-# GestureForge user prompt log
+# GestureForge prompt log and AI assistance declaration
+
+OpenAI Codex assisted substantially with planning, code, tests, troubleshooting, documentation, repository management and board setup. The team is responsible for understanding, reviewing and explaining the submitted work. AI assistance is not a student contribution percentage. MediaPipe provides pretrained landmarks; scikit-learn supplies the classifiers fitted to personal numeric training data.
+
+This file preserves the recovered user prompts and clarification answers, including the complete implementation plan. It does not contain hidden instructions, AI reasoning, raw webcam images or participant feature arrays. Existing original-message hashes and timestamps are retained. Later prompts transcribed from the visible conversation are explicitly labelled; they have no invented timestamp or source hash.
+
+Coverage is this Codex task. Other Codex conversations, including P02 setup assistance, have not been supplied or confirmed complete. Unit-specific AI-use requirements and team review remain pending. See [contributions](docs/CONTRIBUTIONS.md), [decisions](decision_log.md), [verification](docs/evidence/verification.json), and [results](docs/evidence/RESULTS.md).
+
+The report includes the prompt appendix because the course specification requests prompts in the report. This standalone copy makes them easy to locate in the source submission.
+
+## Assistance and verification
+
+| Work | Verification | Limit |
+| --- | --- | --- |
+| Code and tests | Recorded automated checks, lint, type checks and application smoke checks | Does not establish human understanding or live performance |
+| Classifier comparison | Separate P01 TRAIN/VALIDATION recordings and reproducible numeric inputs | Development validation, not untouched final testing |
+| Live prototype | P01 hold/rearm observation and P02 assisted laptop feedback | Qualitative evidence with stated limits |
+| Report and board | Reconciled with source, supplied assessment files and recorded evidence | Team identifiers, signatures, tutor feedback and external prompt coverage remain pending |
+
+## Recovered user prompts
 
 Updated 28 September 2026. This appendix preserves the user-message text recovered for this Codex task. Wording, including spelling and the full implementation-plan prompt, is retained. Clarification wrappers are presented as question/answer pairs; technical message IDs are omitted. Attachment references are retained, but the camera image itself is not copied into this log or published.
 
 Timestamps labelled UTC come from the retained session record. Messages obtained only from the task-history API have no recovered exact timestamp and are labelled accordingly. No dates or conversation completeness have been inferred. Each hash covers the original UTF-8 message text before display formatting.
 
-Coverage: the retained record includes the original planning requests and implementation instruction, previously missing from the partial appendix. The task-history API supplements newer messages. The user confirmed Codex use on 27 September; this does not establish that all other Codex conversations, including the assisted P02 setup, have been supplied. External conversation coverage and the unit-specific declaration requirements remain unconfirmed. This is a user-prompt log, not a transcript of AI responses, tool execution or internal instructions. The use and verification record is in [AI_PROMPTS.md](../AI_PROMPTS.md).
+Coverage: the retained record includes the original planning requests and implementation instruction, previously missing from the partial appendix. The task-history API supplements newer messages. The user confirmed Codex use on 27 September; this does not establish that all other Codex conversations, including the assisted P02 setup, have been supplied. External conversation coverage and the unit-specific declaration requirements remain unconfirmed. This is a user-prompt log, not a transcript of AI responses, tool execution or internal instructions. The AI assistance declaration is at the beginning of this file.
 
 ## Prompt register
 
@@ -624,3 +643,33 @@ Recorded time: 2026-09-27 18:12:46.571 UTC. Source: Retained task session record
 Original-message SHA256: `0da9caac78076bfca9143f96afc2e390864fc3fac916bff7f0c6a12416453354`
 
 > Go through the whole repo and do an audit sweep and delete any redundant code or files that are not related to my submission
+
+## Later prompts from the visible conversation
+
+Attachment descriptions are editorial context, not additional user instructions. Screenshots are not republished in this log.
+
+### PR-032
+
+Source: visible user conversation. Exact timestamp not recovered.
+
+> Can this project run on a macos?
+
+### PR-033
+
+Source: visible user conversation. Exact timestamp not recovered.
+
+> what are my tools for each of these
+>
+Attachment context (editorial): Project Management; Version Control; Collaboration; Communication.
+
+### PR-034
+
+Source: visible user conversation. Exact timestamp not recovered.
+
+> For my sprint board can I use any other free tools like trello or anything else? I am also unable to start the camera control even though I have a webcam connected already
+
+### PR-035
+
+Source: visible user conversation. Exact timestamp not recovered.
+
+> I have connected my trello here, create the local sprint board or kanban board there for me. Update everything to my technical report, it should be in word instead of a pdf and also make it look better with figures, tables and images generated here or images taken, design it better, it is currently too plain, optimise it to score the highest grade as shown in the rubrics and requirements. Also, the currently detection for unrecognizable gestures default to previous or bookmark, should this be the case? or should it proper flag as unrecognizable gesture. Are all these documentations needed? Delete them if they do not help or are required in my submission, only keep those that are needed. There should be a prompt_log.md and decision_log.md file as well that I do not see here, generate those for me, remove all the drafts and checklists from my repo as well if they are not needed, it is okay to store them locally but do not commit and push everything to my repo, my repo is to be submitted for grading. Design my prototype UI/UX better, improve on it and also make clear distinctions between deck changes on top of just the deck numbers as it is currently not obvious enough. Update my whole readme accordingly.

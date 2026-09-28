@@ -16,12 +16,14 @@ from .contracts import LABELS
 
 Algorithm = Literal["knn", "svm"]
 MODEL_VERSION = "prototype-v2"
+MARGIN_MODEL_VERSION = "prototype-v3"
 
 
 @dataclass(frozen=True)
 class ModelConfig:
     algorithm: Algorithm = "knn"
     multiplier: float = 1.5
+    margin: float = 1.0
     model_version: str = MODEL_VERSION
     rejection_reference: str = "leave_one_sample_out"
 
@@ -83,12 +85,24 @@ class PrototypeGestureModel:
                 distance=distance,
                 threshold=threshold,
             )
+        if self.config.margin > 1.0:
+            other_rows = self.train_features_scaled[self.train_labels != label]
+            other_distance = float(np.min(np.linalg.norm(other_rows - scaled, axis=1)))
+            if other_distance / max(distance, 1e-12) < self.config.margin:
+                return PredictionResult(
+                    label=label,
+                    accepted=False,
+                    reason="margin_rejection",
+                    distance=distance,
+                    threshold=threshold,
+                )
         return PredictionResult(label=label, accepted=True, distance=distance, threshold=threshold)
 
     def to_config(self) -> dict[str, object]:
         return {
             "algorithm": self.config.algorithm,
             "multiplier": self.config.multiplier,
+            "margin": self.config.margin,
             "model_version": self.model_version,
             "rejection_reference": self.config.rejection_reference,
             "labels": sorted(set(str(label) for label in self.train_labels)),
@@ -109,6 +123,7 @@ def train_model(
     labels: np.ndarray | list[str],
     algorithm: Algorithm = "knn",
     multiplier: float = 1.5,
+    margin: float = 1.0,
     *,
     groups: list[str] | np.ndarray | None = None,
 ) -> PrototypeGestureModel:
@@ -133,6 +148,8 @@ def train_model(
         raise ValueError("kNN training requires at least 5 samples")
     if not np.isfinite(multiplier) or multiplier <= 0:
         raise ValueError("rejection multiplier must be finite and positive")
+    if not np.isfinite(margin) or margin < 1.0:
+        raise ValueError("rejection margin must be finite and at least 1.0")
     unknown_labels = sorted(set(str(label) for label in label_vector) - set(LABELS))
     if unknown_labels:
         raise ValueError(f"unknown labels in training data: {unknown_labels}")
@@ -161,7 +178,8 @@ def train_model(
         train_features_scaled=scaled,
         train_labels=label_vector,
         thresholds=thresholds,
-        config=ModelConfig(algorithm=algorithm, multiplier=multiplier,
+        config=ModelConfig(algorithm=algorithm, multiplier=multiplier, margin=margin,
+                           model_version=MARGIN_MODEL_VERSION if margin > 1.0 else MODEL_VERSION,
                            rejection_reference="leave_one_trial_out" if groups is not None
                            else "leave_one_sample_out"),
         fit_seconds=fit_seconds,

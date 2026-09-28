@@ -16,3 +16,5 @@ releases/*.zip
 releases/*.json
 assets/*.task
 docs/qa/
+.local/
+~$*.docx

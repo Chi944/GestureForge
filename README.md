@@ -2,102 +2,57 @@
 
 # GestureForge
 
-**Personal gestures. Deliberate control.**
+### Personal gesture recognition for deliberate card navigation
 
-A local desktop AI prototype that learns personal hand poses<br>
-and advances a card viewer through intentional gesture holds.
+**ICT304 Assignment 1** · Python 3.11 · Local desktop prototype
 
-[![Assignment checks](https://github.com/Chi944/GestureForge_304/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/Chi944/GestureForge_304/actions/workflows/checks.yml)
-![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB)
-![Windows desktop](https://img.shields.io/badge/Platform-Windows-264459)
-![Assignment prototype](https://img.shields.io/badge/Release-Assignment_prototype-62D6AD)
-
-[Run the prototype](#getting-started) · [Pilot results](docs/evidence/PILOT_RESULTS.md) · [Design report](docs/ASSIGNMENT_REPORT.md) · [Agile board](https://github.com/users/Chi944/projects/1)
-
-<img src="docs/images/prototype.png" alt="GestureForge desktop application showing a card deck, camera-off preview, prediction and controller status, and manual controls" width="960">
-
-<sub>Actual Windows application, captured with the camera off. This image shows the interface; live gesture evidence is recorded separately in the pilot results.</sub>
+[Technical report](docs/submission/GestureForge_Technical_Report.docx) · [Run the app](#run-the-prototype) · [Results](docs/evidence/RESULTS.md) · [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
 
 </div>
 
----
+![GestureForge assignment interface](docs/images/prototype.png)
 
-## Assignment at a glance
+GestureForge recognises four personally enrolled static hand poses using webcam landmarks and compares **kNN with RBF SVM**. A hold-and-rearm controller turns a deliberate NEXT pose into one card advance. Processing stays on the computer; normal use does not record camera images or video.
 
-| | |
+The assignment controls its own supplied ten-card deck. **It is not connected to PowerPoint.**
+
+| Gesture | Assignment behaviour |
 | :--- | :--- |
-| **Unit** | ICT304 |
-| **Assignment deadline** | 3 October 2026 |
-| **Final project deadline** | 7 November 2026 |
-| **Assignment deliverable** | Personal gesture-recognition subsystem and NEXT-only card viewer |
-| **AI techniques** | k-nearest neighbours and RBF support vector machine, compared with identical features and scaling |
-| **Verified behaviour** | Real webcam-to-NEXT integration; participant-confirmed two-hold smoke check with neutral rearming |
-| **Pilot evidence** | One participant, 72 trials and 360 valid samples across separate training, validation and negative sessions |
-| **Submission status** | Prototype evidence recorded; report remains a draft and [assignment submission gates](docs/SUBMISSION_CHECKLIST_ASSIGNMENT.md) remain open |
+| NEUTRAL | Arms control after a stable hold and rearms between commands |
+| NEXT | Advances one card per continuous hold |
+| PREVIOUS / BOOKMARK | Recognition preview only; no viewer action |
+| Unrecognised or invalid hand | No command; return to the enrolled neutral pose |
 
-The assignment and final project are two releases of this codebase. The final project adds substantial functionality and broader evaluation; its features are not claimed as implemented here.
+## Run the prototype
 
-## Contents
+Use **64-bit Python 3.11 on an Intel/AMD Windows laptop**. Initial installation needs internet. macOS compatibility has not been verified for this pinned release.
 
-[Prototype](#what-the-prototype-does) · [Setup](#getting-started) · [Architecture](#how-it-works) · [Results](#results-and-limitations) · [Verification](#verification-and-reproducibility) · [Assessment](#assessment-evidence) · [Roadmap](#roadmap-and-next-steps) · [Credits](#project-structure-and-credits)
-
----
-
-## What the prototype does
-
-GestureForge supports a presenter or learner moving through a short deck without touching a mouse or keyboard. It recognises static poses from one enrolled hand and requires a deliberate activation sequence before moving a card.
-
-| Pose label | Assignment behaviour | P01 pilot pose |
-| :--- | :--- | :--- |
-| **NEUTRAL** | Arms or rearms control after a 300 ms hold | Open palm |
-| **NEXT** | Advances one card after a 400 ms hold | Closed fist |
-| **PREVIOUS** | Recognition preview only | Thumb up |
-| **BOOKMARK** | Recognition preview only | Index and middle fingers raised |
-
-The viewer stays latched after an action until neutral rearming. Tracking loss and stale observations require neutral again. Pause stops camera control; mouse and keyboard controls remain available. Navigation does not wrap at deck boundaries.
-
-These are personal example poses, not a universal gesture vocabulary or sign-language translation system.
-
-## Getting started
-
-### 1. Install and open the viewer
-
-Requirements: **Intel/AMD Windows**, **64-bit Python 3.11**, and internet access for initial dependency and model setup. A webcam is needed for collection and live recognition.
-
-Open PowerShell in the repository folder:
+Extract the source ZIP or clone this repository, then open PowerShell in its folder:
 
 ```powershell
 .\setup.cmd
 .\run.cmd
 ```
 
-Setup installs the pinned dependencies and verifies the pretrained hand-landmark asset. If Python is not registered with the Windows launcher, supply its path with `-PythonExe`, for example `.\setup.cmd -PythonExe "C:\Path\To\python.exe"`; see the [user guide](docs/USER_GUIDE.md).
+This opens the keyboard-only viewer. **A connected webcam does not enable Start camera control until a personal dataset is loaded.** Use the Next card button or Right arrow to try the deck without a camera.
 
-A fresh clone opens the **manual card viewer**. Live recognition requires a personal dataset. Participant features are excluded from GitHub and the source archive; the [collection guide](docs/DATA_COLLECTION.md) explains how to record them.
-
-For another Intel/AMD Windows laptop, extract the source ZIP, install **64-bit Python 3.11**, then double-click `setup.cmd` and `run.cmd`. Follow the [Windows laptop guide](docs/WINDOWS_LAPTOP.md) for camera selection, personal enrolment and physical-device acceptance checks. Git is not required to use the ZIP. Create a new environment on each computer; do not copy `.venv`.
-
-### 2. Check the camera and launch the local pilot
-
-After the P01 dataset has been collected on this computer:
+For the enrolled P01 user on the development computer:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/check_environment.py --camera --camera-index 1
-.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1
+.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1
 ```
 
-Index `1` is the verified device on the development computer. Indices can change; select the working index on your machine and close other camera applications first. The shown rejection setting is provisional for P01, not automatically suitable for another participant.
+Camera indices can change. Close other camera applications and select the index that works on your computer. The source repository excludes P01's private samples; use the authorised private marker ZIP to reproduce P01, or follow the [collection instructions](docs/DATA_COLLECTION.md) to enrol your own hand in a separate folder. Never overwrite the retained P01 dataset.
 
-### 3. Demonstrate deliberate control
+1. Click **Start camera control** and show the enrolled NEUTRAL pose until READY.
+2. Hold the enrolled NEXT pose until the card changes. Continuing to hold must not advance again.
+3. Return to NEUTRAL before the next command.
+4. Press **Esc** or **Pause / camera off** to stop gesture control. Manual controls remain available.
 
-1. Click **Start camera control** and hold an open palm until **READY**.
-2. Make a fist until one card advances. Continue holding: the card should remain unchanged.
-3. Return to open palm, then make a fist for the next advance.
-4. Press **Esc** or **Pause / camera off** to pause. Use **Right arrow** or **Next card** for manual navigation.
+For P01, NEUTRAL was an open palm and NEXT was a fist. Another person's gestures must match their own collection. Keep the whole enrolled hand visible, still and similarly oriented to the training samples.
 
-The [complete user guide](docs/USER_GUIDE.md) includes collection, troubleshooting and installation details.
-
----
+[Full user guide](docs/USER_GUIDE.md) · [Second Windows laptop setup](docs/WINDOWS_LAPTOP.md)
 
 ## How it works
 
@@ -105,104 +60,89 @@ The [complete user guide](docs/USER_GUIDE.md) includes collection, troubleshooti
 flowchart LR
     A[Webcam] --> B[MediaPipe landmarks]
     B --> C[60 normalised features]
-    C --> D[kNN or SVM]
-    D --> E[Distance rejection]
-    E --> F[Hold and neutral rearm]
+    C --> D[kNN or RBF SVM]
+    D --> E[Rejection]
+    E --> F[Neutral arm and hold]
     F --> G[Fixed card viewer]
-    G --> H[Local event log]
 ```
 
-MediaPipe supplies the pretrained hand tracker. The project's AI work is feature preprocessing, personal classifier training, rejection calibration, technique comparison and activation-controller integration.
+MediaPipe supplies 21 hand landmarks. The project's work is the feature pipeline, personal classifier fitting and comparison, rejection calibration, controller and application integration. Wrist-relative world landmarks are scaled by wrist-to-middle-knuckle distance. The scaler is fitted only to TRAIN data. Entire trials remain within one recording split.
 
-- **Features:** wrist-relative world landmarks, scaled by wrist-to-middle-knuckle distance; 60 values per valid observation.
-- **Training:** `StandardScaler` fitted only on TRAIN data, then kNN or RBF SVM. Neighbouring frames are never randomly split across training and validation.
-- **Rejection:** class-specific distances calibrated from other training trials. The evaluation and live training paths pass trial IDs, so version 2 excludes the entire originating trial from reference neighbours.
-- **Storage:** numeric arrays and JSON configurations. Models are rebuilt on load; no pickle/joblib model loading.
-- **Responsiveness:** camera processing outside the GUI thread, with a single latest-result mailbox.
+Camera inference runs outside the UI thread with one latest-result mailbox. No hand, multiple hands, the wrong hand, invalid features and rejected predictions cannot dispatch a command. A held gesture fires once, and neutral is required before another action. The model is rebuilt from numeric arrays and JSON rather than loaded from executable pickle files.
 
-The [design report](docs/ASSIGNMENT_REPORT.md) documents interfaces, state transitions, requirements and technique rationale.
+## Results and limits
 
-## Results and limitations
+The recommended live setting is **prototype-v3**, multiplier **2.0**, ambiguity margin **1.5**. The comparison below uses the same saved P01 development sessions:
 
-### Preliminary development validation
-
-| Classifier | Trial macro-F1 | Correct validation trials | Rejection multiplier |
+| Setting | kNN / SVM trial macro-F1 | Correct trials | Unfamiliar samples accepted as command labels |
 | :--- | ---: | ---: | ---: |
-| kNN, 5 neighbours, distance weighting | **0.9686** | 31 / 32 | 2.0 |
-| RBF SVM, C = 1, gamma = scale | **0.9686** | 31 / 32 | 2.0 |
+| Historical distance-only v2 | 0.9686 / 0.9686 | 31 / 32 | 25 / 40 |
+| Recommended v3 with ambiguity rejection | 0.9667 / 0.9667 | 30 / 32 | 5 / 40 |
 
-Training and validation were separate recording sessions from **one consenting participant using the right hand**. Each enrolled label had eight trials per session and five scheduled samples per trial. Eight additional unfamiliar-pose trials supplied 40 negative samples.
+The improved model rejects 25/40 unfamiliar samples as UNKNOWN; 5 are still accepted as BOOKMARK and 10 as NEUTRAL. Two genuine trials become UNKNOWN (one NEXT, one NEUTRAL), and no validation trial is assigned to the wrong known class. This is an observed trade-off, not a perfect unknown detector. Fresh live validation of v3 remains pending.
 
-These are development results: validation feedback informed the rejection correction. They do not establish untouched test performance, performance on unenrolled users, or the final project's live false-action target.
+One consenting participant supplied 160 training and 160 validation samples in separate sessions, plus 40 unfamiliar-pose samples. These are **development-validation results**, not untouched test results or performance on unenrolled people. Timing and per-class results are in the [consolidated evidence](docs/evidence/RESULTS.md).
 
-Trial scores require at least three matching predictions from five scheduled slots; missing, invalid and rejected samples count as UNKNOWN. Macro-F1 averages the four enrolled labels; unfamiliar-pose samples are measured separately.
+Unfamiliar gestures should display **Unrecognised**. PREVIOUS and BOOKMARK are not fallback labels. However, a classifier can mistake an unfamiliar pose for a known pose: the historical model accepted 25/40 negative samples as BOOKMARK and 10/40 as NEUTRAL. Zero NEXT predictions in those samples does not prove zero live false actions. The v3 comparison above records the improvement separately from this historical baseline.
 
-**Known limitation:** 25 of 40 unfamiliar-pose samples were accepted as BOOKMARK; another 10 were accepted as NEUTRAL at multiplier 2.0. None were accepted as NEXT, but those offline sample counts do not measure live actions or prove zero unintended actions. BOOKMARK remains preview-only. The earlier over-rejecting baseline, correction, confusion matrix and per-class results are preserved in the [pilot evidence](docs/evidence/PILOT_RESULTS.md).
+P01 confirmed two held NEXT gestures each advanced once after neutral rearming. P02 reported successful assisted ZIP use on another laptop, NEXT traversal from card 1 to 10, and one action during a five-second hold. P02's exact release/environment and guide-only installation, pause/restart and disconnected-network checks remain unverified. Orientation, movement, framing and distance remain limitations.
 
-## Verification and reproducibility
-
-The recorded 27 September verification includes **60 passing tests**, Ruff, mypy across application, scripts and tests, offscreen GUI startup/shutdown without a camera, and synthetic evaluation. The extracted source copy also passed in a separate environment on the same computer. These software checks do not establish live gesture performance. [P02 feedback recorded on 26 September](docs/evidence/P02_LAPTOP_TEST.md) reports successful ZIP use with Codex assistance and a separate personal dataset; version details, guide-only installation, pause/restart and disconnected-network checks remain open in the [physical-laptop acceptance record](docs/WINDOWS_LAPTOP.md#6-physical-laptop-acceptance-record).
+## Verify and reproduce
 
 ```powershell
-# Software checks; synthetic results are software evidence only
+# Automated tests, lint, type checks, GUI smoke and synthetic software checks
 .\.venv\Scripts\python.exe scripts/verify.py
 
-# Participant comparison, when the local dataset is available
+# Reproduce the recommended v3 comparison from the private P01 package
+.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/reproduced-pilot-v3.json
+
+# Historical v2 comparison remains reproducible
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
 ```
 
-| Evidence | What it establishes |
+[Recorded software checks](docs/evidence/verification.json) distinguish automated verification from live hardware evidence. Synthetic fixtures test the software; they are not human recognition results.
+
+## Submission map
+
+| What the marker needs | Location |
 | :--- | :--- |
-| [Software checks](docs/evidence/verification.json) | Dated commands, runtime/library versions and automated results |
-| [Clean-install checks](docs/evidence/CLEAN_INSTALL.md), [setup script check](docs/evidence/SETUP_CHECK.md) | Extracted-source verification, fresh setup and their limits |
-| [Windows laptop package check](docs/evidence/WINDOWS_LAPTOP_CHECK.md) | Same-computer fresh ZIP installation in a path with spaces, model inference and launcher verification |
-| [P02 laptop feedback](docs/evidence/P02_LAPTOP_TEST.md) | Participant-reported assisted use on another laptop; qualitative evidence with remaining release checks |
-| [Hardware and live checks](docs/evidence/HARDWARE_CHECK.md) | Camera operation, personal collection and live NEXT observations |
-| [Pilot comparison](docs/evidence/PILOT_RESULTS.md) | Initial and corrected results, rejection trade-offs and reproduction command |
-| [Review record](docs/evidence/REVIEW.md) | Confirmed findings and follow-up review |
+| Problem, requirements, lifecycle, architecture, technique investigation and results | [Word technical report](docs/submission/GestureForge_Technical_Report.docx) |
+| Requirement to test mapping and planned full-system evaluation | [Test plan](docs/TEST_PLAN.md) |
+| Measured pilot and qualitative hardware/laptop evidence | [Results](docs/evidence/RESULTS.md) |
+| Installation, operation and data protocol | [User guide](docs/USER_GUIDE.md), [Windows guide](docs/WINDOWS_LAPTOP.md), [collection protocol](docs/DATA_COLLECTION.md) |
+| AI assistance declaration and preserved prompts | [prompt_log.md](prompt_log.md) |
+| Decisions, alternatives, risks and scope boundaries | [decision_log.md](decision_log.md) |
+| Agile tools and progress | [Agile record](docs/AGILE.md), [backlog snapshot](docs/backlog.csv) |
+| Team contributions and required declaration | [Contribution record](docs/CONTRIBUTIONS.md), [official unsigned form](docs/submission/Group_Declaration_TO_COMPLETE.docx) |
+| Dependencies, sources and reproducibility | [Licences and references](LICENSES.md), [requirements.lock](requirements.lock), [model manifest](assets/model_manifest.json) |
 
-## Assessment evidence
+**Before submission:** complete full team identifiers, actual contributions and agreed percentages, tutor/AI-use review, retention arrangements, remaining laptop checks, report review and signatures. Keep the signed declaration and private data in the private LMS package. Verify the downloaded LMS upload. These human steps have not been completed by automated software checks.
 
-| Marker task | Start here |
+## Assignment and project boundary
+
+| Assignment due 3 October 2026 | Project extension due 7 November 2026 |
 | :--- | :--- |
-| Problem, requirements, design and technique investigation | [Assignment design report](docs/ASSIGNMENT_REPORT.md) |
-| Requirements mapped to implemented and planned tests | [Test plan and traceability](docs/TEST_PLAN.md) |
-| Assessment coverage and remaining gates | [Assessment audit](docs/ASSESSMENT_AUDIT.md) |
-| Data collection and consent boundaries | [Collection protocol](docs/DATA_COLLECTION.md) |
-| Lifecycle, scope and schedule | [Build plan](docs/BUILD_PLAN.md) |
-| Agile progress and decisions | [Agile method](docs/AGILE.md), [GitHub board](https://github.com/users/Chi944/projects/1), [decision/risk log](docs/DECISIONS_AND_RISKS.md) |
-| Tool assistance, contributions and attribution | [AI-use record](AI_PROMPTS.md), [contributions](docs/CONTRIBUTIONS.md), [dependency/model sources](LICENSES.md) |
-| Submission package preparation | [Assignment checklist](docs/SUBMISSION_CHECKLIST_ASSIGNMENT.md) |
+| Command-line personal collection | In-app enrolment and practice |
+| Four labels with NEXT execution | PREVIOUS and BOOKMARK execution |
+| Fixed supplied deck | Validated custom JSON decks |
+| Local numeric dataset and configuration | Multiple profile creation, reload and deletion |
+| Preliminary comparison and controller tests | Saved deck state and bookmarks; held-out two-profile and full-system evaluation |
 
-## Roadmap and next steps
+Dynamic gestures, sign-language translation, two-handed commands, PowerPoint/OS control, cloud accounts, mobile apps and an installer are outside the committed scope.
 
-| Assignment prototype — 3 October | Final project extension — 7 November |
-| :--- | :--- |
-| CLI enrolment for one participant | Guided in-app enrolment and practice |
-| Four recognised labels; NEXT executes | PREVIOUS and BOOKMARK also execute |
-| One fixed ten-card deck stored as JSON | User-selected, validated JSON decks and saved bookmarks/position |
-| Local dataset and configurations | Multiple local profiles with create/reload/delete |
-| Preliminary comparison and live smoke checks | Refined rejection, two personal profiles, held-out and full-system evaluation |
-
-**Next:** finish the remaining laptop checks, confirm tutor/team and retention details, review the report, obtain the signed declaration, and verify the LMS upload. The [next-steps checklist](docs/ASSIGNMENT_NEXT_STEPS.md) distinguishes repository work from tasks needing people or another device.
-
-Dynamic gestures, two-handed commands, OS/PowerPoint control, cloud accounts, mobile apps and an executable installer are outside the committed scope.
-
-## Project structure and credits
+## Repository layout
 
 ```text
-gestureforge/    App, camera, features, models, controller and evaluation
-tests/          Automated checks for implemented assignment subsystems
-assets/         Fixed deck and pretrained-model manifest
-experiments/    Reproducible experiment configurations
-scripts/        Setup, verification, agile board and source packaging
-docs/           Report, guides, traceability, evidence and checklists
-data/local/     Private participant features; ignored by Git
-releases/       Locally generated source archives; ignored by Git
+gestureforge/       Application and AI subsystem
+tests/              Automated regression checks
+assets/             Supplied deck and model provenance
+experiments/        Reproducible configurations
+scripts/            Setup, verification and packaging
+docs/               Final report, guides, traceability and evidence
+prompt_log.md       Preserved user prompts and AI declaration
+decision_log.md     Decisions and risks
 ```
 
-Jameson and Deston are the supplied names. Full identifiers, verified responsibilities and signatures must be completed from actual contributions in [CONTRIBUTIONS.md](docs/CONTRIBUTIONS.md). AI-assisted implementation and documentation are disclosed in [AI_PROMPTS.md](AI_PROMPTS.md). MediaPipe, OpenCV, PySide6, NumPy and scikit-learn provide the underlying libraries; their sources and licences are recorded in [LICENSES.md](LICENSES.md).
+Private data, environments, generated ZIPs and local working archives are ignored by Git. Redundant drafts, older PDFs and internal checklists are retained locally rather than included in the graded source. See [release instructions](releases/README.md) for the source and authorised private marker packages.
 
-The generated source archive is **not the complete assignment submission**. Participant evidence may be included only with appropriate permission, and the reviewed report and signed declaration must be packaged separately.
-
-The [submission inventory](docs/SUBMISSION_README.md) lists the report, logs, guides, evidence and unchanged unsigned declaration template, with remaining human signoffs.
+Jameson and Deston are the supplied team names; verified responsibilities and full identifiers remain pending. Codex assistance is disclosed in the prompt log. MediaPipe, OpenCV, PySide6, NumPy and scikit-learn are credited in the licence record.

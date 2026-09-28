@@ -1,6 +1,6 @@
 # GestureForge Test Plan and Requirement Traceability
 
-Status: software verification is recorded in `docs/evidence/verification.json`; live camera, participant pilot, real NEXT actions, and a two-hold live smoke check are recorded in `docs/evidence/PILOT_RESULTS.md`. Fresh-source setup and an actual Windows interface screenshot are also recorded. P02 independently reported the core laptop workflow working on 26 September; see `docs/evidence/P02_LAPTOP_TEST.md`. Pause/restart, offline use and guide-only installation remain unverified. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
+Status: software verification is recorded in `docs/evidence/verification.json`; live camera, P01 pilot results, real NEXT actions, setup/package checks, and P02 qualitative feedback are consolidated in `docs/evidence/RESULTS.md`. Pause/restart, offline use and guide-only installation remain unverified. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
 
 ## Test Strategy
 
@@ -21,7 +21,7 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | RQ-003 Labelled collection | CLI collection smoke test and manifest check; P01 TRAIN, VALIDATION and validation-negative sessions collected | GUI enrolment tests | Assignment pilot collected |
 | RQ-004 60-feature extraction | Unit test for shape and wrist removal | Same | Software verified |
 | RQ-005 Invalid hand rejection | Unit tests for no hand, multiple hands, wrong hand, non-finite values, degenerate scale | Same with UI recovery | Software verified |
-| RQ-006 kNN/SVM comparison | Reproducible evaluate command output; aggregate pilot metrics in `docs/evidence/PILOT_RESULTS.md` | Bounded search evidence | Development validation complete; held-out final pending |
+| RQ-006 kNN/SVM comparison | Reproducible evaluate command output; aggregate pilot metrics in `docs/evidence/RESULTS.md` | Bounded search evidence | Development validation complete; held-out final pending |
 | RQ-007 Hold/rearm controller | State-machine unit tests | Live replay and system tests | Software verified |
 | RQ-008 Assignment NEXT only | Viewer/controller integration test; live NEXT event log | Superseded by all-command tests | Verified for assignment live path |
 | RQ-009 Exactly-once actions | Duplicate event and long-hold tests; two live deliberate holds advanced once each | Twenty five-second holds per profile | Software verified plus assignment live smoke check; formal run reserved for final project |
@@ -71,16 +71,16 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | Camera check | `python scripts/check_environment.py --camera --camera-index 1` on current machine; index may vary elsewhere | Terminal output and camera notes |
 | Model asset download | `python scripts/download_model.py` | Asset path and checksum note |
 | App launch | `python -m gestureforge --smoke-test --screenshot docs/evidence/app-smoke.png` | Screenshot or terminal output |
-| Live app with human dataset | `python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --camera 1` | Screenshot, local event log, and camera notes; do not publish raw event log if it contains local identifiers |
+| Live app with human dataset | `python -m gestureforge --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1` | Screenshot, local event log, and camera notes; do not publish raw event log if it contains local identifiers |
 | Collection path | `python -m gestureforge.collect --camera 1 --split train --participant P01 --hand Right --setup "desk lighting, plain background" --consent --output data/local/pilot` | Manifest and aggregate data summary; do not publish feature rows |
 | Evaluation path | `python -m gestureforge.evaluate --config <path>` | JSON or CSV result |
 | UI launch | `python -m gestureforge` | Screenshot and notes |
 | Live NEXT | Webcam NEXT advances fixed deck; P01 deliberate holds and P02 reported five-second hold advance once after rearm | Short screen recording, participant-observed note, or local event log |
 | Tests | `python -m pytest` | Test output |
-| Board render | `python scripts/board.py` | `docs/SPRINT_BOARD.html` and optional `docs/sprint_events.jsonl` |
+| Agile board | Read the private Trello board linked in `docs/AGILE.md` | Verified board URL, `docs/backlog.csv` snapshot and `docs/sprint_events.jsonl` |
 | Source package | `python scripts/package_release.py` | ZIP manifest JSON and note that it is source only |
 
-The latest software verification summary is stored in `docs/evidence/verification.json`. It records the current exact test count and static-check results; use that file instead of manually copying counts into the final submission.
+The latest software verification summary is stored in `docs/evidence/verification.json`. Consolidated human, package and limitation evidence is stored in `docs/evidence/RESULTS.md`. Use those files instead of manually copying counts into the final submission.
 
 ## Final Project Integration Checks
 
@@ -142,7 +142,7 @@ Config for a data-local manifest:
 }
 ```
 
-Config for collected human pilot data:
+Historical distance-only P01 configuration (v2):
 
 ```json
 {
@@ -152,6 +152,8 @@ Config for collected human pilot data:
 }
 ```
 
-Supported keys are `dataset_path`, `dataset_paths`, `synthetic_fixture`, `algorithm`, `algorithms`, and `rejection_multiplier`.
+Supported keys are `dataset_path`, `dataset_paths`, `synthetic_fixture`, `algorithm`, `algorithms`, `rejection_multiplier`, and `rejection_margin`.
 
 Do not create participant records before consent exists.
+
+The revised P01 configuration is `experiments/pilot-rejection.json`, with multiplier 2.0 and margin 1.5. Regressions cover ambiguous-pose rejection, invalid margin settings, evaluator propagation, and GUI rejection feedback without viewer action. Live v3 recognition/rearm must be retested before treating prior v2 live observations as evidence for the revised model. Historical configurations without a margin retain margin 1.0 for reproducibility; live launches default to margin 1.5.

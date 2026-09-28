@@ -22,6 +22,7 @@ def test_evaluate_config_reports_both_algorithms_for_synthetic_fixture() -> None
         {
             "algorithms": ["knn", "svm"],
             "rejection_multiplier": 1.5,
+            "rejection_margin": 1.2,
             "synthetic_fixture": {
                 "trials_per_label_per_split": 2,
                 "samples_per_trial": 5,
@@ -32,6 +33,7 @@ def test_evaluate_config_reports_both_algorithms_for_synthetic_fixture() -> None
 
     assert result["dataset"]["metadata"]["provenance"] == "SYNTHETIC"
     assert [entry["algorithm"] for entry in result["results"]] == ["knn", "svm"]
+    assert all(entry["model"]["margin"] == 1.2 for entry in result["results"])
     assert all(entry["metrics"]["macro_f1"] == 1.0 for entry in result["results"])
 
 

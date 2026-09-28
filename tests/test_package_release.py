@@ -23,6 +23,18 @@ def test_source_package_excludes_untracked_private_data(tmp_path, monkeypatch):
     assert not any(name.startswith("gestureforge/data/local/") for name in names)
 
 
+@pytest.mark.parametrize("folder", [".local", ".cache"])
+def test_source_package_refuses_accidentally_tracked_working_files(tmp_path, folder):
+    root = _source_repo(tmp_path)
+    local = root / folder / "working-notes.md"
+    local.parent.mkdir()
+    local.write_text("Not a submission artifact", encoding="utf-8")
+    subprocess.run(["git", "add", str(local)], cwd=root, check=True)
+
+    with pytest.raises(SystemExit, match="review before packaging"):
+        package_release._tracked_source_files(root)
+
+
 def test_include_pilot_private_package_adds_only_manifest_and_referenced_features(
     tmp_path, monkeypatch
 ):

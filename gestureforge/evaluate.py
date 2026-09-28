@@ -25,9 +25,10 @@ def evaluate_config(config: dict[str, Any]) -> dict[str, Any]:
     bundle = _load_config_dataset(config)
     algorithms = config.get("algorithms") or [config.get("algorithm", "knn")]
     multiplier = float(config.get("rejection_multiplier", 1.5))
+    margin = float(config.get("rejection_margin", 1.0))
     results = []
     for algorithm in algorithms:
-        results.append(evaluate_algorithm(bundle, str(algorithm), multiplier))
+        results.append(evaluate_algorithm(bundle, str(algorithm), multiplier, margin))
     return {
         "dataset": {
             "manifest_path": None if bundle.manifest_path is None else str(bundle.manifest_path),
@@ -39,13 +40,14 @@ def evaluate_config(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def evaluate_algorithm(
-    bundle: DatasetBundle, algorithm: str = "knn", multiplier: float = 1.5
+    bundle: DatasetBundle, algorithm: str = "knn", multiplier: float = 1.5, margin: float = 1.0
 ) -> dict[str, Any]:
     train_features, train_labels, train_records = bundle.training_data()
     _validate_assignment_evaluation_bundle(bundle)
     if len(train_features) == 0:
         raise ValueError("dataset has no valid training samples")
     model = train_model(train_features, train_labels, algorithm=algorithm, multiplier=multiplier,  # type: ignore[arg-type]
+                        margin=margin,
                         groups=[record.trial_id for record in train_records])
 
     validation_records = tuple(record for record in bundle.records if record.split == "validation")

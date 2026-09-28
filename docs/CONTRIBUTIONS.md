@@ -1,6 +1,6 @@
 # GestureForge team and contribution record
 
-Updated 27 September 2026. The user confirmed the names **Jameson** and **Deston**, and use of **GitHub** and **WhatsApp**. The user explicitly left the remaining team details pending. Names are recorded as supplied; surnames, legal/full names and participant identities are not inferred.
+Updated 28 September 2026. On 27 September, the user confirmed the names **Jameson** and **Deston**, and use of **GitHub** and **WhatsApp**. The user explicitly left the remaining team details pending. Names are recorded as supplied; surnames, legal/full names and participant identities are not inferred.
 
 ## Team details awaiting confirmation
 
@@ -15,16 +15,16 @@ Group name, tutorial membership, team registration and tutor feedback are pendin
 
 | Category | Established use | Evidence and remaining detail |
 | --- | --- | --- |
-| Project management | GitHub Issues/Projects and local sprint backlog | [Agile record](AGILE.md), [GitHub setup](GITHUB_SETUP.md), [local board](SPRINT_BOARD.html); human sprint reviews and ownership pending |
+| Project management | Trello sprint board, GitHub repository and local backlog snapshot | [Agile record](AGILE.md), [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project), `docs/backlog.csv`, [results evidence](evidence/RESULTS.md); human sprint reviews and ownership pending |
 | Version control | Git and private GitHub repository on main | Git history/source package; distinguish substantial AI assistance from human authorship |
 | Collaboration | GitHub, confirmed by user on 27 September | Member-specific edits, reviews and coordination examples pending |
 | Communication | WhatsApp, confirmed by user on 27 September | Discussion dates, participants and factual summaries pending; no chat transcript or meeting is claimed |
 
 ## Recorded assistance and observations
 
-- Codex assisted substantially with planning, source, tests, troubleshooting, documentation, release checks and GitHub/agile setup. See [AI assistance record](../AI_PROMPTS.md). These are tool-use records, not completed student contributions.
+- Codex assisted substantially with planning, source, tests, troubleshooting, documentation, release checks and GitHub/agile setup. See [prompt log](../prompt_log.md) and [decision log](../decision_log.md). These are tool-use records, not completed student contributions.
 - P01 provided numeric right-hand samples and confirmed the two-hold NEXT retest. P02 supplied the qualitative laptop-use report. Linking those pseudonyms to named team members requires confirmation.
-- The user supplied directions and confirmations in the [prompt log](AI_PROMPT_APPENDIX.md). The identity and division of named team members' work remain unconfirmed.
+- The user supplied directions and confirmations in the [prompt log](../prompt_log.md). The identity and division of named team members' work remain unconfirmed.
 
 ## Complete before signing
 

@@ -10,6 +10,7 @@ def main():
     parser.add_argument("--dataset", type=Path, help="Human collection manifest; omitted for keyboard-only viewer")
     parser.add_argument("--algorithm", choices=["knn", "svm"], default="knn")
     parser.add_argument("--multiplier", type=float, default=1.5)
+    parser.add_argument("--margin", type=float, default=1.5)
     parser.add_argument("--camera", type=int, default=0)
     parser.add_argument("--smoke-test", action="store_true", help="Render and close without using the camera")
     parser.add_argument("--screenshot", type=Path, help="Save the app's own window during --smoke-test")
@@ -37,9 +38,12 @@ def main():
             profile = next(iter(participants))
             hand = bundle.metadata.get("chosen_hand", "Right")
             features, labels, records = bundle.training_data()
-            model = train_model(features, labels, args.algorithm, args.multiplier,
+            model = train_model(features, labels, args.algorithm, args.multiplier, args.margin,
                                 groups=[record.trial_id for record in records])
-            note = f"Personal dataset: {profile} • {hand} hand • {args.algorithm.upper()} • local processing"
+            note = (
+                f"Personal dataset: {profile} • {hand} hand • {args.algorithm.upper()} "
+                f"• margin {args.margin:g} • local processing"
+            )
         except (OSError, ValueError, KeyError) as exc:
             parser.exit(1, f"Cannot load gesture dataset: {exc}\n")
     app = QApplication(sys.argv[:1])

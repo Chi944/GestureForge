@@ -61,8 +61,24 @@ def _frame():
     return np.zeros((8, 8, 3), dtype=np.uint8)
 
 
-def _prediction(window: Window, frame_id: int, timestamp: float, label: str) -> Prediction:
-    return Prediction(window.controller.session_id, "pilot", frame_id, timestamp, label, True)
+def _prediction(
+    window: Window,
+    frame_id: int,
+    timestamp: float,
+    label: str,
+    *,
+    accepted: bool = True,
+    reason: str = "",
+) -> Prediction:
+    return Prediction(
+        window.controller.session_id,
+        "pilot",
+        frame_id,
+        timestamp,
+        label,
+        accepted,
+        rejection_reason=reason,
+    )
 
 
 def _disable_logging(window: Window) -> None:
@@ -75,16 +91,33 @@ def test_window_starts_keyboard_only_and_deck_controls_work(qapp) -> None:
 
     try:
         assert window.start_button.isEnabled() is False
+        assert "no gesture dataset loaded" in window.prediction.text()
+        assert "--dataset" in window.detail.text()
         assert window.viewer.position == 0
-        assert "1 OF 10" in window.position.text()
+        assert window.card_badge.text() == "1"
+        assert "GESTUREFORGE ASSIGNMENT DEMO" in window.deck_label.text()
+        assert "Card 1 of 10" in window.position.text()
+        assert "card-01" not in window.position.text()
+        assert window.deck_progress.value() == 1
+        assert window.card_topic.text() == "Topic: Start"
+        assert window.card_title.text() == "Start"
 
         window.next_card()
         assert window.viewer.position == 1
-        assert "2 OF 10" in window.position.text()
+        assert window.card_badge.text() == "2"
+        assert "Card 2 of 10" in window.position.text()
+        assert window.deck_progress.value() == 2
+        assert window.card_topic.text() == "Topic: Personal Setup"
+        assert window.card_title.text() == "Personal Setup"
+        assert "Now showing Personal Setup (from Start)." in window.feedback.text()
+        assert window.card_badge.styleSheet()
+        assert window.card_frame.styleSheet()
 
         window.restart_deck()
         assert window.viewer.position == 0
-        assert "1 OF 10" in window.position.text()
+        assert window.card_badge.text() == "1"
+        assert "Card 1 of 10" in window.position.text()
+        assert window.deck_progress.value() == 1
     finally:
         window.close()
 
@@ -119,8 +152,11 @@ def test_window_poll_executes_next_only_after_neutral_and_hold(monkeypatch, qapp
             window.poll()
 
         assert window.viewer.position == 1
-        assert "NEXT gesture accepted" in window.feedback.text()
-        assert "2 OF 10" in window.position.text()
+        assert "NEXT accepted" in window.feedback.text()
+        assert "Personal Setup" in window.feedback.text()
+        assert "Start" in window.feedback.text()
+        assert window.card_badge.text() == "2"
+        assert "Card 2 of 10" in window.position.text()
     finally:
         window.close()
 
@@ -138,7 +174,33 @@ def test_window_pause_blocks_pending_worker_prediction_from_moving_deck(qapp) ->
 
         assert worker.interrupted is True
         assert window.viewer.position == 0
-        assert "1 OF 10" in window.position.text()
+        assert "Card 1 of 10" in window.position.text()
+    finally:
+        window.close()
+
+
+def test_window_shows_rejection_guidance_without_moving_deck(qapp) -> None:
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60))
+    _disable_logging(window)
+    window.controller.resume("live-session")
+    window.worker = FakeWorker([
+        (_frame(), _prediction(
+            window,
+            1,
+            time.monotonic(),
+            "BOOKMARK",
+            accepted=False,
+            reason="margin_rejection",
+        )),
+    ])
+
+    try:
+        window.poll()
+
+        assert window.viewer.position == 0
+        assert window.prediction.text() == "Prediction: Unrecognised"
+        assert "too similar to another gesture" in window.detail.text()
+        assert "margin_rejection" not in window.detail.text()
     finally:
         window.close()
 

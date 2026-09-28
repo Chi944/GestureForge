@@ -1,0 +1,9 @@
+{
+  "algorithms": [
+    "knn",
+    "svm"
+  ],
+  "dataset_path": "data/local/pilot/manifest.json",
+  "rejection_margin": 1.5,
+  "rejection_multiplier": 2.0
+}
