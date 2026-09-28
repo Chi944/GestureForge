@@ -6,7 +6,7 @@
 
 **ICT304 Assignment 1** · Python 3.11 · Local desktop prototype
 
-[Technical report](docs/submission/GestureForge_Technical_Report.docx) · [Run the app](#run-the-prototype) · [Results](docs/evidence/RESULTS.md) · [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
+[Run the app](#run-the-prototype) · [Results](docs/evidence/RESULTS.md) · [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
 
 </div>
 
@@ -21,7 +21,8 @@ The assignment controls its own supplied ten-card deck. **It is not connected to
 | NEUTRAL | Arms control after a stable hold and rearms between commands |
 | NEXT | Advances one card per continuous hold |
 | PREVIOUS / BOOKMARK | Recognition preview only; no viewer action |
-| Unrecognised or invalid hand | No command; return to the enrolled neutral pose |
+| Unrecognised pose | No command; brief transitions preserve readiness, persistent rejection requires NEUTRAL |
+| Invalid or lost hand | No command; show NEUTRAL again |
 
 ## Run the prototype
 
@@ -79,7 +80,7 @@ The recommended live setting is **prototype-v3**, multiplier **2.0**, ambiguity 
 | Historical distance-only v2 | 0.9686 / 0.9686 | 31 / 32 | 25 / 40 |
 | Recommended v3 with ambiguity rejection | 0.9667 / 0.9667 | 30 / 32 | 5 / 40 |
 
-The improved model rejects 25/40 unfamiliar samples as UNKNOWN; 5 are still accepted as BOOKMARK and 10 as NEUTRAL. Two genuine trials become UNKNOWN (one NEXT, one NEUTRAL), and no validation trial is assigned to the wrong known class. This is an observed trade-off, not a perfect unknown detector. Fresh live validation of v3 remains pending.
+The improved model rejects 25/40 unfamiliar samples as UNKNOWN; 5 are still accepted as BOOKMARK and 10 as NEUTRAL. Two genuine trials become UNKNOWN (one NEXT, one NEUTRAL), and no validation trial is assigned to the wrong known class. This is an observed trade-off, not a perfect unknown detector. The user confirmed two NEUTRAL-to-NEXT transitions each advanced once after the controller correction. Broader live evaluation remains pending.
 
 One consenting participant supplied 160 training and 160 validation samples in separate sessions, plus 40 unfamiliar-pose samples. These are **development-validation results**, not untouched test results or performance on unenrolled people. Timing and per-class results are in the [consolidated evidence](docs/evidence/RESULTS.md).
 
@@ -106,7 +107,7 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 
 | What the marker needs | Location |
 | :--- | :--- |
-| Problem, requirements, lifecycle, architecture, technique investigation and results | [Word technical report](docs/submission/GestureForge_Technical_Report.docx) |
+| Problem, requirements, lifecycle, architecture, technique investigation and results | Local `GestureForge_Technical_Report.docx`, submitted separately |
 | Requirement to test mapping and planned full-system evaluation | [Test plan](docs/TEST_PLAN.md) |
 | Measured pilot and qualitative hardware/laptop evidence | [Results](docs/evidence/RESULTS.md) |
 | Installation, operation and data protocol | [User guide](docs/USER_GUIDE.md), [Windows guide](docs/WINDOWS_LAPTOP.md), [collection protocol](docs/DATA_COLLECTION.md) |
@@ -116,7 +117,11 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 | Team contributions and required declaration | [Contribution record](docs/CONTRIBUTIONS.md), [official unsigned form](docs/submission/Group_Declaration_TO_COMPLETE.docx) |
 | Dependencies, sources and reproducibility | [Licences and references](LICENSES.md), [requirements.lock](requirements.lock), [model manifest](assets/model_manifest.json) |
 
+The technical report, `Prompt_Log.docx` and `Decision_Log.docx` are separate local Word deliverables in `docs/submission/`, excluded from GitHub and both code ZIPs. Submit all three alongside the code and completed declaration. The Markdown logs above remain the source records; the technical report contains a concise AI-assistance declaration, not the full logs.
+
 **Before submission:** complete full team identifiers, actual contributions and agreed percentages, tutor/AI-use review, retention arrangements, remaining laptop checks, report review and signatures. Keep the signed declaration and private data in the private LMS package. Verify the downloaded LMS upload. These human steps have not been completed by automated software checks.
+
+BOOKMARK will mark the current card for later review in the final project, with bookmarks saved and restored with the deck state. Repeating BOOKMARK on the same card will not create duplicates. It does not advance a card; in this assignment it only displays recognition.
 
 ## Assignment and project boundary
 
@@ -138,7 +143,7 @@ tests/              Automated regression checks
 assets/             Supplied deck and model provenance
 experiments/        Reproducible configurations
 scripts/            Setup, verification and packaging
-docs/               Final report, guides, traceability and evidence
+docs/               Guides, traceability and evidence
 prompt_log.md       Preserved user prompts and AI declaration
 decision_log.md     Decisions and risks
 ```

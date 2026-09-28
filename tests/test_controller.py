@@ -10,6 +10,7 @@ def pred(
     timestamp: float,
     *,
     accepted: bool = True,
+    reason: str = "tracking lost",
     session: str = "s1",
 ) -> Prediction:
     return Prediction(
@@ -19,7 +20,7 @@ def pred(
         timestamp=timestamp,
         label=label,
         accepted=accepted,
-        rejection_reason="" if accepted else "tracking lost",
+        rejection_reason="" if accepted else reason,
     )
 
 
@@ -97,6 +98,55 @@ def test_changed_candidate_cancels_hold() -> None:
     assert controller.state == "CANDIDATE"
 
 
+def test_brief_classifier_rejection_after_ready_allows_retry() -> None:
+    controller = Controller("s1")
+    controller.resume()
+    frame = arm(controller)
+    session = controller.session_id
+
+    assert (
+        controller.process(
+            pred("NEXT", frame, 0.45, accepted=False, reason="margin_rejection", session=session),
+            0.45,
+        )
+        is None
+    )
+    assert controller.state == "READY"
+
+    event = hold_next(controller, frame + 1, 0.55)
+
+    assert event is not None
+    assert event.command == "NEXT"
+    assert controller.state == "LATCHED"
+
+
+def test_classifier_rejection_mid_candidate_restarts_full_hold() -> None:
+    controller = Controller("s1")
+    controller.resume()
+    frame = arm(controller)
+    session = controller.session_id
+
+    assert controller.process(pred("NEXT", frame, 0.45, session=session), 0.45) is None
+    assert (
+        controller.process(
+            pred("NEXT", frame + 1, 0.60, accepted=False, reason="margin_rejection", session=session),
+            0.60,
+        )
+        is None
+    )
+    assert controller.state == "READY"
+    assert controller.process(pred("NEXT", frame + 2, 0.65, session=session), 0.65) is None
+    assert controller.process(pred("NEXT", frame + 3, 0.84, session=session), 0.84) is None
+    assert controller.process(pred("NEXT", frame + 4, 1.03, session=session), 1.03) is None
+    assert controller.state == "CANDIDATE"
+
+    event = controller.process(pred("NEXT", frame + 5, 1.06, session=session), 1.06)
+
+    assert event is not None
+    assert event.command == "NEXT"
+    assert controller.state == "LATCHED"
+
+
 def test_preview_labels_do_not_unlatch() -> None:
     controller = Controller("s1")
     controller.resume()
@@ -105,6 +155,25 @@ def test_preview_labels_do_not_unlatch() -> None:
 
     assert hold_next(controller, frame, 0.45) is not None
     assert controller.process(pred("BOOKMARK", frame + 4, 1.00, session=session), 1.00) is None
+    assert controller.state == "LATCHED"
+
+
+def test_latched_classifier_rejection_jitter_cannot_retrigger() -> None:
+    controller = Controller("s1")
+    controller.resume()
+    frame = arm(controller)
+    session = controller.session_id
+
+    assert hold_next(controller, frame, 0.45) is not None
+    assert (
+        controller.process(
+            pred("NEXT", frame + 4, 1.00, accepted=False, reason="distance_rejection", session=session),
+            1.00,
+        )
+        is None
+    )
+    assert controller.state == "LATCHED"
+    assert controller.process(pred("NEXT", frame + 5, 1.10, session=session), 1.10) is None
     assert controller.state == "LATCHED"
 
 
@@ -130,6 +199,69 @@ def test_tracking_loss_and_gap_require_neutral_again() -> None:
     controller.process(pred("NEUTRAL", frame + 6, 1.36, session=session), 1.36)
     controller.process(pred("NEUTRAL", frame + 7, 1.52, session=session), 1.52)
     assert controller.state == "READY"
+
+
+def test_long_classifier_rejection_after_ready_expires_to_wait_neutral() -> None:
+    controller = Controller("s1")
+    controller.resume()
+    frame = arm(controller)
+    session = controller.session_id
+
+    for offset, timestamp in enumerate((0.45, 0.60, 0.76, 0.92)):
+        assert (
+            controller.process(
+                pred(
+                    "NEXT",
+                    frame + offset,
+                    timestamp,
+                    accepted=False,
+                    reason="distance_rejection",
+                    session=session,
+                ),
+                timestamp,
+            )
+            is None
+        )
+    assert controller.state == "READY"
+
+    assert (
+        controller.process(
+            pred("NEXT", frame + 4, 1.01, accepted=False, reason="distance_rejection", session=session),
+            1.01,
+        )
+        is None
+    )
+    assert controller.state == "WAIT_NEUTRAL"
+    assert controller.process(pred("NEXT", frame + 5, 1.10, session=session), 1.10) is None
+    assert controller.state == "WAIT_NEUTRAL"
+
+
+def test_accepted_next_after_expired_classifier_rejection_still_requires_neutral() -> None:
+    controller = Controller("s1")
+    controller.resume()
+    frame = arm(controller)
+    session = controller.session_id
+
+    for offset, timestamp in enumerate((0.45, 0.60, 0.76, 0.92)):
+        assert (
+            controller.process(
+                pred(
+                    "NEXT",
+                    frame + offset,
+                    timestamp,
+                    accepted=False,
+                    reason="margin_rejection",
+                    session=session,
+                ),
+                timestamp,
+            )
+            is None
+        )
+    assert controller.state == "READY"
+
+    assert controller.process(pred("NEXT", frame + 4, 1.10, session=session), 1.10) is None
+    assert controller.state == "WAIT_NEUTRAL"
+    assert controller.last_error == "classifier rejection grace expired"
 
 
 def test_stale_future_out_of_order_and_old_session_do_not_execute() -> None:

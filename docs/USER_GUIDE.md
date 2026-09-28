@@ -247,4 +247,11 @@ The final project guide will add profile creation, in-app practice, PREVIOUS and
 
 The live app defaults to ambiguity margin 1.5. For the revised P01 setting, pass both `--multiplier 2 --margin 1.5`. Accepted unfamiliar poses are recognition errors, not default PREVIOUS/BOOKMARK behaviour. Rejected poses display Unrecognised and cannot dispatch actions.
 
-The new `experiments/pilot-rejection.json` reproduces prototype-v3 macro-F1 0.9667 for both classifiers on P01 development validation. Historical `experiments/pilot.json` intentionally retains distance-only prototype-v2 (margin 1.0), macro-F1 0.9686. For exact historical live configuration pass `--margin 1`. The balanced update reduces unfamiliar command-label accepts from 25/40 to 5/40 but requires a fresh physical-camera retest. See the [result comparison](evidence/RESULTS.md).
+The new `experiments/pilot-rejection.json` reproduces prototype-v3 macro-F1 0.9667 for both classifiers on P01 development validation. Historical `experiments/pilot.json` intentionally retains distance-only prototype-v2 (margin 1.0), macro-F1 0.9686. For exact historical live configuration pass `--margin 1`. The balanced update reduces unfamiliar command-label accepts from 25/40 to 5/40 and the user confirmed the corrected NEUTRAL-to-NEXT transition twice. This remains smoke evidence, not formal live evaluation. See the [result comparison](evidence/RESULTS.md).
+
+
+## Transition recovery and BOOKMARK
+
+After a 300 ms NEUTRAL hold reaches READY, move directly into NEXT and hold it steadily for 400 ms. A classifier-only rejection during the transition cancels any partial NEXT hold but preserves readiness for up to 500 ms; the stable NEXT hold must start again from zero. Longer rejection, lost/wrong/multiple hands, stale observations or a camera fault require NEUTRAL again. Rejection while LATCHED cannot trigger a second action. If NEXT appears with WAIT NEUTRAL, show NEUTRAL until READY before retrying; removing the hand is unnecessary. Restart the app after installing this controller update.
+
+BOOKMARK is recognition preview only in the assignment. In the final project it will mark the current card for later review and persist that mark with saved deck state. Repeating it will keep one bookmark, without moving the card. It does not control PowerPoint.

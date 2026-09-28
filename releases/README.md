@@ -1,6 +1,6 @@
 # Release packages
 
-The graded source contains the application, tests, guides, final Word report, prompt and decision logs, traceability, measured evidence and unsigned declaration template. Participant samples, environments, working drafts and archived checklists stay out of GitHub and the source ZIP.
+The graded source contains the application, tests, guides, Markdown prompt and decision logs, traceability, measured evidence and unsigned declaration template. Participant samples, environments, working drafts and archived checklists stay out of GitHub and the source ZIP.
 
 After staging only reviewed submission files:
 
@@ -17,7 +17,7 @@ After staging only reviewed submission files:
 
 The private archive must not be attached to GitHub. P01 private marker sharing was authorised; the retention arrangement remains pending. No raw video or images are included. The downloaded landmark model is verified during online setup rather than redistributed in the archive. Create a new environment on each laptop; do not copy `.venv`.
 
-The Word report is [GestureForge Technical Report](../docs/submission/GestureForge_Technical_Report.docx). The official form is an **unsigned template**, not a completed declaration. Complete report review, team details and signatures before submitting. Local package verification does not verify an LMS upload or second-laptop guide-only operation.
+Submit the three local Word files from `docs/submission/` separately: `GestureForge_Technical_Report.docx`, `Prompt_Log.docx` and `Decision_Log.docx`. They are intentionally excluded from GitHub and both code ZIPs. The official form is an **unsigned template**, not a completed declaration. Complete report review, team details and signatures before submitting. Local package verification does not verify an LMS upload or second-laptop guide-only operation.
 
 To reproduce the saved P01 comparison after extracting the private marker package and running `setup.cmd`:
 

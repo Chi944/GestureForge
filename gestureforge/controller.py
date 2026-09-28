@@ -13,8 +13,10 @@ NEUTRAL_HOLD_SECONDS = 0.300
 COMMAND_HOLD_SECONDS = 0.400
 MAX_PREDICTION_AGE_SECONDS = 0.200
 MAX_FRAME_GAP_SECONDS = 0.200
+CLASSIFIER_REJECTION_GRACE_SECONDS = 0.500
 
 EXECUTABLE_COMMANDS = {"NEXT"}
+CLASSIFIER_REJECTION_REASONS = {"distance_rejection", "margin_rejection"}
 
 
 @dataclass
@@ -36,6 +38,7 @@ class Controller:
         self._last_frame_id: int | None = None
         self._neutral_started_at: float | None = None
         self._candidate: _Candidate | None = None
+        self._classifier_reject_started_at: float | None = None
         self._event_counter = 0
 
     def resume(self, session_id: str | None = None) -> None:
@@ -49,6 +52,7 @@ class Controller:
         self._last_frame_id = None
         self._neutral_started_at = None
         self._candidate = None
+        self._classifier_reject_started_at = None
 
     def pause(self) -> None:
         self.state = "PAUSED"
@@ -56,6 +60,7 @@ class Controller:
         self.last_error = ""
         self._neutral_started_at = None
         self._candidate = None
+        self._classifier_reject_started_at = None
 
     def fault(self, reason: str = "fault") -> None:
         self.pause()
@@ -76,17 +81,24 @@ class Controller:
         self._last_frame_id = prediction.frame_id
 
         if not prediction.accepted:
-            self._require_neutral(prediction.rejection_reason or "prediction rejected")
+            self._handle_rejected_prediction(prediction)
             return None
 
         label = prediction.label.upper()
         if label == "NEUTRAL":
+            self._classifier_reject_started_at = None
             self._observe_neutral(prediction.timestamp)
             return None
 
         if self.state == "LATCHED":
+            self._classifier_reject_started_at = None
             self.progress = 1.0
             return None
+
+        if self._classifier_rejection_expired(prediction.timestamp):
+            self._require_neutral("classifier rejection grace expired")
+            return None
+        self._classifier_reject_started_at = None
 
         self._neutral_started_at = None
         if label not in EXECUTABLE_COMMANDS:
@@ -98,10 +110,12 @@ class Controller:
 
         if self.state == "WAIT_NEUTRAL":
             self.progress = 0.0
+            self.last_error = "Show NEUTRAL until READY, then hold NEXT."
             return None
 
         if self._candidate is None or self._candidate.label != label:
             self._candidate = _Candidate(label=label, started_at=prediction.timestamp)
+            self._classifier_reject_started_at = None
             self.state = "CANDIDATE"
             self.progress = 0.0
             return None
@@ -158,12 +172,41 @@ class Controller:
     def _cancel_candidate(self) -> None:
         self._candidate = None
 
+    def _handle_rejected_prediction(self, prediction: Prediction) -> None:
+        reason = prediction.rejection_reason or "prediction rejected"
+        if reason not in CLASSIFIER_REJECTION_REASONS:
+            self._require_neutral(reason)
+            return
+        if self.state == "LATCHED":
+            self.progress = 1.0
+            self.last_error = reason
+            return
+        if self.state not in {"READY", "CANDIDATE"}:
+            self._require_neutral(reason)
+            return
+        if self._classifier_reject_started_at is None:
+            self._classifier_reject_started_at = prediction.timestamp
+        if prediction.timestamp - self._classifier_reject_started_at > CLASSIFIER_REJECTION_GRACE_SECONDS:
+            self._require_neutral(reason)
+            return
+        self._cancel_candidate()
+        self.state = "READY"
+        self.progress = 0.0
+        self.last_error = reason
+
+    def _classifier_rejection_expired(self, timestamp: float) -> bool:
+        return (
+            self._classifier_reject_started_at is not None
+            and timestamp - self._classifier_reject_started_at > CLASSIFIER_REJECTION_GRACE_SECONDS
+        )
+
     def _require_neutral(self, reason: str, *, reset_clock: bool = False) -> None:
         self.state = "WAIT_NEUTRAL"
         self.progress = 0.0
         self.last_error = reason
         self._neutral_started_at = None
         self._candidate = None
+        self._classifier_reject_started_at = None
         if reset_clock:
             self._last_timestamp = None
             self._last_frame_id = None

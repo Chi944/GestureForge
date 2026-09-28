@@ -75,7 +75,7 @@ An issue is done when:
 
 The private GitHub repository is <https://github.com/Chi944/GestureForge_304>. The private Trello sprint board was created on 28 September 2026: <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
 
-The Trello board contains 32 open cards: 27 cards migrated from `docs/backlog.csv` plus five current assignment-improvement cards for the Word report, unknown-gesture handling, UI clarity, submission documentation cleanup, and Trello setup. Creating these tools is not evidence of human peer review, ownership allocation, tutor approval, or weekly tutor meetings.
+The Trello board contains 33 open cards: 27 cards migrated from `docs/backlog.csv` plus six current improvement cards for the Word report, unknown-gesture handling, UI clarity, submission documentation cleanup, Trello setup, and the live NEXT transition correction. Creating these tools is not evidence of human peer review, ownership allocation, tutor approval, or weekly tutor meetings.
 
 ## Status Rules
 

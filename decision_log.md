@@ -46,3 +46,21 @@ Consolidated 28 September 2026; historical decisions preserved for Assignment 1 
 ## Rejection refinement recorded 28 September 2026
 
 D-017 supersedes D-003 for the recommended live demonstration configuration. Use kNN with multiplier 2 and ambiguity margin 1.5 (prototype-v3); preserve experiments/pilot.json as the historical v2 comparison and use experiments/pilot-rejection.json for v3. The scaled nearest-other-class / nearest-predicted-class distance ratio rejects ambiguous poses. In the same P01 development data, command-label accepts on unfamiliar samples fall from 25/40 to 5/40, while trial macro-F1 changes from 0.9686 to 0.9667 and 30/32 genuine trials remain correct. Margin 2 rejects all 40 negatives but drops macro-F1 to 0.8846; it is not selected. No validation negatives enter training. Fresh live v3 validation and broader unknown testing remain pending. Evidence: [results](docs/evidence/RESULTS.md) and the two experiment configurations.
+
+
+## Local submission documents recorded 28 September 2026
+
+D-018 refines D-012: keep the technical report local and supply the prompt log and decision log as two separate Word documents. Remove the tracked technical report from the current branch, ignore all three generated Word deliverables, and exclude them from code ZIPs. Preserve the root Markdown logs as source records. The report retains the software-tool and AI-assistance declarations and refers to the companion logs. Submit the three Word documents alongside code and the completed Group Declaration. This changes document placement, not the evidence or declaration requirements; tutor confirmation of the unit AI-use appendix arrangement remains pending. Prior Git history is retained.
+
+
+## Transition recovery recorded 28 September 2026
+
+D-019: distinguish classifier-only rejection from tracking loss in the shared controller. The reported NEXT + WAIT NEUTRAL failure and code inspection show that one transitional rejected frame cancelled arming. Keep readiness through at most 500 ms of distance/margin rejection; cancel any partial command hold and require a new 400 ms stable hold. Expiry also applies when the first accepted non-neutral prediction returns. Keep LATCHED through classifier jitter, and keep immediate neutral reset for invalid tracking or stale data. This repairs the controller rather than relaxing classification or shortening activation holds. Automated regressions cover these paths; physical-camera confirmation remains pending. The 500 ms interval is an engineering starting value, not a measured optimum. No extra training data is required to implement this fix.
+
+
+## Commit presentation recorded 28 September 2026
+
+D-020: the user explicitly requested four historical commit subject edits: “Refine gesture rejection and UI”; “Polish README and readiness evidence on main”; “Prepare reports and reproducible user packages”; and “Reconcile documents and preserve complete task prompt log”. Reword only the requested subjects, preserve file trees and authorship, keep a local recovery reference, and guard the remote update against concurrent changes. Rewritten commits and their descendants receive new IDs. Historical hashes quoted in the prompt log remain unchanged as original-message evidence. This is a presentation change and does not change the disclosed academic purpose or AI assistance.
+
+
+D-019 live follow-up: after being asked to restart with kNN, multiplier 2, margin 1.5 and camera 1, the user confirmed “Yes, both transitions work once”. This is participant-observed confirmation of the corrected transition path, not a formal false-action, latency or twenty-hold test. The earlier pending status above records the state before this reply.

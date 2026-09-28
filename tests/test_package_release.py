@@ -35,6 +35,19 @@ def test_source_package_refuses_accidentally_tracked_working_files(tmp_path, fol
         package_release._tracked_source_files(root)
 
 
+@pytest.mark.parametrize("filename", ["GestureForge_Technical_Report.docx",
+                                      "Prompt_Log.docx", "Decision_Log.docx"])
+def test_package_refuses_local_submission_documents(tmp_path, filename):
+    root = _source_repo(tmp_path)
+    document = root / "docs/submission" / filename
+    document.parent.mkdir(parents=True)
+    document.write_bytes(b"local document")
+    subprocess.run(["git", "add", str(document)], cwd=root, check=True)
+
+    with pytest.raises(SystemExit, match="review before packaging"):
+        package_release._tracked_source_files(root)
+
+
 def test_include_pilot_private_package_adds_only_manifest_and_referenced_features(
     tmp_path, monkeypatch
 ):

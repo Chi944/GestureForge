@@ -54,7 +54,9 @@ def _tracked_source_files(root: Path) -> list[Path]:
         raise SystemExit("Stage the reviewed release files before packaging.")
     forbidden = (".venv/", ".tools/", ".python/", ".cache/", ".local/",
                  "data/local/", "experiments/local/")
-    if any(name.startswith(forbidden) for name in files):
+    local_documents = {"docs/submission/GestureForge_Technical_Report.docx",
+                       "docs/submission/Prompt_Log.docx", "docs/submission/Decision_Log.docx"}
+    if any(name.startswith(forbidden) or name in local_documents for name in files):
         raise SystemExit("Private data or environment files are tracked; review before packaging.")
     return [Path(name) for name in sorted(files)]
 

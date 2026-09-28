@@ -53,6 +53,9 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | Controller | Continuous long command | No duplicate actions |
 | Controller | Neutral returns after latch | Controller can rearm |
 | Controller | Candidate changes mid-hold | Pending hold cancels |
+| Controller | Brief classifier rejection after READY or during hold | No action from reject; retry starts a fresh 400 ms hold within 500 ms |
+| Controller | Classifier rejection exceeds 500 ms, including first accepted return | Requires fresh NEUTRAL |
+| Controller | Classifier-reject jitter while LATCHED | No duplicate action |
 | Controller | Tracking loss | Requires neutral before next action |
 | Controller | Stale frame | Rejected |
 | Controller | Out-of-order timestamp | Rejected |
@@ -157,3 +160,6 @@ Supported keys are `dataset_path`, `dataset_paths`, `synthetic_fixture`, `algori
 Do not create participant records before consent exists.
 
 The revised P01 configuration is `experiments/pilot-rejection.json`, with multiplier 2.0 and margin 1.5. Regressions cover ambiguous-pose rejection, invalid margin settings, evaluator propagation, and GUI rejection feedback without viewer action. Live v3 recognition/rearm must be retested before treating prior v2 live observations as evidence for the revised model. Historical configurations without a margin retain margin 1.0 for reproducibility; live launches default to margin 1.5.
+
+
+The 28 September live defect report (NEXT displayed with WAIT NEUTRAL after a pose transition) is recorded in the results. Regression tests cover the repaired controller and UI polling path. The user subsequently confirmed both transitions advance once after restart. This is live smoke evidence only; broader final-project testing remains planned.

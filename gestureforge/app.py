@@ -34,8 +34,8 @@ CARD_STYLES = (
 )
 
 REJECTION_MESSAGES = {
-    "distance_rejection": "Pose does not match your enrolment. Keep your hand visible and return to neutral.",
-    "margin_rejection": "Pose is too similar to another gesture. Show your enrolled neutral pose, then retry.",
+    "distance_rejection": "Pose does not match yet. Hold the enrolled pose steady, or return to neutral if it persists.",
+    "margin_rejection": "Pose is ambiguous. Hold the enrolled pose steady, or return to neutral if it persists.",
     "multiple_hands": "Only show your enrolled hand.",
     "no_hand": "No hand detected. Keep your enrolled hand in view.",
     "observation has no landmarks": "No usable hand landmarks were found. Keep your hand in view.",
@@ -387,7 +387,16 @@ class Window(QMainWindow):
             event = self.controller.process(prediction, time.monotonic())
             self.state.setText(self.controller.state.replace("_", " "))
             self.progress.setValue(round(self.controller.progress * 100))
-            guidance = self.rejection_message(prediction.rejection_reason) if prediction.rejection_reason else ""
+            if self.controller.state == "WAIT_NEUTRAL" and prediction.rejection_reason in {
+                "distance_rejection", "margin_rejection",
+            }:
+                guidance = "Show NEUTRAL until READY, then retry."
+            else:
+                guidance = (
+                    self.rejection_message(prediction.rejection_reason)
+                    if prediction.rejection_reason
+                    else ""
+                )
             self.detail.setText(guidance or self.controller.last_error or
                                 "Return to neutral between commands. Esc pauses immediately.")
             if event:

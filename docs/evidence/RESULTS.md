@@ -110,6 +110,8 @@ Unrecognisable gestures should be rejected as UNKNOWN. The current classifier so
 
 The current verification summary lives in `verification.json`. Earlier package checks recorded:
 
+GitHub Actions run `36413668556` did not start its test job: GitHub reported an account payment/spending-limit block. This is not a remote test pass or a code-test failure. Fresh local verification remains available in `verification.json`; the account owner must resolve the GitHub setting before remote CI can execute.
+
 - Fresh extracted source setup on the development computer passed with Python 3.11.16 and the expected `hand_landmarker.task` SHA256 `fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1`.
 - Same-computer source archive verification passed pip checks, model checks, launcher smoke and synthetic verification from an extracted folder with spaces in its path.
 - Private marker archive integrity passed and reproduced macro-F1 0.9686274509803923 for kNN and SVM from extracted source with authorised P01 numeric data.
@@ -130,3 +132,12 @@ This supports the assignment claim that a separately enrolled user could operate
 - Rebuild and verify the final submission archive after the current documentation and UI changes.
 - Download the LMS upload and check it before the deadline.
 - For the November project, run two-participant held-out evaluation, full command execution checks, twenty-hold duplicate-action runs, false-action measurement, latency measurement and stability testing.
+
+
+## NEUTRAL-to-NEXT transition correction — 28 September 2026
+
+The user reported repeated failed advances while the display showed NEXT + WAIT NEUTRAL. Code inspection identified that every rejected prediction, including a valid tracked hand between enrolled poses, immediately disarmed the controller. This explains why a subsequent recognised NEXT could not execute.
+
+The update distinguishes classifier-only distance/margin rejection from invalid tracking. After READY, up to 500 ms of classifier rejection cancels a partial hold without disarming; accepted NEXT must then complete a fresh 400 ms hold. Longer rejection requires NEUTRAL again. Tracking loss, stale/out-of-order data, wrong/multiple hands, pause and camera faults retain their reset protection. LATCHED stays latched through classifier rejection. Classifier thresholds and retained P01 recordings are unchanged.
+
+Controller and app regression tests exercise the transition, timeout, retry and duplicate prevention. See `verification.json` for fresh automated results. After receiving the corrected launch command (kNN, multiplier 2, margin 1.5, camera 1), the user confirmed: “Yes, both transitions work once”. This is a successful participant-observed live smoke retest of the corrected transition, not a quantified accuracy, latency, false-action or twenty-hold result.

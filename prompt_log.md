@@ -6,7 +6,7 @@ This file preserves the recovered user prompts and clarification answers, includ
 
 Coverage is this Codex task. Other Codex conversations, including P02 setup assistance, have not been supplied or confirmed complete. Unit-specific AI-use requirements and team review remain pending. See [contributions](docs/CONTRIBUTIONS.md), [decisions](decision_log.md), [verification](docs/evidence/verification.json), and [results](docs/evidence/RESULTS.md).
 
-The report includes the prompt appendix because the course specification requests prompts in the report. This standalone copy makes them easy to locate in the source submission.
+The user subsequently requested separate local Word documents for the technical report, prompt log and decision log. Submit `Prompt_Log.docx` and `Decision_Log.docx` alongside the report; the report retains a concise AI-assistance declaration and companion-document references. This Markdown file is the preserved source log. Confirm the separate-appendix arrangement against the unit AI-use guidance during final review.
 
 ## Assistance and verification
 
@@ -60,6 +60,14 @@ Coverage: the retained record includes the original planning requests and implem
 | PR-029 | 2026-09-27 12:09:08.654 UTC | Clarification reply |
 | PR-030 | 2026-09-27 12:09:13.313 UTC | Clarification reply |
 | PR-031 | 2026-09-27 18:12:46.571 UTC | User instruction |
+| PR-032 | Exact timestamp not recovered | User instruction |
+| PR-033 | Exact timestamp not recovered | User instruction |
+| PR-034 | Exact timestamp not recovered | User instruction |
+| PR-035 | Exact timestamp not recovered | User instruction |
+| PR-036 | Exact timestamp not recovered | User instruction |
+| PR-037 | Exact timestamp not recovered | Clarification reply |
+| PR-038 | Exact timestamp not recovered | User instruction |
+| PR-039 | Exact timestamp not recovered | Clarification reply |
 
 ## PR-001
 
@@ -673,3 +681,40 @@ Source: visible user conversation. Exact timestamp not recovered.
 Source: visible user conversation. Exact timestamp not recovered.
 
 > I have connected my trello here, create the local sprint board or kanban board there for me. Update everything to my technical report, it should be in word instead of a pdf and also make it look better with figures, tables and images generated here or images taken, design it better, it is currently too plain, optimise it to score the highest grade as shown in the rubrics and requirements. Also, the currently detection for unrecognizable gestures default to previous or bookmark, should this be the case? or should it proper flag as unrecognizable gesture. Are all these documentations needed? Delete them if they do not help or are required in my submission, only keep those that are needed. There should be a prompt_log.md and decision_log.md file as well that I do not see here, generate those for me, remove all the drafts and checklists from my repo as well if they are not needed, it is okay to store them locally but do not commit and push everything to my repo, my repo is to be submitted for grading. Design my prototype UI/UX better, improve on it and also make clear distinctions between deck changes on top of just the deck numbers as it is currently not obvious enough. Update my whole readme accordingly.
+
+
+### PR-036
+
+Source: visible user conversation. Exact timestamp not recovered.
+
+> Now when I am doing the live testing, when I switch from neutral to next, the slide does not change or it takes many tries to get to the next slide. What and how is bookmark going to be used? Also, the technical report should not be committed to github but only saved locally, the prompt log and decision log should not be part of the technical report but separate word documents, ensure that my assignments covers everything as shown in the screenshots
+
+Attachment context (editorial): assessment criteria weighted 10/35/20/15/10/10; tool reporting, declaration and working-code penalties; report requirements covering lifecycle, problem, data, techniques, innovation, all-subsystem testing, milestones, tools and references.
+
+### PR-037
+
+Source: visible clarification reply. Exact timestamp not recovered.
+
+> Question: When NEXT fails, does the app show “Prediction: NEXT” with “WAIT NEUTRAL,” or does the prediction stay “Unrecognised”? This distinguishes a transition/controller problem from recognition.
+>
+> User answer: NEXT + WAIT NEUTRAL
+
+
+### PR-038
+
+Source: visible user conversation. Exact timestamp not recovered.
+
+> In the first screenshot, remove the words "with curated Word submission" from the commit line
+> In the second screenshot, remove the word "assignment"
+> In the third screenshot, change the commit line from [**Prepare assignment report and reproducible private marker package**](https://github.com/Chi944/GestureForge_304/commit/4ad9339dc7d9486bda1c4e3672d71471e29173f8 "Prepare assignment report and reproducible private marker package")   to "Prepare reports and reproducible user packages" and remove the word "submission" from this commit line [**Reconcile submission documents and preserve complete task prompt log**](https://github.com/Chi944/GestureForge_304/commit/b91765b3820420eed492edef63180a8b2026a47c "Reconcile submission documents and preserve complete task prompt log")
+
+Attachment context (editorial): the additional subjects shown were “Refine gesture rejection and UI with curated Word submission” and “Polish assignment README and readiness evidence on main”. Original commit links are retained as historical prompt text; rewording changes commit IDs.
+
+
+### PR-039
+
+Source: visible clarification reply. Exact timestamp not recovered.
+
+> Question: The controller fix passes 73 automated tests, but your currently open app is still the old process. After closing it and restarting with `.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1`, does NEUTRAL until READY → fist held steadily advance once, and repeat only after NEUTRAL?
+>
+> User answer: Yes, both transitions work once

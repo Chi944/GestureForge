@@ -132,18 +132,21 @@ def test_window_poll_executes_next_only_after_neutral_and_hold(monkeypatch, qapp
     window.controller.resume("live-session")
 
     packets = []
-    for frame_id, timestamp, label in [
-        (1, 100.00, "NEUTRAL"),
-        (2, 100.15, "NEUTRAL"),
-        (3, 100.31, "NEUTRAL"),
-        (4, 100.45, "PREVIOUS"),
-        (5, 100.55, "BOOKMARK"),
-        (6, 100.65, "NEXT"),
-        (7, 100.83, "NEXT"),
-        (8, 101.00, "NEXT"),
-        (9, 101.06, "NEXT"),
+    for frame_id, timestamp, label, accepted, reason in [
+        (1, 100.00, "NEUTRAL", True, ""),
+        (2, 100.15, "NEUTRAL", True, ""),
+        (3, 100.31, "NEUTRAL", True, ""),
+        (4, 100.45, "PREVIOUS", True, ""),
+        (5, 100.55, "BOOKMARK", True, ""),
+        (6, 100.60, "NEXT", False, "margin_rejection"),
+        (7, 100.65, "NEXT", True, ""),
+        (8, 100.83, "NEXT", True, ""),
+        (9, 101.00, "NEXT", True, ""),
+        (10, 101.06, "NEXT", True, ""),
     ]:
-        packets.append((_frame(), _prediction(window, frame_id, timestamp, label)))
+        packets.append(
+            (_frame(), _prediction(window, frame_id, timestamp, label, accepted=accepted, reason=reason))
+        )
     window.worker = FakeWorker(packets)
 
     try:
@@ -179,28 +182,62 @@ def test_window_pause_blocks_pending_worker_prediction_from_moving_deck(qapp) ->
         window.close()
 
 
-def test_window_shows_rejection_guidance_without_moving_deck(qapp) -> None:
+def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
     window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60))
     _disable_logging(window)
+    current = [100.0]
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
     window.controller.resume("live-session")
+    arm_session = window.controller.session_id
+    for frame_id, timestamp in ((1, 100.00), (2, 100.15), (3, 100.31)):
+        window.controller.process(
+            Prediction(arm_session, "pilot", frame_id, timestamp, "NEUTRAL", True),
+            timestamp,
+        )
     window.worker = FakeWorker([
         (_frame(), _prediction(
             window,
-            1,
-            time.monotonic(),
+            4,
+            100.45,
             "BOOKMARK",
             accepted=False,
             reason="margin_rejection",
         )),
+        *[
+            (
+                _frame(),
+                _prediction(
+                    window,
+                    frame_id,
+                    timestamp,
+                    "BOOKMARK",
+                    accepted=False,
+                    reason="margin_rejection",
+                ),
+            )
+            for frame_id, timestamp in ((5, 100.63), (6, 100.81), (7, 100.99))
+        ],
     ])
 
     try:
+        current[0] = 100.45
         window.poll()
 
         assert window.viewer.position == 0
         assert window.prediction.text() == "Prediction: Unrecognised"
-        assert "too similar to another gesture" in window.detail.text()
+        assert "Pose is ambiguous" in window.detail.text()
         assert "margin_rejection" not in window.detail.text()
+
+        for timestamp in (100.63, 100.81, 100.99):
+            current[0] = timestamp
+            window.poll()
+
+        assert window.viewer.position == 0
+        assert window.controller.state == "WAIT_NEUTRAL"
+        assert "Show NEUTRAL" in window.detail.text()
+        assert "Pose is ambiguous" not in window.detail.text()
     finally:
         window.close()
 
