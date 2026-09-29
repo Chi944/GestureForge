@@ -1,6 +1,6 @@
 # Run GestureForge on another Windows laptop
 
-Target: Intel/AMD Windows 10/11 with **64-bit Python 3.11**, a webcam and internet for first setup. [P02 feedback recorded in the consolidated results](evidence/RESULTS.md#p02-qualitative-feedback) reports successful assisted ZIP use with a personal right-hand dataset on another laptop. Exact package/environment details, guide-only installation, pause/restart, camera release/reopen and disconnected-network checks remain open. Do not copy a `.venv` from another computer.
+Target: Intel/AMD Windows 10/11 with **64-bit Python 3.11**, a webcam and internet for first setup. [P02 feedback recorded in the consolidated results](evidence/RESULTS.md#p02-qualitative-feedback) reports successful ZIP use with a personal right-hand dataset on another laptop. On 29 September the user confirmed offline operation and camera pause/restart both passed. Exact package checksum, Windows version, camera index, dataset size and guide-only setup details are not recorded. Do not copy a `.venv` from another computer.
 
 ## 1. Transfer and extract
 
@@ -74,7 +74,7 @@ $hand = 'Right'
 .\.venv\Scripts\python.exe -m gestureforge.collect --camera $camera --split train --participant $participant --hand $hand --setup "laptop webcam, desk lighting, plain background" --consent --output data/local/pilot
 .\.venv\Scripts\python.exe -m gestureforge.collect --camera $camera --split validation --participant $participant --hand $hand --setup "laptop webcam, separate validation session" --consent --output data/local/pilot
 .\.venv\Scripts\python.exe -m gestureforge.collect --camera $camera --split validation_negative --participant $participant --hand $hand --setup "laptop webcam, unfamiliar poses" --consent --output data/local/pilot
-.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/laptop-pilot.json
+.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/laptop-pilot.json
 .\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera $camera
 ```
 
@@ -96,7 +96,8 @@ Record actual observations here or in a copy of this table against the exact pac
 | Personal dataset collected/available under permission; validation reviewed | Pending |
 | Neutral arms; sustained NEXT hold advances exactly once | Pending |
 | Neutral rearms; a second NEXT hold advances once | Pending |
-| Pause blocks gesture actions; reopening releases/reacquires camera | Pending |
-| After setup, disconnect Wi-Fi/network and repeat viewer, model and live checks | Pending |
+| Pause/restart camera control | User confirmed passed on 29 September; exact test date and package not supplied |
+| Camera released for another app and reacquired | Not separately reported |
+| Offline runtime use after setup | User confirmed passed on 29 September; individual subchecks and package not supplied |
 
 Initial setup requires internet. Runtime uses local assets/data; the disconnected-network row verifies that behaviour on the actual laptop. This is a source-based prototype, not an executable installer. Keep all November features and formal performance targets in the final-project plan.

@@ -1,6 +1,6 @@
 # GestureForge Data Collection Protocol
 
-Status: P01 consented right-hand pilot completed: 32 TRAIN, 32 VALIDATION and eight validation-negative trials, 360/360 valid scheduled samples. Numeric features remain excluded from GitHub and the source-only ZIP. Private tutor/marker submission permission was granted on 26 September; the retention period and private submission location remain open. See [RESULTS.md](evidence/RESULTS.md) for measured results and limitations.
+Status: P01 consented right-hand pilot completed: 32 TRAIN, 32 VALIDATION and eight validation-negative trials, 360/360 valid scheduled samples. Numeric features remain excluded from GitHub and the source-only ZIP. Private tutor/marker submission permission was granted on 26 September. No scheduled deletion has been requested for the local numeric P01 data, and no raw images or video are stored. See [RESULTS.md](evidence/RESULTS.md) for measured results and limitations.
 
 Observed samples store their actual monotonic capture time. Trial start times and the five scheduled offsets are stored in metadata, allowing sampling delay to be audited. A slot with no observed frame keeps its scheduled time as a placeholder and is explicitly invalid; it is never treated as an actual capture.
 

@@ -12,10 +12,16 @@ def main():
     parser.add_argument("--multiplier", type=float, default=1.5)
     parser.add_argument("--margin", type=float, default=1.5)
     parser.add_argument("--camera", type=int, default=0)
+    parser.add_argument("--studio", action="store_true", help="Open the project Studio preview shell")
+    parser.add_argument(
+        "--studio-mode", choices=["preview", "rehearsal"], default="preview",
+        help="Studio routing mode; both modes simulate actions only",
+    )
     parser.add_argument("--smoke-test", action="store_true", help="Render and close without using the camera")
     parser.add_argument("--screenshot", type=Path, help="Save the app's own window during --smoke-test")
     args = parser.parse_args()
     from .capture import DEFAULT_ASSET
+    from .contracts import RoutingMode
     from .features import extract_feature_vector
     from .app import Window
     from PySide6.QtWidgets import QApplication
@@ -25,6 +31,11 @@ def main():
     hand = "Right"
     profile = "pilot"
     note = "Keyboard demo • collect your gestures before enabling camera control. See the User Guide."
+    if args.studio:
+        note = (
+            "Studio preview • camera control needs a starter or personal dataset. "
+            "Shortcut dispatch, enrolment and workspace persistence are intentionally not enabled here."
+        )
     if args.dataset:
         from .dataset import load_dataset
         from .models import train_model
@@ -47,7 +58,10 @@ def main():
         except (OSError, ValueError, KeyError) as exc:
             parser.exit(1, f"Cannot load gesture dataset: {exc}\n")
     app = QApplication(sys.argv[:1])
-    window = Window(model, extract_feature_vector, hand, args.camera, DEFAULT_ASSET, profile, note)
+    window = Window(
+        model, extract_feature_vector, hand, args.camera, DEFAULT_ASSET, profile, note,
+        studio=args.studio, studio_mode=RoutingMode(args.studio_mode.upper()),
+    )
     window.show()
     window.raise_()
     window.activateWindow()

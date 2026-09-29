@@ -1,10 +1,10 @@
 # GestureForge Agile Working Method
 
-Status: active Trello sprint board plus local submission backlog snapshot.
+Status: assignment submitted; three-member project development in progress.
 
 ## Agile Setup
 
-Use short, evidence-focused sprints. Detailed acceptance work is tracked in `docs/backlog.csv`; the live Kanban board is the private Trello board at <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
+Use short, evidence-focused sprints. Current project acceptance work is tracked in [project/TEAM_BACKLOG.csv](project/TEAM_BACKLOG.csv), with evidence and percentages in [project/PROGRESS.md](project/PROGRESS.md). The live Kanban board is <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>. `docs/backlog.csv` remains the historical assignment snapshot.
 
 Trello columns:
 
@@ -73,9 +73,9 @@ An issue is done when:
 
 ## Board Status
 
-The private GitHub repository is <https://github.com/Chi944/GestureForge_304>. The private Trello sprint board was created on 28 September 2026: <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
+GitHub: <https://github.com/Chi944/GestureForge_304>. Trello sprint board, created on 28 September 2026: <https://trello.com/b/wDb978u6/gestureforge-assignment-and-project>.
 
-The Trello board contains 32 open cards after archiving the tutor-question task: 26 original backlog cards plus six current improvement cards for the Word report, unknown-gesture handling, UI clarity, submission documentation cleanup, Trello setup, and the live NEXT transition correction. Creating these tools is not evidence of human peer review, ownership allocation, tutor approval, or weekly tutor meetings.
+The board retains assignment history and 29 project cards split between Deston, Hau Jie and Javier. Each project card names its owner, dependencies, deadline and acceptance criteria. Branch rules and editing boundaries are in [project/TEAM_GUIDE.md](project/TEAM_GUIDE.md): each builder pushes only to their own branch and requests Deston's review; only Deston merges into `main`. Tool setup does not establish completed teammate work or tutor review.
 
 ## Status Rules
 

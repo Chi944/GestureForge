@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-29T12:14:03.206738+00:00",
+  "timestamp_utc": "2026-09-29T18:59:43.156684+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,41 +13,48 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.287,
+      "seconds": 0.153,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 2.088,
-      "stdout": "Success: no issues found in 30 source files\n",
+      "seconds": 0.79,
+      "stdout": "Success: no issues found in 32 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 31.468,
-      "stdout": "........................................................................ [ 87%]\n..........                                                               [100%]\n82 passed in 30.56s\n",
+      "seconds": 14.512,
+      "stdout": "........................................................................ [ 59%]\n.................................................                        [100%]\n121 passed in 13.58s\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 1.135,
+      "seconds": 1.172,
       "stdout": "",
       "stderr": ""
     },
     {
-      "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments/synthetic-software-check.json",
+      "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 2.886,
+      "seconds": 1.134,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output C:\\Users\\Desto\\Desktop\\Murdoch\\ICT304\\Assignment\\code\\experiments\\synthetic-software-check.json",
+      "returncode": 0,
+      "seconds": 4.422,
       "stdout": "",
       "stderr": ""
     }
   ],
   "limitations": [
     "Synthetic evaluation is software evidence only.",
-    "This script does not verify live participant performance or a second computer; see the assessment audit."
+    "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
   ]
 }

@@ -1,6 +1,6 @@
 # GestureForge Test Plan and Requirement Traceability
 
-Status: software verification is recorded in `docs/evidence/verification.json`; live camera, P01 pilot results, real NEXT actions, setup/package checks, and P02 qualitative feedback are consolidated in `docs/evidence/RESULTS.md`. Pause/restart, offline use and guide-only installation remain unverified. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
+Status: software verification is recorded in `docs/evidence/verification.json`; live camera, P01 pilot results, real NEXT actions, setup/package checks, and P02 qualitative feedback are consolidated in `docs/evidence/RESULTS.md`. The user confirmed second-laptop pause/restart and offline use on 29 September; guide-only installation and exact device/package details remain undocumented. Formal twenty-hold runs, live false-action measurement, p95 latency and held-out testing are final-project checks.
 
 ## Test Strategy
 
@@ -16,7 +16,7 @@ The assignment only executes tests for implemented prototype parts. The final pr
 
 | Requirement | Assignment test evidence | Final project test evidence | Current status |
 | --- | --- | --- | --- |
-| RQ-001 Local Windows Python 3.11 run | Environment check and launch smoke test | Second-machine release test | Software verified; P02 laptop use reported, remaining release checks pending |
+| RQ-001 Local Windows Python 3.11 run | Environment check and launch smoke test | Second-machine release test | Software verified; P02 laptop use, pause/restart and offline operation reported; exact release/environment details not recorded |
 | RQ-002 Work under `code` | File layout review | File layout review | Implemented |
 | RQ-003 Labelled collection | CLI collection smoke test and manifest check; P01 TRAIN, VALIDATION and validation-negative sessions collected | GUI enrolment tests | Assignment pilot collected |
 | RQ-004 60-feature extraction | Unit test for shape and wrist removal | Same | Software verified |
@@ -159,7 +159,7 @@ Supported keys are `dataset_path`, `dataset_paths`, `synthetic_fixture`, `algori
 
 Do not create participant records before consent exists.
 
-The revised P01 configuration is `experiments/pilot-rejection.json`, with multiplier 2.0 and margin 1.5. Regressions cover ambiguous-pose rejection, invalid margin settings, evaluator propagation, and GUI rejection feedback without viewer action. Live v3 recognition/rearm must be retested before treating prior v2 live observations as evidence for the revised model. Historical configurations without a margin retain margin 1.0 for reproducibility; live launches default to margin 1.5.
+The revised P01 configuration is `experiments/pilot-rejection.json`, with multiplier 2.0 and margin 1.5. Regressions cover ambiguous-pose rejection, invalid margin settings, evaluator propagation, and GUI rejection feedback without viewer action. The user confirmed the revised live recognition/rearm transitions after restarting the corrected app. Historical configurations without a margin retain margin 1.0 for reproducibility; live launches default to margin 1.5. This smoke retest does not replace final-project performance evaluation.
 
 
 The 28 September live defect report (NEXT displayed with WAIT NEUTRAL after a pose transition) is recorded in the results. Regression tests cover the repaired controller and UI polling path. The user subsequently confirmed both transitions advance once after restart. This is live smoke evidence only; broader final-project testing remains planned.

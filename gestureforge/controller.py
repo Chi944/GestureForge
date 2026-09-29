@@ -6,7 +6,7 @@ import math
 import uuid
 from dataclasses import dataclass
 
-from .contracts import CommandEvent, Prediction
+from .contracts import CommandEvent, Prediction, validate_gesture_id, validate_identifier
 
 
 NEUTRAL_HOLD_SECONDS = 0.300
@@ -15,7 +15,7 @@ MAX_PREDICTION_AGE_SECONDS = 0.200
 MAX_FRAME_GAP_SECONDS = 0.200
 CLASSIFIER_REJECTION_GRACE_SECONDS = 0.500
 
-EXECUTABLE_COMMANDS = {"NEXT"}
+EXECUTABLE_COMMANDS = frozenset({"NEXT"})
 CLASSIFIER_REJECTION_REASONS = {"distance_rejection", "margin_rejection"}
 
 
@@ -28,7 +28,21 @@ class _Candidate:
 class Controller:
     """State machine that protects the viewer from accidental repeat actions."""
 
-    def __init__(self, session_id: str, profile_id: str = "pilot") -> None:
+    def __init__(
+        self, session_id: str, profile_id: str = "pilot", *,
+        executable_gesture_ids: frozenset[str] | None = None,
+        model_version: str | None = None,
+    ) -> None:
+        self._legacy_labels = executable_gesture_ids is None
+        gesture_ids = EXECUTABLE_COMMANDS if executable_gesture_ids is None else executable_gesture_ids
+        if isinstance(gesture_ids, str) or not 1 <= len(gesture_ids) <= 3:
+            raise ValueError("one to three executable gesture IDs are required")
+        for gesture_id in gesture_ids:
+            validate_gesture_id(gesture_id)
+        self._executable_gesture_ids = frozenset(gesture_ids)
+        if model_version is not None:
+            validate_identifier(model_version)
+        self._model_version = model_version
         self.session_id = session_id
         self.profile_id = profile_id
         self.state = "PAUSED"
@@ -40,6 +54,14 @@ class Controller:
         self._candidate: _Candidate | None = None
         self._classifier_reject_started_at: float | None = None
         self._event_counter = 0
+
+    @property
+    def executable_gesture_ids(self) -> frozenset[str]:
+        return self._executable_gesture_ids
+
+    @property
+    def model_version(self) -> str | None:
+        return self._model_version
 
     def resume(self, session_id: str | None = None) -> None:
         """Begin accepting predictions after a fresh neutral hold."""
@@ -73,6 +95,9 @@ class Controller:
             return None
         if not self._matches_active_identity(prediction):
             return None
+        if self.model_version is not None and prediction.model_version != self.model_version:
+            self._require_neutral("model version mismatch")
+            return None
         if not self._prediction_is_fresh_and_ordered(prediction, now):
             self._require_neutral("stale, future, or out-of-order prediction", reset_clock=True)
             return None
@@ -84,7 +109,7 @@ class Controller:
             self._handle_rejected_prediction(prediction)
             return None
 
-        label = prediction.label.upper()
+        label = prediction.label.upper() if self._legacy_labels else prediction.label
         if label == "NEUTRAL":
             self._classifier_reject_started_at = None
             self._observe_neutral(prediction.timestamp)
@@ -101,7 +126,7 @@ class Controller:
         self._classifier_reject_started_at = None
 
         self._neutral_started_at = None
-        if label not in EXECUTABLE_COMMANDS:
+        if label not in self.executable_gesture_ids:
             self._cancel_candidate()
             if self.state != "WAIT_NEUTRAL":
                 self.state = "READY"
@@ -110,7 +135,7 @@ class Controller:
 
         if self.state == "WAIT_NEUTRAL":
             self.progress = 0.0
-            self.last_error = "Show NEUTRAL until READY, then hold NEXT."
+            self.last_error = "Show NEUTRAL until READY, then hold an enabled gesture."
             return None
 
         if self._candidate is None or self._candidate.label != label:
@@ -136,6 +161,7 @@ class Controller:
             frame_id=prediction.frame_id,
             command=label,
             timestamp=now,
+            model_version=prediction.model_version,
         )
 
     def _matches_active_identity(self, prediction: Prediction) -> bool:

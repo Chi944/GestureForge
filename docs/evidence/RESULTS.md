@@ -1,6 +1,6 @@
 # GestureForge Assignment Evidence Summary
 
-Status: consolidated 28 September 2026 from the earlier pilot, hardware, laptop, setup, marker-package and review records. This is Assignment 1 evidence for the NEXT-only prototype. It is not final-project held-out testing.
+Status: updated 29 September 2026 from the pilot, hardware, laptop, setup, marker-package and review records, including the user's latest laptop confirmations. This is Assignment 1 evidence for the NEXT-only prototype. It is not final-project held-out testing.
 
 ## Current Submission Evidence
 
@@ -9,10 +9,10 @@ Status: consolidated 28 September 2026 from the earlier pilot, hardware, laptop,
 | Environment and dependencies | Python 3.11.16, pinned dependencies, model checksum check, Ruff, mypy, automated tests, offscreen GUI startup and synthetic evaluation are recorded in `verification.json`. | Software checks do not prove live camera performance. |
 | Camera and hand tracking | On the development computer, camera index 1 produced usable non-black video. A visible 60-second preview processed 1,145 frames and detected one hand in 338 frames. | Device indexes can change. Camera index 1 is not a universal setting. |
 | P01 dataset | P01 consented to local numeric right-hand collection. TRAIN and VALIDATION each have 32 trials and 160 valid scheduled samples; validation-negative has eight trials and 40 valid samples. | No raw frames or video are saved. Feature rows, trial IDs, thresholds and raw event logs stay private. |
-| Classifier comparison | Corrected prototype-v2 evaluation at multiplier 2.0 gives kNN and SVM macro-F1 0.9686274509803923, with 31 of 32 validation trials correct. | Development validation only. It is not untouched final-project test performance. |
+| Classifier comparison | Recommended prototype-v3 at multiplier 2.0 and margin 1.5 gives both classifiers macro-F1 0.9667, with 30 of 32 validation trials correct and two UNKNOWN. Historical v2 results remain below. | Development validation only. It is not untouched final-project test performance. |
 | Live NEXT path | Local live use verified `webcam -> MediaPipe -> kNN multiplier 2.0 -> controller -> viewer`. The participant confirmed two sustained NEXT holds advanced exactly once each with NEUTRAL rearm between holds. | Smoke evidence only. Formal twenty-hold, false-action and latency runs remain final-project tasks. |
 | Fresh setup/package checks | Same-computer extracted-source setup passed in fresh environments. Private marker archive reproduced the selected P01 result from extracted source and included only the authorised P01 manifest plus numeric sidecar. | These are not guide-only second-laptop acceptance checks. |
-| P02 laptop feedback | P02 reported assisted ZIP use on another laptop with their own right-hand dataset: NEXT moved Card 1 to Card 10, a five-second hold acted once, NEUTRAL rearm was required, and PREVIOUS/BOOKMARK remained preview-only. | Qualitative and participant-reported. Exact package, OS, camera index, dataset size, guide-only setup, pause/restart and offline use remain unverified. |
+| P02 laptop feedback | P02 reported assisted ZIP use on another laptop with their own right-hand dataset: NEXT moved Card 1 to Card 10, a five-second hold acted once, NEUTRAL rearm was required, and PREVIOUS/BOOKMARK remained preview-only. On 29 September the user confirmed second-laptop offline operation and camera pause/restart both passed. | Qualitative and user-reported. Exact test date, package checksum, OS, camera index, dataset size and guide-only setup are not recorded. |
 
 ## P01 Data Summary
 
@@ -22,7 +22,7 @@ Status: consolidated 28 September 2026 from the earlier pilot, hardware, laptop,
 | VALIDATION | 32 | 160 | 160 | Separate recording session using the same P01 right-hand profile |
 | VALIDATION_NEGATIVE | 8 | 40 | 40 | Unenrolled poses for open-set rejection development |
 
-The source repository and public source ZIP exclude `data/local`. The private marker package may include the P01 numeric manifest and sidecar because the user allowed private tutor/marker use if needed for submission. The retention period and final private submission location are still pending.
+The source repository and source ZIP exclude `data/local`. The private marker package may include the P01 numeric manifest and sidecar because the user allowed private tutor/marker use if needed for submission. On 29 September the participant requested that the samples be retained without a scheduled deletion date. This does not broaden permission beyond local/private marker use. Submit participant data only through the private assessment channel.
 
 ## Historical calibration correction
 
@@ -100,7 +100,7 @@ Reproduce the revised result with the authorised private dataset:
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/reproduced-pilot-v3.json
 ```
 
-The historical and revised runs use the same saved development recordings. No new participant recording or live v3 acceptance is claimed. Full outputs, thresholds and individual prediction records stay in ignored `experiments/local`; the source configuration contains only reproducible settings. A fresh physical-camera check and broader, independently collected positive and negative data are still needed before claiming reliable unknown rejection.
+The historical and revised runs use the same saved development recordings. No new participant recording is claimed. The user subsequently confirmed live v3 transition smoke success, as recorded below. Full outputs, thresholds and individual prediction records stay in ignored `experiments/local`; the source configuration contains only reproducible settings. Broader, independently collected positive and negative data are still needed before claiming reliable unknown rejection.
 
 ## Rejection Limitation
 
@@ -108,7 +108,7 @@ Unrecognisable gestures should be rejected as UNKNOWN. The current classifier so
 
 ## Software Verification
 
-The current verification summary lives in `verification.json`. Earlier package checks recorded:
+The current verification summary lives in `verification.json`. On 29 September, 116 tests, Ruff, mypy across 32 files, assignment GUI smoke, Studio GUI smoke and synthetic evaluation passed. The refreshed private archive was extracted and its own source reproduced both v3 macro-F1 values of 0.9667 and passed GUI smoke using the existing verified Windows environment; this was not a new dependency installation. Archive integrity and privacy boundaries were checked locally. Earlier package checks recorded:
 
 GitHub Actions run `36413668556` did not start its test job: GitHub reported an account payment/spending-limit block. This is not a remote test pass or a code-test failure. The user requested local CI instead. Hosted runs are now disabled; quota-blocked runs were removed after their metadata was retained locally. Fresh local verification remains available in `verification.json`; no remote pass is claimed.
 
@@ -116,20 +116,21 @@ GitHub Actions run `36413668556` did not start its test job: GitHub reported an 
 - Same-computer source archive verification passed pip checks, model checks, launcher smoke and synthetic verification from an extracted folder with spaces in its path.
 - Private marker archive integrity passed and reproduced macro-F1 0.9686274509803923 for kNN and SVM from extracted source with authorised P01 numeric data.
 
-These archive checks support reproducibility. They do not replace an unaided physical second-laptop acceptance test.
+These archive checks support reproducibility. They do not replace recording the exact second-laptop package checksum and environment.
 
 ## P02 Qualitative Feedback
 
 P02 reported that recognition worked best when the hand faced the camera, stayed still, remained at a similar distance and position to the training samples, and stayed well lit. Recognition became unreliable with motion, tilt, back-of-hand orientation, lateral shift and distance changes. Recovery usually involved returning to NEUTRAL before repeating the command.
 
-This supports the assignment claim that a separately enrolled user could operate the NEXT path on another laptop with assistance. It cannot be reported as P02 accuracy, formal release acceptance, guide-only installation, disconnected-network operation or full-system final evaluation.
+This supports the assignment claim that a separately enrolled user could operate the NEXT path on another laptop. On 29 September the user additionally confirmed that offline operation and camera pause/restart both passed. These confirmations establish user-reported checks, not recorded P02 accuracy, an exact-release acceptance record, guide-only installation or full-system final evaluation.
 
 ## Open Gates
 
-- Record full team names, student IDs, contribution percentages and signatures.
-- Confirm P01 retention period and final private submission location.
-- Complete or clearly mark pending guide-only second-laptop checks: exact package/version, Windows/Python/camera details, pause/restart, camera release/reopen and offline runtime use.
-- Rebuild and verify the final submission archive after the current documentation and UI changes.
+- Team names, IDs and a 60/40 contribution split are present in the private declaration; the user confirmed both members' agreement on 29 September. Review its confirmation boxes and add specific report/code responsibility evidence before submission.
+- Confirm course administration requirements: same-tutorial membership and team registration have not been established here; the user reports no tutor feedback. Do not claim tutor requirements approval.
+- Review prompt-log coverage and obtain tutor acceptance for the requested separate prompt document: page 1 of the brief specifies prompts in the report. The user requested no log edits during this refresh.
+- Record guide-only second-laptop setup and exact package/version and Windows/Python/camera details. Offline and pause/restart checks were confirmed passed by the user; no independent event log or exact test date is supplied.
+- Use the rebuilt source/private archives and their SHA256 companions; rebuild again if any submitted source changes after verification.
 - Download the LMS upload and check it before the deadline.
 - For the November project, run two-participant held-out evaluation, full command execution checks, twenty-hold duplicate-action runs, false-action measurement, latency measurement and stability testing.
 

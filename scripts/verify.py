@@ -1,5 +1,6 @@
 """Run release checks and save their actual output as assessment evidence."""
 
+import argparse
 from datetime import datetime, timezone
 import importlib.metadata
 import json
@@ -14,13 +15,19 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=ROOT / "docs/evidence/verification.json")
+    parser.add_argument("--synthetic-output", type=Path,
+                        default=ROOT / "experiments/synthetic-software-check.json")
+    args = parser.parse_args()
     commands = [
         ["-m", "ruff", "check", "gestureforge", "tests", "scripts"],
         ["-m", "mypy", "gestureforge", "scripts", "tests"],
         ["-m", "pytest", "-q"],
         ["-m", "gestureforge", "--smoke-test"],
+        ["-m", "gestureforge", "--studio", "--smoke-test"],
         ["-m", "gestureforge.evaluate", "--config", "experiments/prototype.json",
-         "--output", "experiments/synthetic-software-check.json"],
+         "--output", str(args.synthetic_output)],
     ]
     results = []
     environment = {**os.environ, "QT_QPA_PLATFORM": "offscreen",
@@ -40,8 +47,8 @@ def main():
                            ["numpy", "scikit-learn", "mediapipe", "PySide6", "opencv-contrib-python"]},
               "checks": results,
               "limitations": ["Synthetic evaluation is software evidence only.",
-                               "This script does not verify live participant performance or a second computer; see the assessment audit."]}
-    output = ROOT / "docs" / "evidence" / "verification.json"
+                               "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."]}
+    output = args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     return int(any(result["returncode"] for result in results))

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "deck_id": "harbor-onboarding",
+  "title": "Harbor Desk: a fictional team onboarding demo",
+  "cards": [
+    {"id": "welcome", "title": "Welcome to Harbor Desk", "body": "Harbor Desk is a fictional product used only for this demonstration. Learn a six-step onboarding workflow, try approved local resources and return to the presentation safely."},
+    {"id": "outcomes", "title": "What you will practise", "body": "Navigate a short briefing, estimate a training budget, open a reference and resource folder, bookmark a question, and recover from an unavailable resource. All prices and product claims are invented."},
+    {"id": "team", "title": "Your example team", "body": "A fictional team has eight new colleagues. Each person needs two training sessions. No real employee, customer or company information is used."},
+    {"id": "budget", "title": "Estimate the training budget", "body": "Each fictional session costs 15 credits per person. Open Calculator and calculate 8 × 2 × 15 = 240 credits. Return to GestureForge and explicitly resume. Opening Calculator alone does not complete the task."},
+    {"id": "reference", "title": "Find the onboarding reference", "body": "Open the locally bound product reference. Find the fictional escalation contact: the training coordinator. Return, resume and acknowledge that you found the answer."},
+    {"id": "resources", "title": "Locate the resource folder", "body": "Open the locally bound demo resource folder. Find corporate_reference.txt. Return and resume. The shared workspace stores a semantic resource slot; each computer chooses its own folder."},
+    {"id": "discussion", "title": "Save a discussion point", "body": "Bookmark this card for later discussion. Repeating BOOKMARK must keep one bookmark. Use the bookmark review list to return to it after the demonstration."},
+    {"id": "recovery", "title": "Recover without guessing", "body": "The evaluator will make a dedicated test reference unavailable. Attempt to open it, read the failure message and use the manual retry or rebind path. Do not delete or rename genuine user files."},
+    {"id": "resume", "title": "Pause, save and resume", "body": "Pause and reload the demo. Check the saved position and bookmark. Gesture control must remain paused and no resource may reopen automatically. Resume explicitly and show NEUTRAL before another command."},
+    {"id": "finish", "title": "Review the session", "body": "Review completed steps, launch requests, failures and retries. A launch request is not proof of task completion. Discuss one recognition limitation and the manual alternative."}
+  ]
+}

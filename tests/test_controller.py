@@ -1,4 +1,7 @@
 import math
+from dataclasses import replace
+
+import pytest
 
 from gestureforge.contracts import Prediction
 from gestureforge.controller import Controller
@@ -317,3 +320,33 @@ def test_non_finite_times_are_rejected_and_neutral_can_recover() -> None:
     controller.process(pred("NEUTRAL", 3, 1.16, session=session), 1.16)
     controller.process(pred("NEUTRAL", 4, 1.31, session=session), 1.31)
     assert controller.state == "READY"
+
+
+def test_custom_ids_are_exact_immutable_and_guarded_by_model_revision() -> None:
+    controller = Controller("s1", executable_gesture_ids=frozenset({"G1", "G2", "G3"}),
+                            model_version="model-v2")
+    controller.resume("s1")
+
+    def feed(label: str, frame: int, time: float, version: str = "model-v2"):
+        return controller.process(replace(pred(label, frame, time), model_version=version), time)
+
+    for frame, time in enumerate((0.0, 0.15, 0.31), 1):
+        assert feed("NEUTRAL", frame, time) is None
+    assert controller.state == "READY"
+    assert feed("g1", 4, 0.45) is None
+    assert controller.state == "READY"
+    assert feed("UNKNOWN", 5, 0.55) is None
+    assert feed("G1", 6, 0.65) is None
+    assert feed("G1", 7, 0.80, "old-model") is None
+    assert controller.state == "WAIT_NEUTRAL"
+    assert feed("G1", 8, 0.95) is None
+    assert controller.executable_gesture_ids == frozenset({"G1", "G2", "G3"})
+    with pytest.raises(AttributeError):
+        setattr(controller, "executable_gesture_ids", frozenset({"NEXT"}))
+
+
+@pytest.mark.parametrize("ids", [frozenset(), frozenset({"NEUTRAL"}), frozenset({"UNKNOWN"}),
+                                frozenset({"g1"}), frozenset({"G1", "G2", "G3", "G4"})])
+def test_invalid_executable_ids_are_rejected(ids: frozenset[str]) -> None:
+    with pytest.raises(ValueError):
+        Controller("s1", executable_gesture_ids=ids)

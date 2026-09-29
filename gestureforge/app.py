@@ -8,7 +8,7 @@ import time
 from uuid import uuid4
 
 import cv2
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
@@ -16,8 +16,9 @@ from PySide6.QtWidgets import (
 )
 
 from .capture import HandCamera
-from .contracts import Prediction
+from .contracts import Action, ActionType, Prediction, RoutingMode
 from .controller import Controller
+from .routing import RoutingSession
 from .viewer import Viewer
 
 CARD_STYLES = (
@@ -39,6 +40,12 @@ REJECTION_MESSAGES = {
     "multiple_hands": "Only show your enrolled hand.",
     "no_hand": "No hand detected. Keep your enrolled hand in view.",
     "observation has no landmarks": "No usable hand landmarks were found. Keep your hand in view.",
+}
+
+STUDIO_BINDINGS = {
+    "NEXT": Action(ActionType.NEXT),
+    "PREVIOUS": Action(ActionType.PREVIOUS),
+    "BOOKMARK": Action(ActionType.BOOKMARK),
 }
 
 
@@ -104,15 +111,25 @@ class CaptureWorker(Thread):
 
 class Window(QMainWindow):
     def __init__(self, model=None, feature_function=None, chosen_hand="Right", camera_index=0,
-                 asset=None, profile="pilot", data_note="No enrolled dataset loaded"):
+                 asset=None, profile="pilot", data_note="No enrolled dataset loaded",
+                 studio=False, studio_mode=RoutingMode.PREVIEW):
         super().__init__()
-        self.setWindowTitle("GestureForge | Assignment prototype")
+        self.studio = studio
+        self.studio_mode = studio_mode
+        self.setWindowTitle("GestureForge Studio" if studio else "GestureForge | Assignment prototype")
         self.resize(1150, 740)
         self.setMinimumSize(900, 620)
         self.model, self.feature_function = model, feature_function
         self.chosen_hand, self.camera_index, self.asset = chosen_hand, camera_index, asset
         self.profile = profile
-        self.controller = Controller(str(uuid4()), profile)
+        self.routing = (
+            RoutingSession(profile, self._model_version(), "demo-studio", STUDIO_BINDINGS, studio_mode)
+            if studio
+            else None
+        )
+        self.controller = (
+            self.routing.controller if self.routing is not None else Controller(str(uuid4()), profile)
+        )
         self.viewer = Viewer()
         self.worker = None
         self.last_result_at = 0.0
@@ -126,13 +143,23 @@ class Window(QMainWindow):
         header = QLabel("GestureForge")
         header.setObjectName("title")
         page.addWidget(header)
-        subtitle = QLabel("Personal gestures. Deliberate actions.   /   Assignment release 0.1")
+        subtitle_text = (
+            "Training demo workspace preview   /   project integration build"
+            if studio
+            else "Personal gestures. Deliberate actions.   /   Assignment release 0.1"
+        )
+        subtitle = QLabel(subtitle_text)
         subtitle.setObjectName("muted")
         page.addWidget(subtitle)
         self.notice = QLabel(data_note)
         self.notice.setWordWrap(True)
         self.notice.setObjectName("notice")
         page.addWidget(self.notice)
+        self.studio_status = QLabel("")
+        self.studio_status.setWordWrap(True)
+        self.studio_status.setObjectName("notice")
+        if studio:
+            page.addWidget(self.studio_status)
         columns = QHBoxLayout()
         page.addLayout(columns, 1)
         left = QVBoxLayout()
@@ -153,7 +180,11 @@ class Window(QMainWindow):
         self.progress.setValue(0)
         self.progress.setTextVisible(False)
         left.addWidget(self.progress)
-        self.detail = QLabel("Start → neutral pose → hold NEXT → return to neutral")
+        self.detail = QLabel(
+            "Start -> neutral pose -> hold a bound gesture -> return to neutral"
+            if studio
+            else "Start → neutral pose → hold NEXT → return to neutral"
+        )
         self.detail.setWordWrap(True)
         self.detail.setObjectName("muted")
         left.addWidget(self.detail)
@@ -218,12 +249,9 @@ class Window(QMainWindow):
         reset_button = QPushButton("Restart deck")
         reset_button.clicked.connect(self.restart_deck)
         controls.addWidget(reset_button)
-        boundary = QLabel(
-            "NEXT: active  •  PREVIOUS / BOOKMARK: recognition preview only\n"
-            "November extension: guided enrolment, profiles, all three actions and saved decks."
-        )
-        boundary.setObjectName("muted")
-        page.addWidget(boundary)
+        self.boundary = QLabel()
+        self.boundary.setObjectName("muted")
+        page.addWidget(self.boundary)
         self.shortcuts = []
         for key, slot in [("Right", self.next_card), ("Escape", self.pause)]:
             shortcut = QShortcut(QKeySequence(key), self)
@@ -262,7 +290,60 @@ class Window(QMainWindow):
             QProgressBar#deckProgress { background: #d5d1bf; height: 10px; }
             QProgressBar#deckProgress::chunk { background: #d97757; }
         """)
+        self.render_studio_status()
         self.render_card()
+
+    def _model_version(self) -> str:
+        return getattr(self.model, "model_version", "prototype-v1")
+
+    def action_text(self, action: Action) -> str:
+        if action.kind == ActionType.OPEN_SHORTCUT:
+            return f"open shortcut {action.shortcut_id}"
+        return {
+            ActionType.NEXT: "show next card",
+            ActionType.PREVIOUS: "show previous card",
+            ActionType.BOOKMARK: "bookmark this card",
+            ActionType.ADVANCE_STAGE: "advance stage",
+        }[action.kind]
+
+    def render_studio_status(self):
+        if not self.studio:
+            self.boundary.setText(
+                "NEXT: active  •  PREVIOUS / BOOKMARK: recognition preview only\n"
+                "November extension: guided enrolment, profiles, all three actions and saved decks."
+            )
+            return
+        assert self.routing is not None
+        snapshot = self.routing.snapshot
+        bindings = "  |  ".join(
+            f"{gesture}: would {self.action_text(action)}"
+            for gesture, action in snapshot.bindings
+        )
+        mode = snapshot.mode.value.title()
+        self.boundary.setText(
+            f"Studio {mode}: simulated gesture actions only. Manual deck controls remain active.\n"
+            f"{bindings}"
+        )
+        missing = []
+        if self.model is None:
+            missing.append("starter/personal recogniser")
+        missing.extend(["profile enrolment", "workspace/runbook storage", "validated shortcut dispatcher"])
+        self.studio_status.setText(
+            "Studio preview is running without: " + ", ".join(missing) + "."
+        )
+
+    def configure_studio(self, *, context_id: str = "demo-studio",
+                         mode: RoutingMode | None = None) -> None:
+        if self.routing is None:
+            return
+        self.pause()
+        self.routing.configure(
+            self.profile, self._model_version(), context_id, STUDIO_BINDINGS,
+            mode or self.routing.snapshot.mode,
+        )
+        self.controller = self.routing.controller
+        self.state.setText("Paused after Studio context change. Resume and show NEUTRAL.")
+        self.render_studio_status()
 
     def card_topic_text(self) -> str:
         title = self.viewer.current_card.title
@@ -326,21 +407,31 @@ class Window(QMainWindow):
     def start_camera(self):
         if self.model is None or self.worker is not None:
             return
-        session = str(uuid4())
-        self.controller.resume(session)
+        if self.routing is not None:
+            snapshot = self.routing.resume()
+            session = snapshot.session_id
+            profile = snapshot.profile_id
+        else:
+            session = str(uuid4())
+            profile = self.profile
+            self.controller.resume(session)
         self.last_result_at = time.monotonic()
         self.received_first_frame = False
         self.worker = CaptureWorker(self.model, self.feature_function, self.chosen_hand,
-                                    self.camera_index, self.asset, session, self.profile)
+                                    self.camera_index, self.asset, session, profile)
         self.worker.start()
         self.start_button.setEnabled(False)
         self.state.setText("Opening camera • show your enrolled neutral pose")
         self.log({"type": "start", "session": session, "timestamp": time.monotonic(),
                   "camera_index": self.camera_index, "chosen_hand": self.chosen_hand,
+                  "mode": self.routing.snapshot.mode.value if self.routing else "ASSIGNMENT",
                   "model": self.model.to_config() if hasattr(self.model, "to_config") else None})
 
     def pause(self):
-        self.controller.pause()
+        if self.routing is not None:
+            self.routing.pause()
+        else:
+            self.controller.pause()
         if self.worker is not None:
             self.worker.requestInterruption()
         self.progress.setValue(0)
@@ -381,10 +472,14 @@ class Window(QMainWindow):
                 Qt.TransformationMode.SmoothTransformation,
             ))
             display = prediction.label if prediction.accepted else "Unrecognised"
-            if prediction.label in {"PREVIOUS", "BOOKMARK"} and prediction.accepted:
+            if not self.studio and prediction.label in {"PREVIOUS", "BOOKMARK"} and prediction.accepted:
                 display += " (preview only)"
             self.prediction.setText(f"Prediction: {display}")
-            event = self.controller.process(prediction, time.monotonic())
+            event = (
+                self.routing.process(prediction, time.monotonic())
+                if self.routing is not None
+                else self.controller.process(prediction, time.monotonic())
+            )
             self.state.setText(self.controller.state.replace("_", " "))
             self.progress.setValue(round(self.controller.progress * 100))
             if self.controller.state == "WAIT_NEUTRAL" and prediction.rejection_reason in {
@@ -400,15 +495,33 @@ class Window(QMainWindow):
             self.detail.setText(guidance or self.controller.last_error or
                                 "Return to neutral between commands. Esc pauses immediately.")
             if event:
-                old_topic = self.card_topic_text()
-                moved = self.viewer.apply(event)
-                event = replace(event, resulting_position=self.viewer.position)
-                self.render_card()
-                self.log({"type": "command", "source": "gesture", **asdict(event)})
-                self.feedback.setText(
-                    f"NEXT accepted: now showing {self.card_topic_text()} (from {old_topic})."
-                    if moved else f"NEXT accepted, still showing {old_topic}; this is the final card."
-                )
+                if self.routing is not None:
+                    result = self.routing.route(event, time.monotonic())
+                    if result.simulated_action is not None:
+                        action = self.action_text(result.simulated_action)
+                        self.feedback.setText(
+                            f"Studio simulation: {event.command} would {action}."
+                        )
+                        self.log({
+                            "type": "studio_simulation", "source": "gesture",
+                            "event_id": event.event_id, "command": event.command,
+                            "action": result.simulated_action.kind.value,
+                            "timestamp": time.monotonic(),
+                        })
+                    elif result.rejection_reason:
+                        self.feedback.setText(
+                            f"Studio routing rejected {event.command}: {result.rejection_reason}."
+                        )
+                else:
+                    old_topic = self.card_topic_text()
+                    moved = self.viewer.apply(event)
+                    event = replace(event, resulting_position=self.viewer.position)
+                    self.render_card()
+                    self.log({"type": "command", "source": "gesture", **asdict(event)})
+                    self.feedback.setText(
+                        f"NEXT accepted: now showing {self.card_topic_text()} (from {old_topic})."
+                        if moved else f"NEXT accepted, still showing {old_topic}; this is the final card."
+                    )
         elif (self.controller.state != "PAUSED" and time.monotonic() - self.last_result_at
               > (2 if self.received_first_frame else 20)):
             self.pause()
@@ -420,6 +533,12 @@ class Window(QMainWindow):
             self.controller.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
             self.start_button.setEnabled(self.model is not None)
+
+    def changeEvent(self, event):
+        if self.studio and event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
+            self.pause()
+            self.state.setText("Paused after focus loss. Resume Studio before gestures.")
+        super().changeEvent(event)
 
     def closeEvent(self, event):
         self.pause()

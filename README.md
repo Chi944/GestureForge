@@ -2,11 +2,11 @@
 
 # GestureForge
 
-### Personal gesture recognition for deliberate card navigation
+### Personal gesture recognition for deliberate card navigation and demo control
 
-**ICT304 Assignment 1** · Python 3.11 · Local desktop prototype
+**ICT304 Assignment 1 submitted** · **Final project in progress** · Python 3.11
 
-[Run the app](#run-the-prototype) · [Results](docs/evidence/RESULTS.md) · [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
+[Run the app](#run-the-prototype) · [Project build](#project-build) · [Results](docs/evidence/RESULTS.md) · [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
 
 </div>
 
@@ -23,6 +23,40 @@ The assignment controls its own supplied ten-card deck. **It is not connected to
 | PREVIOUS / BOOKMARK | Recognition preview only; no viewer action |
 | Unrecognised pose | No command; brief transitions preserve readiness, persistent rejection requires NEUTRAL |
 | Invalid or lost hand | No command; show NEUTRAL again |
+
+## Project build
+
+The final project is now scoped as **GestureForge Studio** for corporate training and product demonstrations. It extends the submitted assignment with personal profiles, three mapped gesture actions, Quick Actions for local resources, a validated demo deck/runbook, session review and full evaluation. Contextual AI assistance was removed from scope; the AI subsystem remains personal kNN/SVM gesture recognition.
+
+Current project foundation on `main`:
+
+| Area | Status |
+| :--- | :--- |
+| Shared routing contract | Implemented and tested in `gestureforge/contracts.py`, `gestureforge/controller.py` and `gestureforge/routing.py` |
+| Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
+| Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
+| Studio preview | Opt-in `--studio` simulation; shows would-be actions without executing gesture-driven viewer or desktop actions |
+| Full Studio workflow | Starter data, profiles, readiness scoring, runbooks, persistence and real shortcut dispatch remain to be integrated |
+
+Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
+
+```powershell
+.\run.cmd --studio
+# Preview with your own existing local dataset and camera index:
+.\run.cmd --studio --dataset data/local/pilot/manifest.json --multiplier 2 --margin 1.5 --camera 1
+```
+
+Without a dataset, the manual viewer opens and explains why camera simulation is unavailable. In Studio, switching simulation mode/context or losing application focus pauses capture; resume explicitly. Default launch without `--studio` preserves assignment behaviour.
+
+[Approved plan](docs/project/PROJECT_PLAN.md) · [Progress](docs/project/PROGRESS.md) · [Team guide](docs/project/TEAM_GUIDE.md) · [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) · [Javier brief](docs/project/JAVIER_HANDOFF.md) · [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
+
+Verify the project without overwriting historical assignment evidence:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/verify.py --output docs/project/verification.json --synthetic-output experiments/local/project-software-check.json
+```
+
+[Current project checks](docs/project/verification.json) record software evidence. They do not establish live-camera performance or completion of remaining features.
 
 ## Run the prototype
 
@@ -68,7 +102,7 @@ bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multi
 
 Allow camera access for the launching application when macOS asks. Without a personal dataset, the viewer opens with keyboard/mouse controls and camera control stays disabled.
 
-All 41 pinned packages resolved for Apple Silicon/Python 3.11. The current software checks passed **82 tests**, lint, type checking, GUI smoke and synthetic evaluation on Windows. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
+All 41 pinned packages resolved for Apple Silicon/Python 3.11. The current software checks passed **116 tests**, lint, type checking, GUI smoke, Studio smoke and synthetic evaluation on Windows. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
 
 ### Use gesture control
 
@@ -114,7 +148,7 @@ One consenting participant supplied 160 training and 160 validation samples in s
 
 Unfamiliar gestures should display **Unrecognised**. PREVIOUS and BOOKMARK are not fallback labels. However, a classifier can mistake an unfamiliar pose for a known pose: the historical model accepted 25/40 negative samples as BOOKMARK and 10/40 as NEUTRAL. Zero NEXT predictions in those samples does not prove zero live false actions. The v3 comparison above records the improvement separately from this historical baseline.
 
-P01 confirmed two held NEXT gestures each advanced once after neutral rearming. P02 reported successful assisted ZIP use on another laptop, NEXT traversal from card 1 to 10, and one action during a five-second hold. P02's exact release/environment and guide-only installation, pause/restart and disconnected-network checks remain unverified. Orientation, movement, framing and distance remain limitations.
+P01 confirmed two held NEXT gestures each advanced once after neutral rearming. P02 reported successful assisted ZIP use on another laptop, NEXT traversal from card 1 to 10, and one action during a five-second hold. On 29 September the user also confirmed that second-laptop offline operation and camera pause/restart checks passed. These are user-reported results; the exact release/environment and an unaided guide-only installation remain undocumented. Orientation, movement, framing and distance remain limitations.
 
 ## Verify and reproduce
 
@@ -137,19 +171,19 @@ CI runs locally with `scripts/verify.py`; release scripts produce the transferab
 
 | What the marker needs | Location |
 | :--- | :--- |
-| Problem, requirements, lifecycle, architecture, technique investigation and results | Local `GestureForge_Technical_Report.docx`, submitted separately |
+| Problem, requirements, lifecycle, architecture, technique investigation and results | Local `GestureForge_TechnicalReport_Updated.docx`, submitted separately |
 | Requirement to test mapping and planned full-system evaluation | [Test plan](docs/TEST_PLAN.md) |
 | Measured pilot and qualitative hardware/laptop evidence | [Results](docs/evidence/RESULTS.md) |
 | Installation, operation and data protocol | [User guide](docs/USER_GUIDE.md), [Windows guide](docs/WINDOWS_LAPTOP.md), [collection protocol](docs/DATA_COLLECTION.md) |
-| AI assistance declaration and preserved prompts | [prompt_log.md](prompt_log.md) |
-| Decisions, alternatives, risks and scope boundaries | [decision_log.md](decision_log.md) |
+| AI assistance declaration and recorded prompts | Local `submission/Prompt_Log.docx`, submitted separately |
+| Decisions, alternatives, risks and scope boundaries | Local `submission/Decision_Log.docx`, submitted separately |
 | Agile tools and progress | [Agile record](docs/AGILE.md), [backlog snapshot](docs/backlog.csv) |
-| Tools record and required declaration | [Tools and coordination](docs/CONTRIBUTIONS.md), [official unsigned form](docs/submission/Group_Declaration_TO_COMPLETE.docx) |
+| Tools record and required declaration | [Tools and coordination](docs/CONTRIBUTIONS.md); local `groupDeclarationSheet.docx`, submitted separately |
 | Dependencies, sources and reproducibility | [Licences and references](LICENSES.md), [requirements.lock](requirements.lock), [model manifest](assets/model_manifest.json) |
 
-The technical report, `Prompt_Log.docx` and `Decision_Log.docx` are separate local Word deliverables in `docs/submission/`, excluded from GitHub and both code ZIPs. Submit all three alongside the code and completed declaration. The Markdown logs above remain the source records; the technical report contains a concise AI-assistance declaration, not the full logs.
+The technical report, `Prompt_Log.docx`, `Decision_Log.docx` and completed declaration are private deliverables maintained outside this repository in the assignment's `submission/` folder. They are excluded from GitHub and both code ZIPs. Submit the reviewed Word deliverables and completed declaration alongside the code.
 
-**Before submission:** complete full team identifiers, actual contributions and agreed percentages, AI-use review, retention arrangements, remaining laptop checks, report review and signatures. Keep the signed declaration and private data in the private LMS package. Verify the downloaded LMS upload. These human steps have not been completed by automated software checks.
+**Before submission:** confirm same-tutorial/team registration, review the AI disclosure and separate local logs, and verify the exact upload package. Page 1 of the course brief asks for prompts in the report; this assignment keeps them in a separate Word log at the user's request, and acceptance of that arrangement has not been confirmed. Keep personal details and authorised participant data in the private LMS submission, then download and verify the uploaded files.
 
 BOOKMARK will mark the current card for later review in the final project, with bookmarks saved and restored with the deck state. Repeating BOOKMARK on the same card will not create duplicates. It does not advance a card; in this assignment it only displays recognition.
 
@@ -163,7 +197,7 @@ BOOKMARK will mark the current card for later review in the final project, with 
 | Local numeric dataset and configuration | Multiple profile creation, reload and deletion |
 | Preliminary comparison and controller tests | Saved deck state and bookmarks; held-out two-profile and full-system evaluation |
 
-Dynamic gestures, sign-language translation, two-handed commands, PowerPoint/OS control, cloud accounts, mobile apps and an installer are outside the committed scope.
+Dynamic gestures, sign-language translation, two-handed commands, direct PowerPoint control, arbitrary OS scripting, background control, cloud accounts, mobile apps and an installer are outside the committed scope. The expanded project includes bounded user-configured desktop shortcuts; these are planned separately from the submitted assignment.
 
 ## Repository layout
 
@@ -174,10 +208,8 @@ assets/             Supplied deck and model provenance
 experiments/        Reproducible configurations
 scripts/            Setup, verification and packaging
 docs/               Guides, traceability and evidence
-prompt_log.md       Preserved user prompts and AI declaration
-decision_log.md     Decisions and risks
 ```
 
 Private data, environments, generated ZIPs and local working archives are ignored by Git. Redundant drafts, older PDFs and internal checklists are retained locally rather than included in the graded source. See [release instructions](releases/README.md) for the source and authorised private marker packages.
 
-Jameson and Deston are the supplied team names; verified responsibilities and full identifiers remain pending. Codex assistance is disclosed in the prompt log. MediaPipe, OpenCV, PySide6, NumPy and scikit-learn are credited in the licence record.
+Team identities and agreed contributions are recorded in the separate local report and declaration. Codex assisted planning, code, tests, documentation and troubleshooting; the team remains responsible for understanding and checking the submitted work. MediaPipe, OpenCV, PySide6, NumPy and scikit-learn are credited in the licence record.

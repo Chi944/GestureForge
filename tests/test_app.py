@@ -10,10 +10,11 @@ import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QApplication
 
 from gestureforge.app import Window
-from gestureforge.contracts import Prediction
+from gestureforge.contracts import Prediction, RoutingMode
 
 
 @pytest.fixture(scope="module")
@@ -85,6 +86,27 @@ def _disable_logging(window: Window) -> None:
     window._log_failed = True
 
 
+def _studio_prediction(
+    window: Window,
+    frame_id: int,
+    timestamp: float,
+    label: str,
+    *,
+    accepted: bool = True,
+) -> Prediction:
+    assert window.routing is not None
+    snapshot = window.routing.snapshot
+    return Prediction(
+        snapshot.session_id,
+        snapshot.profile_id,
+        frame_id,
+        timestamp,
+        label,
+        accepted,
+        model_version=snapshot.model_version,
+    )
+
+
 def test_window_starts_keyboard_only_and_deck_controls_work(qapp) -> None:
     window = Window(model=None, data_note="keyboard only")
     _disable_logging(window)
@@ -118,6 +140,111 @@ def test_window_starts_keyboard_only_and_deck_controls_work(qapp) -> None:
         assert window.card_badge.text() == "1"
         assert "Card 1 of 10" in window.position.text()
         assert window.deck_progress.value() == 1
+    finally:
+        window.close()
+
+
+def test_studio_no_dataset_starts_as_simulated_shell(qapp) -> None:
+    window = Window(model=None, data_note="studio no data", studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.start_button.isEnabled() is False
+        assert "starter/personal recogniser" in window.studio_status.text()
+        assert "Studio Preview" in window.boundary.text()
+        assert "NEXT: would show next card" in window.boundary.text()
+        assert "PREVIOUS: would show previous card" in window.boundary.text()
+        assert "BOOKMARK: would bookmark this card" in window.boundary.text()
+        assert window.viewer.position == 0
+    finally:
+        window.close()
+
+
+def test_studio_preview_simulates_without_moving_deck(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60), studio=True)
+    _disable_logging(window)
+    current = [100.0]
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
+    assert window.routing is not None
+    window.routing.resume()
+    window.controller = window.routing.controller
+    packets = []
+    for frame_id, timestamp, label in [
+        (1, 100.00, "NEUTRAL"),
+        (2, 100.15, "NEUTRAL"),
+        (3, 100.31, "NEUTRAL"),
+        (4, 100.45, "NEXT"),
+        (5, 100.62, "NEXT"),
+        (6, 100.78, "NEXT"),
+        (7, 100.91, "NEXT"),
+    ]:
+        packets.append((_frame(), _studio_prediction(window, frame_id, timestamp, label)))
+    window.worker = FakeWorker(packets)
+
+    try:
+        for _, prediction in list(packets):
+            current[0] = prediction.timestamp
+            window.poll()
+
+        assert window.viewer.position == 0
+        assert "Studio simulation: NEXT would show next card." in window.feedback.text()
+        assert "Card 1 of 10" in window.position.text()
+    finally:
+        window.close()
+
+
+def test_studio_context_change_drops_old_identity(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60), studio=True)
+    _disable_logging(window)
+    current = [200.0]
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
+    assert window.routing is not None
+    old_snapshot = window.routing.resume()
+    stale = Prediction(
+        old_snapshot.session_id,
+        old_snapshot.profile_id,
+        1,
+        200.0,
+        "NEXT",
+        True,
+        model_version=old_snapshot.model_version,
+    )
+    worker = FakeWorker([(_frame(), stale)])
+    window.worker = worker
+
+    try:
+        window.configure_studio(context_id="stage-2", mode=RoutingMode.REHEARSAL)
+        current[0] = 200.0
+        window.poll()
+
+        assert worker.interrupted is True
+        assert window.viewer.position == 0
+        assert "Studio simulation" not in window.feedback.text()
+        assert window.routing.snapshot.context_id == "stage-2"
+        assert window.routing.snapshot.mode == RoutingMode.REHEARSAL
+    finally:
+        window.close()
+
+
+def test_studio_focus_loss_pauses_and_invalidates_worker(monkeypatch, qapp) -> None:
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    window.routing.resume()
+    worker = FakeWorker()
+    window.worker = worker
+    monkeypatch.setattr(window, "isActiveWindow", lambda: False)
+
+    try:
+        window.changeEvent(QEvent(QEvent.Type.ActivationChange))
+
+        assert worker.interrupted is True
+        assert window.routing.state == "PAUSED"
+        assert "focus loss" in window.state.text()
     finally:
         window.close()
 
@@ -322,3 +449,16 @@ def test_main_rejects_synthetic_dataset_for_live_control(tmp_path) -> None:
 
     assert completed.returncode == 1
     assert "Synthetic fixtures cannot enable live control" in completed.stderr
+
+
+def test_main_studio_smoke_starts_without_dataset() -> None:
+    completed = subprocess.run(
+        [sys.executable, "-m", "gestureforge", "--studio", "--smoke-test"],
+        check=False,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+        timeout=20,
+    )
+
+    assert completed.returncode == 0
