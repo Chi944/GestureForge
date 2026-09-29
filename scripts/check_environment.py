@@ -14,7 +14,8 @@ def main():
     parser.add_argument("--camera-index", type=int, default=0, help="Camera index for --camera")
     parser.add_argument("--model", action="store_true", help="Verify model and run blank-image inference without opening a camera")
     args = parser.parse_args()
-    report: dict[str, object] = {"python": platform.python_version(), "platform": platform.platform()}
+    report: dict[str, object] = {"python": platform.python_version(), "platform": platform.platform(),
+                                 "architecture": platform.machine()}
     for name in ["numpy", "scikit-learn", "mediapipe", "opencv-contrib-python", "PySide6"]:
         report[name] = importlib.metadata.version(name)
     if args.model:
@@ -25,7 +26,7 @@ def main():
         asset = assets / "hand_landmarker.task"
         expected = json.loads((assets / "model_manifest.json").read_text(encoding="utf-8"))
         if not asset.is_file():
-            raise SystemExit("Missing model. Run setup.cmd while connected to the internet.")
+            raise SystemExit("Missing model. Run: python scripts/download_model.py while online.")
         digest = hashlib.sha256(asset.read_bytes()).hexdigest()
         if digest != expected["sha256"]:
             raise SystemExit("Model checksum mismatch. Replace the model through verified setup.")

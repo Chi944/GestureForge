@@ -26,7 +26,11 @@ The assignment controls its own supplied ten-card deck. **It is not connected to
 
 ## Run the prototype
 
-Use **64-bit Python 3.11 on an Intel/AMD Windows laptop**. Initial installation needs internet. macOS compatibility has not been verified for this pinned release.
+Initial installation needs internet. Clone the repository or extract a fresh source ZIP; create the Python environment on the computer that will run the app.
+
+### Windows
+
+Use **64-bit Python 3.11 on an Intel/AMD laptop**.
 
 Extract the source ZIP or clone this repository, then open PowerShell in its folder:
 
@@ -44,6 +48,30 @@ For the enrolled P01 user on the development computer:
 .\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1
 ```
 
+### Apple Silicon Mac
+
+Use **macOS 13+ and native Python 3.11 (`arm64`)**. Open Terminal in the project folder:
+
+```bash
+python3.11 scripts/setup_macos.py
+bash run.sh
+```
+
+Setup installs the pinned dependencies and verifies the hand model. Do not copy a Windows `.venv` or run Python through Rosetta. See the [Mac guide](docs/MACOS.md) for Python installation, camera permissions and personal gesture collection.
+
+After collecting your own dataset in `data/local/mac-pilot`, check the camera and launch gesture control:
+
+```bash
+.venv/bin/python scripts/check_environment.py --camera --camera-index 0
+bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 0
+```
+
+Allow camera access for the launching application when macOS asks. Without a personal dataset, the viewer opens with keyboard/mouse controls and camera control stays disabled.
+
+All 41 pinned packages resolved for Apple Silicon/Python 3.11. The current software checks passed **82 tests**, lint, type checking, GUI smoke and synthetic evaluation on Windows. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
+
+### Use gesture control
+
 Camera indices can change. Close other camera applications and select the index that works on your computer. The source repository excludes P01's private samples; use the authorised private marker ZIP to reproduce P01, or follow the [collection instructions](docs/DATA_COLLECTION.md) to enrol your own hand in a separate folder. Never overwrite the retained P01 dataset.
 
 1. Click **Start camera control** and show the enrolled NEUTRAL pose until READY.
@@ -53,7 +81,7 @@ Camera indices can change. Close other camera applications and select the index 
 
 For P01, NEUTRAL was an open palm and NEXT was a fist. Another person's gestures must match their own collection. Keep the whole enrolled hand visible, still and similarly oriented to the training samples.
 
-[Full user guide](docs/USER_GUIDE.md) · [Second Windows laptop setup](docs/WINDOWS_LAPTOP.md)
+[Full user guide](docs/USER_GUIDE.md) · [Second Windows laptop setup](docs/WINDOWS_LAPTOP.md) · [Apple Silicon Mac setup](docs/MACOS.md)
 
 ## How it works
 

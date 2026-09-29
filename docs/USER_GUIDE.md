@@ -1,5 +1,8 @@
 # GestureForge User Guide
 
+For Apple Silicon macOS installation, camera permissions and equivalent Terminal commands,
+use the [Mac setup guide](MACOS.md). The `.cmd` and PowerShell commands below are for Windows.
+
 Status: assignment guide aligned to implemented entry points. Software verification is recorded in `docs/evidence/verification.json`; measured pilot results, setup/package checks, P02 qualitative feedback and limitations are consolidated in `docs/evidence/RESULTS.md`. P02 reported the core second-laptop workflow working; pause/restart, offline use and guide-only setup remain unverified.
 
 ## Purpose
