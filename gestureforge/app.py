@@ -113,6 +113,8 @@ class Window(QMainWindow):
     def __init__(self, model=None, feature_function=None, chosen_hand="Right", camera_index=0,
                  asset=None, profile="pilot", data_note="No enrolled dataset loaded",
                  studio=False, studio_mode=RoutingMode.PREVIEW):
+        if studio and studio_mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
+            raise ValueError("Studio currently supports simulation modes only")
         super().__init__()
         self.studio = studio
         self.studio_mode = studio_mode
@@ -127,9 +129,7 @@ class Window(QMainWindow):
             if studio
             else None
         )
-        self.controller = (
-            self.routing.controller if self.routing is not None else Controller(str(uuid4()), profile)
-        )
+        self.controller = Controller(str(uuid4()), profile)
         self.viewer = Viewer()
         self.worker = None
         self.last_result_at = 0.0
@@ -294,7 +294,7 @@ class Window(QMainWindow):
         self.render_card()
 
     def _model_version(self) -> str:
-        return getattr(self.model, "model_version", "prototype-v1")
+        return getattr(self.model, "model_version", "unversioned")
 
     def action_text(self, action: Action) -> str:
         if action.kind == ActionType.OPEN_SHORTCUT:
@@ -336,12 +336,13 @@ class Window(QMainWindow):
                          mode: RoutingMode | None = None) -> None:
         if self.routing is None:
             return
+        if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
+            raise ValueError("Studio currently supports simulation modes only")
         self.pause()
         self.routing.configure(
             self.profile, self._model_version(), context_id, STUDIO_BINDINGS,
             mode or self.routing.snapshot.mode,
         )
-        self.controller = self.routing.controller
         self.state.setText("Paused after Studio context change. Resume and show NEUTRAL.")
         self.render_studio_status()
 
@@ -458,6 +459,7 @@ class Window(QMainWindow):
     def poll(self):
         if self.worker is None:
             return
+        control = self.routing or self.controller
         packet = self.worker.take_latest()
         if packet is not None:
             frame, prediction = packet
@@ -480,9 +482,9 @@ class Window(QMainWindow):
                 if self.routing is not None
                 else self.controller.process(prediction, time.monotonic())
             )
-            self.state.setText(self.controller.state.replace("_", " "))
-            self.progress.setValue(round(self.controller.progress * 100))
-            if self.controller.state == "WAIT_NEUTRAL" and prediction.rejection_reason in {
+            self.state.setText(control.state.replace("_", " "))
+            self.progress.setValue(round(control.progress * 100))
+            if control.state == "WAIT_NEUTRAL" and prediction.rejection_reason in {
                 "distance_rejection", "margin_rejection",
             }:
                 guidance = "Show NEUTRAL until READY, then retry."
@@ -492,7 +494,7 @@ class Window(QMainWindow):
                     if prediction.rejection_reason
                     else ""
                 )
-            self.detail.setText(guidance or self.controller.last_error or
+            self.detail.setText(guidance or control.last_error or
                                 "Return to neutral between commands. Esc pauses immediately.")
             if event:
                 if self.routing is not None:
@@ -522,7 +524,7 @@ class Window(QMainWindow):
                         f"NEXT accepted: now showing {self.card_topic_text()} (from {old_topic})."
                         if moved else f"NEXT accepted, still showing {old_topic}; this is the final card."
                     )
-        elif (self.controller.state != "PAUSED" and time.monotonic() - self.last_result_at
+        elif (control.state != "PAUSED" and time.monotonic() - self.last_result_at
               > (2 if self.received_first_frame else 20)):
             self.pause()
             self.state.setText("Camera stalled. Wait for shutdown, then restart.")
@@ -530,7 +532,7 @@ class Window(QMainWindow):
             error = self.worker.error
             self.worker.wait()
             self.worker = None
-            self.controller.fault(error or "Camera stopped")
+            control.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
             self.start_button.setEnabled(self.model is not None)
 

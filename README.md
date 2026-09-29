@@ -46,7 +46,7 @@ Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Jav
 .\run.cmd --studio --dataset data/local/pilot/manifest.json --multiplier 2 --margin 1.5 --camera 1
 ```
 
-Without a dataset, the manual viewer opens and explains why camera simulation is unavailable. In Studio, switching simulation mode/context or losing application focus pauses capture; resume explicitly. Default launch without `--studio` preserves assignment behaviour.
+Without a dataset, the manual viewer opens and explains why camera simulation is unavailable. Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Mode/context switching is currently an integration API, not an on-screen editor. Default launch without `--studio` preserves assignment behaviour.
 
 [Approved plan](docs/project/PROJECT_PLAN.md) · [Progress](docs/project/PROGRESS.md) · [Team guide](docs/project/TEAM_GUIDE.md) · [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) · [Javier brief](docs/project/JAVIER_HANDOFF.md) · [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
 
@@ -102,7 +102,7 @@ bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multi
 
 Allow camera access for the launching application when macOS asks. Without a personal dataset, the viewer opens with keyboard/mouse controls and camera control stays disabled.
 
-All 41 pinned packages resolved for Apple Silicon/Python 3.11. The current software checks passed **116 tests**, lint, type checking, GUI smoke, Studio smoke and synthetic evaluation on Windows. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
+All 41 pinned packages resolved for Apple Silicon/Python 3.11. The [current project checks](docs/project/verification.json) record the Windows test, lint, type-checking, GUI-smoke and synthetic-evaluation results. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
 
 ### Use gesture control
 

@@ -1,29 +1,32 @@
-# GestureForge Studio progress snapshot
+# GestureForge Studio progress
 
-Date: 30 September 2026
+Snapshot: 30 September 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
 
-This progress record uses the base-hour estimates in `TEAM_BACKLOG.csv`. It counts only implemented or reviewable work with repository evidence. Planned teammate work, Trello card creation, future consented data collection and unmerged branches are not counted as complete.
+## Completion measure
 
-## Current build status
+Progress = the original estimated hours of fully completed tasks / the total original estimated hours in [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv). These are task weights, not hours actually worked. In-progress tasks receive no completion credit until their acceptance evidence is complete.
 
-| Owner | Evidence counted | Earned / planned hours | Progress |
-|---|---|---:|---:|
-| Deston | Assignment baseline preserved; shared routing/controller contracts; Studio preview shell; fictional scenario/protocol; team handoff docs; local verification | 15 / 75 | 20% |
-| Hau Jie | No recognition/profile project branch or PR present on remote yet | 0 / 75 | 0% |
-| Javier | No shortcut/viewer/workspace project branch or PR present on remote yet | 0 / 73 | 0% |
-| Team total | Published foundation only; feature work remains ahead | 15 / 223 | 7% |
+| Owner | Completed task weight / planned | Verified completion |
+| :--- | ---: | ---: |
+| Deston | 8 / 75 | 10.7% |
+| Hau Jie | 0 / 75 | 0% verified |
+| Javier | 0 / 73 | 0% verified |
+| Team | 8 / 223 | 3.6% |
 
-## Verified foundation
+Two of 29 tasks are complete: GF-P01 (preserve/review the assignment baseline, 2 hours) and GF-P32 (author the fictional scenario and evaluation protocol, 6 hours). GF-P32 is content/protocol authoring; this does not claim an implemented runbook or completed user study. No teammate feature branches or open PRs were available during this snapshot. Zero verified completion does not mean a teammate has done no work locally.
 
-- `gestureforge/contracts.py`, `gestureforge/controller.py` and `gestureforge/routing.py` define and test the shared routing boundary.
-- `python -m gestureforge --studio --smoke-test` opens a simulation-only Studio shell. It does not yet dispatch desktop shortcuts or replace the assignment viewer.
-- `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` give each member their first tasks and branch rules.
-- `docs/project/DEMO_SCENARIO.md`, `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` provide the fictional corporate training scenario.
+## Built, but broader tasks still in progress
 
-## Not complete yet
+- **GF-P02 — Deston:** shared typed actions, immutable routing snapshots, controller integration, invalidation and simulation routing are implemented and tested. The complete profile/workspace schemas and screen contracts still need integration review with the builders.
+- **GF-P10 — Deston:** the opt-in Studio preview opens, simulates held gesture actions, pauses on focus loss, and invalidates old context events. Starter/profile selection, readiness checks and the final integrated session workflow remain to be built. The preview cannot dispatch desktop actions.
+- **GF-P05 — Javier:** Windows launch and camera-handoff probe is selected as the first task; no completion evidence has been received.
 
-- Hau Jie's starter recogniser, personal profile lifecycle, guided enrolment, readiness scoring and final recognition evaluation.
-- Javier's viewer bookmark/persistence extension, workspace/runbook storage, desktop shortcut dispatcher, Quick Actions and session summary.
-- Deston's final integrated Studio workflow, held-out evaluation, stability run, guide/video/report/slides and release packaging.
+Software checks are recorded in [verification.json](verification.json). Automated simulation is not live-camera, Windows launch, starter-recognition or second-laptop evidence. The submitted assignment archive remains unchanged. GitHub Actions is manual-only; these checks ran locally.
 
-Fresh local verification passed Ruff, mypy, 116 pytest tests, assignment GUI smoke, Studio GUI smoke and synthetic evaluation. GitHub Actions remains manual-only.
+## Next deliverables
+
+- **Hau Jie:** GF-P03 custom vocabulary/legacy import and GF-P28 consented starter feasibility spike, on `codex/hau-jie-profiles`.
+- **Javier:** GF-P05 Windows target/camera probe, followed by GF-P08 viewer actions and GF-P09 validated storage, on `codex/javier-shortcuts`.
+- **Deston:** review the first deliverables, finalise shared schemas/screens, integrate readiness and session UI, and own verification, design and release decisions.
+
+Use [TEAM_GUIDE.md](TEAM_GUIDE.md) and the individual briefs for file ownership, test expectations and PR rules. Teammates push their own branches; Deston reviews and merges into main. Move cards to Done only with linked acceptance evidence.

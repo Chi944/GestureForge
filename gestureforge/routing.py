@@ -45,10 +45,6 @@ class RoutingSession:
     def last_error(self) -> str:
         return self._controller.last_error
 
-    @property
-    def controller(self) -> Controller:
-        return self._controller
-
     def configure(
         self, profile_id: str, model_version: str, context_id: str,
         bindings: Mapping[str, Action], mode: RoutingMode = RoutingMode.PREVIEW,
@@ -77,6 +73,10 @@ class RoutingSession:
 
     def pause(self) -> None:
         self._controller.pause()
+        self._issued.clear()
+
+    def fault(self, reason: str) -> None:
+        self._controller.fault(reason)
         self._issued.clear()
 
     def process(self, prediction: Prediction, now: float) -> CommandEvent | None:

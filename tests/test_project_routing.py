@@ -54,6 +54,7 @@ def test_single_typed_action_routes_once(action: Action) -> None:
 @pytest.mark.parametrize("mode", [RoutingMode.PREVIEW, RoutingMode.REHEARSAL])
 def test_practice_records_would_be_shortcut_without_executable_result(mode: RoutingMode) -> None:
     session = RoutingSession("trainer", "model-v2", "quick-actions", BINDINGS, mode)
+    assert not hasattr(session, "controller")
     event = emit(session, "G2")
     result = session.route(event, 0.91)
     assert result.action is None
@@ -169,3 +170,15 @@ def test_pause_and_tracking_loss_cancel_pending_events() -> None:
 def test_project_contract_does_not_change_legacy_versions() -> None:
     assert FEATURE_VERSION == SCHEMA_VERSION == 1
     assert PROJECT_CONTRACT_VERSION == 1
+
+
+def test_camera_fault_cancels_issued_action_and_requires_fresh_neutral() -> None:
+    session = RoutingSession("trainer", "model-v2", "stage-1", BINDINGS)
+    event = emit(session)
+    session.fault("Camera stopped")
+    assert session.state == "PAUSED"
+    assert session.last_error == "Camera stopped"
+    assert session.route(event, 0.91).rejection_reason == "paused"
+    session.resume()
+    assert session.state == "WAIT_NEUTRAL"
+    assert session.route(event, 0.91).rejection_reason == "identity_mismatch"

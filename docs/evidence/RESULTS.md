@@ -108,7 +108,7 @@ Unrecognisable gestures should be rejected as UNKNOWN. The current classifier so
 
 ## Software Verification
 
-The current verification summary lives in `verification.json`. On 29 September, 116 tests, Ruff, mypy across 32 files, assignment GUI smoke, Studio GUI smoke and synthetic evaluation passed. The refreshed private archive was extracted and its own source reproduced both v3 macro-F1 values of 0.9667 and passed GUI smoke using the existing verified Windows environment; this was not a new dependency installation. Archive integrity and privacy boundaries were checked locally. Earlier package checks recorded:
+The current verification summary lives in `verification.json`. On 29 September, 82 tests, Ruff, mypy across 30 files, GUI smoke and synthetic evaluation passed. The refreshed private archive was extracted and its own source reproduced both v3 macro-F1 values of 0.9667 and passed GUI smoke using the existing verified Windows environment; this was not a new dependency installation. Archive integrity and privacy boundaries were checked locally. Earlier package checks recorded:
 
 GitHub Actions run `36413668556` did not start its test job: GitHub reported an account payment/spending-limit block. This is not a remote test pass or a code-test failure. The user requested local CI instead. Hosted runs are now disabled; quota-blocked runs were removed after their metadata was retained locally. Fresh local verification remains available in `verification.json`; no remote pass is claimed.
 

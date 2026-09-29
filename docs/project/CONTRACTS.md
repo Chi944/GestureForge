@@ -48,7 +48,7 @@ Use monotonic capture timestamps and increasing frame IDs in real operation. The
 
 ## Lifecycle and dispatch rules
 
-`RoutingSession(profile_id, model_version, context_id, bindings, mode=PREVIEW)` starts PAUSED. Read `snapshot`, `state`, `progress`, `last_error`; do not access its private controller.
+`RoutingSession(profile_id, model_version, context_id, bindings, mode=PREVIEW)` starts PAUSED. Read `snapshot`, `state`, `progress`, `last_error`; do not access its private controller. Call `fault(reason)` on camera failure to pause and invalidate issued events.
 
 `configure(...)` takes the same complete arguments, validates before replacing state, creates a fresh session and pauses. Any profile, model, workspace, context, mapping or mode change goes through it. Explicit `resume()` creates another fresh session and WAIT_NEUTRAL; `pause()` cancels issued work. Deston's shell must restart or restamp capture against the new snapshot, never relabel an old queued prediction as fresh. A stage transition may call configure then resume in the same UI handler, retaining valid readiness but still requiring NEUTRAL. Profile/model changes and focus loss require explicit user resume.
 
@@ -64,4 +64,4 @@ Manual actions use the same validated target/action handlers, labelled `source=m
 
 Run `.\.venv\Scripts\python.exe -m pytest -q tests/test_controller.py tests/test_project_routing.py tests/test_viewer.py`.
 
-Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. Starter data, profile persistence, GUI integration, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
+Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter data, profile persistence, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.

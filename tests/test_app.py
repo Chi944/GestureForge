@@ -169,7 +169,6 @@ def test_studio_preview_simulates_without_moving_deck(monkeypatch, qapp) -> None
     monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
     assert window.routing is not None
     window.routing.resume()
-    window.controller = window.routing.controller
     packets = []
     for frame_id, timestamp, label in [
         (1, 100.00, "NEUTRAL"),
@@ -462,3 +461,18 @@ def test_main_studio_smoke_starts_without_dataset() -> None:
     )
 
     assert completed.returncode == 0
+
+
+def test_studio_rejects_live_mode_at_both_entry_points(qapp) -> None:
+    with pytest.raises(ValueError, match="simulation modes only"):
+        Window(studio=True, studio_mode=RoutingMode.LIVE)
+    window = Window(studio=True)
+    _disable_logging(window)
+    try:
+        assert window.routing is not None
+        original = window.routing.snapshot
+        with pytest.raises(ValueError, match="simulation modes only"):
+            window.configure_studio(mode=RoutingMode.LIVE)
+        assert window.routing.snapshot == original
+    finally:
+        window.close()
