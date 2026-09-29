@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import time
+from dataclasses import replace
 from hashlib import sha256
 
 import numpy as np
@@ -14,7 +15,7 @@ from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QApplication
 
 from gestureforge.app import Window
-from gestureforge.contracts import Prediction, RoutingMode
+from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
 
 
 @pytest.fixture(scope="module")
@@ -44,6 +45,9 @@ class FakeWorker:
 
     def requestInterruption(self):
         self.interrupted = True
+
+    def isInterruptionRequested(self):
+        return self.interrupted
 
 
 class FakeCloseEvent:
@@ -225,6 +229,7 @@ def test_studio_context_change_drops_old_identity(monkeypatch, qapp) -> None:
         assert "Studio simulation" not in window.feedback.text()
         assert window.routing.snapshot.context_id == "stage-2"
         assert window.routing.snapshot.mode == RoutingMode.REHEARSAL
+        assert window.prediction.text() == "Prediction: awaiting new camera session"
     finally:
         window.close()
 
@@ -474,5 +479,102 @@ def test_studio_rejects_live_mode_at_both_entry_points(qapp) -> None:
         with pytest.raises(ValueError, match="simulation modes only"):
             window.configure_studio(mode=RoutingMode.LIVE)
         assert window.routing.snapshot == original
+    finally:
+        window.close()
+
+
+def test_studio_binding_editor_applies_once_then_new_hold_simulates_new_action(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    old = window.routing.resume()
+    worker = FakeWorker([(_frame(), _studio_prediction(window, 1, 100.0, "NEXT"))])
+    window.worker = worker
+    current = [100.0]
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
+    try:
+        # Editing is a draft: no implicit remapping or restart during a hold.
+        window.binding_pickers[0].setCurrentIndex(1)  # NEXT gesture -> PREVIOUS action
+        window.mode_picker.setCurrentIndex(1)
+        assert window.routing.snapshot == old
+        window.apply_bindings_button.click()
+        assert worker.interrupted
+        assert window.routing.state == "PAUSED"
+        assert window.routing.snapshot.session_id != old.session_id
+        assert window.routing.snapshot.mode == RoutingMode.REHEARSAL
+        assert dict(window.routing.snapshot.bindings)["NEXT"] == Action(ActionType.PREVIOUS)
+        window.poll()
+        assert window.prediction.text() == "Prediction: awaiting new camera session"
+        assert window.viewer.position == 0
+        assert "NEXT: would show previous card" in window.boundary.text()
+
+        window.routing.resume()
+        packets = [(_frame(), _studio_prediction(window, i, t, label)) for i, t, label in (
+            (1, 101.0, "NEUTRAL"), (2, 101.15, "NEUTRAL"), (3, 101.31, "NEUTRAL"),
+            (4, 101.45, "NEXT"), (5, 101.60, "NEXT"), (6, 101.75, "NEXT"), (7, 101.90, "NEXT"),
+        )]
+        window.worker = FakeWorker(packets)
+        for _, prediction in packets:
+            current[0] = prediction.timestamp
+            window.poll()
+        assert "NEXT would show previous card" in window.feedback.text()
+        assert window.viewer.position == 0
+    finally:
+        window.close()
+
+
+def test_studio_invalid_draft_preserves_active_session_and_custom_mapping_survives_mode_change(qapp) -> None:
+    window = Window(studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    try:
+        window.configure_studio(context_id="stage-2", bindings={"G1": Action(ActionType.BOOKMARK)})
+        old = window.routing.resume()
+        worker = FakeWorker()
+        window.worker = worker
+        with pytest.raises(ValueError):
+            window.configure_studio(bindings={"NEUTRAL": Action(ActionType.NEXT)})
+        assert window.routing.snapshot == old
+        assert not worker.interrupted
+        assert window.routing.state == "WAIT_NEUTRAL"
+        window.mode_picker.setCurrentIndex(1)
+        window.apply_bindings_button.click()
+        assert window.routing.snapshot.context_id == "stage-2"
+        assert dict(window.routing.snapshot.bindings) == {"G1": Action(ActionType.BOOKMARK)}
+        assert window.binding_labels[0].text() == "G1 gesture"
+        assert window.binding_pickers[1].isHidden()
+        assert worker.interrupted
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("change", ["pause", "session", "profile", "model"])
+def test_studio_discards_interrupted_or_wrong_identity_packet_before_display(change, monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    window.routing.resume()
+    packet = _studio_prediction(window, 1, 100.0, "NEXT")
+    packet = replace(
+        packet,
+        session_id="other" if change == "session" else packet.session_id,
+        profile_id="other" if change == "profile" else packet.profile_id,
+        model_version="other" if change == "model" else packet.model_version,
+    )
+    window.worker = FakeWorker([(_frame(), packet)])
+    window.last_result_at = 100.0
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: 100.0)
+    try:
+        before = window.prediction.text()
+        if change == "pause":
+            window.pause()
+        window.poll()
+        assert window.prediction.text() == before
+        assert "Studio simulation" not in window.feedback.text()
+        assert window.viewer.position == 0
     finally:
         window.close()

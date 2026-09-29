@@ -1,5 +1,6 @@
 """Assignment desktop shell: one real action, with future scope clearly labelled."""
 
+from collections.abc import Mapping
 from dataclasses import asdict, replace
 import json
 from pathlib import Path
@@ -12,7 +13,7 @@ from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
-    QProgressBar, QFrame,
+    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea,
 )
 
 from .capture import HandCamera
@@ -117,7 +118,6 @@ class Window(QMainWindow):
             raise ValueError("Studio currently supports simulation modes only")
         super().__init__()
         self.studio = studio
-        self.studio_mode = studio_mode
         self.setWindowTitle("GestureForge Studio" if studio else "GestureForge | Assignment prototype")
         self.resize(1150, 740)
         self.setMinimumSize(900, 620)
@@ -137,7 +137,14 @@ class Window(QMainWindow):
         self._log_path = None
         self._log_failed = False
         container = QWidget()
-        self.setCentralWidget(container)
+        container.setObjectName("page")
+        if studio:
+            scroll = QScrollArea()
+            scroll.setWidgetResizable(True)
+            scroll.setWidget(container)
+            self.setCentralWidget(scroll)
+        else:
+            self.setCentralWidget(container)
         page = QVBoxLayout(container)
         page.setContentsMargins(28, 22, 28, 22)
         header = QLabel("GestureForge")
@@ -160,13 +167,43 @@ class Window(QMainWindow):
         self.studio_status.setObjectName("notice")
         if studio:
             page.addWidget(self.studio_status)
+            settings = QGridLayout()
+            page.addLayout(settings)
+            self.mode_picker = QComboBox()
+            self.mode_picker.setAccessibleName("Simulation mode")
+            for mode in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
+                self.mode_picker.addItem(mode.value.title(), mode.value)
+            mode_label = QLabel("Simulation mode")
+            mode_label.setBuddy(self.mode_picker)
+            settings.addWidget(mode_label, 0, 0)
+            settings.addWidget(self.mode_picker, 1, 0)
+            self.binding_labels = []
+            self.binding_pickers = []
+            for index in range(3):
+                label = QLabel()
+                picker = QComboBox()
+                label.setBuddy(picker)
+                settings.addWidget(label, 0, index + 1)
+                settings.addWidget(picker, 1, index + 1)
+                self.binding_labels.append(label)
+                self.binding_pickers.append(picker)
+            self.apply_bindings_button = QPushButton("Apply and pause")
+            self.apply_bindings_button.clicked.connect(self.apply_studio_settings)
+            self.apply_bindings_button.setToolTip(
+                "Apply these simulation settings, stop the camera and require neutral on resume."
+            )
+            settings.addWidget(self.apply_bindings_button, 1, 4)
+            settings_note = QLabel("Draft settings apply only when you click Apply and pause. Nothing is saved yet.")
+            settings_note.setObjectName("muted")
+            settings_note.setWordWrap(True)
+            settings.addWidget(settings_note, 2, 0, 1, 5)
         columns = QHBoxLayout()
         page.addLayout(columns, 1)
         left = QVBoxLayout()
         columns.addLayout(left, 1)
         self.preview = QLabel("Camera off\n\nFrames stay on this computer")
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.preview.setMinimumSize(390, 270)
+        self.preview.setMinimumSize(390, 180 if studio else 270)
         self.preview.setObjectName("preview")
         left.addWidget(self.preview, 1)
         self.prediction = QLabel("Prediction: awaiting camera")
@@ -251,6 +288,7 @@ class Window(QMainWindow):
         controls.addWidget(reset_button)
         self.boundary = QLabel()
         self.boundary.setObjectName("muted")
+        self.boundary.setWordWrap(True)
         page.addWidget(self.boundary)
         self.shortcuts = []
         for key, slot in [("Right", self.next_card), ("Escape", self.pause)]:
@@ -262,6 +300,8 @@ class Window(QMainWindow):
         self.timer.start(30)
         self.setStyleSheet("""
             QMainWindow { background: #101923; }
+            QWidget#page { background: #101923; }
+            QScrollArea { background: #101923; border: none; }
             QWidget { color: #e8eef4; font-family: 'Segoe UI'; font-size: 14px; }
             QLabel#title { font-size: 32px; font-weight: 700; }
             QLabel#muted { color: #a9bacb; font-size: 12px; }
@@ -285,6 +325,10 @@ class Window(QMainWindow):
                           padding: 12px; border-radius: 7px; }
             QPushButton:hover { background: #355b72; }
             QPushButton:disabled { color: #738392; background: #1c2a35; }
+            QComboBox { background: #223247; border: 1px solid #486478;
+                        padding: 7px; border-radius: 5px; }
+            QComboBox QAbstractItemView { background: #223247; color: #e8eef4;
+                                         selection-background-color: #355b72; }
             QProgressBar { background: #253542; border: none; height: 8px; border-radius: 4px; }
             QProgressBar::chunk { background: #62d6ad; border-radius: 4px; }
             QProgressBar#deckProgress { background: #d5d1bf; height: 10px; }
@@ -331,19 +375,59 @@ class Window(QMainWindow):
         self.studio_status.setText(
             "Studio preview is running without: " + ", ".join(missing) + "."
         )
+        self.mode_picker.setCurrentIndex(self.mode_picker.findData(snapshot.mode.value))
+        for index, (label, picker) in enumerate(zip(self.binding_labels, self.binding_pickers)):
+            active = index < len(snapshot.bindings)
+            label.setVisible(active)
+            picker.setVisible(active)
+            if not active:
+                continue
+            gesture, action = snapshot.bindings[index]
+            label.setText(f"{gesture} gesture")
+            picker.setAccessibleName(f"Simulated action for {gesture}")
+            picker.clear()
+            choices = [Action(kind) for kind in (
+                ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK, ActionType.ADVANCE_STAGE,
+            )]
+            if action not in choices:
+                choices.append(action)
+            for choice in choices:
+                picker.addItem(self.action_text(choice).capitalize(), choice)
+            picker.setCurrentIndex(choices.index(action))
 
-    def configure_studio(self, *, context_id: str = "demo-studio",
-                         mode: RoutingMode | None = None) -> None:
+    def apply_studio_settings(self):
+        assert self.routing is not None
+        bindings = {
+            gesture: self.binding_pickers[index].currentData()
+            for index, (gesture, _) in enumerate(self.routing.snapshot.bindings)
+        }
+        self.configure_studio(mode=RoutingMode(self.mode_picker.currentData()), bindings=bindings)
+
+    def configure_studio(self, *, context_id: str | None = None,
+                         mode: RoutingMode | None = None,
+                         bindings: Mapping[str, Action] | None = None) -> None:
         if self.routing is None:
             return
         if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
+        old = self.routing.snapshot
+        # Validate the complete draft before stopping capture or replacing active state.
+        draft = replace(
+            old, context_id=old.context_id if context_id is None else context_id,
+            mode=old.mode if mode is None else mode,
+            bindings=old.bindings if bindings is None else tuple(bindings.items()),
+        )
         self.pause()
         self.routing.configure(
-            self.profile, self._model_version(), context_id, STUDIO_BINDINGS,
-            mode or self.routing.snapshot.mode,
+            self.profile, self._model_version(), draft.context_id, dict(draft.bindings), draft.mode,
         )
         self.state.setText("Paused after Studio context change. Resume and show NEUTRAL.")
+        self.prediction.setText("Prediction: awaiting new camera session")
+        self.feedback.setText("Simulation settings applied. Resume and show NEUTRAL before a gesture.")
+        self.log({"type": "studio_configuration", "session": self.routing.snapshot.session_id,
+                  "context": draft.context_id, "mode": draft.mode.value,
+                  "bindings": {gesture: asdict(action) for gesture, action in draft.bindings},
+                  "timestamp": time.monotonic()})
         self.render_studio_status()
 
     def card_topic_text(self) -> str:
@@ -461,6 +545,13 @@ class Window(QMainWindow):
             return
         control = self.routing or self.controller
         packet = self.worker.take_latest()
+        if packet is not None and self.routing is not None:
+            prediction = packet[1]
+            snapshot = self.routing.snapshot
+            if self.worker.isInterruptionRequested() or (
+                prediction.session_id, prediction.profile_id, prediction.model_version
+            ) != (snapshot.session_id, snapshot.profile_id, snapshot.model_version):
+                packet = None
         if packet is not None:
             frame, prediction = packet
             self.last_result_at = time.monotonic()

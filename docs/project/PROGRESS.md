@@ -17,9 +17,9 @@ Two of 29 tasks are complete: GF-P01 (preserve/review the assignment baseline, 2
 
 ## Built, but broader tasks still in progress
 
-- **GF-P02 — Deston:** shared typed actions, immutable routing snapshots, controller integration, invalidation and simulation routing are implemented and tested. The complete profile/workspace schemas and screen contracts still need integration review with the builders.
-- **GF-P10 — Deston:** the opt-in Studio preview opens, simulates held gesture actions, pauses on focus loss, and invalidates old context events. Starter/profile selection, readiness checks and the final integrated session workflow remain to be built. The preview cannot dispatch desktop actions.
-- **GF-P05 — Javier:** Windows launch and camera-handoff probe is selected as the first task; no completion evidence has been received.
+- **GF-P02 â€” Deston:** shared typed actions, immutable routing snapshots, controller integration, invalidation and simulation routing are implemented and tested. The complete profile/workspace schemas and screen contracts still need integration review with the builders.
+- **GF-P10 â€” Deston:** the opt-in Studio preview opens, simulates held gesture actions, pauses on focus loss, and invalidates old context events. An on-screen Preview/Rehearsal selector and gesture-to-action draft editor now apply changes through a validated pause/reset; interrupted and stale identity packets cannot replace the active display. Mappings are in memory only. Starter/profile selection, readiness checks and the final integrated session workflow remain to be built. The preview cannot dispatch desktop actions.
+- **GF-P05 â€” Javier:** Windows launch and camera-handoff probe is selected as the first task; no completion evidence has been received.
 
 Software checks are recorded in [verification.json](verification.json). Automated simulation is not live-camera, Windows launch, starter-recognition or second-laptop evidence. The submitted assignment archive remains unchanged. GitHub Actions is manual-only; these checks ran locally.
 

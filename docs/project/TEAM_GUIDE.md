@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-30 September 2026 · Project deadline 7 November 2026
+30 September 2026 Â· Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -44,6 +44,8 @@ Deston owns the shell; teammates provide embeddable PySide6 widgets instead of s
 | Demo Studio | Card title/body and distinctive card transition, ordered stages/instructions and bookmarks | Current stage and gesture meanings; manual Next/Previous/Bookmark/Continue; pause |
 | Session Review | Correct/wrong/missed trials, would-be actions, retries and acknowledged task completion | Export results; distinguish simulated events from real launch requests |
 
+The current Studio shell includes a simulation-mode selector and draft gesture mappings. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace the profile, readiness or workspace components assigned to the builders.
+
 Keyboard and button controls remain usable when recognition fails. Use readable contrast, labelled inputs, visible focus, sensible tab order and actionable errors. A disabled control must explain what enables it. Do not display a target as completed merely because Windows accepted an open request.
 
 ## Development workflow
@@ -78,12 +80,12 @@ Each review must include: requirement/task IDs; what works; exact tests and resu
 
 | Dates | Gate |
 |---|---|
-| 30 Sep–4 Oct | Shared foundation, starter feasibility and consent, Windows launch probes, capacity and participant recruitment |
-| 5–11 Oct | Profiles/enrolment, viewer/workspaces and first integration |
-| 12–18 Oct | Shortcuts, runbooks, rehearsal and summaries integrated; feature freeze |
-| 19–25 Oct | Frozen-data evaluation, system tasks and replay |
-| 26 Oct–1 Nov | Defects, independent Windows installation and stability; release candidate |
-| 2–6 Nov | Report, guide, video, slides, actual contribution declaration and presentation rehearsal |
+| 30 Sepâ€“4 Oct | Shared foundation, starter feasibility and consent, Windows launch probes, capacity and participant recruitment |
+| 5â€“11 Oct | Profiles/enrolment, viewer/workspaces and first integration |
+| 12â€“18 Oct | Shortcuts, runbooks, rehearsal and summaries integrated; feature freeze |
+| 19â€“25 Oct | Frozen-data evaluation, system tasks and replay |
+| 26 Octâ€“1 Nov | Defects, independent Windows installation and stability; release candidate |
+| 2â€“6 Nov | Report, guide, video, slides, actual contribution declaration and presentation rehearsal |
 | 7 Nov | Deadline buffer |
 
 Base estimates: Deston 75h, Hau Jie 75h, Javier 73h; reserve about 20% contingency. These are estimates, not verified availability. Hau Jie owns methods/results sections; Javier owns user-guide/video drafts; Deston integrates the report, rubric/test matrix and ten-minute presentation. Every member must explain their own work. Register/report the new three-person team using actual identities and contributions; do not reuse the assignment's two-person split.

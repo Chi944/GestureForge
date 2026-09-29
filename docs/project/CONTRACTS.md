@@ -1,6 +1,6 @@
 # Shared project routing contract
 
-Project contract version 1 · 30 September 2026 · Owner Deston
+Project contract version 1 Â· 30 September 2026 Â· Owner Deston
 
 This is the implemented first integration boundary. Existing dataset `SCHEMA_VERSION=1`, `FEATURE_VERSION=1`, legacy labels and NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the new routing types separately. Profile/workspace persistence schemas and widget signal adapters are owned by the respective builders and need interface review before integration; they are not claimed implemented here.
 
@@ -17,7 +17,7 @@ This is the implemented first integration boundary. Existing dataset `SCHEMA_VER
 
 Action types are NEXT, PREVIOUS, BOOKMARK, ADVANCE_STAGE and OPEN_SHORTCUT. Bindings are one to three gesture IDs mapped to `Action` records. IDs are case-sensitive `[A-Z][A-Z0-9_]{0,63}` with NEUTRAL and UNKNOWN reserved. A profile has three action classes plus NEUTRAL, while a context may bind fewer. The current coordinator requires at least one binding; an empty/unbound screen uses manual controls and keeps routing absent/paused.
 
-Other opaque IDs are 1–64 ASCII letters/digits and `_ . : -`, beginning with a letter/digit. Display names and target paths are separate values. The shortcut ID is never a URL or executable path. Actual target validation belongs to Javier's local registry/dispatcher.
+Other opaque IDs are 1â€“64 ASCII letters/digits and `_ . : -`, beginning with a letter/digit. Display names and target paths are separate values. The shortcut ID is never a URL or executable path. Actual target validation belongs to Javier's local registry/dispatcher.
 
 ## Minimal use
 
@@ -65,3 +65,11 @@ Manual actions use the same validated target/action handlers, labelled `source=m
 Run `.\.venv\Scripts\python.exe -m pytest -q tests/test_controller.py tests/test_project_routing.py tests/test_viewer.py`.
 
 Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter data, profile persistence, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
+
+## Current shell adapter (Deston)
+
+`Window(..., studio=True)` exposes `configure_studio(context_id=None, mode=None, bindings=None)`. Omitted values preserve the current snapshot. Supplied bindings replace the whole map (one to three canonical IDs to typed `Action` objects). The complete draft is validated before changing active state; invalid inputs raise `ValueError` and leave the current session/capture intact. Only PREVIEW and REHEARSAL are accepted by this shell.
+
+Successful application pauses capture, clears the old prediction display, creates a fresh routing session, updates the visible legend and records the semantic configuration locally. Interrupted workers and packets with old session/profile/model identities cannot overwrite the new display. Explicit resume still waits for worker shutdown and requires NEUTRAL. The on-screen selectors edit a draft; Apply and pause performs the change. These mappings are in memory only.
+
+This adapter does not load profiles, validate bindings against a profile vocabulary, certify readiness or save workspace settings. Hau Jie's profile adapter must supply the selected vocabulary and model revision, and Javier's workspace adapter must validate its references before using this entry point. Existing stage changes should pass their complete map. The current assignment classifier still supplies legacy gesture IDs; displaying a custom ID in a software test does not train a new gesture.

@@ -4,9 +4,9 @@
 
 ### Personal gesture recognition for deliberate card navigation and demo control
 
-**ICT304 Assignment 1 submitted** · **Final project in progress** · Python 3.11
+**ICT304 Assignment 1 submitted** Â· **Final project in progress** Â· Python 3.11
 
-[Run the app](#run-the-prototype) · [Project build](#project-build) · [Results](docs/evidence/RESULTS.md) · [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
+[Run the app](#run-the-prototype) Â· [Project build](#project-build) Â· [Results](docs/evidence/RESULTS.md) Â· [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
 
 </div>
 
@@ -46,9 +46,9 @@ Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Jav
 .\run.cmd --studio --dataset data/local/pilot/manifest.json --multiplier 2 --margin 1.5 --camera 1
 ```
 
-Without a dataset, the manual viewer opens and explains why camera simulation is unavailable. Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Mode/context switching is currently an integration API, not an on-screen editor. Default launch without `--studio` preserves assignment behaviour.
+Without a dataset, the manual viewer opens and explains why camera simulation is unavailable. Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio dropdowns to choose Preview/Rehearsal and the simulated action for each gesture, then click **Apply and pause**. Draft edits do not change active control. Applying stops capture and requires a new NEUTRAL hold on resume. Mappings are temporary and are not saved. Context switching remains an integration API until runbooks are connected. Default launch without `--studio` preserves assignment behaviour.
 
-[Approved plan](docs/project/PROJECT_PLAN.md) · [Progress](docs/project/PROGRESS.md) · [Team guide](docs/project/TEAM_GUIDE.md) · [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) · [Javier brief](docs/project/JAVIER_HANDOFF.md) · [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
+[Approved plan](docs/project/PROJECT_PLAN.md) Â· [Progress](docs/project/PROGRESS.md) Â· [Team guide](docs/project/TEAM_GUIDE.md) Â· [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) Â· [Javier brief](docs/project/JAVIER_HANDOFF.md) Â· [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
 
 Verify the project without overwriting historical assignment evidence:
 
@@ -115,7 +115,7 @@ Camera indices can change. Close other camera applications and select the index 
 
 For P01, NEUTRAL was an open palm and NEXT was a fist. Another person's gestures must match their own collection. Keep the whole enrolled hand visible, still and similarly oriented to the training samples.
 
-[Full user guide](docs/USER_GUIDE.md) · [Second Windows laptop setup](docs/WINDOWS_LAPTOP.md) · [Apple Silicon Mac setup](docs/MACOS.md)
+[Full user guide](docs/USER_GUIDE.md) Â· [Second Windows laptop setup](docs/WINDOWS_LAPTOP.md) Â· [Apple Silicon Mac setup](docs/MACOS.md)
 
 ## How it works
 
