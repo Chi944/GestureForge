@@ -661,3 +661,163 @@ def test_studio_discards_interrupted_or_wrong_identity_packet_before_display(cha
         assert window.viewer.position == 0
     finally:
         window.close()
+
+
+def _candidate_model(vocabulary):
+    # Lightweight adapter test double; classifier correctness has its own numeric tests.
+    return SimpleNamespace(
+        predict=lambda _: (vocabulary.action_ids[0], True, ""),
+        train_labels=vocabulary.labels, model_version="gesture-test-revision-2",
+        config=SimpleNamespace(algorithm="knn", multiplier=2.0, margin=1.5),
+    )
+
+
+def test_studio_background_load_switches_once_and_waits_for_camera_release(monkeypatch, qapp) -> None:
+    from threading import Event
+    import gestureforge.app as app_module
+
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    candidate = _candidate_model(vocabulary)
+    release = Event()
+    entered = Event()
+    calls = []
+
+    def load(path, *settings, studio):
+        calls.append((path, settings, studio))
+        entered.set()
+        assert release.wait(5)
+        return candidate, "Left", "P02", vocabulary
+
+    monkeypatch.setattr(app_module, "load_personal_model", load)
+    window = Window(model=object(), studio=True, model_settings=("knn", 2.0, 1.5))
+    _disable_logging(window)
+    assert window.routing is not None
+    old = window.routing.resume()
+    packet = (_frame(), _studio_prediction(window, 1, 100.0, "NEXT"))
+    camera = FakeWorker([packet])
+    window.worker = camera
+    try:
+        assert window.load_studio_dataset("personal.json")
+        loader = window.model_loader
+        assert loader is not None
+        assert entered.wait(5)
+        assert camera.interrupted
+        assert not window.start_button.isEnabled()
+        assert not window.load_dataset_button.isEnabled()
+        assert not window.load_studio_dataset("another.json")
+        window.start_camera()
+        assert window.worker is camera
+        with pytest.raises(ValueError, match="Wait for the dataset load"):
+            window.configure_studio(context_id="stage-2")
+        release.set()
+        loader.join(5)
+        assert not loader.is_alive()
+        window.poll()
+        assert calls == [("personal.json", ("knn", 2.0, 1.5), True)]
+        assert window.model is candidate and window.chosen_hand == "Left" and window.profile == "P02"
+        assert window.routing.snapshot.session_id != old.session_id
+        assert window.routing.snapshot.model_version == candidate.model_version
+        assert window.routing.snapshot.mode == RoutingMode.PREVIEW
+        assert window.routing.state == "PAUSED"
+        assert window.binding_labels[0].text() == "G1 gesture"
+        assert window.prediction.text() == "Prediction: awaiting new camera session"
+        assert window.viewer.position == 0
+        assert not window.start_button.isEnabled()
+        camera.finished = True
+        window.poll()
+        assert window.worker is None and window.start_button.isEnabled()
+        assert window.load_dataset_button.isEnabled()
+        window.routing.resume()
+        assert window.routing.state == "WAIT_NEUTRAL"
+    finally:
+        release.set()
+        if window.model_loader is not None:
+            window.model_loader.join(5)
+        window.close()
+
+
+@pytest.mark.parametrize("failure", ["file", "labels", "identity"])
+def test_failed_studio_load_retains_selection_and_allows_retry(failure, monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    old_model = _candidate_model(LEGACY_VOCABULARY)
+    candidate = _candidate_model(LEGACY_VOCABULARY)
+    if failure == "labels":
+        candidate.train_labels = ("UNTRAINED",)
+
+    def load(*args, **kwargs):
+        if failure == "file":
+            raise ValueError("Feature checksum mismatch")
+        return candidate, "Right", "invalid/profile" if failure == "identity" else "P02", LEGACY_VOCABULARY
+
+    monkeypatch.setattr(app_module, "load_personal_model", load)
+    window = Window(model=old_model, studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    old = window.routing.resume()
+    try:
+        assert window.load_studio_dataset("broken.json")
+        assert window.model_loader is not None
+        window.model_loader.join(5)
+        window.poll()
+        assert window.model is old_model
+        assert window.routing.snapshot == old
+        assert window.routing.state == "PAUSED"
+        assert "Dataset not loaded" in window.notice.text()
+        assert window.start_button.isEnabled() and window.load_dataset_button.isEnabled()
+        assert window.model_loader is None
+    finally:
+        window.close()
+
+
+def test_closing_during_training_never_installs_finished_model(monkeypatch, qapp) -> None:
+    from threading import Event
+    import gestureforge.app as app_module
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    release = Event()
+    candidate = _candidate_model(LEGACY_VOCABULARY)
+
+    def load(*args, **kwargs):
+        assert release.wait(5)
+        return candidate, "Right", "P02", LEGACY_VOCABULARY
+
+    monkeypatch.setattr(app_module, "load_personal_model", load)
+    window = Window(studio=True)
+    _disable_logging(window)
+    try:
+        window.load_studio_dataset("personal.json")
+        loader = window.model_loader
+        assert loader is not None
+        window.close()
+        release.set()
+        loader.join(5)
+        window.poll()
+        assert window.model is None
+        assert not window.timer.isActive()
+        window.start_camera()
+        assert window.worker is None
+        assert not window.load_studio_dataset("second.json")
+    finally:
+        release.set()
+        window.close()
+
+
+def test_in_app_loader_rejects_real_synthetic_manifest(tmp_path, qapp) -> None:
+    from gestureforge.fixtures import save_synthetic_dataset
+
+    dataset = save_synthetic_dataset(tmp_path)
+    window = Window(studio=True)
+    _disable_logging(window)
+    try:
+        window.load_studio_dataset(dataset.manifest_path)
+        assert window.model_loader is not None
+        window.model_loader.join(5)
+        window.poll()
+        assert window.model is None and window.worker is None
+        assert "Synthetic fixtures cannot enable live control" in window.notice.text()
+        assert window.load_dataset_button.isEnabled()
+        assert not window.start_button.isEnabled()
+    finally:
+        window.close()

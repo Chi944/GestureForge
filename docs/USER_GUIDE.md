@@ -13,6 +13,14 @@ GestureForge controls its own fixed ten-card deck. It is not connected to Micros
 
 ## Requirements
 
+### Project Studio preview
+
+Launch `.\run.cmd --studio` for the current project build. Click **Load personal dataset...** and select an existing personal `manifest.json`; no restart is required. Loading pauses control and trains locally in the background. After success, check the reset Preview mappings, click **Start camera control** and hold NEUTRAL until READY. Switching datasets requires another explicit start and neutral hold. If loading fails, the previous model stays selected and paused.
+
+The loader uses your launch settings, for example `.\run.cmd --studio --algorithm knn --multiplier 2 --margin 1.5 --camera 1`. It accepts one participant's numeric collection data, including custom gesture vocabularies, and rejects synthetic fixtures. It does not create or save profiles yet. All Studio gesture actions are simulations; the manual card buttons still work. See the [project progress](project/PROGRESS.md) for remaining functionality.
+
+### Assignment environment
+
 - Windows computer with a working webcam.
 - Python 3.11. The local development environment currently reports Python 3.11.16.
 - Access to this `code` folder.

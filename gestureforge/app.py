@@ -13,11 +13,11 @@ from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
-    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea,
+    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog,
 )
 
 from .capture import HandCamera
-from .contracts import Action, ActionType, Prediction, RoutingMode
+from .contracts import Action, ActionType, Prediction, RoutingMode, validate_identifier
 from .controller import Controller
 from .routing import RoutingSession
 from .viewer import Viewer
@@ -45,6 +45,48 @@ REJECTION_MESSAGES = {
 }
 
 STUDIO_ACTIONS = (Action(ActionType.NEXT), Action(ActionType.PREVIOUS), Action(ActionType.BOOKMARK))
+
+
+def load_personal_model(path, algorithm="knn", multiplier=1.5, margin=1.5, *, studio=False):
+    """Shared CLI/UI loader; numeric participant data only, never saved model objects."""
+    from .dataset import load_dataset
+    from .models import train_model
+
+    bundle = load_dataset(path)
+    if not studio and bundle.vocabulary != LEGACY_VOCABULARY:
+        raise ValueError("Custom gesture datasets require --studio.")
+    if any(record.provenance != "human" for record in bundle.records):
+        raise ValueError("Synthetic fixtures cannot enable live control. Collect personal gestures.")
+    participants = {record.participant_id for record in bundle.records}
+    if len(participants) != 1:
+        raise ValueError("Live control requires exactly one participant's dataset.")
+    profile = next(iter(participants))
+    if studio:
+        validate_identifier(profile)
+    hand = bundle.metadata.get("chosen_hand", "Right")
+    if hand not in ("Left", "Right"):
+        raise ValueError("Dataset chosen_hand must be Left or Right")
+    features, labels, records = bundle.training_data()
+    model = train_model(features, labels, algorithm, multiplier, margin,
+                        groups=[record.trial_id for record in records],
+                        vocabulary=bundle.vocabulary if studio else None)
+    return model, hand, profile, bundle.vocabulary
+
+
+class ModelLoadWorker(Thread):
+    """One pending load; no widgets or camera access on this thread."""
+
+    def __init__(self, path, settings):
+        super().__init__(daemon=True, name="gestureforge-model-load")
+        self.path, self.settings = path, settings
+        self.result = None
+        self.error = ""
+
+    def run(self):
+        try:
+            self.result = load_personal_model(self.path, *self.settings, studio=True)
+        except Exception as exc:
+            self.error = f"{type(exc).__name__}: {exc}"
 
 
 class CaptureWorker(Thread):
@@ -111,7 +153,7 @@ class Window(QMainWindow):
     def __init__(self, model=None, feature_function=None, chosen_hand="Right", camera_index=0,
                  asset=None, profile="pilot", data_note="No enrolled dataset loaded",
                  studio=False, studio_mode=RoutingMode.PREVIEW,
-                 vocabulary=LEGACY_VOCABULARY):
+                 vocabulary=LEGACY_VOCABULARY, model_settings=("knn", 1.5, 1.5)):
         if studio and studio_mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
         super().__init__()
@@ -132,6 +174,9 @@ class Window(QMainWindow):
         self.controller = Controller(str(uuid4()), profile)
         self.viewer = Viewer()
         self.worker = None
+        self.model_loader = None
+        self.model_settings = model_settings
+        self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
         self._log_path = None
@@ -166,6 +211,12 @@ class Window(QMainWindow):
         self.studio_status.setWordWrap(True)
         self.studio_status.setObjectName("notice")
         if studio:
+            self.load_dataset_button = QPushButton("Load personal dataset...")
+            self.load_dataset_button.setToolTip(
+                "Choose an existing manifest.json. Pauses control, trains locally and resets mappings."
+            )
+            self.load_dataset_button.clicked.connect(self.choose_studio_dataset)
+            page.addWidget(self.load_dataset_button)
             page.addWidget(self.studio_status)
             settings = QGridLayout()
             page.addLayout(settings)
@@ -275,6 +326,9 @@ class Window(QMainWindow):
                 "saved manifest.json; see the User Guide's live gesture control command."
             )
             self.start_button.setToolTip("Load a personal gesture dataset when launching the app.")
+            if studio:
+                self.detail.setText("Choose Load personal dataset and select your collected manifest.json.")
+                self.start_button.setToolTip("Load a personal dataset using the button above.")
         self.start_button.clicked.connect(self.start_camera)
         controls.addWidget(self.start_button)
         self.pause_button = QPushButton("Pause / camera off")
@@ -408,6 +462,8 @@ class Window(QMainWindow):
                          bindings: Mapping[str, Action] | None = None) -> None:
         if self.routing is None:
             return
+        if self.model_loader is not None:
+            raise ValueError("Wait for the dataset load to finish before changing settings")
         if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
         old = self.routing.snapshot
@@ -431,6 +487,76 @@ class Window(QMainWindow):
                   "bindings": {gesture: asdict(action) for gesture, action in draft.bindings},
                   "timestamp": time.monotonic()})
         self.render_studio_status()
+
+    def choose_studio_dataset(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Load a personal gesture dataset", "", "Gesture dataset (manifest.json *.json)",
+        )
+        if path:
+            self.load_studio_dataset(Path(path))
+
+    def load_studio_dataset(self, path):
+        if not self.studio:
+            raise ValueError("In-app dataset loading requires Studio")
+        if self.model_loader is not None or self._closing:
+            return False
+        self.pause()
+        self.start_button.setEnabled(False)
+        self.load_dataset_button.setEnabled(False)
+        self.apply_bindings_button.setEnabled(False)
+        self.notice.setText("Loading and training locally. Camera control is paused; existing data is unchanged.")
+        self.model_loader = ModelLoadWorker(path, self.model_settings)
+        self.model_loader.start()
+        return True
+
+    def use_studio_model(self, model, hand, profile, vocabulary):
+        """Install an already trained candidate atomically; capture resumes only on request."""
+        if not self.studio or self.model_loader is not None or self._closing:
+            raise ValueError("Studio must be open and idle before changing the model")
+        if hand not in ("Left", "Right") or not callable(getattr(model, "predict", None)):
+            raise ValueError("A trained model and Left/Right hand are required")
+        if set(model.train_labels) != set(vocabulary.labels):
+            raise ValueError("Model labels must match the selected vocabulary")
+        candidate = RoutingSession(profile, model.model_version, "demo-studio",
+                                   dict(zip(vocabulary.action_ids, STUDIO_ACTIONS, strict=True)))
+        note = (f"Personal dataset: {profile} | {hand} hand | "
+                f"{model.config.algorithm.upper()} | rejection {model.config.multiplier:g} | "
+                f"margin {model.config.margin:g} | local processing")
+        self.pause()
+        self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
+        self.routing = candidate
+        self.received_first_frame = False
+        self.preview.clear()
+        self.preview.setText("Camera off\n\nDataset loaded; start and show NEUTRAL")
+        self.prediction.setText("Prediction: awaiting new camera session")
+        self.state.setText("Paused after dataset change. Start and show NEUTRAL.")
+        self.detail.setText("Mappings reset to Preview. Check the actions before starting camera simulation.")
+        self.notice.setText(note)
+        self.feedback.setText("Dataset loaded. Gesture actions remain simulations; start explicitly.")
+        self.start_button.setToolTip("Start camera simulation using the loaded personal dataset.")
+        self.start_button.setEnabled(self.worker is None)
+        self.render_studio_status()
+        self.log({"type": "studio_dataset", "profile": profile, "model_version": model.model_version,
+                  "session": candidate.snapshot.session_id, "timestamp": time.monotonic()})
+
+    def poll_model_load(self):
+        loader = self.model_loader
+        if loader is None or loader.is_alive():
+            return
+        loader.join()
+        self.model_loader = None
+        try:
+            if loader.error:
+                raise ValueError(loader.error)
+            if loader.result is None:
+                raise ValueError("Dataset training returned no model")
+            self.use_studio_model(*loader.result)
+        except (ValueError, AttributeError, TypeError) as exc:
+            self.notice.setText(f"Dataset not loaded: {exc}. Previous selection retained; control is paused.")
+        finally:
+            self.load_dataset_button.setEnabled(True)
+            self.apply_bindings_button.setEnabled(True)
+            self.start_button.setEnabled(self.model is not None and self.worker is None)
 
     def card_topic_text(self) -> str:
         title = self.viewer.current_card.title
@@ -492,7 +618,7 @@ class Window(QMainWindow):
             self.notice.setText("Event logging failed. Check disk space and folder permissions.")
 
     def start_camera(self):
-        if self.model is None or self.worker is not None:
+        if self.model is None or self.worker is not None or self.model_loader is not None or self._closing:
             return
         if self.routing is not None:
             snapshot = self.routing.resume()
@@ -543,6 +669,9 @@ class Window(QMainWindow):
         self.render_card()
 
     def poll(self):
+        if self._closing:
+            return
+        self.poll_model_load()
         if self.worker is None:
             return
         control = self.routing or self.controller
@@ -627,7 +756,7 @@ class Window(QMainWindow):
             self.worker = None
             control.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
-            self.start_button.setEnabled(self.model is not None)
+            self.start_button.setEnabled(self.model is not None and self.model_loader is None)
 
     def changeEvent(self, event):
         if self.studio and event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
@@ -636,6 +765,7 @@ class Window(QMainWindow):
         super().changeEvent(event)
 
     def closeEvent(self, event):
+        self._closing = True
         self.pause()
         if self.worker is not None and not self.worker.wait(3000):
             self.log({"type": "camera_shutdown_timeout", "timestamp": time.monotonic(),
