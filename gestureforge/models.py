@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from hashlib import sha256
+import json
 from importlib.metadata import version
 from time import perf_counter
 from typing import Literal
@@ -12,7 +14,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-from .contracts import LABELS
+from .contracts import FEATURE_VERSION
+from .vocabulary import GestureVocabulary, LEGACY_VOCABULARY
 
 Algorithm = Literal["knn", "svm"]
 MODEL_VERSION = "prototype-v2"
@@ -126,6 +129,7 @@ def train_model(
     margin: float = 1.0,
     *,
     groups: list[str] | np.ndarray | None = None,
+    vocabulary: GestureVocabulary | None = None,
 ) -> PrototypeGestureModel:
     """Train the assignment's default kNN or SVM model.
 
@@ -150,10 +154,11 @@ def train_model(
         raise ValueError("rejection multiplier must be finite and positive")
     if not np.isfinite(margin) or margin < 1.0:
         raise ValueError("rejection margin must be finite and at least 1.0")
-    unknown_labels = sorted(set(str(label) for label in label_vector) - set(LABELS))
+    selected = vocabulary or LEGACY_VOCABULARY
+    unknown_labels = sorted(set(str(label) for label in label_vector) - set(selected.labels))
     if unknown_labels:
         raise ValueError(f"unknown labels in training data: {unknown_labels}")
-    label_counts = {label: int(np.sum(label_vector == label)) for label in LABELS}
+    label_counts = {label: int(np.sum(label_vector == label)) for label in selected.labels}
     missing_labels = [label for label, count in label_counts.items() if count == 0]
     if missing_labels:
         raise ValueError(f"training data must include all four labels; missing {missing_labels}")
@@ -172,6 +177,18 @@ def train_model(
     thresholds = class_distance_thresholds(scaled, label_vector, multiplier, groups=groups)
     threshold_seconds = perf_counter() - threshold_start
     fit_seconds = perf_counter() - total_start
+    model_version = MARGIN_MODEL_VERSION if margin > 1.0 else MODEL_VERSION
+    if vocabulary is not None:
+        revision = sha256(feature_matrix.tobytes())
+        revision.update(json.dumps({
+            "labels": label_vector.tolist(), "vocabulary": vocabulary.to_dict(),
+            "feature_version": FEATURE_VERSION, "implementation": model_version,
+            "algorithm": algorithm, "params": estimator.get_params(deep=False),
+            "multiplier": multiplier, "margin": margin,
+            "groups": None if groups is None else np.asarray(groups).tolist(),
+            "libraries": _library_versions(),
+        }, sort_keys=True).encode("utf-8"))
+        model_version = "gesture-v1-" + revision.hexdigest()[:32]
     return PrototypeGestureModel(
         estimator=estimator,
         scaler=scaler,
@@ -179,7 +196,7 @@ def train_model(
         train_labels=label_vector,
         thresholds=thresholds,
         config=ModelConfig(algorithm=algorithm, multiplier=multiplier, margin=margin,
-                           model_version=MARGIN_MODEL_VERSION if margin > 1.0 else MODEL_VERSION,
+                           model_version=model_version,
                            rejection_reference="leave_one_trial_out" if groups is not None
                            else "leave_one_sample_out"),
         fit_seconds=fit_seconds,

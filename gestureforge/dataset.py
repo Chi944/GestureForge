@@ -17,6 +17,7 @@ from uuid import uuid4
 import numpy as np
 
 from .contracts import FEATURE_VERSION, LABELS, SCHEMA_VERSION
+from .vocabulary import GestureVocabulary, LEGACY_VOCABULARY
 
 UNKNOWN_LABEL = "UNKNOWN"
 TRAIN_SPLIT = "train"
@@ -63,6 +64,7 @@ class DatasetBundle:
     records: tuple[SampleRecord, ...]
     features: np.ndarray
     metadata: dict[str, Any]
+    vocabulary: GestureVocabulary = LEGACY_VOCABULARY
 
     def valid_records(self, split: str | None = None) -> tuple[SampleRecord, ...]:
         return tuple(
@@ -90,6 +92,7 @@ def save_dataset(
     records: Iterable[SampleRecord | dict[str, Any]],
     features: np.ndarray,
     metadata: dict[str, Any] | None = None,
+    *, vocabulary: GestureVocabulary | None = None,
 ) -> DatasetBundle:
     """Save a JSON manifest and sidecar NPZ feature matrix."""
 
@@ -98,21 +101,24 @@ def save_dataset(
 
     feature_matrix = _coerce_feature_matrix(features)
     normalised_records = _assign_feature_indices(records, len(feature_matrix))
-    _validate_records(normalised_records, len(feature_matrix))
+    selected = vocabulary or LEGACY_VOCABULARY
+    _validate_records(normalised_records, len(feature_matrix), selected)
 
     temp_feature_path = manifest_path.with_name(f".{manifest_path.stem}.{uuid4().hex}.npz")
     np.savez_compressed(temp_feature_path, features=feature_matrix)
     feature_hash = file_sha256(temp_feature_path)
     feature_path = manifest_path.with_name(f"{manifest_path.stem}.features.{feature_hash[:16]}.npz")
     manifest = {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": SCHEMA_VERSION if vocabulary is None else 2,
         "feature_version": FEATURE_VERSION,
-        "labels": list(LABELS),
+        "labels": list(LABELS if vocabulary is None else selected.labels),
         "feature_file": feature_path.name,
         "feature_sha256": feature_hash,
         "metadata": metadata or {},
         "records": [asdict(record) for record in normalised_records],
     }
+    if vocabulary is not None:
+        manifest["vocabulary"] = vocabulary.to_dict()
     temp_manifest_path = manifest_path.with_name(f".{manifest_path.name}.{uuid4().hex}.tmp")
     try:
         if feature_path.exists():
@@ -133,6 +139,7 @@ def save_dataset(
         records=tuple(normalised_records),
         features=feature_matrix,
         metadata=metadata or {},
+        vocabulary=selected,
     )
 
 
@@ -140,8 +147,12 @@ def merge_datasets(bundles: Iterable[DatasetBundle]) -> DatasetBundle:
     bundle_list = list(bundles)
     if not bundle_list:
         raise ValueError("at least one dataset is required")
+    vocabulary = bundle_list[0].vocabulary
+    if any(bundle.vocabulary != vocabulary for bundle in bundle_list):
+        raise ValueError("cannot merge different gesture vocabularies")
     merged_records, merged_features = _merge_records_and_features(
-        [bundle.records for bundle in bundle_list], [bundle.features for bundle in bundle_list]
+        [bundle.records for bundle in bundle_list], [bundle.features for bundle in bundle_list],
+        vocabulary,
     )
     metadata = {
         "sources": [
@@ -156,6 +167,7 @@ def merge_datasets(bundles: Iterable[DatasetBundle]) -> DatasetBundle:
         records=merged_records,
         features=merged_features,
         metadata=metadata,
+        vocabulary=vocabulary,
     )
 
 
@@ -164,8 +176,14 @@ def load_dataset(path: str | Path) -> DatasetBundle:
 
     manifest_path = _manifest_path(path)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("schema_version") != SCHEMA_VERSION:
+    schema = manifest.get("schema_version")
+    if type(schema) is not int or schema not in {SCHEMA_VERSION, 2}:
         raise ValueError(f"unsupported dataset schema version {manifest.get('schema_version')}")
+    vocabulary = (LEGACY_VOCABULARY if schema == SCHEMA_VERSION else
+                  GestureVocabulary.from_mapping(manifest.get("vocabulary")))
+    expected_labels = list(LABELS) if schema == SCHEMA_VERSION else list(vocabulary.labels)
+    if manifest.get("labels") != expected_labels:
+        raise ValueError("dataset labels do not match its vocabulary")
     if manifest.get("feature_version") != FEATURE_VERSION:
         raise ValueError(f"unsupported feature version {manifest.get('feature_version')}")
 
@@ -178,12 +196,13 @@ def load_dataset(path: str | Path) -> DatasetBundle:
     with np.load(feature_path) as loaded:
         features = _coerce_feature_matrix(loaded["features"])
     records = tuple(SampleRecord.from_mapping(record) for record in manifest["records"])
-    _validate_records(records, len(features))
+    _validate_records(records, len(features), vocabulary)
     return DatasetBundle(
         manifest_path=manifest_path,
         records=records,
         features=features,
         metadata=dict(manifest.get("metadata", {})),
+        vocabulary=vocabulary,
     )
 
 
@@ -244,7 +263,10 @@ def _assign_feature_indices(
     return tuple(assigned)
 
 
-def _validate_records(records: Iterable[SampleRecord], feature_count: int) -> None:
+def _validate_records(
+    records: Iterable[SampleRecord], feature_count: int,
+    vocabulary: GestureVocabulary = LEGACY_VOCABULARY,
+) -> None:
     feature_indices: set[int] = set()
     feature_split_by_index: dict[int, str] = {}
     session_splits: dict[str, str] = {}
@@ -253,7 +275,7 @@ def _validate_records(records: Iterable[SampleRecord], feature_count: int) -> No
     trial_slots: dict[str, set[int]] = {}
     hands: set[str] = set()
     for record in records:
-        if record.intended_label not in LABELS and not (
+        if record.intended_label not in vocabulary.labels and not (
             record.split == VALIDATION_NEGATIVE_SPLIT and record.intended_label == UNKNOWN_LABEL
         ):
             raise ValueError(f"unknown intended label {record.intended_label}")
@@ -305,6 +327,7 @@ def _validate_records(records: Iterable[SampleRecord], feature_count: int) -> No
 def _merge_records_and_features(
     record_groups: list[tuple[SampleRecord, ...]],
     feature_groups: list[np.ndarray],
+    vocabulary: GestureVocabulary = LEGACY_VOCABULARY,
 ) -> tuple[tuple[SampleRecord, ...], np.ndarray]:
     merged_features: list[np.ndarray] = []
     merged_records: list[SampleRecord] = []
@@ -329,7 +352,7 @@ def _merge_records_and_features(
         if merged_features
         else np.empty((0, 60), dtype=np.float32)
     )
-    _validate_records(merged_records, len(feature_matrix))
+    _validate_records(merged_records, len(feature_matrix), vocabulary)
     return tuple(merged_records), feature_matrix
 
 
