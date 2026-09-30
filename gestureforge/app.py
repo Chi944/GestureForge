@@ -188,6 +188,7 @@ class Window(QMainWindow):
         self.received_first_frame = False
         self._log_path = None
         self._log_failed = False
+        self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
         container.setObjectName("page")
         if studio:
@@ -404,6 +405,10 @@ class Window(QMainWindow):
                 shortcut = QShortcut(QKeySequence(key), self)
                 shortcut.activated.connect(slot)
                 self.shortcuts.append(shortcut)
+            self.studio_key_hint = " | ".join(
+                f"{shortcut.key().toString(QKeySequence.SequenceFormat.NativeText)}: {label}"
+                for shortcut, label in zip(self.shortcuts[-2:], ("load dataset", "start"))
+            ) + " | Esc: pause"
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.poll)
         self.timer.start(30)
@@ -473,7 +478,7 @@ class Window(QMainWindow):
         self.camera_status.setText(
             f"Selected camera: {self.camera_index} | Enrolled hand: {self.chosen_hand} | "
             f"Profile: {self.profile if self.model is not None else 'none'} | "
-            "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
+            f"{self.studio_key_hint}"
         )
         bindings = "  |  ".join(
             f"{gesture}: would {self.action_text(action)}"

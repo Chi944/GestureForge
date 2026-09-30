@@ -14,7 +14,11 @@ def validate_runtime() -> None:
         raise SystemExit("This setup is for macOS. On Windows, use setup.cmd.")
     if platform.machine() != "arm64":
         raise SystemExit("Use native Apple Silicon Python, not Intel Python or Rosetta.")
-    if int(platform.mac_ver()[0].split(".")[0]) < 13:
+    try:
+        major = int(platform.mac_ver()[0].split(".")[0])
+    except (IndexError, ValueError):
+        raise SystemExit("Could not read the macOS version. Confirm macOS 13+ with sw_vers.") from None
+    if major < 13:
         raise SystemExit("The pinned dependencies require macOS 13 Ventura or newer.")
     if sys.version_info[:2] != (3, 11):
         raise SystemExit("Run this script with Python 3.11: python3.11 scripts/setup_macos.py")
@@ -23,6 +27,7 @@ def validate_runtime() -> None:
 def main() -> None:
     validate_runtime()
     environment = {**os.environ, "PIP_CACHE_DIR": str(ROOT / ".cache" / "pip")}
+    environment.pop("QT_QPA_PLATFORM", None)
 
     def run(*args: str) -> None:
         subprocess.run(args, cwd=ROOT, env=environment, check=True)
@@ -47,6 +52,9 @@ def main() -> None:
     ).strip()
     run(str(python), "scripts/download_model.py")
     run(str(python), "scripts/check_environment.py", "--model")
+    # Exercise the native Qt window too; neither smoke mode starts a camera.
+    run(str(python), "-m", "gestureforge", "--smoke-test")
+    run(str(python), "-m", "gestureforge", "--studio", "--smoke-test")
     print("Setup complete. Launch from Terminal with: bash run.sh")
 
 

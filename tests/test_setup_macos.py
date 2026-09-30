@@ -11,6 +11,7 @@ from scripts import setup_macos
     ("Darwin", "arm64", "26.0", (3, 11), None),
     ("Windows", "AMD64", "", (3, 11), "Windows"),
     ("Darwin", "x86_64", "14.0", (3, 11), "Rosetta"),
+    ("Darwin", "arm64", "", (3, 11), "macOS version"),
     ("Darwin", "arm64", "12.7", (3, 11), "macOS 13"),
     ("Darwin", "arm64", "14.0", (3, 12), "Python 3.11"),
 ])
@@ -60,3 +61,34 @@ def test_setup_preserves_incompatible_environment(tmp_path, monkeypatch):
 def test_shell_launcher_has_unix_line_endings():
     launcher = Path(__file__).resolve().parent.parent / "run.sh"
     assert b"\r" not in launcher.read_bytes()
+
+
+@pytest.mark.parametrize("fail_studio", [False, True])
+def test_setup_checks_both_gui_modes_before_reporting_success(
+    tmp_path, monkeypatch, capsys, fail_studio
+):
+    monkeypatch.setattr(setup_macos, "ROOT", tmp_path)
+    monkeypatch.setattr(setup_macos, "validate_runtime", lambda: None)
+    monkeypatch.setattr(setup_macos.subprocess, "check_output", lambda *a, **k: "ca.pem\n")
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    calls = []
+
+    def run(args, **kwargs):
+        calls.append(args)
+        assert kwargs["env"].get("QT_QPA_PLATFORM") is None
+        if fail_studio and "--studio" in args:
+            raise subprocess.CalledProcessError(1, args)
+
+    monkeypatch.setattr(setup_macos.subprocess, "run", run)
+    if fail_studio:
+        with pytest.raises(subprocess.CalledProcessError):
+            setup_macos.main()
+    else:
+        setup_macos.main()
+    python = str(tmp_path / ".venv" / "bin" / "python")
+    assert calls[-3:] == [
+        (python, "scripts/check_environment.py", "--model"),
+        (python, "-m", "gestureforge", "--smoke-test"),
+        (python, "-m", "gestureforge", "--studio", "--smoke-test"),
+    ]
+    assert ("Setup complete" in capsys.readouterr().out) is not fail_studio

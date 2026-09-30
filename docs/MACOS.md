@@ -2,7 +2,7 @@
 
 Target: **Apple Silicon, macOS 13 Ventura or newer, native Python 3.11**.
 The pinned dependencies have compatible wheels and passed a cross-platform pip
-resolution check. Actual Mac installation, camera permission, live operation and
+[resolution check](project/macos-compatibility.json) (1 October 2026). Actual Mac installation, camera permission, live operation and
 performance still need verification on the destination Mac. Intel Macs and Rosetta
 are outside this setup path.
 
@@ -30,13 +30,34 @@ bash run.sh
 
 Setup needs internet. It installs the existing pinned dependencies into `.venv`,
 verifies their consistency, downloads the checksum-verified hand model and runs
-blank-image landmark inference. It does not open the camera or collect samples.
+blank-image landmark inference, then briefly opens and closes both the assignment
+window and Studio preview. Setup reports success only if these checks pass. It does
+not open the camera or collect samples. Run setup from an ordinary graphical Mac
+Terminal session, without setting `QT_QPA_PLATFORM=offscreen`.
 If setup fails, resolve the reported error and rerun; it does not delete an existing
 environment. Use `bash run.sh` rather than double-clicking the script so errors
 remain visible. The launcher handles project folders containing spaces.
 
 The initial viewer supports keyboard/mouse control. **Start camera control remains
 disabled until a personal dataset is supplied.** A connected webcam alone is not enough.
+
+## Studio on Mac
+
+```bash
+bash run.sh --studio
+```
+
+Choose **Load personal dataset...** to load your own `manifest.json`, or launch with
+`--studio --dataset data/local/mac-pilot/manifest.json --multiplier 2 --margin 1.5`.
+Choose **Camera index**, click **Use camera and pause**, then explicitly Start after
+the previous capture stops. The on-screen keyboard hint uses the native Qt shortcut
+names. Start/Pause and the active gesture meanings stay visible while setup scrolls.
+
+Studio currently simulates gesture actions; manual card navigation works. It does
+not yet execute desktop shortcuts on any platform. The planned local app/file/folder
+launchers and Camera handoff belong to the Windows project track. They are not a
+promise of macOS desktop automation. Personal data loading, classifier training,
+preview/rehearsal and the assignment viewer are the Mac compatibility target.
 
 ## Camera permission and personal gestures
 
@@ -86,16 +107,21 @@ before repeating. PREVIOUS and BOOKMARK remain recognition previews.
 ```bash
 .venv/bin/python -m pip check
 .venv/bin/python scripts/check_environment.py --model
-.venv/bin/python scripts/verify.py
+.venv/bin/python scripts/verify.py --output experiments/local/macos-verification.json --synthetic-output experiments/local/macos-software-check.json
 ```
 
-The verification script saves actual results in `docs/evidence/verification.json`.
-It runs offscreen software checks; it does not prove camera or live performance.
-Keep the Mac's evidence separately from the Windows record when sharing results.
+These commands save Mac verification under ignored `experiments/local/`, preserving
+the recorded Windows and submitted assignment evidence. The verification script runs
+offscreen software checks; it does not prove camera or live performance. Share the
+Mac report with the team after checking it contains no private participant details.
 
 Then run the app normally and confirm:
 
-- The window responds while the camera preview moves, and different cards are visible.
+- Test both `bash run.sh` and `bash run.sh --studio`. The window responds while the
+  camera preview moves; setup scrolls without hiding Start/Pause or gesture meanings.
+- In Studio, load a dataset, change camera, pause/restart and switch Preview/Rehearsal.
+  Each change requires a fresh NEUTRAL; displayed actions remain simulations.
+- In the assignment viewer, different cards are visibly distinct.
 - NEUTRAL arms, a five-second NEXT hold advances once, and another NEXT needs NEUTRAL.
 - Pause releases the camera; restarting and closing/reopening work.
 - After successful setup, the viewer and camera still work with Wi-Fi disconnected.

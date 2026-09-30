@@ -53,7 +53,7 @@ Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Jav
 
 Without a dataset, the manual viewer opens. In Studio, click **Load personal dataset...** and choose your collected `manifest.json`. Loading pauses control and trains locally in the background using the launch settings (`--algorithm`, `--multiplier`, `--margin`). A successful switch resets the action mappings and mode to Preview; check the mappings, wait for any previous camera thread to stop, then start explicitly and show NEUTRAL. Failed loads retain the previous selection in a paused state. Numeric gesture data stays local; synthetic fixtures cannot enable camera simulation. This loads existing data; guided enrolment and saved-profile management are still in development.
 
-Use **Camera index** and **Use camera and pause** to select another webcam without restarting the application (usually 0 or 1). After the old camera releases, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. **Ctrl+O** opens dataset selection, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The loading indicator stays visible while training; camera changes are disabled during that job.
+Use **Camera index** and **Use camera and pause** to select another webcam without restarting the application (usually 0 or 1). After the old camera releases, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. The on-screen hint shows the platform-native shortcuts for loading a dataset and starting capture (**Ctrl+O/Ctrl+Enter** on Windows); **Esc** pauses. The loading indicator stays visible while training; camera changes are disabled during that job.
 
 Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio dropdowns to choose Preview/Rehearsal and the simulated action for each gesture, then click **Apply and pause**. Draft edits do not change active control. Applying stops capture and requires a new NEUTRAL hold on resume. Mappings are temporary and are not saved. Context switching remains an integration API until runbooks are connected. Default launch without `--studio` preserves assignment behaviour.
 
@@ -104,7 +104,7 @@ python3.11 scripts/setup_macos.py
 bash run.sh
 ```
 
-Setup installs the pinned dependencies and verifies the hand model. Do not copy a Windows `.venv` or run Python through Rosetta. See the [Mac guide](docs/MACOS.md) for Python installation, camera permissions and personal gesture collection.
+Setup installs the pinned dependencies, verifies the hand model and briefly opens both GUI modes to check startup. Run `bash run.sh --studio` for the project preview. Do not copy a Windows `.venv` or run Python through Rosetta. See the [Mac guide](docs/MACOS.md) for Python installation, camera permissions and personal gesture collection.
 
 After collecting your own dataset in `data/local/mac-pilot`, check the camera and launch gesture control:
 
@@ -115,7 +115,7 @@ bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multi
 
 Allow camera access for the launching application when macOS asks. Without a personal dataset, the viewer opens with keyboard/mouse controls and camera control stays disabled.
 
-All 41 pinned packages resolved for Apple Silicon/Python 3.11. The [current project checks](docs/project/verification.json) record the Windows test, lint, type-checking, GUI-smoke and synthetic-evaluation results. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
+All 41 pinned packages resolved for Apple Silicon/Python 3.11 in the [refreshed 1 October check](docs/project/macos-compatibility.json). Studio uses native keyboard shortcut labels; the planned desktop shortcut launcher is Windows-specific, while the Mac target covers the viewer, personal classifier and Studio simulation. The [current project checks](docs/project/verification.json) record the Windows test, lint, type-checking, GUI-smoke and synthetic-evaluation results. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
 
 ### Use gesture control
 
@@ -167,7 +167,7 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 
 ```powershell
 # Automated tests, lint, type checks, GUI smoke and synthetic software checks
-.\.venv\Scripts\python.exe scripts/verify.py
+.\.venv\Scripts\python.exe scripts/verify.py --output docs/project/verification.json --synthetic-output experiments/local/project-software-check.json
 
 # Reproduce the recommended v3 comparison from the private P01 package
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/reproduced-pilot-v3.json

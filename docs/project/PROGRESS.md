@@ -1,6 +1,6 @@
 # GestureForge Studio progress
 
-Snapshot: 30 September 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 1 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
 
 ## Completion measure
 
@@ -13,7 +13,7 @@ Progress = the original estimated hours of fully completed tasks / the total ori
 | Javier | 0 / 73 | 0% verified |
 | Team | 13 / 223 | 5.8% |
 
-Three of 29 tasks are complete: GF-P01 (preserve/review the assignment baseline, 2 hours), GF-P32 (author the fictional scenario and evaluation protocol, 6 hours), and GF-P03 (custom vocabulary and legacy import, 5 hours). GF-P32 is content/protocol authoring; this does not claim an implemented runbook or completed user study. Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) passed independent review and 151 tests at its submitted head and was merged. No Javier feature branch or PR was available during this snapshot. Zero verified completion does not mean a teammate has done no work locally.
+Three of 29 tasks are complete: GF-P01 (preserve/review the assignment baseline, 2 hours), GF-P32 (author the fictional scenario and evaluation protocol, 6 hours), and GF-P03 (custom vocabulary and legacy import, 5 hours). GF-P32 is content/protocol authoring; this does not claim an implemented runbook or completed user study. Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) passed independent review and 151 tests at its submitted head and was merged. Javier has published `codex/javier-shortcuts` at `3237cae`, containing a ZIP review package. No source PR is open; its contents require review and integration before completion credit. Zero verified completion does not mean a teammate has done no work locally.
 
 ## Built, but broader tasks still in progress
 
@@ -29,6 +29,8 @@ The earlier dataset-loading slice passed 162 tests plus lint, type checks, both 
 The earlier camera-selection slice passed 169 tests, Ruff, mypy (34 files), both GUI smoke modes and synthetic evaluation. Tests cover selecting a different camera during capture, old-packet rejection, explicit restart after release, invalid indices, busy-loading controls and camera-failure recovery with manual fallback. A Windows-native screenshot at the minimum window size was inspected; vertical scrolling is available. The first verification run found a missing test-double attribute declaration; it was fixed before the clean rerun. Independent code review found no actionable issues; its focused UI suite passed 37 tests. No open PRs were available at the final GitHub check. The user chose to defer live webcam checks.
 
 The persistent-controls and replay slice passes 183 tests, Ruff, mypy (36 files), both GUI smoke modes and synthetic evaluation. Native Windows screenshots at 900x620 logical pixels were inspected at both scroll positions; capture controls and the legend remained visible. A clearly synthetic five-second NEXT hold with 56 total frames produced one protected action with no duplicates, versus 51 baseline requests with 50 duplicates; this is tool validation only. Its trace/report remain local. Independent review identified possible replacement of an existing report; the writer now rejects existing output and publishes exclusively, with regression checks for repeat CLI use and a competing writer. Independent re-review approved the fix with no remaining findings. No new participant, webcam or Windows-launch acceptance is claimed.
+
+The Mac compatibility slice passes 187 tests, Ruff, mypy (36 files), both GUI smoke modes and synthetic evaluation on Windows. Apple Silicon/Python 3.11 wheel resolution was refreshed for all 41 pins; [macos-compatibility.json](macos-compatibility.json) records the target, lock checksum and limitations. Mac setup now runs both GUI smoke modes before reporting success and gives an actionable message if its OS version cannot be read. Studio displays native shortcut labels. The updated Mac guide covers Studio and writes destination checks into ignored local outputs, preserving historical evidence. Actual Mac setup, Cocoa rendering, camera permissions, live transitions and responsiveness remain unverified. The Windows shortcut implementation remains outside the Mac compatibility target. No additional completed-task credit is claimed.
 
 ## Next deliverables
 

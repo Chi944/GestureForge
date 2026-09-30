@@ -14,6 +14,7 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtCore import QEvent, QPoint
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QApplication
 
 from gestureforge.app import Window
@@ -25,6 +26,15 @@ from gestureforge.vocabulary import GestureVocabulary
 def qapp():
     app = QApplication.instance() or QApplication([])
     yield app
+
+
+def test_studio_keyboard_hint_matches_native_shortcuts(qapp):
+    window = Window(studio=True)
+    try:
+        for shortcut in window.shortcuts[-2:]:
+            assert shortcut.key().toString(QKeySequence.SequenceFormat.NativeText) in window.camera_status.text()
+    finally:
+        window.close()
 
 
 class FakeWorker:
