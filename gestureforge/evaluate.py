@@ -16,6 +16,7 @@ from .contracts import LABELS
 from .dataset import DatasetBundle, SampleRecord, dataset_hashes, load_dataset, merge_datasets
 from .fixtures import synthetic_dataset
 from .models import train_model
+from .vocabulary import GestureVocabulary, LEGACY_VOCABULARY
 
 UNKNOWN = "UNKNOWN"
 COMMAND_LABELS = {"NEXT", "PREVIOUS", "BOOKMARK"}
@@ -48,6 +49,7 @@ def evaluate_algorithm(
         raise ValueError("dataset has no valid training samples")
     model = train_model(train_features, train_labels, algorithm=algorithm, multiplier=multiplier,  # type: ignore[arg-type]
                         margin=margin,
+                        vocabulary=bundle.vocabulary,
                         groups=[record.trial_id for record in train_records])
 
     validation_records = tuple(record for record in bundle.records if record.split == "validation")
@@ -61,8 +63,8 @@ def evaluate_algorithm(
     negative_predictions = _predict_records(model, bundle, validation_negative_records)
     predict_seconds = perf_counter() - start
     trial_predictions = trial_majority_predictions(validation_records, sample_predictions)
-    metrics = classification_metrics(trial_predictions)
-    metrics["validation_negative"] = validation_negative_metrics(negative_predictions)
+    metrics = classification_metrics(trial_predictions, bundle.vocabulary)
+    metrics["validation_negative"] = validation_negative_metrics(negative_predictions, bundle.vocabulary)
     return {
         "algorithm": algorithm,
         "model": model.to_config(),
@@ -110,20 +112,25 @@ def trial_majority_predictions(
     return results
 
 
-def classification_metrics(trial_predictions: list[dict[str, str]]) -> dict[str, Any]:
-    columns = [*LABELS, UNKNOWN]
-    confusion = {label: {column: 0 for column in columns} for label in LABELS}
+def classification_metrics(
+    trial_predictions: list[dict[str, str]],
+    vocabulary: GestureVocabulary = LEGACY_VOCABULARY,
+) -> dict[str, Any]:
+    labels = LABELS if vocabulary == LEGACY_VOCABULARY else vocabulary.labels
+    columns = [*labels, UNKNOWN]
+    confusion = {label: {column: 0 for column in columns} for label in labels}
     for prediction in trial_predictions:
         true_label = prediction["true_label"]
         predicted_label = prediction["predicted_label"]
-        if true_label in confusion and predicted_label in columns:
-            confusion[true_label][predicted_label] += 1
+        if true_label not in confusion or predicted_label not in columns:
+            raise ValueError("evaluation label outside selected vocabulary")
+        confusion[true_label][predicted_label] += 1
 
     per_class: dict[str, dict[str, float]] = {}
     f1_values: list[float] = []
-    for label in LABELS:
+    for label in labels:
         tp = confusion[label][label]
-        fp = sum(confusion[other][label] for other in LABELS if other != label)
+        fp = sum(confusion[other][label] for other in labels if other != label)
         fn = sum(confusion[label][column] for column in columns if column != label)
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
@@ -138,11 +145,14 @@ def classification_metrics(trial_predictions: list[dict[str, str]]) -> dict[str,
     }
 
 
-def validation_negative_metrics(predictions: list[dict[str, Any]]) -> dict[str, Any]:
+def validation_negative_metrics(
+    predictions: list[dict[str, Any]],
+    vocabulary: GestureVocabulary = LEGACY_VOCABULARY,
+) -> dict[str, Any]:
     accepted_commands = sum(
         1
         for prediction in predictions
-        if prediction["accepted"] and prediction["raw_label"] in COMMAND_LABELS
+        if prediction["accepted"] and prediction["raw_label"] in vocabulary.action_ids
     )
     total = len(predictions)
     return {

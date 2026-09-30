@@ -1,6 +1,7 @@
 """Guided trial collection. Stores features, never raw camera images or audio."""
 
 import argparse
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 import time
@@ -13,6 +14,7 @@ from .capture import DEFAULT_ASSET, HandCamera
 from .contracts import LABELS
 from .dataset import SampleRecord, load_dataset, save_dataset
 from .features import extract_feature_vector
+from .vocabulary import GestureVocabulary
 
 SAMPLE_OFFSETS = (0.2, 0.6, 1.0, 1.4, 1.8)
 
@@ -29,6 +31,9 @@ def scheduled_sample(observation, due, chosen_hand):
 
 
 def collect_trials(args):
+    vocabulary_path = getattr(args, "vocabulary", None)
+    vocabulary = (None if vocabulary_path is None else GestureVocabulary.from_mapping(
+        json.loads(Path(vocabulary_path).read_text(encoding="utf-8"))))
     output = Path(args.output)
     manifest = output if output.suffix == ".json" else output / "manifest.json"
     records = []
@@ -37,6 +42,10 @@ def collect_trials(args):
     trial_start_times = {}
     if manifest.exists():
         existing = load_dataset(manifest)
+        if vocabulary is not None and vocabulary != existing.vocabulary:
+            raise ValueError("Collection vocabulary does not match the existing dataset.")
+        if json.loads(manifest.read_text(encoding="utf-8"))["schema_version"] == 2:
+            vocabulary = existing.vocabulary
         if any(record.participant_id != args.participant for record in existing.records):
             raise ValueError("Use a separate dataset for each participant.")
         if existing.metadata.get("chosen_hand", args.hand) != args.hand:
@@ -52,7 +61,8 @@ def collect_trials(args):
                      "collected_at": datetime.now(timezone.utc).isoformat(),
                      "setup": args.setup, "camera_index": args.camera,
                      "consent_confirmed_by_operator": True})
-    labels = ("UNKNOWN",) if args.split == "validation_negative" else LABELS
+    labels = (("UNKNOWN",) if args.split == "validation_negative" else
+              LABELS if vocabulary is None else vocabulary.labels)
     metadata = {"provenance": "human", "chosen_hand": args.hand, "sessions": sessions,
                 "sampling_offsets_seconds": list(SAMPLE_OFFSETS), "raw_video_recorded": False,
                 "trial_start_times": trial_start_times,
@@ -108,7 +118,7 @@ def collect_trials(args):
                     records.extend(pending_records)
                     features.extend(pending_features)
                     matrix = np.asarray(features, dtype=np.float32).reshape(-1, 60)
-                    save_dataset(manifest, records, matrix, metadata)
+                    save_dataset(manifest, records, matrix, metadata, vocabulary=vocabulary)
                     completed += 1
                     print(f"Saved {label} trial {trial + 1}: {len(pending_features)}/5 valid")
                     release_until = time.monotonic() + 1
@@ -137,6 +147,8 @@ def show(frame, title, instruction):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default="data/local/pilot")
+    parser.add_argument("--vocabulary", type=Path,
+                        help="Versioned JSON vocabulary for three custom gesture IDs plus NEUTRAL")
     parser.add_argument("--participant", default="P01", help="Pseudonymous ID, not a name")
     parser.add_argument("--split", choices=["train", "validation", "validation_negative"], required=True)
     parser.add_argument("--hand", choices=["Left", "Right"], default="Right")
