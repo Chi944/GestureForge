@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-30T08:47:01.816456+00:00",
+  "timestamp_utc": "2026-09-30T09:26:44.374802+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.625,
+      "seconds": 1.579,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 3.518,
+      "seconds": 0.958,
       "stdout": "Success: no issues found in 34 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 46.392,
-      "stdout": "........................................................................ [ 44%]\n........................................................................ [ 88%]\n..................                                                       [100%]\n162 passed in 38.21s\n",
+      "seconds": 22.574,
+      "stdout": "........................................................................ [ 42%]\n........................................................................ [ 85%]\n.........................                                                [100%]\n169 passed in 21.50s\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 1.328,
+      "seconds": 1.546,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 1.47,
+      "seconds": 1.759,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 4.835,
+      "seconds": 4.372,
       "stdout": "",
       "stderr": ""
     }

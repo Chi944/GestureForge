@@ -34,6 +34,7 @@ class FakeWorker:
         self.interrupted = False
         self.finished = False
         self.wait_result = wait_result
+        self.start = Mock()
 
     def take_latest(self):
         if self.packets:
@@ -704,6 +705,10 @@ def test_studio_background_load_switches_once_and_waits_for_camera_release(monke
         assert camera.interrupted
         assert not window.start_button.isEnabled()
         assert not window.load_dataset_button.isEnabled()
+        assert not window.apply_camera_button.isEnabled()
+        assert not window.load_progress.isHidden()
+        with pytest.raises(ValueError, match="Wait for the dataset load"):
+            window.set_studio_camera(1)
         assert not window.load_studio_dataset("another.json")
         window.start_camera()
         assert window.worker is camera
@@ -727,6 +732,8 @@ def test_studio_background_load_switches_once_and_waits_for_camera_release(monke
         window.poll()
         assert window.worker is None and window.start_button.isEnabled()
         assert window.load_dataset_button.isEnabled()
+        assert window.apply_camera_button.isEnabled()
+        assert window.load_progress.isHidden()
         window.routing.resume()
         assert window.routing.state == "WAIT_NEUTRAL"
     finally:
@@ -819,5 +826,93 @@ def test_in_app_loader_rejects_real_synthetic_manifest(tmp_path, qapp) -> None:
         assert "Synthetic fixtures cannot enable live control" in window.notice.text()
         assert window.load_dataset_button.isEnabled()
         assert not window.start_button.isEnabled()
+    finally:
+        window.close()
+
+
+def test_camera_change_waits_for_release_and_restarts_with_fresh_identity(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    window.configure_studio(context_id="stage-2", mode=RoutingMode.REHEARSAL)
+    old = window.routing.resume()
+    previous = FakeWorker([(_frame(), _studio_prediction(window, 1, 100.0, "NEXT"))])
+    window.worker = previous
+    factory = Mock()
+    replacement = FakeWorker()
+    factory.return_value = replacement
+    monkeypatch.setattr(app_module, "CaptureWorker", factory)
+    try:
+        window.camera_picker.setValue(1)
+        assert window.camera_index == 0 and window.routing.snapshot == old
+        window.apply_camera_button.click()
+        changed = window.routing.snapshot
+        assert window.camera_index == 1 and previous.interrupted
+        assert changed.session_id != old.session_id
+        assert changed.context_id == old.context_id and changed.bindings == old.bindings
+        assert changed.mode == RoutingMode.REHEARSAL and window.routing.state == "PAUSED"
+        window.start_camera()
+        factory.assert_not_called()
+        window.poll()
+        assert window.prediction.text() == "Prediction: awaiting new camera session"
+        assert window.preview.pixmap().isNull()
+        previous.finished = True
+        window.poll()
+        assert window.worker is None and window.start_button.isEnabled()
+        window.start_camera()
+        assert factory.call_args.args[3] == 1
+        assert factory.call_args.args[5] == window.routing.snapshot.session_id
+        assert window.routing.snapshot.session_id != changed.session_id
+        replacement.start.assert_called_once()
+        assert window.routing.state == "WAIT_NEUTRAL"
+        active = window.routing.snapshot
+        assert not window.set_studio_camera(1)
+        assert window.routing.snapshot == active and not replacement.interrupted
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("index", [-1, True, 1.5, "1", 2**31])
+def test_invalid_camera_index_preserves_active_studio(index, qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    old = window.routing.resume()
+    worker = FakeWorker()
+    window.worker = worker
+    try:
+        with pytest.raises(ValueError):
+            window.set_studio_camera(index)
+        assert window.camera_index == 0 and window.routing.snapshot == old
+        assert not worker.interrupted
+    finally:
+        window.close()
+
+
+def test_studio_camera_failure_clears_preview_and_preserves_manual_controls(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    window.routing.resume()
+    worker = FakeWorker([(_frame(), _studio_prediction(window, 1, 100.0, "NEUTRAL"))])
+    window.worker = worker
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: 100.0)
+    try:
+        window.poll()
+        assert not window.preview.pixmap().isNull()
+        worker.error = "Camera disconnected"
+        worker.finished = True
+        window.poll()
+        assert window.worker is None and window.routing.state == "PAUSED"
+        assert window.preview.pixmap().isNull()
+        assert "Camera disconnected" in window.detail.text()
+        assert "permissions" in window.detail.text()
+        assert window.start_button.isEnabled()
+        window.next_card()
+        assert window.viewer.position == 1
     finally:
         window.close()

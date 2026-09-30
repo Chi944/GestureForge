@@ -13,7 +13,7 @@ from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
-    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog,
+    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox,
 )
 
 from .capture import HandCamera
@@ -45,6 +45,11 @@ REJECTION_MESSAGES = {
 }
 
 STUDIO_ACTIONS = (Action(ActionType.NEXT), Action(ActionType.PREVIOUS), Action(ActionType.BOOKMARK))
+
+
+def validate_camera_index(index):
+    if type(index) is not int or not 0 <= index <= 2147483647:
+        raise ValueError("Camera index must be a non-negative 32-bit integer")
 
 
 def load_personal_model(path, algorithm="knn", multiplier=1.5, margin=1.5, *, studio=False):
@@ -156,6 +161,8 @@ class Window(QMainWindow):
                  vocabulary=LEGACY_VOCABULARY, model_settings=("knn", 1.5, 1.5)):
         if studio and studio_mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
+        if studio:
+            validate_camera_index(camera_index)
         super().__init__()
         self.studio = studio
         self.setWindowTitle("GestureForge Studio" if studio else "GestureForge | Assignment prototype")
@@ -216,7 +223,30 @@ class Window(QMainWindow):
                 "Choose an existing manifest.json. Pauses control, trains locally and resets mappings."
             )
             self.load_dataset_button.clicked.connect(self.choose_studio_dataset)
-            page.addWidget(self.load_dataset_button)
+            camera_controls = QHBoxLayout()
+            page.addLayout(camera_controls)
+            camera_controls.addWidget(self.load_dataset_button, 1)
+            camera_label = QLabel("Camera index")
+            camera_controls.addWidget(camera_label)
+            self.camera_picker = QSpinBox()
+            self.camera_picker.setRange(0, 2147483647)
+            self.camera_picker.setValue(camera_index)
+            self.camera_picker.setAccessibleName("Camera device index")
+            self.camera_picker.setToolTip("Usually 0 for the first webcam, 1 for the second. Apply, then Start to test.")
+            camera_label.setBuddy(self.camera_picker)
+            camera_controls.addWidget(self.camera_picker)
+            self.apply_camera_button = QPushButton("Use camera and pause")
+            self.apply_camera_button.clicked.connect(lambda: self.set_studio_camera(self.camera_picker.value()))
+            camera_controls.addWidget(self.apply_camera_button)
+            self.camera_status = QLabel()
+            self.camera_status.setObjectName("muted")
+            self.camera_status.setWordWrap(True)
+            page.addWidget(self.camera_status)
+            self.load_progress = QProgressBar()
+            self.load_progress.setRange(0, 0)
+            self.load_progress.setAccessibleName("Loading and training personal dataset")
+            self.load_progress.hide()
+            page.addWidget(self.load_progress)
             page.addWidget(self.studio_status)
             settings = QGridLayout()
             page.addLayout(settings)
@@ -349,6 +379,11 @@ class Window(QMainWindow):
             shortcut = QShortcut(QKeySequence(key), self)
             shortcut.activated.connect(slot)
             self.shortcuts.append(shortcut)
+        if studio:
+            for key, slot in [("Ctrl+O", self.choose_studio_dataset), ("Ctrl+Return", self.start_camera)]:
+                shortcut = QShortcut(QKeySequence(key), self)
+                shortcut.activated.connect(slot)
+                self.shortcuts.append(shortcut)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.poll)
         self.timer.start(30)
@@ -383,6 +418,8 @@ class Window(QMainWindow):
                         padding: 7px; border-radius: 5px; }
             QComboBox QAbstractItemView { background: #223247; color: #e8eef4;
                                          selection-background-color: #355b72; }
+            QSpinBox { background: #223247; border: 1px solid #486478; padding: 7px; }
+            QPushButton:focus, QComboBox:focus, QSpinBox:focus { border: 2px solid #62d6ad; }
             QProgressBar { background: #253542; border: none; height: 8px; border-radius: 4px; }
             QProgressBar::chunk { background: #62d6ad; border-radius: 4px; }
             QProgressBar#deckProgress { background: #d5d1bf; height: 10px; }
@@ -413,6 +450,11 @@ class Window(QMainWindow):
             return
         assert self.routing is not None
         snapshot = self.routing.snapshot
+        self.camera_status.setText(
+            f"Selected camera: {self.camera_index} | Enrolled hand: {self.chosen_hand} | "
+            f"Profile: {self.profile if self.model is not None else 'none'} | "
+            "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
+        )
         bindings = "  |  ".join(
             f"{gesture}: would {self.action_text(action)}"
             for gesture, action in snapshot.bindings
@@ -489,6 +531,8 @@ class Window(QMainWindow):
         self.render_studio_status()
 
     def choose_studio_dataset(self):
+        if self.model_loader is not None or self._closing:
+            return
         path, _ = QFileDialog.getOpenFileName(
             self, "Load a personal gesture dataset", "", "Gesture dataset (manifest.json *.json)",
         )
@@ -504,9 +548,29 @@ class Window(QMainWindow):
         self.start_button.setEnabled(False)
         self.load_dataset_button.setEnabled(False)
         self.apply_bindings_button.setEnabled(False)
+        self.apply_camera_button.setEnabled(False)
+        self.load_progress.show()
         self.notice.setText("Loading and training locally. Camera control is paused; existing data is unchanged.")
         self.model_loader = ModelLoadWorker(path, self.model_settings)
         self.model_loader.start()
+        return True
+
+    def set_studio_camera(self, index):
+        if not self.studio or self._closing:
+            raise ValueError("Camera selection requires an open Studio window")
+        validate_camera_index(index)
+        if self.model_loader is not None:
+            raise ValueError("Wait for the dataset load to finish before changing camera")
+        if index == self.camera_index:
+            return False
+        self.configure_studio()
+        self.camera_index = index
+        self.camera_picker.setValue(index)
+        self.start_button.setEnabled(self.model is not None and self.worker is None)
+        self.detail.setText(f"Camera {index} selected. Wait for camera release, then Start and show NEUTRAL.")
+        self.render_studio_status()
+        self.log({"type": "camera_selection", "camera_index": index,
+                  "timestamp": time.monotonic()})
         return True
 
     def use_studio_model(self, model, hand, profile, vocabulary):
@@ -556,6 +620,8 @@ class Window(QMainWindow):
         finally:
             self.load_dataset_button.setEnabled(True)
             self.apply_bindings_button.setEnabled(True)
+            self.apply_camera_button.setEnabled(True)
+            self.load_progress.hide()
             self.start_button.setEnabled(self.model is not None and self.worker is None)
 
     def card_topic_text(self) -> str:
@@ -635,6 +701,8 @@ class Window(QMainWindow):
         self.worker.start()
         self.start_button.setEnabled(False)
         self.state.setText("Opening camera • show your enrolled neutral pose")
+        if self.studio:
+            self.preview.setText(f"Opening camera {self.camera_index}...")
         self.log({"type": "start", "session": session, "timestamp": time.monotonic(),
                   "camera_index": self.camera_index, "chosen_hand": self.chosen_hand,
                   "mode": self.routing.snapshot.mode.value if self.routing else "ASSIGNMENT",
@@ -647,6 +715,9 @@ class Window(QMainWindow):
             self.controller.pause()
         if self.worker is not None:
             self.worker.requestInterruption()
+        if self.studio:
+            self.preview.clear()
+            self.preview.setText("Camera stopping..." if self.worker else "Camera off")
         self.progress.setValue(0)
         self.state.setText("Paused • camera stopping" if self.worker else "Paused")
         self.log({"type": "pause", "timestamp": time.monotonic()})
@@ -750,12 +821,22 @@ class Window(QMainWindow):
               > (2 if self.received_first_frame else 20)):
             self.pause()
             self.state.setText("Camera stalled. Wait for shutdown, then restart.")
+            if self.studio:
+                self.detail.setText("Close other camera apps and check the cable/permissions. "
+                                    "Wait for release, then retry Start or select another camera index.")
         if self.worker.isFinished():
             error = self.worker.error
             self.worker.wait()
             self.worker = None
             control.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
+            if self.studio:
+                self.preview.clear()
+                self.preview.setText("Camera off\n\nStart explicitly to reconnect")
+                if error:
+                    self.detail.setText(f"Capture stopped: {error}\n"
+                                        "Check the hand model, camera connection and permissions; close other "
+                                        "camera apps. Retry Start or choose another camera index.")
             self.start_button.setEnabled(self.model is not None and self.model_loader is None)
 
     def changeEvent(self, event):

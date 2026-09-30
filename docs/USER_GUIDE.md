@@ -19,6 +19,10 @@ Launch `.\run.cmd --studio` for the current project build. Click **Load personal
 
 The loader uses your launch settings, for example `.\run.cmd --studio --algorithm knn --multiplier 2 --margin 1.5 --camera 1`. It accepts one participant's numeric collection data, including custom gesture vocabularies, and rejects synthetic fixtures. It does not create or save profiles yet. All Studio gesture actions are simulations; the manual card buttons still work. See the [project progress](project/PROGRESS.md) for remaining functionality.
 
+In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause**. Editing the number alone does not change capture. Applying a different index stops the old worker and clears its predictions; wait for release before Start becomes available. Start explicitly and hold NEUTRAL again. Camera changes preserve your active mappings and simulation mode. The selection is not saved across launches; use `--camera` for a launch default.
+
+**Ctrl+O** loads a dataset, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The indeterminate loading bar means local training is still running, not a completion percentage. Camera selection is disabled during loading. If the preview stalls or the camera disconnects, follow the recovery message: close other camera apps, check the cable and permissions, then retry Start or another camera index. Manual card controls remain available. On a small window, scroll to reach the card and capture buttons.
+
 ### Assignment environment
 
 - Windows computer with a working webcam.

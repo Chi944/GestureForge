@@ -46,6 +46,20 @@ Deston owns the shell; teammates provide embeddable PySide6 widgets instead of s
 
 The current Studio shell includes a simulation-mode selector and draft gesture mappings. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace the profile, readiness or workspace components assigned to the builders.
 
+Screen transitions use the same small rule set:
+
+| Trigger | Required transition |
+|---|---|
+| Open Studio with no starter/personal model | Show Home and Setup with Start disabled, manual deck controls available and the message "No starter or personal recogniser loaded." |
+| Select a saved profile or load a personal dataset | Pause camera, train/validate candidate off the UI thread, then either install the complete model/vocabulary and remain paused or keep the old selection with an error. |
+| Finish starter check or personal rehearsal | Show pass/fail/expired readiness and the short reason. Passing readiness may later enable LIVE; current shell still allows only Preview/Rehearsal. |
+| Select Quick Actions, Demo Studio or another stage | Apply that context's complete one-to-three gesture/action map, clear pending holds, update the legend and show "Resume and show NEUTRAL." An empty map is manual-only with routing paused. |
+| Edit shortcut target, action slot, profile model or gesture mapping | Pause and expire readiness because the behaviour revision changed. Cosmetic label edits do not expire readiness. |
+| Import workspace or restore saved state | Validate everything first; on success replace visible content and stay paused. Never launch apps, open files/URLs, replay events or mark tasks complete from loading. |
+| Focus loss, Camera launch or capture fault | Pause, cancel pending events and require explicit resume. Camera launch also waits for capture release before Javier's adapter opens the Camera app. |
+
+Builder widgets should emit the records named in `CONTRACTS.md` and leave these messages to the shell: current profile/model/context, current gesture meanings, readiness state, disabled-control reason, simulated versus real action, launch requested, launch failed, target unbound, workspace import failed and neutral required. Keep local module messages factual; do not claim hardware evidence or teammate acceptance from synthetic checks.
+
 Keyboard and button controls remain usable when recognition fails. Use readable contrast, labelled inputs, visible focus, sensible tab order and actionable errors. A disabled control must explain what enables it. Do not display a target as completed merely because Windows accepted an open request.
 
 ## Development workflow
