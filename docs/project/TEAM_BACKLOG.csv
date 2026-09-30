@@ -1,7 +1,7 @@
 ID,Sprint,Owner,Requirement,Task,Depends on,Acceptance evidence,Status,Estimate hours
 GF-P01,30 Sep-4 Oct,Deston,R14,Preserve assignment baseline and review existing changes,,Archive hash and reviewed starting state without overwriting submitted work,Done,2
 GF-P02,30 Sep-4 Oct,Deston,R07 R11 R15 R16 R21,Freeze starter personal workspace and runbook contracts plus screens,GF-P01,Try Now optional Personalise and one-action-per-stage-slot rules agreed,In Progress,8
-GF-P03,30 Sep-4 Oct,Hau Jie,R01 R03,Prove custom vocabulary and legacy dataset import,GF-P02,Existing assignment input loads and four custom IDs evaluate without label loss,Backlog,5
+GF-P03,30 Sep-4 Oct,Hau Jie,R01 R03,Prove custom vocabulary and legacy dataset import,GF-P02,PR #10 merged; legacy inputs and three custom action IDs plus NEUTRAL verified by tests/test_vocabulary.py,Done,5
 GF-P05,30 Sep-4 Oct,Javier,R08,Probe Windows app file folder HTTPS targets and Camera handoff,,All target types visibly open; errors and launch-request status correct; webcam release and resume verified,To Do,5
 GF-P06,5-11 Oct,Hau Jie,R01 R15,Implement profile lifecycle and starter selection,GF-P03,Guest start and two saved profiles reload independently; no account required,Backlog,10
 GF-P07,5-11 Oct,Hau Jie,R02,Implement guided enrolment and collection widgets,GF-P06,Three poses plus NEUTRAL collected with actions disabled and clear invalid feedback,Backlog,10

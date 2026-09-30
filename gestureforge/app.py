@@ -21,6 +21,7 @@ from .contracts import Action, ActionType, Prediction, RoutingMode
 from .controller import Controller
 from .routing import RoutingSession
 from .viewer import Viewer
+from .vocabulary import LEGACY_VOCABULARY
 
 CARD_STYLES = (
     ("#f2f1e9", "#ab5e45"),
@@ -43,11 +44,7 @@ REJECTION_MESSAGES = {
     "observation has no landmarks": "No usable hand landmarks were found. Keep your hand in view.",
 }
 
-STUDIO_BINDINGS = {
-    "NEXT": Action(ActionType.NEXT),
-    "PREVIOUS": Action(ActionType.PREVIOUS),
-    "BOOKMARK": Action(ActionType.BOOKMARK),
-}
+STUDIO_ACTIONS = (Action(ActionType.NEXT), Action(ActionType.PREVIOUS), Action(ActionType.BOOKMARK))
 
 
 class CaptureWorker(Thread):
@@ -113,7 +110,8 @@ class CaptureWorker(Thread):
 class Window(QMainWindow):
     def __init__(self, model=None, feature_function=None, chosen_hand="Right", camera_index=0,
                  asset=None, profile="pilot", data_note="No enrolled dataset loaded",
-                 studio=False, studio_mode=RoutingMode.PREVIEW):
+                 studio=False, studio_mode=RoutingMode.PREVIEW,
+                 vocabulary=LEGACY_VOCABULARY):
         if studio and studio_mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
         super().__init__()
@@ -124,8 +122,10 @@ class Window(QMainWindow):
         self.model, self.feature_function = model, feature_function
         self.chosen_hand, self.camera_index, self.asset = chosen_hand, camera_index, asset
         self.profile = profile
+        self.vocabulary = vocabulary
         self.routing = (
-            RoutingSession(profile, self._model_version(), "demo-studio", STUDIO_BINDINGS, studio_mode)
+            RoutingSession(profile, self._model_version(), "demo-studio",
+                           dict(zip(vocabulary.action_ids, STUDIO_ACTIONS, strict=True)), studio_mode)
             if studio
             else None
         )
@@ -417,6 +417,8 @@ class Window(QMainWindow):
             mode=old.mode if mode is None else mode,
             bindings=old.bindings if bindings is None else tuple(bindings.items()),
         )
+        if any(gesture not in self.vocabulary.action_ids for gesture, _ in draft.bindings):
+            raise ValueError("Bindings must use gestures from the selected dataset vocabulary")
         self.pause()
         self.routing.configure(
             self.profile, self._model_version(), draft.context_id, dict(draft.bindings), draft.mode,

@@ -15,7 +15,7 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 | Member | Owns | First work | Reviewer |
 |---|---|---|---|
 | Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | GF-P01 baseline, GF-P02 interfaces and screen design, then GF-P10 shell integration | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P03 vocabulary and legacy import, GF-P28 starter feasibility | Deston |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P03 merged in PR #10; next GF-P28 starter feasibility | Deston |
 | Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | GF-P05 Windows launch probes, GF-P08 viewer, GF-P09 workspace | Deston |
 
 Do not rewrite another owner's files to make a demo work. Put a required shared-interface change on the relevant Trello card for Deston to resolve. Own your module's tests and explanations; Deston's final checks do not replace them. Use AI tools to implement and investigate, then read and understand the generated code and report actual assistance.

@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-29T19:34:40.425491+00:00",
+  "timestamp_utc": "2026-09-30T08:32:00.967989+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.158,
+      "seconds": 0.883,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 0.814,
-      "stdout": "Success: no issues found in 32 source files\n",
+      "seconds": 2.301,
+      "stdout": "Success: no issues found in 34 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 13.807,
-      "stdout": "........................................................................ [ 55%]\n.........................................................                [100%]\n129 passed in 12.95s\n",
+      "seconds": 24.891,
+      "stdout": "........................................................................ [ 46%]\n........................................................................ [ 92%]\n............                                                             [100%]\n156 passed in 23.27s\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 1.098,
+      "seconds": 1.294,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 1.102,
+      "seconds": 1.23,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 2.615,
+      "seconds": 4.799,
       "stdout": "",
       "stderr": ""
     }

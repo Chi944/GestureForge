@@ -1,7 +1,7 @@
 # GF-P03: custom vocabulary and legacy import
 
 Hau Jie implementation handoff, 30 September 2026. Base: `cfbe5cbdcc90e68287629aaa4e22d2cdcb829e92`.
-Status: implemented locally and awaiting Deston's review. This is not completion of the recognition/profile lane.
+Status: accepted after Codex-assisted review for Deston and merged in [PR #10](https://github.com/Chi944/GestureForge_304/pull/10), merge commit `ff55d07`. Independent checks of head `d2ccf0c` passed 151 tests, Ruff, mypy, both GUI smoke checks and synthetic evaluation. This is not completion of the recognition/profile lane.
 
 ## Delivered
 
@@ -33,7 +33,7 @@ model = train_model(x, y, vocabulary=bundle.vocabulary,
 
 Collection retains the existing arguments, with optional `--vocabulary vocabulary.json`.
 The evaluator still accepts `python -m gestureforge.evaluate --config CONFIG.json`.
-Gesture IDs do not imply NEXT/PREVIOUS/BOOKMARK actions; Deston's shell must validate bindings against the selected vocabulary. No shell, controller, routing, shared contracts or viewer source was edited.
+Gesture IDs do not imply NEXT/PREVIOUS/BOOKMARK actions. PR #10 did not edit shell, controller, routing, shared contracts or viewer source. Deston's follow-up integrates vocabulary-aware training, mapping labels and binding validation into Studio; see [CONTRACTS.md](CONTRACTS.md).
 
 ## Actual verification
 

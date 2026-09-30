@@ -5,6 +5,8 @@ import sys
 import time
 from dataclasses import replace
 from hashlib import sha256
+from types import SimpleNamespace
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -16,6 +18,7 @@ from PySide6.QtWidgets import QApplication
 
 from gestureforge.app import Window
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
+from gestureforge.vocabulary import GestureVocabulary
 
 
 @pytest.fixture(scope="module")
@@ -468,6 +471,84 @@ def test_main_studio_smoke_starts_without_dataset() -> None:
     assert completed.returncode == 0
 
 
+@pytest.mark.parametrize("studio", [False, True])
+@pytest.mark.parametrize("custom", [False, True])
+def test_main_selects_dataset_vocabulary_without_changing_assignment(studio, custom, monkeypatch) -> None:
+    from gestureforge import __main__ as launcher
+    from gestureforge.fixtures import synthetic_dataset
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    vocabulary = GestureVocabulary(("G1", "G2", "G3")) if custom else LEGACY_VOCABULARY
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    features, labels, records = bundle.training_data()
+    mapping = dict(zip(LEGACY_VOCABULARY.labels, vocabulary.labels, strict=True))
+    # Mock only the human-data gate; synthetic arrays never become participant files.
+    dataset = SimpleNamespace(
+        vocabulary=vocabulary, metadata={"chosen_hand": "Right"},
+        records=[SimpleNamespace(provenance="human", participant_id="MOCK_GATE_ONLY")],
+        training_data=lambda: (features, np.array([mapping[label] for label in labels]), records),
+    )
+    monkeypatch.setattr("gestureforge.dataset.load_dataset", lambda _: dataset)
+    application = Mock()
+    application.exec.return_value = 0
+    monkeypatch.setattr("PySide6.QtWidgets.QApplication", Mock(return_value=application))
+    window = Mock()
+    monkeypatch.setattr("gestureforge.app.Window", window)
+    monkeypatch.setattr(sys, "argv", ["gestureforge", "--dataset", "mock-manifest.json"]
+                        + (["--studio"] if studio else []))
+    if custom and not studio:
+        with pytest.raises(SystemExit) as exc:
+            launcher.main()
+        assert exc.value.code == 1
+        window.assert_not_called()
+        return
+    assert launcher.main() == 0
+    model = window.call_args.args[0]
+    assert set(model.train_labels) == set(vocabulary.labels)
+    assert model.model_version.startswith("gesture-v1-" if studio else "prototype-v3")
+    assert window.call_args.kwargs["vocabulary"] == vocabulary
+
+
+def test_custom_classifier_labels_reach_studio_simulation(monkeypatch, qapp) -> None:
+    from gestureforge.fixtures import synthetic_dataset
+    from gestureforge.models import train_model
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    features, labels, records = synthetic_dataset(trials_per_label_per_split=2).training_data()
+    mapping = dict(zip(LEGACY_VOCABULARY.labels, vocabulary.labels, strict=True))
+    labels = np.array([mapping[label] for label in labels])
+    model = train_model(features, labels, vocabulary=vocabulary,
+                        groups=[record.trial_id for record in records])
+    window = Window(model=model, studio=True, vocabulary=vocabulary)
+    _disable_logging(window)
+    assert window.routing is not None
+    current = [100.0]
+    monkeypatch.setattr("gestureforge.app.time.monotonic", lambda: current[0])
+    try:
+        assert [label.text() for label in window.binding_labels] == [f"{g} gesture" for g in vocabulary.action_ids]
+        assert window.routing.snapshot.model_version == model.model_version
+        window.routing.resume()
+        packets = []
+        for i, timestamp, gesture in (
+            (1, 100.0, "NEUTRAL"), (2, 100.15, "NEUTRAL"), (3, 100.31, "NEUTRAL"),
+            (4, 100.45, "G1"), (5, 100.60, "G1"), (6, 100.75, "G1"), (7, 100.90, "G1"),
+            (8, 101.05, "G1"),
+        ):
+            label, accepted, _ = model.predict(features[np.flatnonzero(labels == gesture)[0]])
+            assert accepted and label == gesture
+            packets.append((_frame(), _studio_prediction(window, i, timestamp, label)))
+        window.worker = FakeWorker(packets)
+        for _, prediction in packets:
+            current[0] = prediction.timestamp
+            window.poll()
+        assert "G1 would show next card" in window.feedback.text()
+        assert window.routing.state == "LATCHED"
+        assert window.viewer.position == 0
+    finally:
+        window.close()
+
+
 def test_studio_rejects_live_mode_at_both_entry_points(qapp) -> None:
     with pytest.raises(ValueError, match="simulation modes only"):
         Window(studio=True, studio_mode=RoutingMode.LIVE)
@@ -526,7 +607,7 @@ def test_studio_binding_editor_applies_once_then_new_hold_simulates_new_action(m
 
 
 def test_studio_invalid_draft_preserves_active_session_and_custom_mapping_survives_mode_change(qapp) -> None:
-    window = Window(studio=True)
+    window = Window(studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
     _disable_logging(window)
     assert window.routing is not None
     try:
@@ -536,6 +617,8 @@ def test_studio_invalid_draft_preserves_active_session_and_custom_mapping_surviv
         window.worker = worker
         with pytest.raises(ValueError):
             window.configure_studio(bindings={"NEUTRAL": Action(ActionType.NEXT)})
+        with pytest.raises(ValueError, match="selected dataset vocabulary"):
+            window.configure_studio(bindings={"NOT_ENROLLED": Action(ActionType.NEXT)})
         assert window.routing.snapshot == old
         assert not worker.interrupted
         assert window.routing.state == "WAIT_NEUTRAL"
