@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-30T09:26:44.374802+00:00",
+  "timestamp_utc": "2026-09-30T10:41:45.586446+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 1.579,
+      "seconds": 0.444,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 0.958,
-      "stdout": "Success: no issues found in 34 source files\n",
+      "seconds": 1.104,
+      "stdout": "Success: no issues found in 36 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 22.574,
-      "stdout": "........................................................................ [ 42%]\n........................................................................ [ 85%]\n.........................                                                [100%]\n169 passed in 21.50s\n",
+      "seconds": 39.429,
+      "stdout": "........................................................................ [ 39%]\n........................................................................ [ 78%]\n.......................................                                  [100%]\n183 passed in 37.58s\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 1.546,
+      "seconds": 2.76,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 1.759,
+      "seconds": 6.271,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 4.372,
+      "seconds": 54.257,
       "stdout": "",
       "stderr": ""
     }

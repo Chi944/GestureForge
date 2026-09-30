@@ -13,7 +13,7 @@ import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PySide6.QtCore import QEvent
+from PySide6.QtCore import QEvent, QPoint
 from PySide6.QtWidgets import QApplication
 
 from gestureforge.app import Window
@@ -545,6 +545,35 @@ def test_custom_classifier_labels_reach_studio_simulation(monkeypatch, qapp) -> 
             window.poll()
         assert "G1 would show next card" in window.feedback.text()
         assert window.routing.state == "LATCHED"
+        assert window.viewer.position == 0
+    finally:
+        window.close()
+
+
+def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.resize(900, 620)
+    content = window.studio_scroll.widget()
+    assert content is not None
+    content.setMinimumHeight(1500)
+    window.show()
+    qapp.processEvents()
+    try:
+        window.configure_studio(context_id="training-stage")
+        assert "Context: training-stage" in window.boundary.text()
+        widgets = (window.start_button, window.pause_button, window.state, window.progress, window.boundary)
+        before = [widget.mapTo(window, QPoint(0, 0)).y() for widget in widgets]
+        scrollbar = window.studio_scroll.verticalScrollBar()
+        assert scrollbar.maximum() > 0
+        scrollbar.setValue(scrollbar.maximum())
+        qapp.processEvents()
+        assert before == [widget.mapTo(window, QPoint(0, 0)).y() for widget in widgets]
+        assert all(widget.isVisible() and 0 <= y < window.height() for widget, y in zip(widgets, before))
+        assert window.routing is not None
+        window.routing.resume()
+        window.pause_button.click()
+        assert window.routing.state == "PAUSED"
         assert window.viewer.position == 0
     finally:
         window.close()

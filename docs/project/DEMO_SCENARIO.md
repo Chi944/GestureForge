@@ -56,6 +56,31 @@ Recruit at least two consenting participants who did not contribute to starter t
 
 Targets are prospective, not passed checks. Use a simulated dispatcher for the paired controller-protection on/off replay of identical predictions. Live tests retain protection. Do not run an unprotected external launcher for comparison.
 
+### Controller replay tool (GF-P20 preparation)
+
+Run the same annotated prediction trace through the actual rehearsal routing/controller and a naive baseline that emits one simulated action for every accepted mapped frame:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/replay_controller.py --trace experiments/local/annotated-trace.json --output experiments/local/replay-report.json
+```
+
+This tool never calls the viewer or an operating-system launcher. The baseline deliberately removes activation protection; it is not a competing recognition algorithm. Both conditions receive identical classifier outputs, so this experiment isolates controller behaviour rather than comparing classifiers.
+
+Use a new output filename for each run. Existing traces and reports are never overwritten. The completed report is published atomically using a local filesystem hard link; if the destination filesystem does not support that operation, the command fails without publishing a partial report. Use the project's local NTFS workspace on Windows.
+
+| Trace field | Required meaning |
+|---|---|
+| `schema_version` | Integer 1 |
+| `session_id`, `profile_id`, `model_version`, `context_id` | Identifiers for one uninterrupted capture session and fixed context/model |
+| `bindings` | One to three gesture IDs mapped to typed action objects, such as `{"NEXT": {"kind": "NEXT"}}`; shortcut actions contain only a semantic `shortcut_id` |
+| `frames` | Ordered rows containing `frame_id`, monotonic capture `timestamp`, `label`, boolean `accepted`, and a nonempty `rejection_reason` for rejected frames |
+| `received_at` (per frame) | Monotonic processing time, including capture/processing delay. If omitted, the tool assumes it equals capture time and explicitly reports that limitation |
+| `expected_holds` | Observer annotations with stable-pose `start`, release `end`, and intended `command`. Windows must not overlap and must lie inside recorded coverage. An empty list means a deliberately annotated negative-activity trace |
+
+Include neutral/release frames, invalid detections and negative activity; do not export only successful poses. Keep annotations independent of predicted labels. Normal command-only application logs are insufficient because they omit predictions that did not trigger an action. This tool consumes supplied traces; automatic prediction recording and participant collection are not implemented by it. Split recordings at pause, profile/model/context changes and capture restarts.
+
+The report records the input checksum, controller timing settings, simulated event traces, correct/missed holds, duplicate and unintended actions, and latency from annotated onset to the first matching request. Events outside their matching hold window count as unintended; late arrivals can therefore count as both a missed intended hold and an unintended request. Nearest-rank p95 uses only successful first actions and is null if none succeed; always interpret it beside misses. Keep real recordings and reports under ignored `experiments/local/` with the source commit and actual annotation method/uncertainty. Synthetic traces verify this tool, not the project's participant or live-performance targets.
+
 ## Minimal local records and reviewer handoff
 
 Store under ignored `experiments/local/`: one session record per participant/condition with `participant_id`, condition/order, source/model/config/workspace revisions, setup/readiness/task durations, completed stages, errors/retries/help/fallbacks, comfort/usefulness, actual environment and limitations. Event rows need monotonic time, source (`manual`/`gesture`), session/context/event IDs, typed action, simulated flag and outcome. Avoid raw video, document contents and full target paths in ordinary logs.

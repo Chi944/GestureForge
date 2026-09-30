@@ -191,10 +191,15 @@ class Window(QMainWindow):
         container = QWidget()
         container.setObjectName("page")
         if studio:
-            scroll = QScrollArea()
-            scroll.setWidgetResizable(True)
-            scroll.setWidget(container)
-            self.setCentralWidget(scroll)
+            shell = QWidget()
+            shell.setObjectName("page")
+            shell_layout = QVBoxLayout(shell)
+            shell_layout.setContentsMargins(0, 0, 0, 0)
+            self.studio_scroll = QScrollArea()
+            self.studio_scroll.setWidgetResizable(True)
+            self.studio_scroll.setWidget(container)
+            shell_layout.addWidget(self.studio_scroll, 1)
+            self.setCentralWidget(shell)
         else:
             self.setCentralWidget(container)
         page = QVBoxLayout(container)
@@ -289,6 +294,7 @@ class Window(QMainWindow):
         left.addWidget(self.preview, 1)
         self.prediction = QLabel("Prediction: awaiting camera")
         self.prediction.setObjectName("prediction")
+        self.prediction.setWordWrap(studio)
         left.addWidget(self.prediction)
         self.state = QLabel("Paused • keyboard controls remain available")
         self.state.setWordWrap(True)
@@ -346,7 +352,18 @@ class Window(QMainWindow):
         self.feedback.setObjectName("feedback")
         right.addWidget(self.feedback)
         controls = QHBoxLayout()
-        page.addLayout(controls)
+        if studio:
+            footer = QWidget()
+            footer_layout = QVBoxLayout(footer)
+            footer_layout.setContentsMargins(28, 10, 28, 14)
+            shell_layout.addWidget(footer)
+            left.removeWidget(self.state)
+            footer_layout.addWidget(self.state)
+            left.removeWidget(self.progress)
+            footer_layout.addWidget(self.progress)
+            footer_layout.addLayout(controls)
+        else:
+            page.addLayout(controls)
         self.start_button = QPushButton("Start camera control")
         self.start_button.setEnabled(model is not None)
         if model is None:
@@ -373,7 +390,10 @@ class Window(QMainWindow):
         self.boundary = QLabel()
         self.boundary.setObjectName("muted")
         self.boundary.setWordWrap(True)
-        page.addWidget(self.boundary)
+        if studio:
+            footer_layout.addWidget(self.boundary)
+        else:
+            page.addWidget(self.boundary)
         self.shortcuts = []
         for key, slot in [("Right", self.next_card), ("Escape", self.pause)]:
             shortcut = QShortcut(QKeySequence(key), self)
@@ -461,7 +481,7 @@ class Window(QMainWindow):
         )
         mode = snapshot.mode.value.title()
         self.boundary.setText(
-            f"Studio {mode}: simulated gesture actions only. Manual deck controls remain active.\n"
+            f"Studio {mode} | Context: {snapshot.context_id} | Gesture actions simulated; manual deck active.\n"
             f"{bindings}"
         )
         missing = []
