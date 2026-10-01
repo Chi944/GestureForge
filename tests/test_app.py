@@ -99,9 +99,29 @@ def test_unsaved_trace_blocks_close_and_restart_until_retry(tmp_path, monkeypatc
         window.poll()
         window.start_camera()
         assert factory.call_count == 1 and window.evaluation_trace is trace
+        routing, model, viewer = window.routing, window.model, window.viewer
+        assert routing is not None
+        snapshot = routing.snapshot
+        camera_index = window.camera_index
+        viewer.next_keyboard()
+        window.restart_deck()
+        assert window.viewer is viewer and viewer.position == 1
+        assert not window.configure_studio(context_id="new-context")
+        assert not window.set_studio_camera(camera_index + 1)
+        assert not window.load_studio_dataset(tmp_path / "unused.json")
+        vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+        with pytest.raises(ValueError, match="Save the current evaluation trace"):
+            window.use_studio_model(_candidate_model(vocabulary), "Left", "P02", vocabulary)
+        assert window.model_loader is None and window.model is model
+        assert window.routing is routing and routing.snapshot == snapshot
+        assert window.camera_index == camera_index and routing.state == "PAUSED"
+        assert window.evaluation_trace is trace and "disk full" in window.trace_status.text()
         monkeypatch.setattr(trace, "save", save)
-        window.pause()
+        assert window.pause()
         assert window.evaluation_trace is None and len(list(tmp_path.glob("*.json"))) == 1
+        assert window.configure_studio(context_id="new-context")
+        window.restart_deck()
+        assert window.viewer.position == 0
     finally:
         window.close()
 

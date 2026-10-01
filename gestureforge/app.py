@@ -540,9 +540,9 @@ class Window(QMainWindow):
 
     def configure_studio(self, *, context_id: str | None = None,
                          mode: RoutingMode | None = None,
-                         bindings: Mapping[str, Action] | None = None) -> None:
+                         bindings: Mapping[str, Action] | None = None) -> bool:
         if self.routing is None:
-            return
+            return False
         if self.model_loader is not None:
             raise ValueError("Wait for the dataset load to finish before changing settings")
         if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
@@ -556,7 +556,8 @@ class Window(QMainWindow):
         )
         if any(gesture not in self.vocabulary.action_ids for gesture, _ in draft.bindings):
             raise ValueError("Bindings must use gestures from the selected dataset vocabulary")
-        self.pause()
+        if not self.pause():
+            return False
         self.routing.configure(
             self.profile, self._model_version(), draft.context_id, dict(draft.bindings), draft.mode,
         )
@@ -568,6 +569,7 @@ class Window(QMainWindow):
                   "bindings": {gesture: asdict(action) for gesture, action in draft.bindings},
                   "timestamp": time.monotonic()})
         self.render_studio_status()
+        return True
 
     def choose_studio_dataset(self):
         if self.model_loader is not None or self._closing:
@@ -583,7 +585,8 @@ class Window(QMainWindow):
             raise ValueError("In-app dataset loading requires Studio")
         if self.model_loader is not None or self._closing:
             return False
-        self.pause()
+        if not self.pause():
+            return False
         self.start_button.setEnabled(False)
         self.load_dataset_button.setEnabled(False)
         self.apply_bindings_button.setEnabled(False)
@@ -602,7 +605,8 @@ class Window(QMainWindow):
             raise ValueError("Wait for the dataset load to finish before changing camera")
         if index == self.camera_index:
             return False
-        self.configure_studio()
+        if not self.configure_studio():
+            return False
         self.camera_index = index
         self.camera_picker.setValue(index)
         self.start_button.setEnabled(self.model is not None and self.worker is None)
@@ -625,7 +629,8 @@ class Window(QMainWindow):
         note = (f"Personal dataset: {profile} | {hand} hand | "
                 f"{model.config.algorithm.upper()} | rejection {model.config.multiplier:g} | "
                 f"margin {model.config.margin:g} | local processing")
-        self.pause()
+        if not self.pause():
+            raise ValueError("Save the current evaluation trace before changing the model")
         self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
         self.routing = candidate
         self.received_first_frame = False
@@ -761,7 +766,7 @@ class Window(QMainWindow):
             self.controller.pause()
         if self.worker is not None:
             self.worker.requestInterruption()
-        self.finish_evaluation_trace()
+        saved = self.finish_evaluation_trace()
         if self.studio:
             self.record_trace.setEnabled(self.worker is None and self.evaluation_trace is None)
             self.preview.clear()
@@ -769,6 +774,7 @@ class Window(QMainWindow):
         self.progress.setValue(0)
         self.state.setText("Paused • camera stopping" if self.worker else "Paused")
         self.log({"type": "pause", "timestamp": time.monotonic()})
+        return saved
 
     def finish_evaluation_trace(self):
         trace = self.evaluation_trace
@@ -800,7 +806,8 @@ class Window(QMainWindow):
                   "position": self.viewer.position, "timestamp": time.monotonic()})
 
     def restart_deck(self):
-        self.pause()
+        if not self.pause():
+            return
         self.viewer = Viewer()
         self.feedback.setText("Deck restarted. Resume and show neutral before another gesture.")
         self.render_card()

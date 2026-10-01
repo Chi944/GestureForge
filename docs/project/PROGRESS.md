@@ -34,6 +34,8 @@ The Mac compatibility slice passes 187 tests, Ruff, mypy (36 files), both GUI sm
 
 The evaluation-recording slice adds opt-in Studio capture of controller-consumed predictions under ignored `experiments/local/controller-traces/`. It records only labels, acceptance state and monotonic timing, marks new traces `annotation_complete: false`, and preserves buffered evidence if saving fails. Replay now refuses unannotated generated traces before scoring while retaining support for legacy hand-authored traces. This advances GF-P20 tooling only: actual P01/P02/new-participant recordings, independent hold annotations and workflow comparison runs are still future work. No additional completed-task credit is claimed.
 
+The recovery follow-up passed 193 tests, lint, type checks, both GUI smoke modes and synthetic evaluation. Independent review found and then approved a fix for state changes continuing after a trace save failure. Camera/configuration changes, dataset/model replacement and deck reset now preserve the previous selection until saving succeeds. The regression checks failed storage, preserved state and successful retry. These are software checks without new webcam or participant evidence.
+
 ## Next deliverables
 
 - **Hau Jie:** GF-P03 is accepted; next is GF-P28 consented starter feasibility, then profile lifecycle/enrolment, on `codex/hau-jie-profiles`. Sync the merged main before starting the next PR.
