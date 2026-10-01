@@ -20,7 +20,7 @@ Suggested IDs:
 Before collection, the participant must explicitly agree to numeric feature
 collection and team-internal model evaluation. Permission to redistribute or include
 the features in the final submission is a separate decision. The collector stores
-numeric landmarks and manifests, not raw images, video or audio. Do not commit
+normalised numeric features and manifests, not raw images, video or audio. Do not commit
 participant data to GitHub.
 
 ## Windows setup and camera check
@@ -52,7 +52,7 @@ appears. Reposition slightly between trials. Keep invalid scheduled samples; the
 are evidence and must not be silently recollected until a score improves. Q stops
 collection while preserving complete trials.
 
-Replace `P03`, `Javier` and camera index below for the actual participant.
+Replace `P03` and the camera index below for the actual participant.
 
 Session 1:
 
@@ -60,7 +60,7 @@ Session 1:
 .\.venv\Scripts\python.exe -m gestureforge.collect `
   --output "data\local\starter\P03\session-1" `
   --participant P03 --split train --hand Right --trials 8 --camera 0 `
-  --setup "Javier laptop, camera 0, right hand, starter session 1" --consent
+  --setup "P03 laptop, camera 0, right hand, starter session 1" --consent
 ```
 
 Take a short break and reposition before the separate second run.
@@ -71,7 +71,7 @@ Session 2:
 .\.venv\Scripts\python.exe -m gestureforge.collect `
   --output "data\local\starter\P03\session-2" `
   --participant P03 --split validation --hand Right --trials 8 --camera 0 `
-  --setup "Javier laptop, camera 0, right hand, separate starter session 2" --consent
+  --setup "P03 laptop, camera 0, right hand, separate starter session 2" --consent
 ```
 
 Each session contains eight trials per four labels and at most five scheduled
@@ -87,7 +87,7 @@ Run eight separate `validation_negative` trials:
 .\.venv\Scripts\python.exe -m gestureforge.collect `
   --output "data\local\starter\P03\negatives" `
   --participant P03 --split validation_negative --hand Right --trials 8 --camera 0 `
-  --setup "Javier laptop, camera 0; trials 1-3 index only, 4-6 three fingers, 7-8 pinch" `
+  --setup "P03 laptop, camera 0; trials 1-3 index only, 4-6 three fingers, 7-8 pinch" `
   --consent
 ```
 
