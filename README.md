@@ -34,9 +34,11 @@ Current project foundation on `main`:
 | :--- | :--- |
 | Shared routing contract | Implemented and tested in `gestureforge/contracts.py`, `gestureforge/controller.py` and `gestureforge/routing.py` |
 | Custom gesture vocabulary | PR #10 merged: schema-2 collection, kNN/SVM training and evaluation support three custom action IDs plus NEUTRAL; legacy datasets remain supported |
+| Starter collection protocol | [Shared pose and recording guide](docs/project/STARTER_COLLECTION_GUIDE.md) accepted in PR #12; three-member collection and person-separated model comparison remain in progress |
 | Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
 | Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
 | Studio preview | Opt-in `--studio` simulation; shows would-be actions without executing gesture-driven viewer or desktop actions |
+| Manual card browser | Studio's **Manual browse / bookmarks** tab supports Previous, Next, bookmarking, reviewing and removing bookmarks without a dataset; bookmarks are session-local |
 | In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
 | Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
@@ -60,6 +62,8 @@ Without a dataset, the manual viewer opens. In Studio, click **Load personal dat
 Use **Camera index** and **Use camera and pause** to select another webcam without restarting the application (usually 0 or 1). After the old camera releases, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. The on-screen hint shows the platform-native shortcuts for loading a dataset and starting capture (**Ctrl+O/Ctrl+Enter** on Windows); **Esc** pauses. The loading indicator stays visible while training; camera changes are disabled during that job.
 
 Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio dropdowns to choose Preview/Rehearsal and the simulated action for each gesture, then click **Apply and pause**. Draft edits do not change active control. Applying stops capture and requires a new NEUTRAL hold on resume. Mappings are temporary and are not saved. Context switching remains an integration API until runbooks are connected. Default launch without `--studio` preserves assignment behaviour.
+
+Use **Manual browse / bookmarks** beside the Card tab to inspect the deck with buttons. Double-click a saved bookmark, or select it and press Enter, to revisit its card. Select a bookmark before removing it. Both tabs share the same deck; Restart deck resets the position and clears these session-local bookmarks. Gesture Preview/Rehearsal still only displays would-be actions. Saved-state integration remains separate work.
 
 [Approved plan](docs/project/PROJECT_PLAN.md) Â· [Progress](docs/project/PROGRESS.md) Â· [Team guide](docs/project/TEAM_GUIDE.md) Â· [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) Â· [Javier brief](docs/project/JAVIER_HANDOFF.md) Â· [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
 

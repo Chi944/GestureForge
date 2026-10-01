@@ -15,7 +15,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtCore import QEvent, QPoint
 from PySide6.QtGui import QKeySequence
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QPushButton
 
 from gestureforge.app import Window
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
@@ -263,6 +263,92 @@ def test_studio_no_dataset_starts_as_simulated_shell(qapp) -> None:
         assert "PREVIOUS: would show previous card" in window.boundary.text()
         assert "BOOKMARK: would bookmark this card" in window.boundary.text()
         assert window.viewer.position == 0
+    finally:
+        window.close()
+
+
+def test_studio_manual_viewer_browses_bookmarks_and_resyncs_after_restart(qapp) -> None:
+    window = Window(model=None, data_note="studio no data", studio=True)
+    _disable_logging(window)
+
+    try:
+        widget = window.manual_viewer
+        assert widget is not None
+        assert widget.viewer is window.viewer
+        assert window.start_button.isEnabled() is False
+
+        widget.buttons[ActionType.PREVIOUS].click()
+        assert window.viewer.position == 0
+        assert widget.buttons[ActionType.PREVIOUS].isEnabled() is False
+
+        widget.buttons[ActionType.NEXT].click()
+        assert window.viewer.position == 1
+        assert "Card 2 of 10" in window.position.text()
+        assert widget.viewer is window.viewer
+        assert widget.buttons[ActionType.PREVIOUS].isEnabled() is True
+
+        widget.buttons[ActionType.BOOKMARK].click()
+        widget.buttons[ActionType.BOOKMARK].click()
+        assert [card.id for card in window.viewer.bookmarks] == ["card-02"]
+        assert widget.bookmarks.count() == 1
+        assert widget.buttons[ActionType.BOOKMARK].isEnabled() is False
+
+        widget.buttons[ActionType.NEXT].click()
+        widget.buttons[ActionType.NEXT].click()
+        assert window.viewer.position == 3
+        window.deck_tabs.setCurrentIndex(1)
+        widget.bookmarks.setCurrentRow(0)
+        widget.bookmarks.itemActivated.emit(widget.bookmarks.currentItem())
+        window.deck_tabs.setCurrentIndex(0)
+        assert window.viewer.position == 1
+        assert "Card 2 of 10" in window.position.text()
+
+        window.deck_tabs.setCurrentIndex(1)
+        widget.bookmarks.setCurrentRow(0)
+        remove = next(button for button in widget.findChildren(QPushButton) if button.text() == "Remove selected bookmark")
+        remove.click()
+        window.deck_tabs.setCurrentIndex(0)
+        assert window.viewer.bookmarks == ()
+        assert widget.bookmarks.count() == 0
+        assert widget.buttons[ActionType.BOOKMARK].isEnabled() is True
+
+        widget.buttons[ActionType.PREVIOUS].click()
+        assert window.viewer.position == 0
+        old = window.viewer
+        window.restart_deck()
+        assert window.viewer is not old
+        assert widget.viewer is window.viewer
+        assert window.viewer.position == 0
+        assert "Card 1 of 10" in window.position.text()
+    finally:
+        window.close()
+
+
+def test_studio_manual_viewer_rejects_non_viewer_actions_without_mutating(qapp) -> None:
+    window = Window(model=None, data_note="studio no data", studio=True)
+    _disable_logging(window)
+
+    try:
+        window.manual_viewer_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.viewer.position == 0
+        assert window.viewer.bookmarks == ()
+        assert "Use NEXT or the button to advance." in window.feedback.text()
+    finally:
+        window.close()
+
+
+def test_assignment_window_keeps_existing_card_controls_only(qapp) -> None:
+    window = Window(model=None, data_note="keyboard only")
+    _disable_logging(window)
+
+    try:
+        assert window.manual_viewer is None
+        assert not hasattr(window, "deck_tabs")
+        window.manual_viewer_action(Action(ActionType.BOOKMARK))
+        assert window.viewer.bookmarks == ()
+        window.next_card()
+        assert window.viewer.position == 1
+        assert "Card 2 of 10" in window.position.text()
     finally:
         window.close()
 

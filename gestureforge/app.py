@@ -14,6 +14,7 @@ from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
     QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox, QCheckBox,
+    QTabWidget,
 )
 
 from .capture import HandCamera
@@ -21,6 +22,7 @@ from .contracts import Action, ActionType, Prediction, RoutingMode, validate_ide
 from .controller import Controller
 from .routing import RoutingSession
 from .viewer import Viewer
+from .javier_widgets import ViewerWidget
 from .vocabulary import LEGACY_VOCABULARY
 from .traces import EvaluationTrace
 
@@ -331,7 +333,19 @@ class Window(QMainWindow):
         self.card_frame.setObjectName("card")
         right = QVBoxLayout(self.card_frame)
         right.setContentsMargins(28, 28, 28, 28)
-        columns.addWidget(self.card_frame, 1)
+        self.manual_viewer = None
+        if studio:
+            self.deck_tabs = QTabWidget()
+            self.deck_tabs.setObjectName("deckTabs")
+            self.deck_tabs.addTab(self.card_frame, "Card")
+            self.manual_viewer = ViewerWidget(self.viewer)
+            self.manual_viewer.setObjectName("manualViewer")
+            self.manual_viewer.action_requested.connect(self.manual_viewer_action)
+            self.deck_tabs.addTab(self.manual_viewer, "Manual browse / bookmarks")
+            self.deck_tabs.currentChanged.connect(lambda _index: self.render_card())
+            columns.addWidget(self.deck_tabs, 1)
+        else:
+            columns.addWidget(self.card_frame, 1)
         card_header = QHBoxLayout()
         right.addLayout(card_header)
         self.card_badge = QLabel()
@@ -459,6 +473,20 @@ class Window(QMainWindow):
                                          selection-background-color: #355b72; }
             QSpinBox { background: #223247; border: 1px solid #486478; padding: 7px; }
             QPushButton:focus, QComboBox:focus, QSpinBox:focus { border: 2px solid #62d6ad; }
+            QTabWidget#deckTabs::pane { background: #101923; border: 1px solid #486478; border-radius: 7px; }
+            QTabWidget#deckTabs QTabBar::tab { background: #223247; color: #e8eef4;
+                                               border: 1px solid #486478; padding: 8px 12px; }
+            QTabWidget#deckTabs QTabBar::tab:focus { border: 2px solid #62d6ad; }
+            QTabWidget#deckTabs QTabBar::tab:selected { background: #355b72; color: #ffffff; }
+            QWidget#manualViewer { background: #101923; }
+            QWidget#manualViewer QLabel { color: #e8eef4; background: transparent; }
+            QWidget#manualViewer QTextEdit, QWidget#manualViewer QListWidget {
+                background: #0c1620; color: #e8eef4; border: 1px solid #486478; border-radius: 6px;
+                selection-background-color: #355b72; selection-color: #ffffff;
+            }
+            QWidget#manualViewer QTextEdit:focus, QWidget#manualViewer QListWidget:focus {
+                border: 2px solid #62d6ad;
+            }
             QProgressBar { background: #253542; border: none; height: 8px; border-radius: 4px; }
             QProgressBar::chunk { background: #62d6ad; border-radius: 4px; }
             QProgressBar#deckProgress { background: #d5d1bf; height: 10px; }
@@ -682,6 +710,9 @@ class Window(QMainWindow):
         return reason
 
     def render_card(self):
+        if self.manual_viewer is not None:
+            self.manual_viewer.viewer = self.viewer
+            self.manual_viewer.refresh()
         card = self.viewer.current_card
         count = len(self.viewer.deck.cards)
         number = self.viewer.position + 1
@@ -803,6 +834,22 @@ class Window(QMainWindow):
             if moved else f"Still showing {old_topic}; the assignment deck does not wrap."
         )
         self.log({"type": "command", "source": "keyboard_or_mouse", "command": "NEXT",
+                  "position": self.viewer.position, "timestamp": time.monotonic()})
+
+    def manual_viewer_action(self, action):
+        if not self.studio or action.kind not in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK}:
+            return
+        old_topic = self.card_topic_text()
+        moved = self.viewer.apply_action(action)
+        self.render_card()
+        self.feedback.setText(
+            f"Manual {action.kind.value}: now showing {self.card_topic_text()} (from {old_topic})."
+            if moved and action.kind != ActionType.BOOKMARK
+            else f"Manual {action.kind.value}: {self.action_text(action)}."
+            if moved
+            else f"Manual {action.kind.value}: no change."
+        )
+        self.log({"type": "command", "source": "manual_viewer", "command": action.kind.value,
                   "position": self.viewer.position, "timestamp": time.monotonic()})
 
     def restart_deck(self):
