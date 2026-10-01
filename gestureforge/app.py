@@ -14,7 +14,7 @@ from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
     QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox, QCheckBox,
-    QTabWidget,
+    QSizePolicy, QTabWidget,
 )
 
 from .capture import HandCamera
@@ -23,8 +23,10 @@ from .controller import Controller
 from .routing import RoutingSession
 from .storage import read_json
 from .viewer import Viewer, load_deck
-from .javier_widgets import ViewerWidget
+from .javier_widgets import RunbookWidget, ViewerWidget, WorkspaceWidget
+from .runbook import Runbook
 from .vocabulary import LEGACY_VOCABULARY
+from .workspace import Workspace, parse_workspace
 from .traces import EvaluationTrace
 
 CARD_STYLES = (
@@ -184,6 +186,12 @@ class Window(QMainWindow):
         )
         self.controller = Controller(str(uuid4()), profile)
         self.viewer = Viewer()
+        self.deck_available = True
+        self.workspace = Workspace("demo-studio", "Demo Studio", self.viewer.deck)
+        self.runbook = None
+        self.routing_manual_only = False
+        self.manual_context_id = "demo-studio"
+        self.manual_mode = studio_mode
         self.worker = None
         self.model_loader = None
         self.model_settings = model_settings
@@ -199,6 +207,8 @@ class Window(QMainWindow):
         self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
         container.setObjectName("page")
+        if studio:
+            container.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         if studio:
             shell = QWidget()
             shell.setObjectName("page")
@@ -308,7 +318,9 @@ class Window(QMainWindow):
         columns.addLayout(left, 1)
         self.preview = QLabel("Camera off\n\nFrames stay on this computer")
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.preview.setMinimumSize(390, 180 if studio else 270)
+        self.preview.setMinimumSize(320 if studio else 390, 180 if studio else 270)
+        if studio:
+            self.preview.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
         self.preview.setObjectName("preview")
         left.addWidget(self.preview, 1)
         self.prediction = QLabel("Prediction: awaiting camera")
@@ -333,6 +345,8 @@ class Window(QMainWindow):
         left.addWidget(self.detail)
         self.card_frame = QFrame()
         self.card_frame.setObjectName("card")
+        self.card_frame.setMinimumWidth(0)
+        self.card_frame.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
         right = QVBoxLayout(self.card_frame)
         right.setContentsMargins(28, 28, 28, 28)
         self.manual_viewer = None
@@ -342,9 +356,27 @@ class Window(QMainWindow):
             self.deck_tabs.addTab(self.card_frame, "Card")
             self.manual_viewer = ViewerWidget(self.viewer)
             self.manual_viewer.setObjectName("manualViewer")
+            self.manual_viewer.setMinimumWidth(0)
+            self.manual_viewer.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             self.manual_viewer.action_requested.connect(self.manual_viewer_action)
             self.deck_tabs.addTab(self.manual_viewer, "Manual browse / bookmarks")
+            self.workspace_widget = WorkspaceWidget(self.workspace)
+            self.workspace_widget.setObjectName("manualViewer")
+            self.workspace_widget.setMinimumWidth(0)
+            self.workspace_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.workspace_widget.workspace_changed.connect(self.accept_workspace_widget_change)
+            self.deck_tabs.addTab(self.workspace_widget, "Workspace")
+            self.runbook_widget = RunbookWidget(self._make_runbook(self.workspace))
+            self.runbook_widget.setObjectName("manualViewer")
+            self.runbook_widget.setMinimumWidth(0)
+            self.runbook_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.runbook_widget.action_requested.connect(self.manual_runbook_action)
+            self.runbook_widget.previous_stage_requested.connect(self.previous_runbook_stage)
+            self.runbook_widget.complete.hide()
+            self.deck_tabs.addTab(self.runbook_widget, "Runbook")
             self.deck_tabs.currentChanged.connect(lambda _index: self.render_card())
+            self.deck_tabs.setMinimumWidth(0)
+            self.deck_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             columns.addWidget(self.deck_tabs, 1)
         else:
             columns.addWidget(self.card_frame, 1)
@@ -420,12 +452,12 @@ class Window(QMainWindow):
         self.pause_button = QPushButton("Pause / camera off")
         self.pause_button.clicked.connect(self.pause)
         controls.addWidget(self.pause_button)
-        next_button = QPushButton("Next card  →")
-        next_button.clicked.connect(self.next_card)
-        controls.addWidget(next_button)
-        reset_button = QPushButton("Restart deck")
-        reset_button.clicked.connect(self.restart_deck)
-        controls.addWidget(reset_button)
+        self.next_button = QPushButton("Next card  →")
+        self.next_button.clicked.connect(self.next_card)
+        controls.addWidget(self.next_button)
+        self.reset_button = QPushButton("Restart deck")
+        self.reset_button.clicked.connect(self.restart_deck)
+        controls.addWidget(self.reset_button)
         self.boundary = QLabel()
         self.boundary.setObjectName("muted")
         self.boundary.setWordWrap(True)
@@ -444,25 +476,30 @@ class Window(QMainWindow):
                 shortcut = QShortcut(QKeySequence(key), self)
                 shortcut.activated.connect(slot)
                 self.shortcuts.append(shortcut)
-            self.deck_tools = QHBoxLayout()
-            for text, slot in (
+            self.deck_tools = QGridLayout()
+            self.file_tool_buttons = []
+            for index, (text, slot) in enumerate((
                 ("Load deck...", self.choose_studio_deck),
                 ("Save progress...", self.choose_save_studio_progress),
                 ("Restore progress...", self.choose_restore_studio_progress),
-            ):
+                ("Load workspace...", self.choose_studio_workspace),
+                ("Save session...", self.choose_save_studio_session),
+                ("Restore session...", self.choose_restore_studio_session),
+            )):
                 button = QPushButton(text)
                 button.clicked.connect(slot)
                 button.setAccessibleName(text.replace("...", ""))
-                self.deck_tools.addWidget(button)
-            assert self.manual_viewer is not None
-            manual_layout = self.manual_viewer.layout()
-            assert isinstance(manual_layout, QVBoxLayout)
-            manual_layout.insertLayout(0, self.deck_tools)
+                button.setMinimumWidth(0)
+                button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+                self.deck_tools.addWidget(button, index // 3, index % 3)
+                self.file_tool_buttons.append(button)
             self.deck_file_status = QLabel("Load a deck, or save and restore your place and bookmarks.")
             self.deck_file_status.setWordWrap(True)
             self.deck_file_status.setTextFormat(Qt.TextFormat.PlainText)
             self.deck_file_status.setObjectName("muted")
-            manual_layout.insertWidget(1, self.deck_file_status)
+            file_tools_index = max(0, page.count() - 1)
+            page.insertLayout(file_tools_index, self.deck_tools)
+            page.insertWidget(file_tools_index + 1, self.deck_file_status)
             self.studio_key_hint = " | ".join(
                 f"{shortcut.key().toString(QKeySequence.SequenceFormat.NativeText)}: {label}"
                 for shortcut, label in zip(self.shortcuts[-2:], ("load dataset", "start"))
@@ -528,6 +565,9 @@ class Window(QMainWindow):
     def _model_version(self) -> str:
         return getattr(self.model, "model_version", "unversioned")
 
+    def _can_start_studio_camera(self) -> bool:
+        return self.model is not None and self.worker is None and not self.routing_manual_only
+
     def action_text(self, action: Action) -> str:
         if action.kind == ActionType.OPEN_SHORTCUT:
             return f"open shortcut {action.shortcut_id}"
@@ -538,6 +578,56 @@ class Window(QMainWindow):
             ActionType.ADVANCE_STAGE: "advance stage",
         }[action.kind]
 
+    def _active_studio_bindings(self) -> tuple[tuple[str, Action], ...]:
+        if self.routing_manual_only:
+            return ()
+        assert self.routing is not None
+        return self.routing.snapshot.bindings
+
+    def _make_runbook(self, workspace: Workspace) -> Runbook:
+        viewer = self.viewer if workspace.deck is not None else None
+        return Runbook(workspace, self.reset_runbook_stage, viewer)
+
+    def _refresh_workspace_widgets(self) -> None:
+        if not self.studio:
+            return
+        if hasattr(self, "workspace_widget"):
+            self.workspace_widget.set_workspace(self.workspace)
+        if hasattr(self, "runbook_widget"):
+            self.runbook_widget.runbook = self.runbook or self._make_runbook(self.workspace)
+            self.runbook_widget.refresh()
+
+    def accept_workspace_widget_change(self, workspace: Workspace) -> None:
+        if not self.use_studio_workspace(workspace):
+            self.workspace_widget.import_accepted = False
+            self._refresh_workspace_widgets()
+            if hasattr(self, "workspace_widget"):
+                self.workspace_widget.status.setText("Shell rejected activation; prior workspace retained.")
+            return
+        self.workspace_widget.import_accepted = True
+
+    def _set_deck_available(self, available: bool) -> None:
+        self.deck_available = available
+        for widget in (self.card_frame, self.manual_viewer, self.next_button, self.reset_button):
+            if widget is not None:
+                widget.setEnabled(available)
+
+    def reset_runbook_stage(self, stage, resume: bool) -> bool:
+        bindings = {binding.gesture_id: binding.action for binding in stage.bindings} if stage else {}
+        mismatch = [gesture for gesture in bindings if gesture not in self.vocabulary.action_ids]
+        if mismatch:
+            if not self.configure_studio(context_id=stage.id if stage else self.workspace.id, bindings={}):
+                return False
+            self.feedback.setText(
+                f"Stage gestures {', '.join(mismatch)} are not in the loaded vocabulary; use manual buttons."
+            )
+            return True
+        if not self.configure_studio(context_id=stage.id if stage else self.workspace.id, bindings=bindings):
+            return False
+        if resume and not self.routing_manual_only:
+            self.start_camera()
+        return True
+
     def render_studio_status(self):
         if not self.studio:
             self.boundary.setText(
@@ -547,35 +637,43 @@ class Window(QMainWindow):
             return
         assert self.routing is not None
         snapshot = self.routing.snapshot
+        context_id = self.manual_context_id if self.routing_manual_only else snapshot.context_id
+        mode = self.manual_mode if self.routing_manual_only else snapshot.mode
         self.camera_status.setText(
             f"Selected camera: {self.camera_index} | Enrolled hand: {self.chosen_hand} | "
             f"Profile: {self.profile if self.model is not None else 'none'} | "
             f"{self.studio_key_hint}"
         )
+        active_bindings = self._active_studio_bindings()
         bindings = "  |  ".join(
             f"{gesture}: would {self.action_text(action)}"
-            for gesture, action in snapshot.bindings
+            for gesture, action in active_bindings
         )
-        mode = snapshot.mode.value.title()
-        self.boundary.setText(
-            f"Studio {mode} | Context: {snapshot.context_id} | Gesture actions simulated; manual deck active.\n"
-            f"{bindings}"
-        )
+        mode_text = mode.value.title()
+        if bindings:
+            self.boundary.setText(
+                f"Studio {mode_text} | Context: {context_id} | Gesture actions simulated; manual deck active.\n"
+                f"{bindings}"
+            )
+        else:
+            self.boundary.setText(
+                f"Studio {mode_text} | Context: {context_id} | Manual-only stage; no gesture actions are active."
+            )
         missing = []
         if self.model is None:
             missing.append("starter/personal recogniser")
-        missing.extend(["profile enrolment", "workspace/runbook storage", "validated shortcut dispatcher"])
+        missing.extend(["profile enrolment", "validated shortcut dispatcher"])
         self.studio_status.setText(
             "Studio preview is running without: " + ", ".join(missing) + "."
         )
-        self.mode_picker.setCurrentIndex(self.mode_picker.findData(snapshot.mode.value))
+        self.mode_picker.setCurrentIndex(self.mode_picker.findData(mode.value))
         for index, (label, picker) in enumerate(zip(self.binding_labels, self.binding_pickers)):
-            active = index < len(snapshot.bindings)
+            active = index < len(active_bindings)
             label.setVisible(active)
             picker.setVisible(active)
             if not active:
                 continue
-            gesture, action = snapshot.bindings[index]
+            gesture, action = active_bindings[index]
             label.setText(f"{gesture} gesture")
             picker.setAccessibleName(f"Simulated action for {gesture}")
             picker.clear()
@@ -592,7 +690,7 @@ class Window(QMainWindow):
         assert self.routing is not None
         bindings = {
             gesture: self.binding_pickers[index].currentData()
-            for index, (gesture, _) in enumerate(self.routing.snapshot.bindings)
+            for index, (gesture, _) in enumerate(self._active_studio_bindings())
         }
         self.configure_studio(mode=RoutingMode(self.mode_picker.currentData()), bindings=bindings)
 
@@ -606,25 +704,40 @@ class Window(QMainWindow):
         if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
         old = self.routing.snapshot
+        new_context_id = (self.manual_context_id if self.routing_manual_only else old.context_id) if context_id is None else context_id
+        validate_identifier(new_context_id)
+        new_mode = (self.manual_mode if self.routing_manual_only else old.mode) if mode is None else mode
+        new_bindings = () if self.routing_manual_only and bindings is None else old.bindings if bindings is None else tuple(bindings.items())
         # Validate the complete draft before stopping capture or replacing active state.
-        draft = replace(
-            old, context_id=old.context_id if context_id is None else context_id,
-            mode=old.mode if mode is None else mode,
-            bindings=old.bindings if bindings is None else tuple(bindings.items()),
-        )
-        if any(gesture not in self.vocabulary.action_ids for gesture, _ in draft.bindings):
+        if not 0 <= len(new_bindings) <= 3:
+            raise ValueError("Bindings must contain zero to three gestures")
+        if any(gesture not in self.vocabulary.action_ids for gesture, _ in new_bindings):
             raise ValueError("Bindings must use gestures from the selected dataset vocabulary")
+        if new_bindings:
+            replace(old, context_id=new_context_id, mode=new_mode, bindings=new_bindings)
         if not self.pause():
             return False
-        self.routing.configure(
-            self.profile, self._model_version(), draft.context_id, dict(draft.bindings), draft.mode,
-        )
+        self.manual_context_id = new_context_id
+        self.manual_mode = new_mode
+        self.routing_manual_only = len(new_bindings) == 0
+        if self.routing_manual_only:
+            if self.worker is not None:
+                self.worker.requestInterruption()
+        else:
+            self.routing.configure(
+                self.profile, self._model_version(), new_context_id, dict(new_bindings), new_mode,
+            )
         self.state.setText("Paused after Studio context change. Resume and show NEUTRAL.")
         self.prediction.setText("Prediction: awaiting new camera session")
-        self.feedback.setText("Simulation settings applied. Resume and show NEUTRAL before a gesture.")
+        self.feedback.setText(
+            "Manual-only stage active; use the buttons."
+            if self.routing_manual_only
+            else "Simulation settings applied. Resume and show NEUTRAL before a gesture."
+        )
+        self.start_button.setEnabled(self._can_start_studio_camera())
         self.log({"type": "studio_configuration", "session": self.routing.snapshot.session_id,
-                  "context": draft.context_id, "mode": draft.mode.value,
-                  "bindings": {gesture: asdict(action) for gesture, action in draft.bindings},
+                  "context": new_context_id, "mode": new_mode.value,
+                  "bindings": {gesture: asdict(action) for gesture, action in new_bindings},
                   "timestamp": time.monotonic()})
         self.render_studio_status()
         return True
@@ -685,6 +798,46 @@ class Window(QMainWindow):
         if path:
             self.restore_studio_progress(Path(path))
 
+    def choose_studio_workspace(self):
+        if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if not self.pause():
+            self.set_deck_file_status("Workspace not loaded: save the current evaluation trace first.")
+            return
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Load a Studio workspace", str(self.studio_state_folder), "JSON (*.json)",
+        )
+        if path:
+            self.load_studio_workspace(Path(path))
+
+    def choose_save_studio_session(self):
+        if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if not self.pause():
+            self.set_deck_file_status("Session not saved: save the current evaluation trace first.")
+            return
+        suggested = str(self.studio_state_folder / "studio-session.json")
+        try:
+            self.studio_state_folder.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            suggested = ""
+            self.set_deck_file_status(f"Default save folder unavailable: {exc}. Choose a writable JSON file.")
+        path, _ = QFileDialog.getSaveFileName(self, "Save Studio session", suggested, "JSON (*.json)")
+        if path:
+            self.save_studio_session(Path(path))
+
+    def choose_restore_studio_session(self):
+        if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if not self.pause():
+            self.set_deck_file_status("Session not restored: save the current evaluation trace first.")
+            return
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Restore Studio session", str(self.studio_state_folder), "JSON (*.json)",
+        )
+        if path:
+            self.restore_studio_session(Path(path))
+
     def load_studio_deck(self, path: Path) -> bool:
         if not self.studio or self.model_loader is not None or self._closing:
             return False
@@ -697,12 +850,23 @@ class Window(QMainWindow):
             self.set_deck_file_status(f"Deck not loaded: {exc}. Choose a valid GestureForge deck JSON.")
             return False
         self.viewer = Viewer(deck, project_actions=True)
+        self.workspace = Workspace("manual-deck", deck.title, deck)
+        self.runbook = self._make_runbook(self.workspace)
+        self._set_deck_available(True)
+        self._refresh_workspace_widgets()
+        self.configure_studio(
+            context_id=self.workspace.id,
+            bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
+        )
         self.set_deck_file_status(f"Loaded deck: {deck.title}.")
         self.render_card()
         return True
 
     def save_studio_progress(self, path: Path) -> bool:
         if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if not self.deck_available:
+            self.set_deck_file_status("Progress not saved: this workspace has no deck.")
             return False
         if not self.pause():
             self.set_deck_file_status("Progress not saved: save the current evaluation trace first.")
@@ -718,6 +882,9 @@ class Window(QMainWindow):
     def restore_studio_progress(self, path: Path) -> bool:
         if not self.studio or self.model_loader is not None or self._closing:
             return False
+        if not self.deck_available:
+            self.set_deck_file_status("Progress not restored: this workspace has no deck.")
+            return False
         if not self.pause():
             self.set_deck_file_status("Progress not restored: save the current evaluation trace first.")
             return False
@@ -728,6 +895,103 @@ class Window(QMainWindow):
             self.set_deck_file_status(f"Progress not restored: {exc}. Use progress saved for this deck.")
             return False
         self.set_deck_file_status(f"Progress restored: {path}")
+        self.render_card()
+        return True
+
+    def load_studio_workspace(self, path: Path) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Workspace not loaded: save the current evaluation trace first.")
+            return False
+        try:
+            workspace = parse_workspace(read_json(path))
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"Workspace not loaded: {exc}. Prior workspace retained.")
+            return False
+        return self.use_studio_workspace(workspace)
+
+    def use_studio_workspace(self, workspace: Workspace) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Workspace not loaded: save the current evaluation trace first.")
+            return False
+        previous = (
+            self.workspace, self.viewer, self.runbook, self.deck_available,
+            self.routing_manual_only, self.manual_context_id, self.manual_mode,
+        )
+        candidate_viewer = Viewer(workspace.deck, project_actions=True) if workspace.deck is not None else self.viewer
+        candidate_runbook = Runbook(workspace, self.reset_runbook_stage,
+                                    candidate_viewer if workspace.deck is not None else None)
+        self.workspace = workspace
+        self.viewer = candidate_viewer
+        self.runbook = candidate_runbook
+        self._set_deck_available(workspace.deck is not None)
+        self._refresh_workspace_widgets()
+        if workspace.stages:
+            try:
+                self.runbook.activate()
+            except ValueError as exc:
+                (
+                    self.workspace, self.viewer, self.runbook, self.deck_available,
+                    self.routing_manual_only, self.manual_context_id, self.manual_mode,
+                ) = previous
+                self._set_deck_available(self.deck_available)
+                self._refresh_workspace_widgets()
+                self.set_deck_file_status(f"Workspace not loaded: {exc}. Prior workspace retained.")
+                return False
+        else:
+            if not self.configure_studio(context_id=workspace.id, bindings={}):
+                (
+                    self.workspace, self.viewer, self.runbook, self.deck_available,
+                    self.routing_manual_only, self.manual_context_id, self.manual_mode,
+                ) = previous
+                self._set_deck_available(self.deck_available)
+                self._refresh_workspace_widgets()
+                return False
+        stage = self.runbook.current_stage if self.runbook else None
+        mismatch = [
+            binding.gesture_id for binding in stage.bindings
+            if binding.gesture_id not in self.vocabulary.action_ids
+        ] if stage else []
+        if mismatch:
+            self.set_deck_file_status(
+                f"Workspace loaded: {workspace.title}. Stage gestures {', '.join(mismatch)} "
+                "are not in the loaded vocabulary; use manual buttons."
+            )
+        else:
+            self.set_deck_file_status(f"Workspace loaded: {workspace.title}.")
+        self.render_card()
+        return True
+
+    def save_studio_session(self, path: Path) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing or self.runbook is None:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Session not saved: save the current evaluation trace first.")
+            return False
+        try:
+            self.runbook.save(path)
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"Session not saved: {exc}. Choose a writable JSON file.")
+            return False
+        self.set_deck_file_status(f"Session saved: {path}")
+        return True
+
+    def restore_studio_session(self, path: Path) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing or self.runbook is None:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Session not restored: save the current evaluation trace first.")
+            return False
+        try:
+            self.runbook.restore(path)
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"Session not restored: {exc}. Prior session retained.")
+            return False
+        self._refresh_workspace_widgets()
+        self.set_deck_file_status(f"Session restored: {path}")
         self.render_card()
         return True
 
@@ -760,7 +1024,7 @@ class Window(QMainWindow):
             return False
         self.camera_index = index
         self.camera_picker.setValue(index)
-        self.start_button.setEnabled(self.model is not None and self.worker is None)
+        self.start_button.setEnabled(self._can_start_studio_camera())
         self.detail.setText(f"Camera {index} selected. Wait for camera release, then Start and show NEUTRAL.")
         self.render_studio_status()
         self.log({"type": "camera_selection", "camera_index": index,
@@ -782,8 +1046,12 @@ class Window(QMainWindow):
                 f"margin {model.config.margin:g} | local processing")
         if not self.pause():
             raise ValueError("Save the current evaluation trace before changing the model")
+        was_manual_only = self.routing_manual_only
         self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
         self.routing = candidate
+        self.routing_manual_only = False
+        self.manual_context_id = candidate.snapshot.context_id
+        self.manual_mode = candidate.snapshot.mode
         self.received_first_frame = False
         self.preview.clear()
         self.preview.setText("Camera off\n\nDataset loaded; start and show NEUTRAL")
@@ -793,7 +1061,17 @@ class Window(QMainWindow):
         self.notice.setText(note)
         self.feedback.setText("Dataset loaded. Gesture actions remain simulations; start explicitly.")
         self.start_button.setToolTip("Start camera simulation using the loaded personal dataset.")
-        self.start_button.setEnabled(self.worker is None)
+        self.start_button.setEnabled(self._can_start_studio_camera())
+        if self.runbook is not None:
+            if self.runbook.current_stage is not None:
+                self.reset_runbook_stage(self.runbook.current_stage, False)
+            elif was_manual_only:
+                self.configure_studio(context_id=self.workspace.id, bindings={})
+            else:
+                self.configure_studio(
+                    context_id=self.workspace.id,
+                    bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
+                )
         self.render_studio_status()
         self.log({"type": "studio_dataset", "profile": profile, "model_version": model.model_version,
                   "session": candidate.snapshot.session_id, "timestamp": time.monotonic()})
@@ -817,7 +1095,7 @@ class Window(QMainWindow):
             self.apply_bindings_button.setEnabled(True)
             self.apply_camera_button.setEnabled(True)
             self.load_progress.hide()
-            self.start_button.setEnabled(self.model is not None and self.worker is None)
+            self.start_button.setEnabled(self._can_start_studio_camera())
 
     def card_topic_text(self) -> str:
         title = self.viewer.current_card.title
@@ -838,6 +1116,21 @@ class Window(QMainWindow):
         if self.manual_viewer is not None:
             self.manual_viewer.viewer = self.viewer
             self.manual_viewer.refresh()
+        if self.runbook is not None and hasattr(self, "runbook_widget"):
+            self.runbook_widget.refresh()
+        if not self.deck_available:
+            self.deck_progress.setRange(0, 1)
+            self.deck_progress.setValue(0)
+            self.card_badge.setText("-")
+            self.deck_label.setText("NO DECK")
+            self.position.setText("No card loaded")
+            self.card_topic.setText("Topic: manual-only workspace")
+            self.card_title.setText(self.workspace.title)
+            stage = self.runbook.current_stage if self.runbook else None
+            self.card_body.setText(stage.instructions if stage else "Use the runbook controls for this workspace.")
+            self.feedback.setText("Deck controls are disabled for this workspace.")
+            self.card_frame.setStyleSheet("QFrame#card { background: #eef3f8; border-radius: 12px; }")
+            return
         card = self.viewer.current_card
         count = len(self.viewer.deck.cards)
         number = self.viewer.position + 1
@@ -885,7 +1178,10 @@ class Window(QMainWindow):
             self.notice.setText("Event logging failed. Check disk space and folder permissions.")
 
     def start_camera(self):
-        if self.model is None or self.worker is not None or self.model_loader is not None or self._closing:
+        if (
+            self.model is None or self.worker is not None or self.model_loader is not None
+            or self._closing or (self.studio and self.routing_manual_only)
+        ):
             return
         if not self.finish_evaluation_trace():
             return
@@ -952,6 +1248,9 @@ class Window(QMainWindow):
         return True
 
     def next_card(self):
+        if self.studio and not self.deck_available:
+            self.feedback.setText("No deck is loaded for this workspace.")
+            return
         old_topic = self.card_topic_text()
         moved = self.viewer.next_keyboard()
         self.render_card()
@@ -964,6 +1263,9 @@ class Window(QMainWindow):
 
     def manual_viewer_action(self, action):
         if not self.studio or action.kind not in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK}:
+            return
+        if not self.deck_available:
+            self.feedback.setText("No deck is loaded for this workspace.")
             return
         old_topic = self.card_topic_text()
         moved = self.viewer.apply_action(action)
@@ -978,10 +1280,59 @@ class Window(QMainWindow):
         self.log({"type": "command", "source": "manual_viewer", "command": action.kind.value,
                   "position": self.viewer.position, "timestamp": time.monotonic()})
 
+    def manual_runbook_action(self, action):
+        if not self.studio or self.runbook is None:
+            return
+        if action.kind == ActionType.ADVANCE_STAGE:
+            try:
+                self.runbook.advance()
+            except ValueError as exc:
+                self.feedback.setText(f"Runbook not advanced: {exc}")
+                return
+            self._refresh_workspace_widgets()
+            self.render_card()
+            self.feedback.setText("Runbook finished." if self.runbook.finished else "Runbook advanced.")
+            self.log({"type": "runbook_advance", "stage": self.runbook.current_stage.id
+                      if self.runbook.current_stage else None, "timestamp": time.monotonic()})
+            return
+        if action.kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK} and self.deck_available:
+            self.manual_viewer_action(action)
+            return
+        self.feedback.setText(f"Manual {self.action_text(action)} is simulated; no OS action is launched.")
+        self.log({"type": "manual_simulation", "action": action.kind.value, "timestamp": time.monotonic()})
+
+    def previous_runbook_stage(self):
+        if not self.studio or self.runbook is None:
+            return
+        try:
+            changed = self.runbook.previous()
+        except ValueError as exc:
+            self.feedback.setText(f"Runbook not moved: {exc}")
+            return
+        if changed:
+            self._refresh_workspace_widgets()
+            self.render_card()
+            self.feedback.setText("Previous runbook stage restored.")
+
     def restart_deck(self):
         if not self.pause():
             return
+        if not self.deck_available:
+            self.feedback.setText("No deck is loaded for this workspace.")
+            return
+        previous = (self.viewer, self.runbook, self.routing_manual_only, self.manual_context_id, self.manual_mode)
         self.viewer = Viewer(self.viewer.deck, project_actions=self.studio)
+        if self.workspace.deck is not None:
+            self.runbook = self._make_runbook(self.workspace)
+            self._refresh_workspace_widgets()
+            try:
+                if self.runbook.current_stage is not None:
+                    self.runbook.activate()
+            except ValueError as exc:
+                self.viewer, self.runbook, self.routing_manual_only, self.manual_context_id, self.manual_mode = previous
+                self._refresh_workspace_widgets()
+                self.feedback.setText(f"Deck not restarted: {exc}")
+                return
         self.feedback.setText("Deck restarted. Resume and show neutral before another gesture.")
         self.render_card()
 
@@ -1097,7 +1448,7 @@ class Window(QMainWindow):
                     self.detail.setText(f"Capture stopped: {error}\n"
                                         "Check the hand model, camera connection and permissions; close other "
                                         "camera apps. Retry Start or choose another camera index.")
-            self.start_button.setEnabled(self.model is not None and self.model_loader is None)
+            self.start_button.setEnabled(self.model is not None and self.model_loader is None and not self.routing_manual_only)
 
     def changeEvent(self, event):
         if self.studio and event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():

@@ -508,6 +508,7 @@ class WorkspaceWidget(QWidget):
         from .workspace import WorkspaceStore
         super().__init__(parent)
         self.store = WorkspaceStore(workspace)
+        self.import_accepted = True
         layout = QVBoxLayout(self)
         self.details = plain_label()
         layout.addWidget(self.details)
@@ -531,8 +532,15 @@ class WorkspaceWidget(QWidget):
 
     def import_path(self, path: Path) -> bool:
         try:
+            previous = self.store.active
             candidate = self.store.import_file(path)
+            self.import_accepted = True
             self.workspace_changed.emit(candidate)
+            if not self.import_accepted:
+                self.store.active = previous
+                self.refresh()
+                self.status.setText('Shell rejected activation; prior workspace retained.')
+                return False
             self.refresh()
             self.status.setText('Validated content staged. Local targets are unbound until configured on this machine. Shell activation must reset routing and stay paused.')
             return True

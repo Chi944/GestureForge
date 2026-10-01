@@ -2,7 +2,7 @@
 
 Project contract version 1 Â· 30 September 2026 Â· Owner Deston
 
-This is the implemented first integration boundary. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the new routing types separately. Profile/workspace persistence schemas and widget signal adapters are owned by the respective builders and need interface review before integration; they are not claimed implemented here.
+This is the implemented first integration boundary. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the new routing types separately. Studio now integrates manual deck browsing, workspace loading and runbook session save/restore; profile persistence, readiness and real desktop dispatch still need their owned adapters before LIVE use.
 
 ## Records and responsibilities
 
@@ -21,7 +21,7 @@ Other opaque IDs are 1â€“64 ASCII letters/digits and `_ . : -`, beginning w
 
 ## Builder handoff records
 
-These records define the integration boundary for GF-P02. They are not implemented persistence modules yet. Hau Jie owns the profile/readiness storage and widgets; Javier owns workspace/runbook/shortcut storage and widgets; Deston owns the shell handoff and final acceptance.
+These records define the integration boundary for GF-P02. Hau Jie owns the profile/readiness storage and widgets; Javier owns shortcut storage and remaining widgets; Deston owns the shell handoff and final acceptance. The current Studio shell has validated workspace/runbook loading and session persistence for manual Preview/Rehearsal use only.
 
 | Handoff | Required fields | Version and loading rule |
 |---|---|---|
@@ -97,7 +97,7 @@ Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-pe
 
 ## Current shell adapter (Deston)
 
-`Window(..., studio=True, vocabulary=bundle.vocabulary)` exposes `configure_studio(context_id=None, mode=None, bindings=None)`. The default vocabulary preserves legacy labels. The three vocabulary action IDs initially map in order to NEXT, PREVIOUS and BOOKMARK simulations. Omitted configuration values preserve the current snapshot. Supplied bindings replace the whole map (one to three enrolled IDs to typed `Action` objects). The complete draft, including membership in the selected vocabulary, is validated before changing active state; invalid inputs raise `ValueError` and leave the current session/capture intact. Only PREVIEW and REHEARSAL are accepted by this shell.
+`Window(..., studio=True, vocabulary=bundle.vocabulary)` exposes `configure_studio(context_id=None, mode=None, bindings=None)`. The default vocabulary preserves legacy labels. The three vocabulary action IDs initially map in order to NEXT, PREVIOUS and BOOKMARK simulations. Omitted configuration values preserve the current snapshot. Supplied bindings replace the whole map (up to three enrolled IDs to typed `Action` objects); an empty map pauses routing and keeps the context manual-only. The complete draft, including membership in the selected vocabulary, is validated before changing active state; invalid inputs raise `ValueError` and leave the current session/capture intact. Only PREVIEW and REHEARSAL are accepted by this shell.
 
 Successful application pauses capture, clears the old prediction display, creates a fresh routing session, updates the visible legend and records the semantic configuration locally. Interrupted workers and packets with old session/profile/model identities cannot overwrite the new display. Explicit resume still waits for worker shutdown and requires NEUTRAL. The on-screen selectors edit a draft; Apply and pause performs the change. These mappings are in memory only.
 
@@ -105,13 +105,13 @@ Successful application pauses capture, clears the old prediction display, create
 
 The Studio launcher loads schema-1 or schema-2 datasets and passes `bundle.vocabulary` to both `train_model` and `Window`. Explicit vocabulary training produces a data/settings-bound model revision even for legacy IDs. The assignment launcher keeps its existing model-version policy and rejects custom IDs with a request to use `--studio`.
 
-This adapter does not load saved profiles, certify readiness or save workspace settings. Hau Jie's future profile adapter must supply the selected vocabulary and matching model revision, and Javier's workspace adapter must validate its references before using this entry point. Existing stage changes should pass their complete map. Software fixtures verify custom classification-to-simulation integration; live recognition of newly enrolled poses remains to be measured.
+This adapter does not load saved profiles or certify readiness. Hau Jie's future profile adapter must supply the selected vocabulary and matching model revision. Workspace/runbook state is saved through the Studio session file path, and stage changes must pass their complete map through the existing context reset path. Software fixtures verify custom classification-to-simulation integration; live recognition of newly enrolled poses remains to be measured.
 
 ### Personal dataset selection and model replacement
 
 Studio's **Load personal dataset...** button calls `load_studio_dataset(path)`. The CLI and UI share `load_personal_model`: schema-1/2 numeric manifests, one participant, human provenance, valid hand and train-only fitting. UI loading pauses capture immediately and permits one background training job; start and configuration application are blocked until it finishes. Launch algorithm/rejection settings are reused. No data or model file is rewritten.
 
-`use_studio_model(model, hand, profile, vocabulary)` installs a completed candidate on the UI thread. The classifier must expose `predict`, `train_labels`, `model_version` and the existing `config` fields; its labels must match the vocabulary. Validate the candidate and fresh routing snapshot before replacing state. Successful replacement interrupts old capture, clears the old preview/prediction, resets to Preview and the three default simulation mappings, and remains paused. Start stays disabled until the prior camera worker releases; explicit start requires NEUTRAL. Invalid candidates leave the previous model and mappings intact. Failed asynchronous loads leave that selection paused.
+`use_studio_model(model, hand, profile, vocabulary)` installs a completed candidate on the UI thread. The classifier must expose `predict`, `train_labels`, `model_version` and the existing `config` fields; its labels must match the vocabulary. Validate the candidate and fresh routing snapshot before replacing state. Successful replacement interrupts old capture, clears the old preview/prediction, resets mode to Preview and remains paused. If the current workspace has an active stage, Studio reapplies that stage's bindings when they match the new vocabulary; mismatched or empty stages stay manual-only. Without an active runbook stage, the startup or standalone deck keeps the default three simulated mappings; an imported manual-only workspace stays manual-only. Start stays disabled until the prior camera worker releases; explicit start requires NEUTRAL. Invalid candidates leave the previous model and mappings intact. Failed asynchronous loads leave that selection paused.
 
 Closing stops UI polling; a finishing background load cannot update widgets, start capture or dispatch. This adapter does not create, rename, delete or persist profiles. Hau Jie's profile selector can supply an already trained candidate through this entry point once its lifecycle and readiness contracts are ready.
 
@@ -123,8 +123,16 @@ Camera faults and pause clear the displayed preview. Recovery messages do not au
 
 ### Manual deck files and progress
 
-Studio exposes `load_studio_deck(path)`, `save_studio_progress(path)` and `restore_studio_progress(path)`, each returning success/failure. They require an open Studio window with no dataset load in progress. The visible file buttons pause before opening their dialogs; cancelling leaves control paused. Each direct operation also pauses and honours failed evaluation-trace saving before changing a deck or writing progress.
+Studio exposes `load_studio_deck(path)`, `save_studio_progress(path)` and `restore_studio_progress(path)`, each returning success/failure. They require an open Studio window with no dataset load in progress. The shared file-control grid pauses before opening dialogs; cancelling leaves control paused. Each direct operation also pauses and honours failed evaluation-trace saving before changing a deck or writing progress.
 
 Deck loading reuses the bounded version-1 parser and replaces the viewer only after complete validation. Progress uses the existing viewer state schema: deck ID, ordered card IDs, current card ID and bookmarks. Restore validates against the loaded deck before changing state. Failure retains the previous deck/position/bookmarks; atomic save failure retains any prior file. Both viewer tabs are refreshed after successful load/restore, imported text is displayed literally, and restart retains the loaded deck while clearing in-memory progress.
 
-File actions never resume capture, replay commands or establish readiness. Queued interrupted-worker packets remain ignored; a later explicit Start creates a fresh session and requires NEUTRAL. The default save location is ignored `.local/studio`; saving is explicit, with no autosave on close. Progress does not include deck text, profile/model data, mappings, local targets or runbook state. Full workspace/runbook persistence remains a separate integration boundary.
+File actions never resume capture, replay commands or establish readiness. Queued interrupted-worker packets remain ignored; a later explicit Start creates a fresh session and requires NEUTRAL. The default save location is ignored `.local/studio`; saving is explicit, with no autosave on close. Progress does not include deck text, profile/model data, mappings, local targets or runbook state.
+
+### Studio workspace and runbook session files
+
+Studio exposes `load_studio_workspace(path)`, `save_studio_session(path)` and `restore_studio_session(path)`, each returning success/failure. Workspace load validates the full portable workspace before replacing visible deck/runbook state; failure keeps the prior workspace, viewer, runbook and routing context. Loading a standalone custom deck creates a manual deck workspace and detaches the prior runbook.
+
+Runbook stage changes call the same context reset path as routing configuration. Stages with no bindings, or bindings outside the loaded vocabulary, are manual-only with routing paused. A compatible `use_studio_model(...)` call reapplies the current stage bindings and keeps actions in Preview/Rehearsal simulation. Runbook buttons for Previous, Continue/Finish and stage actions operate on the local runbook or produce simulated requests only.
+
+Session save writes schema version, the current workspace JSON, current stage ID/finished state and matching viewer state. Restore requires that same workspace to be loaded first, then validates the session's embedded workspace JSON and saved stage before changing state; it restores paused and never replays actions. Restart clears in-memory viewer progress and reactivates the first stage for the current deck/workspace.

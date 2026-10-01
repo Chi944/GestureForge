@@ -1,7 +1,10 @@
-# Javier widget and dispatch proposal for Deston
+# Component interfaces and dispatch contract
 
-Review draft; no shell attachment is included. Baseline: supplied snapshot of
-`a331d5815b9c0b671601935b06cda8b804798d2c`. All changes stay in Javier's lane.
+Current integration contract for the reviewed viewer, workspace, runbook,
+shortcut and session-summary components. Provenance remains in
+`JAVIER_DELIVERY_REVIEW.md`; historical Linux delivery checks are retained in
+`../evidence/component-delivery-checks.json`, while current repository
+verification is `verification.json`.
 
 ## Widgets
 
@@ -73,9 +76,9 @@ consumed IDs within a session. `Dispatcher` is not a security boundary against a
 caller constructing forged Python records; only route-issued gesture results and
 fresh manual requests belong at this trusted shell boundary.
 
-## Review gate
+## Remaining gates
 
-This proposal has been prepared but not sent via an account. Shared shell,
-contracts/controller/routing, capture and recognition/profile source are untouched.
 Windows live opening, both-laptop evidence and Hau Jie's measured readiness data
-remain required before accepting the integrated product.
+remain required before accepting the integrated product. Keep shared shell,
+contracts/controller/routing, capture and recognition/profile changes in their
+owned lanes.

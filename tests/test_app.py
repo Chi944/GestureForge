@@ -17,11 +17,13 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QKeySequence
-from PySide6.QtWidgets import QApplication, QPushButton
+from PySide6.QtWidgets import QApplication, QGridLayout, QPushButton
 
-from gestureforge.app import Window
+from gestureforge.app import STUDIO_ACTIONS, Window
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
 from gestureforge.vocabulary import GestureVocabulary
+from gestureforge.viewer import load_deck
+from gestureforge.workspace import Binding, Stage, Workspace, workspace_json
 
 
 @pytest.fixture(scope="module")
@@ -206,6 +208,11 @@ def _deck_file(path: Path, *, deck_id: str = "deck-test", title: str = "Demo <b>
             {"id": "close", "title": "Close", "body": "Body three"},
         ],
     }), encoding="utf-8")
+    return path
+
+
+def _workspace_file(path: Path, workspace: Workspace) -> Path:
+    path.write_text(json.dumps(workspace_json(workspace)), encoding="utf-8")
     return path
 
 
@@ -452,6 +459,249 @@ def test_studio_restore_pauses_and_ignores_stale_worker_packet(tmp_path, qapp) -
         window.poll()
         assert window.viewer.position == 1
         assert "Studio simulation" not in window.feedback.text()
+    finally:
+        window.close()
+
+
+def test_studio_workspace_runbook_loads_stage_routes_and_session(tmp_path, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    deck = load_deck(deck_path)
+    workspace = Workspace(
+        "training", "Training Workspace", deck,
+        stages=(
+            Stage("intro", "Intro", "Read the first instruction.", "detail",
+                  (Binding("NEXT", Action(ActionType.NEXT)),), "Continue"),
+            Stage("finish", "Finish", "Manual review only.", "close", (), "Finish"),
+        ),
+    )
+    workspace_path = _workspace_file(tmp_path / "workspace.json", workspace)
+    session_path = tmp_path / "session.json"
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    old_snapshot = window.routing.resume()
+    window.worker = FakeWorker([(
+        _frame(),
+        Prediction(old_snapshot.session_id, old_snapshot.profile_id, 1, time.monotonic(), "NEXT", True,
+                   model_version=old_snapshot.model_version),
+    )])
+
+    try:
+        assert window.load_studio_workspace(workspace_path)
+        assert window.runbook is not None
+        assert window.viewer is window.runbook.viewer
+        assert window.viewer.current_card.id == "detail"
+        assert window.runbook_widget.title.text() == "1: Intro"
+        assert "Read the first instruction." in window.runbook_widget.instructions.text()
+        assert window.runbook_widget.complete.isHidden()
+        assert "NEXT" in window.boundary.text() and "Context: intro" in window.boundary.text()
+        assert window.routing.state == "PAUSED"
+        assert window.worker.interrupted
+        window.poll()
+        assert window.viewer.current_card.id == "detail"
+        assert "Studio simulation" not in window.feedback.text()
+
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.runbook.position == 1
+        assert window.viewer.current_card.id == "close"
+        assert window.routing_manual_only
+        assert not window.start_button.isEnabled()
+        assert "Manual-only stage" in window.boundary.text()
+
+        assert window.save_studio_session(session_path)
+        window.previous_runbook_stage()
+        assert window.runbook is not None
+        assert window.runbook.position == 0 and not window.routing_manual_only
+        assert window.restore_studio_session(session_path)
+        assert window.runbook is not None
+        assert window.runbook.position == 1 and window.routing_manual_only
+        assert window.viewer.current_card.id == "close"
+
+        window.restart_deck()
+        assert window.runbook is not None
+        assert window.runbook.position == 0
+        assert not window.routing_manual_only
+        assert window.viewer.current_card.id == "detail"
+        assert "Context: intro" in window.boundary.text()
+    finally:
+        window.close()
+
+
+def test_studio_deckless_workspace_is_honest_manual_only(tmp_path, qapp) -> None:
+    workspace = Workspace(
+        "quick-only", "Quick Only",
+        stages=(Stage("manual", "Manual", "Use the button; no deck is included.", None, ()),),
+    )
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        assert not window.deck_available
+        assert not window.card_frame.isEnabled()
+        assert window.card_title.text() == "Quick Only"
+        assert "no deck" in window.card_body.text().lower() or "button" in window.card_body.text().lower()
+        assert window.routing_manual_only
+        assert not window.start_button.isEnabled()
+        assert isinstance(window.deck_tools, QGridLayout)
+        assert all(button.isEnabled() for button in window.file_tool_buttons)
+        window.start_camera()
+        assert window.worker is None
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        assert "No deck is loaded" in window.feedback.text()
+        window.next_card()
+        assert "No deck is loaded" in window.feedback.text()
+        assert not window.save_studio_progress(tmp_path / "progress.json")
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.runbook is not None
+        assert window.runbook.finished
+    finally:
+        window.close()
+
+
+def test_studio_empty_workspace_stays_manual_only_after_model_reload(qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(Workspace("empty", "Empty"))
+        assert window.routing_manual_only
+        assert not window.start_button.isEnabled()
+        vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+        window.use_studio_model(_candidate_model(vocabulary), "Right", "P02", vocabulary)
+        assert window.workspace.id == "empty"
+        assert window.runbook is not None and window.runbook.current_stage is None
+        assert window.routing_manual_only
+        assert not window.start_button.isEnabled()
+        assert "Context: empty" in window.boundary.text()
+    finally:
+        window.close()
+
+
+def test_custom_deck_model_reload_keeps_default_deck_bindings(tmp_path, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.load_studio_deck(deck_path)
+        assert not window.routing_manual_only
+        vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+        window.use_studio_model(_candidate_model(vocabulary), "Right", "P02", vocabulary)
+        assert window.workspace.id == "manual-deck"
+        assert window.runbook is not None and window.runbook.current_stage is None
+        assert not window.routing_manual_only
+        assert window.routing is not None
+        assert window.routing.snapshot.context_id == "manual-deck"
+        assert dict(window.routing.snapshot.bindings) == dict(zip(vocabulary.action_ids, STUDIO_ACTIONS, strict=True))
+        assert window.start_button.isEnabled()
+    finally:
+        window.close()
+
+
+def test_studio_supplied_workspace_loads_manual_until_matching_vocabulary(qapp) -> None:
+    path = Path(__file__).resolve().parent.parent / "assets" / "harbor_workspace.json"
+    window = Window(model=None, studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.load_studio_workspace(path)
+        assert window.workspace.id == "harbor-onboarding"
+        assert window.runbook is not None
+        assert window.viewer is window.runbook.viewer
+        assert window.runbook.position == 0
+        assert window.routing_manual_only
+        assert "Manual-only stage" in window.boundary.text()
+        assert "G1" in window.feedback.text() and "manual buttons" in window.feedback.text()
+        assert not window.runbook_widget.manual_actions[0].isHidden()
+        assert window.runbook_widget.manual_actions[0].isEnabled()
+
+        vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+        model = _candidate_model(vocabulary)
+        window.use_studio_model(model, "Right", "P02", vocabulary)
+        assert not window.routing_manual_only
+        assert window.runbook.position == 0
+        assert window.routing is not None
+        assert window.runbook.current_stage is not None
+        assert window.routing.snapshot.context_id == window.runbook.current_stage.id
+        assert dict(window.routing.snapshot.bindings) == {
+            binding.gesture_id: binding.action for binding in window.runbook.current_stage.bindings
+        }
+        assert "G1" in window.boundary.text()
+    finally:
+        window.close()
+
+
+def test_studio_workspace_failures_preserve_existing_state(tmp_path, qapp) -> None:
+    good = Workspace("good", "Good", stages=(Stage("one", "One", "Ready.", None, ()),))
+    bad_path = tmp_path / "bad-workspace.json"
+    bad_path.write_text('{"schema_version": 1, "id": "bad", "title": "Bad", "password": "secret"}')
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(good)
+        before = (window.workspace, window.viewer, window.runbook, window.routing_manual_only, window.manual_context_id)
+        assert not window.load_studio_workspace(bad_path)
+        assert (window.workspace, window.viewer, window.runbook,
+                window.routing_manual_only, window.manual_context_id) == before
+        assert "Prior workspace retained" in window.feedback.text()
+
+        trace = SimpleNamespace(frame_count=1, save=Mock(side_effect=OSError("disk full")))
+        window.evaluation_trace = cast(Any, trace)
+        window.trace_path = tmp_path / "trace.json"
+        assert not window.use_studio_workspace(Workspace("other", "Other"))
+        assert (window.workspace, window.viewer, window.runbook,
+                window.routing_manual_only, window.manual_context_id) == before
+        assert "disk full" in window.trace_status.text()
+        window.evaluation_trace = None
+    finally:
+        window.close()
+
+
+def test_workspace_widget_import_rejection_reconciles_to_shell_state(tmp_path, qapp) -> None:
+    current = Workspace("current", "Current", stages=(Stage("one", "One", "Ready.", None, ()),))
+    candidate = Workspace("candidate", "Candidate", stages=(Stage("two", "Two", "Blocked.", None, ()),))
+    path = _workspace_file(tmp_path / "candidate.json", candidate)
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(current)
+        trace = SimpleNamespace(frame_count=1, save=Mock(side_effect=OSError("disk full")))
+        window.evaluation_trace = cast(Any, trace)
+        window.trace_path = tmp_path / "trace.json"
+
+        assert not window.workspace_widget.import_path(path)
+
+        assert window.workspace.id == "current"
+        assert window.workspace_widget.store.active.id == "current"
+        assert "Shell rejected activation" in window.workspace_widget.status.text()
+        assert "disk full" in window.trace_status.text()
+        window.evaluation_trace = None
+    finally:
+        window.close()
+
+
+def test_workspace_widget_same_workspace_rejection_is_explicit(tmp_path, qapp) -> None:
+    current = Workspace("current", "Current", stages=(Stage("one", "One", "Ready.", None, ()),))
+    path = _workspace_file(tmp_path / "current.json", current)
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(current)
+        trace = SimpleNamespace(frame_count=1, save=Mock(side_effect=OSError("disk full")))
+        window.evaluation_trace = cast(Any, trace)
+        window.trace_path = tmp_path / "trace.json"
+
+        assert not window.workspace_widget.import_path(path)
+
+        assert window.workspace.id == "current"
+        assert window.workspace_widget.store.active.id == "current"
+        assert "Shell rejected activation" in window.workspace_widget.status.text()
+        assert "disk full" in window.trace_status.text()
+        window.evaluation_trace = None
     finally:
         window.close()
 
@@ -977,6 +1227,9 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
     try:
         window.configure_studio(context_id="training-stage")
         assert "Context: training-stage" in window.boundary.text()
+        assert isinstance(window.deck_tools, QGridLayout)
+        assert window.deck_tools.itemAtPosition(1, 2) is not None
+        assert window.studio_scroll.horizontalScrollBar().maximum() == 0
         widgets = (window.start_button, window.pause_button, window.state, window.progress, window.boundary)
         before = [widget.mapTo(window, QPoint(0, 0)).y() for widget in widgets]
         scrollbar = window.studio_scroll.verticalScrollBar()
