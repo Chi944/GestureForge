@@ -1,0 +1,73 @@
+{
+  "timestamp_utc": "2026-09-30T12:12:50.426566+00:00",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "versions": {
+    "numpy": "2.3.5",
+    "scikit-learn": "1.8.0",
+    "PySide6": "6.11.2",
+    "mediapipe": "1.0.1",
+    "opencv-contrib-python": "5.0.0.93",
+    "pytest": "9.1.1",
+    "ruff": "0.16.9",
+    "mypy": "2.3.1"
+  },
+  "base_reference": "a331d5815b9c0b671601935b06cda8b804798d2c (supplied ZIP snapshot; remote not authenticated)",
+  "checks": [
+    {
+      "command": "python -m ruff check gestureforge tests scripts",
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": "python -m mypy gestureforge scripts tests",
+      "returncode": 0,
+      "stdout": "Success: no issues found in 43 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": "python -m pytest -q",
+      "returncode": 0,
+      "stdout": "........................................................................ [ 28%]\n........................................................................ [ 57%]\n........................................................................ [ 86%]\n.................................                                        [100%]\n249 passed in 5.33s\n",
+      "stderr": ""
+    },
+    {
+      "command": "python -m gestureforge --smoke-test",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support raise()\n"
+    },
+    {
+      "command": "python -m gestureforge --studio --smoke-test",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support raise()\n"
+    },
+    {
+      "command": "python -m gestureforge.javier_preview --smoke-test",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support propagateSizeHints()\n"
+    },
+    {
+      "command": "python -m gestureforge.javier_preview --quick-only --smoke-test",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support propagateSizeHints()\n"
+    },
+    {
+      "command": "python -m scripts.windows_launch_probe --help",
+      "returncode": 0,
+      "stdout": "usage: windows_launch_probe.py [-h] --laptop-id LAPTOP_ID [--output OUTPUT]\n                               [--camera CAMERA] [--asset ASSET]\n\nGF-P05/P19 isolated Windows probe; no gestures launch anything. Run: python -m\nscripts.windows_launch_probe --laptop-id laptop-A This uses the existing\nCaptureWorker and actual HandCamera, without recognition. Only explicit button\nrequests open targets. Evidence needs observer confirmation.\n\noptions:\n  -h, --help            show this help message and exit\n  --laptop-id LAPTOP_ID\n  --output OUTPUT\n  --camera CAMERA\n  --asset ASSET\n",
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "Linux/Python 3.12, not Windows/Python 3.11 deployment.",
+    "Fake OS adapters and offscreen Qt do not prove visible applications, focus or camera hardware.",
+    "No participant data, live recognition or readiness integration was tested.",
+    "No real Windows probe, both-laptop verification, thirty-minute stability or demo recording was performed.",
+    "Shared shell and recognition files were not modified or integrated."
+  ]
+}
