@@ -13,7 +13,7 @@ from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
-    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox,
+    QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox, QCheckBox,
 )
 
 from .capture import HandCamera
@@ -22,6 +22,7 @@ from .controller import Controller
 from .routing import RoutingSession
 from .viewer import Viewer
 from .vocabulary import LEGACY_VOCABULARY
+from .traces import EvaluationTrace
 
 CARD_STYLES = (
     ("#f2f1e9", "#ab5e45"),
@@ -188,6 +189,9 @@ class Window(QMainWindow):
         self.received_first_frame = False
         self._log_path = None
         self._log_failed = False
+        self.evaluation_trace: EvaluationTrace | None = None
+        self.trace_path: Path | None = None
+        self.trace_folder = Path(__file__).resolve().parent.parent / "experiments/local/controller-traces"
         self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
         container.setObjectName("page")
@@ -248,6 +252,16 @@ class Window(QMainWindow):
             self.camera_status.setObjectName("muted")
             self.camera_status.setWordWrap(True)
             page.addWidget(self.camera_status)
+            self.record_trace = QCheckBox("Record evaluation trace (labels and timing only)")
+            self.record_trace.setToolTip(
+                "Opt in before Start. Saves locally on pause; no images, video or landmarks. "
+                "Intended gestures must be annotated separately before scoring."
+            )
+            page.addWidget(self.record_trace)
+            self.trace_status = QLabel("Trace recording off; no evaluation samples are being saved.")
+            self.trace_status.setWordWrap(True)
+            self.trace_status.setObjectName("muted")
+            page.addWidget(self.trace_status)
             self.load_progress = QProgressBar()
             self.load_progress.setRange(0, 0)
             self.load_progress.setAccessibleName("Loading and training personal dataset")
@@ -711,10 +725,17 @@ class Window(QMainWindow):
     def start_camera(self):
         if self.model is None or self.worker is not None or self.model_loader is not None or self._closing:
             return
+        if not self.finish_evaluation_trace():
+            return
         if self.routing is not None:
             snapshot = self.routing.resume()
             session = snapshot.session_id
             profile = snapshot.profile_id
+            self.record_trace.setEnabled(False)
+            if self.record_trace.isChecked():
+                self.evaluation_trace = EvaluationTrace(snapshot)
+                self.trace_path = self.trace_folder / f"trace-{uuid4()}.json"
+                self.trace_status.setText("Recording controller inputs locally; Pause to save for annotation.")
         else:
             session = str(uuid4())
             profile = self.profile
@@ -740,12 +761,32 @@ class Window(QMainWindow):
             self.controller.pause()
         if self.worker is not None:
             self.worker.requestInterruption()
+        self.finish_evaluation_trace()
         if self.studio:
+            self.record_trace.setEnabled(self.worker is None and self.evaluation_trace is None)
             self.preview.clear()
             self.preview.setText("Camera stopping..." if self.worker else "Camera off")
         self.progress.setValue(0)
         self.state.setText("Paused • camera stopping" if self.worker else "Paused")
         self.log({"type": "pause", "timestamp": time.monotonic()})
+
+    def finish_evaluation_trace(self):
+        trace = self.evaluation_trace
+        if trace is None:
+            return True
+        if trace.frame_count == 0:
+            self.evaluation_trace = None
+            self.trace_status.setText("No controller inputs received; no trace saved.")
+            return True
+        assert self.trace_path is not None
+        try:
+            trace.save(self.trace_path)
+        except (OSError, ValueError) as exc:
+            self.trace_status.setText(f"Trace not saved: {exc}. Fix storage, then press Pause to retry; keep this window open.")
+            return False
+        self.evaluation_trace = None
+        self.trace_status.setText(f"Saved {trace.frame_count} inputs for annotation: {self.trace_path}")
+        return True
 
     def next_card(self):
         old_topic = self.card_topic_text()
@@ -795,10 +836,22 @@ class Window(QMainWindow):
             if not self.studio and prediction.label in {"PREVIOUS", "BOOKMARK"} and prediction.accepted:
                 display += " (preview only)"
             self.prediction.setText(f"Prediction: {display}")
+            processed_at = time.monotonic()
+            if self.evaluation_trace is not None:
+                try:
+                    self.evaluation_trace.append(prediction, processed_at)
+                    self.trace_status.setText(
+                        f"Recording {self.evaluation_trace.frame_count} inputs | "
+                        f"Capture time {prediction.timestamp:.3f} s | Pause to save for annotation."
+                    )
+                except (ValueError, OverflowError) as exc:
+                    self.pause()
+                    self.state.setText(f"Evaluation capture stopped: {exc}. Saved trace covers earlier inputs only.")
+                    return
             event = (
-                self.routing.process(prediction, time.monotonic())
+                self.routing.process(prediction, processed_at)
                 if self.routing is not None
-                else self.controller.process(prediction, time.monotonic())
+                else self.controller.process(prediction, processed_at)
             )
             self.state.setText(control.state.replace("_", " "))
             self.progress.setValue(round(control.progress * 100))
@@ -853,9 +906,11 @@ class Window(QMainWindow):
             error = self.worker.error
             self.worker.wait()
             self.worker = None
+            self.finish_evaluation_trace()
             control.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
             if self.studio:
+                self.record_trace.setEnabled(self.evaluation_trace is None)
                 self.preview.clear()
                 self.preview.setText("Camera off\n\nStart explicitly to reconnect")
                 if error:
@@ -873,6 +928,10 @@ class Window(QMainWindow):
     def closeEvent(self, event):
         self._closing = True
         self.pause()
+        if self.evaluation_trace is not None:
+            self._closing = False
+            event.ignore()
+            return
         if self.worker is not None and not self.worker.wait(3000):
             self.log({"type": "camera_shutdown_timeout", "timestamp": time.monotonic(),
                       "note": "Native driver stalled; daemon worker will end with process exit."})

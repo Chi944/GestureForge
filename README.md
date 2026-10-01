@@ -40,6 +40,7 @@ Current project foundation on `main`:
 | In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
 | Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
+| Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
 | Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |
 | Full Studio workflow | Starter data, profiles, readiness scoring, runbooks, persistence and real shortcut dispatch remain to be integrated |
 
@@ -69,7 +70,7 @@ Verify the project without overwriting historical assignment evidence:
 
 [Current project checks](docs/project/verification.json) record software evidence. They do not establish live-camera performance or completion of remaining features.
 
-For the controller evaluation, use `scripts/replay_controller.py --trace PATH --output PATH` with the environment's Python. The [evaluation guide](docs/project/DEMO_SCENARIO.md#controller-replay-tool-gf-p20-preparation) defines the trace/annotation format and scoring. Existing command-only logs cannot replace full prediction traces. This tool prepares the final evaluation; real participant collection and workflow comparisons remain outstanding.
+For the controller evaluation, use `scripts/replay_controller.py --trace PATH --output PATH` with the environment's Python. The [evaluation guide](docs/project/DEMO_SCENARIO.md#controller-replay-tool-gf-p20-preparation) defines the trace/annotation format and scoring. In Studio, opt into **Record evaluation trace** before Start, then Pause to save a local unannotated trace. The guide explains independent annotation before scoring. Existing command-only logs cannot replace full prediction traces. This tool prepares the final evaluation; real participant collection and workflow comparisons remain outstanding.
 
 ## Run the prototype
 

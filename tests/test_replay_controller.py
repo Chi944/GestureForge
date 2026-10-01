@@ -32,6 +32,18 @@ def frame(frame_id, timestamp, label, accepted=True, rejection_reason=""):
     return row
 
 
+def test_camera_frame_zero_is_valid_but_unannotated_recordings_cannot_be_scored(tmp_path):
+    path = tmp_path / "recorded.json"
+    data = trace([frame(0, 100.0, "NEUTRAL")], [])
+    data["annotation_complete"] = False
+    path.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises(ValueError, match="Annotate expected_holds"):
+        load_trace(path)
+    data["annotation_complete"] = True
+    path.write_text(json.dumps(data), encoding="utf-8")
+    assert replay(load_trace(path))["input"]["frame_count"] == 1
+
+
 def test_long_hold_duplicates_baseline_but_protected_routes_once(tmp_path):
     path = tmp_path / "trace.json"
     path.write_text(json.dumps(trace([

@@ -37,6 +37,75 @@ def test_studio_keyboard_hint_matches_native_shortcuts(qapp):
         window.close()
 
 
+def test_opt_in_trace_ends_at_pause_and_ignores_old_packets(tmp_path, monkeypatch, qapp):
+    import gestureforge.app as app_module
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.trace_folder = tmp_path
+    worker = FakeWorker()
+    monkeypatch.setattr(app_module, "CaptureWorker", lambda *a: worker)
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: 100.0)
+    try:
+        assert not window.record_trace.isChecked()
+        window.record_trace.setChecked(True)
+        window.start_camera()
+        assert not window.record_trace.isEnabled()
+        prediction = _studio_prediction(window, 0, 99.95, "NEUTRAL")
+        worker.packets = [(_frame(), prediction)]
+        window.poll()
+        assert not list(tmp_path.glob("*.json"))
+        window.pause()
+        files = list(tmp_path.glob("*.json"))
+        assert len(files) == 1
+        saved = json.loads(files[0].read_text(encoding="utf-8"))
+        assert saved["frames"][0]["frame_id"] == 0
+        assert saved["frames"][0]["received_at"] == 100.0
+        assert saved["annotation_complete"] is False and saved["expected_holds"] == []
+        assert "landmarks" not in saved and "features" not in saved
+        worker.packets = [(_frame(), replace(prediction, frame_id=1, timestamp=99.98))]
+        window.poll()
+        assert json.loads(files[0].read_text(encoding="utf-8")) == saved
+        worker.finished = True
+        window.poll()
+        assert window.record_trace.isEnabled()
+    finally:
+        window.close()
+
+
+def test_unsaved_trace_blocks_close_and_restart_until_retry(tmp_path, monkeypatch, qapp):
+    import gestureforge.app as app_module
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.trace_folder = tmp_path
+    worker = FakeWorker()
+    factory = Mock(return_value=worker)
+    monkeypatch.setattr(app_module, "CaptureWorker", factory)
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: 100.0)
+    try:
+        window.record_trace.setChecked(True)
+        window.start_camera()
+        worker.packets = [(_frame(), _studio_prediction(window, 0, 99.95, "NEUTRAL"))]
+        window.poll()
+        trace = window.evaluation_trace
+        assert trace is not None
+        save = trace.save
+        monkeypatch.setattr(trace, "save", Mock(side_effect=OSError("disk full")))
+        close = FakeCloseEvent()
+        window.closeEvent(close)
+        assert close.ignored and not window._closing
+        assert window.evaluation_trace is trace and worker.interrupted
+        assert "disk full" in window.trace_status.text()
+        worker.finished = True
+        window.poll()
+        window.start_camera()
+        assert factory.call_count == 1 and window.evaluation_trace is trace
+        monkeypatch.setattr(trace, "save", save)
+        window.pause()
+        assert window.evaluation_trace is None and len(list(tmp_path.glob("*.json"))) == 1
+    finally:
+        window.close()
+
+
 class FakeWorker:
     def __init__(self, packets=(), wait_result=True):
         self.packets = list(packets)

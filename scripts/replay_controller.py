@@ -67,6 +67,8 @@ def load_trace(path: Path) -> dict[str, Any]:
         raise ValueError(f"invalid JSON: {exc}") from exc
     if not isinstance(data, dict):
         raise ValueError("trace must be a JSON object")
+    if "annotation_complete" in data and data["annotation_complete"] is not True:
+        raise ValueError("Annotate expected_holds and set annotation_complete to true before scoring")
     schema_version = data.get("schema_version")
     _require(
         isinstance(schema_version, int) and not isinstance(schema_version, bool)
@@ -166,7 +168,7 @@ def _parse_bindings(raw: Any) -> dict[str, Action]:
 
 def _parse_frames(raw_frames: list[Any], trace: dict[str, Any]) -> tuple[list[tuple[Prediction, float]], bool]:
     predictions: list[tuple[Prediction, float]] = []
-    previous_frame = 0
+    previous_frame = -1
     previous_time: float | None = None
     previous_received: float | None = None
     received_at_assumed = False
