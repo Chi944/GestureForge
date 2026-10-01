@@ -42,9 +42,12 @@ Current project foundation on `main`:
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
 | Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
 | Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |
+| Reviewed product components | Javier's viewer/bookmarks, workspace/runbook, local target registry, dispatcher and widgets are available for shell integration; separate simulation harness below |
 | Full Studio workflow | Starter data, profiles, readiness scoring, runbooks, persistence and real shortcut dispatch remain to be integrated |
 
 Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
+
+To inspect the reviewed components without a webcam or dataset, run `.\.venv\Scripts\python.exe -m gestureforge.javier_preview` (add `--quick-only` for an empty Quick Actions workspace). This developer harness offers manual deck/bookmark browsing, stage editing and simulated shortcut requests. It never opens applications. It is separate from the Studio camera shell; LIVE gesture dispatch still requires profile/readiness integration and actual Windows acceptance. See the [component guide](docs/javier/USER_GUIDE.md) and [integration review](docs/project/JAVIER_DELIVERY_REVIEW.md).
 
 ```powershell
 .\run.cmd --studio
