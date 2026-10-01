@@ -21,7 +21,8 @@ from .capture import HandCamera
 from .contracts import Action, ActionType, Prediction, RoutingMode, validate_identifier
 from .controller import Controller
 from .routing import RoutingSession
-from .viewer import Viewer
+from .storage import read_json
+from .viewer import Viewer, load_deck
 from .javier_widgets import ViewerWidget
 from .vocabulary import LEGACY_VOCABULARY
 from .traces import EvaluationTrace
@@ -194,6 +195,7 @@ class Window(QMainWindow):
         self.evaluation_trace: EvaluationTrace | None = None
         self.trace_path: Path | None = None
         self.trace_folder = Path(__file__).resolve().parent.parent / "experiments/local/controller-traces"
+        self.studio_state_folder = Path(__file__).resolve().parent.parent / ".local/studio"
         self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
         container.setObjectName("page")
@@ -380,6 +382,14 @@ class Window(QMainWindow):
         self.feedback.setWordWrap(True)
         self.feedback.setObjectName("feedback")
         right.addWidget(self.feedback)
+        for label in (
+            self.notice, self.studio_status,
+            self.deck_label, self.position, self.card_topic, self.card_title,
+            self.card_body, self.feedback, self.state, self.detail,
+        ):
+            label.setTextFormat(Qt.TextFormat.PlainText)
+        if studio:
+            self.camera_status.setTextFormat(Qt.TextFormat.PlainText)
         controls = QHBoxLayout()
         if studio:
             footer = QWidget()
@@ -419,6 +429,7 @@ class Window(QMainWindow):
         self.boundary = QLabel()
         self.boundary.setObjectName("muted")
         self.boundary.setWordWrap(True)
+        self.boundary.setTextFormat(Qt.TextFormat.PlainText)
         if studio:
             footer_layout.addWidget(self.boundary)
         else:
@@ -433,6 +444,25 @@ class Window(QMainWindow):
                 shortcut = QShortcut(QKeySequence(key), self)
                 shortcut.activated.connect(slot)
                 self.shortcuts.append(shortcut)
+            self.deck_tools = QHBoxLayout()
+            for text, slot in (
+                ("Load deck...", self.choose_studio_deck),
+                ("Save progress...", self.choose_save_studio_progress),
+                ("Restore progress...", self.choose_restore_studio_progress),
+            ):
+                button = QPushButton(text)
+                button.clicked.connect(slot)
+                button.setAccessibleName(text.replace("...", ""))
+                self.deck_tools.addWidget(button)
+            assert self.manual_viewer is not None
+            manual_layout = self.manual_viewer.layout()
+            assert isinstance(manual_layout, QVBoxLayout)
+            manual_layout.insertLayout(0, self.deck_tools)
+            self.deck_file_status = QLabel("Load a deck, or save and restore your place and bookmarks.")
+            self.deck_file_status.setWordWrap(True)
+            self.deck_file_status.setTextFormat(Qt.TextFormat.PlainText)
+            self.deck_file_status.setObjectName("muted")
+            manual_layout.insertWidget(1, self.deck_file_status)
             self.studio_key_hint = " | ".join(
                 f"{shortcut.key().toString(QKeySequence.SequenceFormat.NativeText)}: {label}"
                 for shortcut, label in zip(self.shortcuts[-2:], ("load dataset", "start"))
@@ -608,6 +638,99 @@ class Window(QMainWindow):
         if path:
             self.load_studio_dataset(Path(path))
 
+    def set_deck_file_status(self, message: str) -> None:
+        self.feedback.setText(message)
+        if self.studio and hasattr(self, "deck_file_status"):
+            self.deck_file_status.setText(message)
+
+    def choose_studio_deck(self):
+        if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if not self.pause():
+            self.set_deck_file_status("Deck not loaded: save the current evaluation trace first.")
+            return
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Load a Studio deck", "", "GestureForge deck (*.json)",
+        )
+        if path:
+            self.load_studio_deck(Path(path))
+
+    def choose_save_studio_progress(self):
+        if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if not self.pause():
+            self.set_deck_file_status("Progress not saved: save the current evaluation trace first.")
+            return
+        suggested = str(self.studio_state_folder / "viewer-progress.json")
+        try:
+            self.studio_state_folder.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            suggested = ""
+            self.set_deck_file_status(f"Default save folder unavailable: {exc}. Choose a writable JSON file.")
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save Studio progress", suggested, "JSON (*.json)",
+        )
+        if path:
+            self.save_studio_progress(Path(path))
+
+    def choose_restore_studio_progress(self):
+        if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if not self.pause():
+            self.set_deck_file_status("Progress not restored: save the current evaluation trace first.")
+            return
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Restore Studio progress", str(self.studio_state_folder), "JSON (*.json)",
+        )
+        if path:
+            self.restore_studio_progress(Path(path))
+
+    def load_studio_deck(self, path: Path) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Deck not loaded: save the current evaluation trace first.")
+            return False
+        try:
+            deck = load_deck(path)
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"Deck not loaded: {exc}. Choose a valid GestureForge deck JSON.")
+            return False
+        self.viewer = Viewer(deck, project_actions=True)
+        self.set_deck_file_status(f"Loaded deck: {deck.title}.")
+        self.render_card()
+        return True
+
+    def save_studio_progress(self, path: Path) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Progress not saved: save the current evaluation trace first.")
+            return False
+        try:
+            self.viewer.save(path)
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"Progress not saved: {exc}. Choose a writable JSON file.")
+            return False
+        self.set_deck_file_status(f"Progress saved: {path}")
+        return True
+
+    def restore_studio_progress(self, path: Path) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Progress not restored: save the current evaluation trace first.")
+            return False
+        try:
+            raw = read_json(path)
+            self.viewer.restore_state(raw)
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"Progress not restored: {exc}. Use progress saved for this deck.")
+            return False
+        self.set_deck_file_status(f"Progress restored: {path}")
+        self.render_card()
+        return True
+
     def load_studio_dataset(self, path):
         if not self.studio:
             raise ValueError("In-app dataset loading requires Studio")
@@ -698,6 +821,8 @@ class Window(QMainWindow):
 
     def card_topic_text(self) -> str:
         title = self.viewer.current_card.title
+        if self.studio:
+            return title
         return title.split(": ", 1)[1] if title.startswith("Card ") and ": " in title else title
 
     def rejection_message(self, reason: str) -> str:
@@ -717,6 +842,7 @@ class Window(QMainWindow):
         count = len(self.viewer.deck.cards)
         number = self.viewer.position + 1
         background, accent = CARD_STYLES[self.viewer.position % len(CARD_STYLES)]
+        self.deck_progress.setRange(0, count)
         self.card_badge.setText(f"{number}")
         self.deck_label.setText(self.viewer.deck.title.upper())
         self.position.setText(f"Card {number} of {count}")
@@ -855,7 +981,7 @@ class Window(QMainWindow):
     def restart_deck(self):
         if not self.pause():
             return
-        self.viewer = Viewer()
+        self.viewer = Viewer(self.viewer.deck, project_actions=self.studio)
         self.feedback.setText("Deck restarted. Resume and show neutral before another gesture.")
         self.render_card()
 

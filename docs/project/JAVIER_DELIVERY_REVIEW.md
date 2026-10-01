@@ -23,9 +23,9 @@ Windows/Python 3.11 verification: 325 tests pass, one symlink test skips because
 
 ## Remaining integration gates
 
-- **Hau Jie:** deliver profile selection/lifecycle and revision-bound readiness plus GF-P28 starter feasibility data. Each person performs their own gestures; Hau Jie owns protocol and quality checks. Deston's new P01 two-session/UNKNOWN recording remains to be performed.
+- **Hau Jie:** deliver profile selection/lifecycle and revision-bound readiness plus GF-P28 starter feasibility data. Each person performs their own gestures; Hau Jie owns protocol and quality checks. Deston's new P01 two-session/UNKNOWN recording is complete (72 trials, 359/360 valid samples); he reports forwarding the private archive on 1 October. Recipient validation, P02/P03 and the participant-separated comparison remain to be evidenced.
 - **Javier:** run GF-P05 on Windows and later GF-P19 on both laptops. Demonstrate visible Calculator, Camera, permitted file/folder/HTTPS opening, camera release, focus pause, manual recovery and error paths. Use `docs/javier/WINDOWS_EVIDENCE.md`; do not replace these with unit tests.
-- **Deston:** attach these components to the one Studio session after the readiness/profile contract is available, respecting pause/save failures, stage reset, empty bindings and local target revisions. Then run the six-stage scenario and live evaluation. No LIVE bypass is added to compensate for missing readiness.
+- **Deston:** manual browsing, custom deck loading and explicit viewer progress save/restore are now attached to Studio. Continue workspace/runbook attachment while awaiting profile/readiness; respect pause/save failures, stage reset, empty bindings and local target revisions. Real gesture dispatch still waits for readiness integration, followed by the six-stage scenario and live evaluation. No LIVE bypass is added to compensate for missing readiness.
 
 Keep teammate branches separate and submit subsequent work through PRs. Component preparation moves Javier's relevant cards to In Progress, not Done. This preserves the original completed-task progress calculation.
 

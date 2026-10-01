@@ -256,7 +256,9 @@ The current software verification summary is recorded in `docs\evidence\verifica
 
 ## Final Project Preview
 
-The final project guide will add profile creation, in-app practice, PREVIOUS and BOOKMARK execution, custom JSON deck loading, saved state, and recovery from corrupted files.
+Run `.\run.cmd --studio` for the project preview. Its **Manual browse / bookmarks** tab already provides Previous, Next, Bookmark, bookmark review/removal and **Load deck...**. Try `assets/corporate_demo_deck.json`. **Save progress...** explicitly saves position and bookmarks to a local JSON file; **Restore progress...** requires that same deck to be loaded and leaves camera control paused. After reopening Studio, load the deck before restoring its progress. Restart keeps the loaded deck but clears its position/bookmarks in memory. Changes are not saved automatically; save again when needed. An invalid deck or incompatible progress file leaves the current content intact and displays an error.
+
+The progress file contains deck/card identifiers and bookmarks, not deck text, profiles, gesture data, mappings or runbook state. Keep personal progress in the suggested ignored local folder. Preview/Rehearsal gestures remain simulations. Profile creation, guided practice, readiness-gated real actions and full workspace/runbook persistence remain in development.
 
 ## Rejection settings and historical results
 

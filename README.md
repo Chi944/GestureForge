@@ -38,14 +38,15 @@ Current project foundation on `main`:
 | Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
 | Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
 | Studio preview | Opt-in `--studio` simulation; shows would-be actions without executing gesture-driven viewer or desktop actions |
-| Manual card browser | Studio's **Manual browse / bookmarks** tab supports Previous, Next, bookmarking, reviewing and removing bookmarks without a dataset; bookmarks are session-local |
+| Manual card browser | Studio's **Manual browse / bookmarks** tab supports Previous, Next, bookmarking, reviewing and removing bookmarks without a dataset |
+| Deck loading and progress | Load validated JSON decks; explicitly save/restore position and bookmarks for the matching deck; control stays paused and failed loads preserve the active deck |
 | In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
 | Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
 | Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
 | Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |
 | Reviewed product components | Javier's viewer/bookmarks, workspace/runbook, local target registry, dispatcher and widgets are available for shell integration; separate simulation harness below |
-| Full Studio workflow | Starter data, profiles, readiness scoring, runbooks, persistence and real shortcut dispatch remain to be integrated |
+| Full Studio workflow | Starter data, profiles, readiness scoring, full workspace/runbook persistence and real shortcut dispatch remain to be integrated |
 
 Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
 
@@ -63,7 +64,7 @@ Use **Camera index** and **Use camera and pause** to select another webcam witho
 
 Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio dropdowns to choose Preview/Rehearsal and the simulated action for each gesture, then click **Apply and pause**. Draft edits do not change active control. Applying stops capture and requires a new NEUTRAL hold on resume. Mappings are temporary and are not saved. Context switching remains an integration API until runbooks are connected. Default launch without `--studio` preserves assignment behaviour.
 
-Use **Manual browse / bookmarks** beside the Card tab to inspect the deck with buttons. Double-click a saved bookmark, or select it and press Enter, to revisit its card. Select a bookmark before removing it. Both tabs share the same deck; Restart deck resets the position and clears these session-local bookmarks. Gesture Preview/Rehearsal still only displays would-be actions. Saved-state integration remains separate work.
+Use **Manual browse / bookmarks** beside the Card tab to inspect the deck with buttons. Double-click a bookmark, or select it and press Enter, to revisit its card. Select a bookmark before removing it. Both tabs share the same deck. **Load deck...** accepts the supplied `assets/corporate_demo_deck.json` or your own validated deck JSON. **Save progress...** writes the current position and bookmarks, with an ignored local folder suggested. **Restore progress...** restores them only for the matching loaded deck and stays paused. Load the same deck first after reopening the app; the progress file does not contain the deck itself. Restart deck keeps the current deck, returns to its first card and clears bookmarks in memory. Nothing autosaves, and restore never replays actions. Gesture Preview/Rehearsal still only displays would-be actions; full workspace/runbook state is separate work.
 
 [Approved plan](docs/project/PROJECT_PLAN.md) Â· [Progress](docs/project/PROGRESS.md) Â· [Team guide](docs/project/TEAM_GUIDE.md) Â· [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) Â· [Javier brief](docs/project/JAVIER_HANDOFF.md) Â· [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
 

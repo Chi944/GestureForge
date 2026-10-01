@@ -5,7 +5,9 @@ import sys
 import time
 from dataclasses import replace
 from hashlib import sha256
+from pathlib import Path
 from types import SimpleNamespace
+from typing import Any, cast
 from unittest.mock import Mock
 
 import numpy as np
@@ -13,7 +15,7 @@ import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PySide6.QtCore import QEvent, QPoint
+from PySide6.QtCore import QEvent, QPoint, Qt
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QApplication, QPushButton
 
@@ -193,6 +195,20 @@ def _disable_logging(window: Window) -> None:
     window._log_failed = True
 
 
+def _deck_file(path: Path, *, deck_id: str = "deck-test", title: str = "Demo <b>Deck</b>") -> Path:
+    path.write_text(json.dumps({
+        "schema_version": 1,
+        "deck_id": deck_id,
+        "title": title,
+        "cards": [
+            {"id": "intro", "title": "Card <b>Intro</b>", "body": "Body <i>one</i>"},
+            {"id": "detail", "title": "Detail & proof", "body": "Body two"},
+            {"id": "close", "title": "Close", "body": "Body three"},
+        ],
+    }), encoding="utf-8")
+    return path
+
+
 def _studio_prediction(
     window: Window,
     frame_id: int,
@@ -333,6 +349,220 @@ def test_studio_manual_viewer_rejects_non_viewer_actions_without_mutating(qapp) 
         assert window.viewer.position == 0
         assert window.viewer.bookmarks == ()
         assert "Use NEXT or the button to advance." in window.feedback.text()
+    finally:
+        window.close()
+
+
+def test_studio_custom_deck_and_progress_round_trip(tmp_path, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    progress = tmp_path / "progress.json"
+    window = Window(model=None, data_note="studio no data", studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.load_studio_deck(deck_path)
+        assert window.viewer.deck.deck_id == "deck-test"
+        assert window.deck_progress.maximum() == 3
+        assert window.deck_label.text() == "DEMO <B>DECK</B>"
+        assert window.card_title.text() == "Card <b>Intro</b>"
+        assert window.card_body.text() == "Body <i>one</i>"
+        assert window.card_title.textFormat() == Qt.TextFormat.PlainText
+        assert window.card_body.textFormat() == Qt.TextFormat.PlainText
+
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        window.manual_viewer_action(Action(ActionType.BOOKMARK))
+        assert window.save_studio_progress(progress)
+
+        restored = Window(model=None, data_note="studio no data", studio=True)
+        _disable_logging(restored)
+        try:
+            assert restored.load_studio_deck(deck_path)
+            assert restored.restore_studio_progress(progress)
+            assert restored.viewer.position == 1
+            assert [card.id for card in restored.viewer.bookmarks] == ["detail"]
+
+            restored.restart_deck()
+            assert restored.viewer.deck.deck_id == "deck-test"
+            assert restored.viewer.position == 0
+            assert restored.viewer.bookmarks == ()
+            assert "Card 1 of 3" in restored.position.text()
+        finally:
+            restored.close()
+    finally:
+        window.close()
+
+
+def test_studio_bad_deck_or_progress_preserves_current_selection(tmp_path, qapp) -> None:
+    good = _deck_file(tmp_path / "good.json")
+    wrong = _deck_file(tmp_path / "wrong.json", deck_id="other-deck")
+    bad = tmp_path / "bad.json"
+    bad.write_text("{", encoding="utf-8")
+    wrong_progress = tmp_path / "wrong-progress.json"
+    window = Window(model=None, data_note="studio no data", studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.load_studio_deck(good)
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        assert window.viewer.position == 1
+        assert not window.load_studio_deck(bad)
+        assert window.viewer.deck.deck_id == "deck-test"
+        assert window.viewer.position == 1
+        assert "Deck not loaded" in window.feedback.text()
+
+        other = Window(model=None, data_note="studio no data", studio=True)
+        _disable_logging(other)
+        try:
+            assert other.load_studio_deck(wrong)
+            other.manual_viewer_action(Action(ActionType.NEXT))
+            assert other.save_studio_progress(wrong_progress)
+        finally:
+            other.close()
+
+        assert not window.restore_studio_progress(wrong_progress)
+        assert window.viewer.deck.deck_id == "deck-test"
+        assert window.viewer.position == 1
+        assert "Progress not restored" in window.feedback.text()
+    finally:
+        window.close()
+
+
+def test_studio_restore_pauses_and_ignores_stale_worker_packet(tmp_path, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    progress = tmp_path / "progress.json"
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60), studio=True)
+    _disable_logging(window)
+    assert window.routing is not None
+    old_snapshot = window.routing.resume()
+    stale = Prediction(old_snapshot.session_id, old_snapshot.profile_id, 1, time.monotonic(), "NEXT", True,
+                       model_version=old_snapshot.model_version)
+    worker = FakeWorker([(_frame(), stale)])
+    window.worker = worker
+
+    try:
+        assert window.load_studio_deck(deck_path)
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        assert window.save_studio_progress(progress)
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        assert window.viewer.position == 2
+
+        assert window.restore_studio_progress(progress)
+        assert worker.interrupted
+        assert window.routing.state == "PAUSED"
+        window.poll()
+        assert window.viewer.position == 1
+        assert "Studio simulation" not in window.feedback.text()
+    finally:
+        window.close()
+
+
+def test_studio_progress_save_honors_trace_and_atomic_failures(tmp_path, monkeypatch, qapp) -> None:
+    import gestureforge.storage as storage
+
+    progress = tmp_path / "progress.json"
+    progress.write_text('{"kept": true}\n', encoding="utf-8")
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        window.record_trace.setChecked(True)
+        assert window.routing is not None
+        window.routing.resume()
+        window.evaluation_trace = cast(Any, SimpleNamespace(frame_count=1, save=Mock(side_effect=OSError("disk full"))))
+        window.trace_path = tmp_path / "trace.json"
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        assert not window.save_studio_progress(progress)
+        assert progress.read_text(encoding="utf-8") == '{"kept": true}\n'
+        assert window.viewer.position == 1
+        assert "Progress not saved" in window.feedback.text()
+
+        window.evaluation_trace = None
+        monkeypatch.setattr(storage.os, "replace", Mock(side_effect=OSError("replace failed")))
+        assert not window.save_studio_progress(progress)
+        assert progress.read_text(encoding="utf-8") == '{"kept": true}\n'
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("operation", ["load", "restore"])
+def test_studio_load_or_restore_does_not_mutate_when_pause_fails(operation, tmp_path, monkeypatch, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        progress = tmp_path / "progress.json"
+        assert window.save_studio_progress(progress)
+        window.manual_viewer_action(Action(ActionType.NEXT))
+        before = (window.viewer.deck.deck_id, window.viewer.position, tuple(card.id for card in window.viewer.bookmarks))
+        monkeypatch.setattr(window, "pause", Mock(return_value=False))
+
+        ok = window.load_studio_deck(deck_path) if operation == "load" else window.restore_studio_progress(progress)
+
+        assert not ok
+        assert (window.viewer.deck.deck_id, window.viewer.position,
+                tuple(card.id for card in window.viewer.bookmarks)) == before
+    finally:
+        window.close()
+
+
+def test_studio_deck_dialogs_cancel_and_busy_without_side_effects(tmp_path, monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.studio_state_folder = tmp_path / "state"
+    load_dialog = Mock(return_value=("", ""))
+    save_dialog = Mock(return_value=("", ""))
+    monkeypatch.setattr(app_module.QFileDialog, "getOpenFileName", load_dialog)
+    monkeypatch.setattr(app_module.QFileDialog, "getSaveFileName", save_dialog)
+    pause = Mock(return_value=True)
+    monkeypatch.setattr(window, "pause", pause)
+
+    try:
+        window.choose_studio_deck()
+        window.choose_save_studio_progress()
+        window.choose_restore_studio_progress()
+        assert load_dialog.call_count == 2 and save_dialog.call_count == 1
+        assert pause.call_count == 3
+        assert window.viewer.position == 0
+
+        window.model_loader = object()
+        window.choose_studio_deck()
+        window.choose_save_studio_progress()
+        window.choose_restore_studio_progress()
+        assert load_dialog.call_count == 2 and save_dialog.call_count == 1
+        assert pause.call_count == 3
+    finally:
+        window.model_loader = None
+        window.close()
+
+
+def test_studio_save_dialog_falls_back_when_default_folder_is_unwritable(tmp_path, monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    destination = tmp_path / "chosen.json"
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    blocked = window.studio_state_folder
+    original_mkdir = Path.mkdir
+
+    def mkdir(path: Path, mode: int = 0o777, parents: bool = False, exist_ok: bool = False) -> None:
+        if path == blocked:
+            raise OSError("locked")
+        original_mkdir(path, mode=mode, parents=parents, exist_ok=exist_ok)
+
+    monkeypatch.setattr(Path, "mkdir", mkdir)
+    save_dialog = Mock(return_value=(str(destination), ""))
+    monkeypatch.setattr(app_module.QFileDialog, "getSaveFileName", save_dialog)
+
+    try:
+        window.choose_save_studio_progress()
+
+        assert save_dialog.call_args.args[2] == ""
+        assert destination.exists()
+        assert "Progress saved" in window.deck_file_status.text()
     finally:
         window.close()
 
