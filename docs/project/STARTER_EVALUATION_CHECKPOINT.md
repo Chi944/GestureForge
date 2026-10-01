@@ -5,6 +5,10 @@ Status: reproducible feasibility comparison for review, **not a ready starter**.
 This PR continues the merged vocabulary and collection guide; it does not change
 the shell, controller, routing, viewer or other builders' modules.
 
+The data counts and measured results below are supplied by Hau Jie. Integration
+review independently checked the evaluator and its software tests; it did not
+rerun these measurements because P02/P03 inputs are not present in that checkout.
+
 ## Private data audit
 
 Each participant contributed 32 positive trials in each of two sessions and eight
@@ -65,8 +69,9 @@ misses in positive-trial macro-F1.
 Fixed existing defaults, chosen for the baseline before inspecting fold results:
 kNN k=5, distance weights; RBF SVM C=1, gamma=scale; distance multiplier=1.5,
 margin=1.0. No parameter search, winner selection or held-out threshold tuning was
-performed. Numeric features, model revisions, input hashes and fitted scaler
-statistics are recorded in the private output for reproduction.
+performed. Numeric features remain in the private input sidecars. Model revisions, input
+hashes and fitted scaler statistics are recorded in the private output; retain
+the sidecars as well as the report for reproduction.
 
 ## Measured results
 
