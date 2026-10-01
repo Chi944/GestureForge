@@ -69,6 +69,20 @@ separately. Exported outcomes include event/session/context/model IDs, monotonic
 receipt time, source, typed action and bounded recovery reason, with no target
 values. These receipt times are not gesture-onset latency measurements.
 
+In Studio, **Edit runbook** mutates only validated workspace content. New, Save
+stage, Delete, Move up and Move down never execute stage actions; accepted edits
+must reset routing before activation. **Session summary** is a measured-results
+surface: Refresh shows counts, and Export session results writes local JSON for
+review. It is separate from saved runbook navigation, which uses the current
+workspace plus stage/viewer state and is explicit rather than autosaved. The
+summary scope uses workspace identity plus a generated review revision ID, not a
+deterministic content hash. Correct/wrong/missed remain zero until measured
+`Trial` records are supplied; zero is unmeasured, not evidence that the workflow
+passed, and manual actions do not create automatic readiness evidence. Before a
+deck/workspace replacement, session restore, restart or close would leave a
+non-empty summary behind, Studio archives it under ignored `.local/studio`;
+archive failure blocks the operation and keeps the current counts visible.
+
 Event capacity is fail-closed: after 4,096 unique requests, export and start a new
 application session/dispatcher under a fresh routing identity. Outcome recording
 is separately bounded at 10,000 rows and checked before side effects. Never evict

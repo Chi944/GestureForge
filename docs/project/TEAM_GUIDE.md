@@ -44,7 +44,9 @@ Deston owns the shell; teammates provide embeddable PySide6 widgets instead of s
 | Demo Studio | Card title/body and distinctive card transition, ordered stages/instructions and bookmarks | Current stage and gesture meanings; manual Next/Previous/Bookmark/Continue; pause |
 | Session Review | Correct/wrong/missed trials, would-be actions, retries and acknowledged task completion | Export results; distinguish simulated events from real launch requests |
 
-The current Studio shell includes a simulation-mode selector and draft gesture mappings. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace the profile, readiness or workspace components assigned to the builders.
+The current Studio shell includes a simulation-mode selector, draft gesture mappings, workspace loading, Edit runbook, Runbook, Session summary and runbook session files. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace profile/readiness work or LIVE shortcut dispatch.
+
+Use **Edit runbook** for authored stage edits and **Session summary** / **Export session results** for local measurement archives. These exports are separate from Studio's explicit saved runbook navigation/session files; navigation position is not autosaved. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; archive failure blocks the operation and keeps counts visible. Successful restore/restart starts a fresh review summary. Do not commit those archives.
 
 Screen transitions use the same small rule set:
 

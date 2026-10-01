@@ -23,8 +23,15 @@ from .controller import Controller
 from .routing import RoutingSession
 from .storage import read_json
 from .viewer import Viewer, load_deck
-from .javier_widgets import RunbookWidget, ViewerWidget, WorkspaceWidget
+from .javier_widgets import (
+    RunbookEditorWidget,
+    RunbookWidget,
+    SessionSummaryWidget,
+    ViewerWidget,
+    WorkspaceWidget,
+)
 from .runbook import Runbook
+from .session_summary import Outcome, SessionSummary
 from .vocabulary import LEGACY_VOCABULARY
 from .workspace import Workspace, parse_workspace
 from .traces import EvaluationTrace
@@ -189,8 +196,10 @@ class Window(QMainWindow):
         self.deck_available = True
         self.workspace = Workspace("demo-studio", "Demo Studio", self.viewer.deck)
         self.runbook = None
+        self.session_summary = SessionSummary()
         self.routing_manual_only = False
         self.manual_context_id = "demo-studio"
+        self.manual_session_id = str(uuid4())
         self.manual_mode = studio_mode
         self.worker = None
         self.model_loader = None
@@ -200,10 +209,12 @@ class Window(QMainWindow):
         self.received_first_frame = False
         self._log_path = None
         self._log_failed = False
+        self._auto_archive_summary_on_close = True
         self.evaluation_trace: EvaluationTrace | None = None
         self.trace_path: Path | None = None
         self.trace_folder = Path(__file__).resolve().parent.parent / "experiments/local/controller-traces"
         self.studio_state_folder = Path(__file__).resolve().parent.parent / ".local/studio"
+        self._set_session_summary_scope()
         self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
         container.setObjectName("page")
@@ -366,14 +377,33 @@ class Window(QMainWindow):
             self.workspace_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             self.workspace_widget.workspace_changed.connect(self.accept_workspace_widget_change)
             self.deck_tabs.addTab(self.workspace_widget, "Workspace")
+            self.runbook_editor = RunbookEditorWidget(self.workspace)
+            self.runbook_editor.setObjectName("manualViewer")
+            self.runbook_editor.setMinimumWidth(0)
+            self.runbook_editor.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.runbook_editor.workspace_changed.connect(self.accept_runbook_editor_change)
+            self.deck_tabs.addTab(self.runbook_editor, "Edit runbook")
             self.runbook_widget = RunbookWidget(self._make_runbook(self.workspace))
             self.runbook_widget.setObjectName("manualViewer")
             self.runbook_widget.setMinimumWidth(0)
             self.runbook_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             self.runbook_widget.action_requested.connect(self.manual_runbook_action)
             self.runbook_widget.previous_stage_requested.connect(self.previous_runbook_stage)
-            self.runbook_widget.complete.hide()
+            self.runbook_widget.completion_acknowledged.connect(self.acknowledge_runbook_completion)
             self.deck_tabs.addTab(self.runbook_widget, "Runbook")
+            self.summary_widget = SessionSummaryWidget(
+                self.session_summary,
+                default_folder=self.studio_state_folder,
+                scope_text=(
+                    "Counts cover Studio manual card/runbook actions plus gesture simulation/rejection events. "
+                    "Bookmark list review/removal and live OS dispatch are outside this summary. "
+                    "Only explicit acknowledgement records task completion."
+                ),
+            )
+            self.summary_widget.setObjectName("manualViewer")
+            self.summary_widget.setMinimumWidth(0)
+            self.summary_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.deck_tabs.addTab(self.summary_widget, "Session summary")
             self.deck_tabs.currentChanged.connect(lambda _index: self.render_card())
             self.deck_tabs.setMinimumWidth(0)
             self.deck_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
@@ -547,11 +577,12 @@ class Window(QMainWindow):
             QTabWidget#deckTabs QTabBar::tab:selected { background: #355b72; color: #ffffff; }
             QWidget#manualViewer { background: #101923; }
             QWidget#manualViewer QLabel { color: #e8eef4; background: transparent; }
-            QWidget#manualViewer QTextEdit, QWidget#manualViewer QListWidget {
+            QWidget#manualViewer QTextEdit, QWidget#manualViewer QListWidget, QWidget#manualViewer QLineEdit {
                 background: #0c1620; color: #e8eef4; border: 1px solid #486478; border-radius: 6px;
                 selection-background-color: #355b72; selection-color: #ffffff;
             }
-            QWidget#manualViewer QTextEdit:focus, QWidget#manualViewer QListWidget:focus {
+            QWidget#manualViewer QTextEdit:focus, QWidget#manualViewer QListWidget:focus,
+            QWidget#manualViewer QLineEdit:focus {
                 border: 2px solid #62d6ad;
             }
             QProgressBar { background: #253542; border: none; height: 8px; border-radius: 4px; }
@@ -588,14 +619,99 @@ class Window(QMainWindow):
         viewer = self.viewer if workspace.deck is not None else None
         return Runbook(workspace, self.reset_runbook_stage, viewer)
 
-    def _refresh_workspace_widgets(self) -> None:
+    def _summary_has_records(self) -> bool:
+        return bool(
+            self.session_summary.outcomes
+            or self.session_summary.trials
+            or self.session_summary.completed_stages
+            or self.session_summary.retries
+        )
+
+    def _archive_session_summary(self, reason: str) -> bool:
+        if not self._summary_has_records():
+            return True
+        try:
+            self.studio_state_folder.mkdir(parents=True, exist_ok=True)
+            path = self.studio_state_folder / f"studio-session-summary-{uuid4()}.json"
+            self.session_summary.export(path)
+        except (OSError, ValueError) as exc:
+            self.set_deck_file_status(f"{reason}: session summary not archived: {exc}. Prior state retained.")
+            return False
+        self.set_deck_file_status(f"Previous session summary archived: {path}")
+        return True
+
+    def _set_session_summary_scope(self) -> None:
+        self.session_summary.set_scope(
+            workspace_id=self.workspace.id,
+            workspace_title=self.workspace.title,
+            revision_id=f"revision-{uuid4()}",
+        )
+
+    def _reset_session_summary(self) -> None:
+        self.session_summary = SessionSummary()
+        self._set_session_summary_scope()
+        if hasattr(self, "summary_widget"):
+            self.summary_widget.summary = self.session_summary
+            self.summary_widget.refresh()
+
+    def _record_session_outcome(
+        self,
+        *,
+        source: str,
+        status: str,
+        action: Action | None,
+        reason: str = "",
+        event_id: str | None = None,
+        identity: tuple[str, str, str] | None = None,
+    ) -> bool:
+        try:
+            self.session_summary.ensure_capacity()
+            session_id, context_id, model_version = identity or self._session_outcome_identity()
+            self.session_summary.record(Outcome(
+                event_id or f"manual-{uuid4()}",
+                session_id,
+                source,
+                status,
+                action,
+                reason,
+                context_id,
+                model_version,
+            ))
+        except ValueError as exc:
+            self.feedback.setText(f"Session summary full; export results before continuing: {exc}")
+            return False
+        if hasattr(self, "summary_widget"):
+            self.summary_widget.refresh()
+        return True
+
+    def _reserve_session_record(self) -> bool:
+        try:
+            self.session_summary.ensure_capacity()
+        except ValueError as exc:
+            self.feedback.setText(f"Session summary full; export results before continuing: {exc}")
+            return False
+        return True
+
+    def _session_outcome_identity(self) -> tuple[str, str, str]:
+        if self.routing_manual_only:
+            return self.manual_session_id, self.manual_context_id, self._model_version()
+        assert self.routing is not None
+        snapshot = self.routing.snapshot
+        return snapshot.session_id, snapshot.context_id, snapshot.model_version
+
+    def _refresh_workspace_widgets(self, *, refresh_editor: bool = False) -> None:
         if not self.studio:
             return
         if hasattr(self, "workspace_widget"):
             self.workspace_widget.set_workspace(self.workspace)
+        if refresh_editor and hasattr(self, "runbook_editor"):
+            self.runbook_editor.set_workspace(self.workspace)
         if hasattr(self, "runbook_widget"):
             self.runbook_widget.runbook = self.runbook or self._make_runbook(self.workspace)
             self.runbook_widget.refresh()
+        if hasattr(self, "summary_widget"):
+            self.summary_widget.summary = self.session_summary
+            self.summary_widget.refresh()
 
     def accept_workspace_widget_change(self, workspace: Workspace) -> None:
         if not self.use_studio_workspace(workspace):
@@ -605,6 +721,23 @@ class Window(QMainWindow):
                 self.workspace_widget.status.setText("Shell rejected activation; prior workspace retained.")
             return
         self.workspace_widget.import_accepted = True
+
+    def accept_runbook_editor_change(self, workspace: Workspace) -> None:
+        if not self.use_studio_workspace(workspace, preserve_deck_review=True, reason="Runbook change not applied"):
+            self.runbook_editor.change_accepted = False
+            self._refresh_workspace_widgets()
+            return
+        self.runbook_editor.change_accepted = True
+
+    def acknowledge_runbook_completion(self, stage_id: str) -> None:
+        try:
+            self.session_summary.acknowledge_completion(stage_id)
+        except ValueError as exc:
+            self.feedback.setText(f"Completion not recorded: {exc}")
+            return
+        if hasattr(self, "summary_widget"):
+            self.summary_widget.refresh()
+        self.feedback.setText(f"Completion acknowledged for stage {stage_id}.")
 
     def _set_deck_available(self, available: bool) -> None:
         self.deck_available = available
@@ -718,6 +851,7 @@ class Window(QMainWindow):
         if not self.pause():
             return False
         self.manual_context_id = new_context_id
+        self.manual_session_id = str(uuid4())
         self.manual_mode = new_mode
         self.routing_manual_only = len(new_bindings) == 0
         if self.routing_manual_only:
@@ -849,11 +983,14 @@ class Window(QMainWindow):
         except (OSError, ValueError) as exc:
             self.set_deck_file_status(f"Deck not loaded: {exc}. Choose a valid GestureForge deck JSON.")
             return False
+        if not self._archive_session_summary("Deck not loaded"):
+            return False
         self.viewer = Viewer(deck, project_actions=True)
         self.workspace = Workspace("manual-deck", deck.title, deck)
         self.runbook = self._make_runbook(self.workspace)
+        self._reset_session_summary()
         self._set_deck_available(True)
-        self._refresh_workspace_widgets()
+        self._refresh_workspace_widgets(refresh_editor=True)
         self.configure_studio(
             context_id=self.workspace.id,
             bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
@@ -911,44 +1048,65 @@ class Window(QMainWindow):
             return False
         return self.use_studio_workspace(workspace)
 
-    def use_studio_workspace(self, workspace: Workspace) -> bool:
+    def use_studio_workspace(
+        self,
+        workspace: Workspace,
+        *,
+        preserve_deck_review: bool = False,
+        reason: str = "Workspace not loaded",
+    ) -> bool:
         if not self.studio or self.model_loader is not None or self._closing:
             return False
         if not self.pause():
-            self.set_deck_file_status("Workspace not loaded: save the current evaluation trace first.")
+            self.set_deck_file_status(f"{reason}: save the current evaluation trace first.")
+            return False
+        if not self._archive_session_summary(reason):
             return False
         previous = (
-            self.workspace, self.viewer, self.runbook, self.deck_available,
-            self.routing_manual_only, self.manual_context_id, self.manual_mode,
+            self.workspace, self.viewer, self.runbook, self.deck_available, self.session_summary,
+            self.routing_manual_only, self.manual_context_id, self.manual_session_id, self.manual_mode,
         )
-        candidate_viewer = Viewer(workspace.deck, project_actions=True) if workspace.deck is not None else self.viewer
+        same_deck = workspace.deck is not None and workspace.deck == self.workspace.deck
+        candidate_viewer = (
+            self.viewer
+            if preserve_deck_review and same_deck
+            else Viewer(workspace.deck, project_actions=True)
+            if workspace.deck is not None
+            else self.viewer
+        )
         candidate_runbook = Runbook(workspace, self.reset_runbook_stage,
                                     candidate_viewer if workspace.deck is not None else None)
+        previous_stage_id = self.runbook.current_stage.id if self.runbook and self.runbook.current_stage else None
         self.workspace = workspace
         self.viewer = candidate_viewer
         self.runbook = candidate_runbook
+        if preserve_deck_review and previous_stage_id:
+            ids = [stage.id for stage in workspace.stages]
+            if previous_stage_id in ids:
+                self.runbook.position = ids.index(previous_stage_id)
+        self._reset_session_summary()
         self._set_deck_available(workspace.deck is not None)
-        self._refresh_workspace_widgets()
+        self._refresh_workspace_widgets(refresh_editor=True)
         if workspace.stages:
             try:
                 self.runbook.activate()
             except ValueError as exc:
                 (
-                    self.workspace, self.viewer, self.runbook, self.deck_available,
-                    self.routing_manual_only, self.manual_context_id, self.manual_mode,
+                    self.workspace, self.viewer, self.runbook, self.deck_available, self.session_summary,
+                    self.routing_manual_only, self.manual_context_id, self.manual_session_id, self.manual_mode,
                 ) = previous
                 self._set_deck_available(self.deck_available)
-                self._refresh_workspace_widgets()
-                self.set_deck_file_status(f"Workspace not loaded: {exc}. Prior workspace retained.")
+                self._refresh_workspace_widgets(refresh_editor=True)
+                self.set_deck_file_status(f"{reason}: {exc}. Prior workspace retained.")
                 return False
         else:
             if not self.configure_studio(context_id=workspace.id, bindings={}):
                 (
-                    self.workspace, self.viewer, self.runbook, self.deck_available,
-                    self.routing_manual_only, self.manual_context_id, self.manual_mode,
+                    self.workspace, self.viewer, self.runbook, self.deck_available, self.session_summary,
+                    self.routing_manual_only, self.manual_context_id, self.manual_session_id, self.manual_mode,
                 ) = previous
                 self._set_deck_available(self.deck_available)
-                self._refresh_workspace_widgets()
+                self._refresh_workspace_widgets(refresh_editor=True)
                 return False
         stage = self.runbook.current_stage if self.runbook else None
         mismatch = [
@@ -985,11 +1143,14 @@ class Window(QMainWindow):
         if not self.pause():
             self.set_deck_file_status("Session not restored: save the current evaluation trace first.")
             return False
+        if not self._archive_session_summary("Session not restored"):
+            return False
         try:
             self.runbook.restore(path)
         except (OSError, ValueError) as exc:
             self.set_deck_file_status(f"Session not restored: {exc}. Prior session retained.")
             return False
+        self._reset_session_summary()
         self._refresh_workspace_widgets()
         self.set_deck_file_status(f"Session restored: {path}")
         self.render_card()
@@ -1051,6 +1212,7 @@ class Window(QMainWindow):
         self.routing = candidate
         self.routing_manual_only = False
         self.manual_context_id = candidate.snapshot.context_id
+        self.manual_session_id = str(uuid4())
         self.manual_mode = candidate.snapshot.mode
         self.received_first_frame = False
         self.preview.clear()
@@ -1251,6 +1413,8 @@ class Window(QMainWindow):
         if self.studio and not self.deck_available:
             self.feedback.setText("No deck is loaded for this workspace.")
             return
+        if self.studio and not self._reserve_session_record():
+            return
         old_topic = self.card_topic_text()
         moved = self.viewer.next_keyboard()
         self.render_card()
@@ -1258,6 +1422,13 @@ class Window(QMainWindow):
             f"Now showing {self.card_topic_text()} (from {old_topic})."
             if moved else f"Still showing {old_topic}; the assignment deck does not wrap."
         )
+        if self.studio:
+            self._record_session_outcome(
+                source="manual",
+                status="applied" if moved else "unchanged",
+                action=Action(ActionType.NEXT),
+                reason="keyboard_or_mouse",
+            )
         self.log({"type": "command", "source": "keyboard_or_mouse", "command": "NEXT",
                   "position": self.viewer.position, "timestamp": time.monotonic()})
 
@@ -1266,6 +1437,8 @@ class Window(QMainWindow):
             return
         if not self.deck_available:
             self.feedback.setText("No deck is loaded for this workspace.")
+            return
+        if not self._reserve_session_record():
             return
         old_topic = self.card_topic_text()
         moved = self.viewer.apply_action(action)
@@ -1277,6 +1450,12 @@ class Window(QMainWindow):
             if moved
             else f"Manual {action.kind.value}: no change."
         )
+        self._record_session_outcome(
+            source="manual",
+            status="applied" if moved else "unchanged",
+            action=action,
+            reason="manual_viewer",
+        )
         self.log({"type": "command", "source": "manual_viewer", "command": action.kind.value,
                   "position": self.viewer.position, "timestamp": time.monotonic()})
 
@@ -1284,35 +1463,67 @@ class Window(QMainWindow):
         if not self.studio or self.runbook is None:
             return
         if action.kind == ActionType.ADVANCE_STAGE:
+            if not self._reserve_session_record():
+                return
+            identity = self._session_outcome_identity()
             try:
-                self.runbook.advance()
+                changed = self.runbook.advance()
             except ValueError as exc:
                 self.feedback.setText(f"Runbook not advanced: {exc}")
+                self._record_session_outcome(
+                    source="manual", status="failed", action=action,
+                    reason=f"runbook_advance: {exc}", identity=identity,
+                )
                 return
             self._refresh_workspace_widgets()
             self.render_card()
             self.feedback.setText("Runbook finished." if self.runbook.finished else "Runbook advanced.")
+            self._record_session_outcome(
+                source="manual",
+                status="applied" if changed else "unchanged",
+                action=action,
+                reason="runbook_continue_or_finish",
+                identity=identity,
+            )
             self.log({"type": "runbook_advance", "stage": self.runbook.current_stage.id
                       if self.runbook.current_stage else None, "timestamp": time.monotonic()})
             return
         if action.kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK} and self.deck_available:
             self.manual_viewer_action(action)
             return
+        if not self._reserve_session_record():
+            return
         self.feedback.setText(f"Manual {self.action_text(action)} is simulated; no OS action is launched.")
+        self._record_session_outcome(
+            source="manual", status="simulated", action=action, reason="manual_runbook_action",
+        )
         self.log({"type": "manual_simulation", "action": action.kind.value, "timestamp": time.monotonic()})
 
     def previous_runbook_stage(self):
         if not self.studio or self.runbook is None:
             return
+        if not self._reserve_session_record():
+            return
+        identity = self._session_outcome_identity()
         try:
             changed = self.runbook.previous()
         except ValueError as exc:
             self.feedback.setText(f"Runbook not moved: {exc}")
+            self._record_session_outcome(
+                source="manual", status="failed", action=None, reason=f"previous_stage: {exc}", identity=identity,
+            )
             return
         if changed:
             self._refresh_workspace_widgets()
             self.render_card()
             self.feedback.setText("Previous runbook stage restored.")
+        self._record_session_outcome(
+            source="manual",
+            status="applied" if changed else "unchanged",
+            action=None,
+            reason="previous_runbook_stage" if changed else "no_previous_runbook_stage",
+            identity=identity,
+        )
 
     def restart_deck(self):
         if not self.pause():
@@ -1320,7 +1531,12 @@ class Window(QMainWindow):
         if not self.deck_available:
             self.feedback.setText("No deck is loaded for this workspace.")
             return
-        previous = (self.viewer, self.runbook, self.routing_manual_only, self.manual_context_id, self.manual_mode)
+        if not self._archive_session_summary("Deck not restarted"):
+            return
+        previous = (
+            self.viewer, self.runbook, self.routing_manual_only,
+            self.manual_context_id, self.manual_session_id, self.manual_mode,
+        )
         self.viewer = Viewer(self.viewer.deck, project_actions=self.studio)
         if self.workspace.deck is not None:
             self.runbook = self._make_runbook(self.workspace)
@@ -1329,10 +1545,14 @@ class Window(QMainWindow):
                 if self.runbook.current_stage is not None:
                     self.runbook.activate()
             except ValueError as exc:
-                self.viewer, self.runbook, self.routing_manual_only, self.manual_context_id, self.manual_mode = previous
+                (
+                    self.viewer, self.runbook, self.routing_manual_only,
+                    self.manual_context_id, self.manual_session_id, self.manual_mode,
+                ) = previous
                 self._refresh_workspace_widgets()
                 self.feedback.setText(f"Deck not restarted: {exc}")
                 return
+        self._reset_session_summary()
         self.feedback.setText("Deck restarted. Resume and show neutral before another gesture.")
         self.render_card()
 
@@ -1400,11 +1620,23 @@ class Window(QMainWindow):
                                 "Return to neutral between commands. Esc pauses immediately.")
             if event:
                 if self.routing is not None:
+                    identity = self._session_outcome_identity()
+                    if not self._reserve_session_record():
+                        self.pause()
+                        return
                     result = self.routing.route(event, time.monotonic())
                     if result.simulated_action is not None:
                         action = self.action_text(result.simulated_action)
                         self.feedback.setText(
                             f"Studio simulation: {event.command} would {action}."
+                        )
+                        self._record_session_outcome(
+                            source="gesture",
+                            status="simulated",
+                            action=result.simulated_action,
+                            reason=f"gesture {event.command}",
+                            event_id=event.event_id,
+                            identity=identity,
                         )
                         self.log({
                             "type": "studio_simulation", "source": "gesture",
@@ -1415,6 +1647,14 @@ class Window(QMainWindow):
                     elif result.rejection_reason:
                         self.feedback.setText(
                             f"Studio routing rejected {event.command}: {result.rejection_reason}."
+                        )
+                        self._record_session_outcome(
+                            source="gesture",
+                            status="rejected",
+                            action=None,
+                            reason=result.rejection_reason,
+                            event_id=event.event_id,
+                            identity=identity,
                         )
                 else:
                     old_topic = self.card_topic_text()
@@ -1460,6 +1700,13 @@ class Window(QMainWindow):
         self._closing = True
         self.pause()
         if self.evaluation_trace is not None:
+            self._closing = False
+            event.ignore()
+            return
+        if (
+            self.studio and self._auto_archive_summary_on_close
+            and not self._archive_session_summary("Window not closed")
+        ):
             self._closing = False
             event.ignore()
             return

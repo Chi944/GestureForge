@@ -2,7 +2,7 @@
 
 Project contract version 1 Â· 30 September 2026 Â· Owner Deston
 
-This is the implemented first integration boundary. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the new routing types separately. Studio now integrates manual deck browsing, workspace loading and runbook session save/restore; profile persistence, readiness and real desktop dispatch still need their owned adapters before LIVE use.
+This is the implemented first integration boundary. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the new routing types separately. Studio now integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore and session-summary export; profile persistence, readiness and real desktop dispatch still need their owned adapters before LIVE use.
 
 ## Records and responsibilities
 
@@ -21,7 +21,7 @@ Other opaque IDs are 1â€“64 ASCII letters/digits and `_ . : -`, beginning w
 
 ## Builder handoff records
 
-These records define the integration boundary for GF-P02. Hau Jie owns the profile/readiness storage and widgets; Javier owns shortcut storage and remaining widgets; Deston owns the shell handoff and final acceptance. The current Studio shell has validated workspace/runbook loading and session persistence for manual Preview/Rehearsal use only.
+These records define the integration boundary for GF-P02. Hau Jie owns the profile/readiness storage and widgets; Javier owns shortcut storage and remaining widgets; Deston owns the shell handoff and final acceptance. The current Studio shell has validated workspace/runbook loading, stage editing, navigation persistence and session-summary export for manual Preview/Rehearsal use only.
 
 | Handoff | Required fields | Version and loading rule |
 |---|---|---|
@@ -136,3 +136,9 @@ Studio exposes `load_studio_workspace(path)`, `save_studio_session(path)` and `r
 Runbook stage changes call the same context reset path as routing configuration. Stages with no bindings, or bindings outside the loaded vocabulary, are manual-only with routing paused. A compatible `use_studio_model(...)` call reapplies the current stage bindings and keeps actions in Preview/Rehearsal simulation. Runbook buttons for Previous, Continue/Finish and stage actions operate on the local runbook or produce simulated requests only.
 
 Session save writes schema version, the current workspace JSON, current stage ID/finished state and matching viewer state. Restore requires that same workspace to be loaded first, then validates the session's embedded workspace JSON and saved stage before changing state; it restores paused and never replays actions. Restart clears in-memory viewer progress and reactivates the first stage for the current deck/workspace.
+
+### Stage editing and session summaries
+
+Studio's **Edit runbook** tab wraps `RunbookEditorWidget`: New, Save stage, Delete, Move up and Move down emit a fully validated workspace and never execute actions. Accepted edits call the same workspace activation path as imports. If the deck is unchanged, Studio preserves deck review state; otherwise it replaces the workspace, resets routing and stays paused. Local target bindings and personal profiles are never written into portable workspace content.
+
+Studio's **Session summary** tab wraps `SessionSummaryWidget`. Refresh shows current counts, and **Export session results** writes scope, counts, outcomes, trials and acknowledged stage completions to local JSON. The scope carries workspace identity plus a generated review `revision_id`; it is a review marker, not a deterministic content hash or readiness proof. Counts cover Studio manual card/runbook actions plus gesture simulation/rejection events; bookmark list review/removal and live OS dispatch are outside this summary. Correct/wrong/missed are zero until measured `Trial` records are supplied, so zero is unmeasured, not a passed evaluation, and manual actions do not create automatic readiness evidence. Navigation saves use **Save session...** / **Restore session...** and are separate from measurement exports. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; archive failure blocks the change or close and retains the current counts. Successful restore/restart starts a fresh review summary. When record limits are reached, export and start a fresh review session rather than evicting old event IDs.

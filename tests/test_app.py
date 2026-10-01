@@ -195,6 +195,7 @@ def _prediction(
 
 def _disable_logging(window: Window) -> None:
     window._log_failed = True
+    window._auto_archive_summary_on_close = False
 
 
 def _deck_file(path: Path, *, deck_id: str = "deck-test", title: str = "Demo <b>Deck</b>") -> Path:
@@ -493,7 +494,8 @@ def test_studio_workspace_runbook_loads_stage_routes_and_session(tmp_path, qapp)
         assert window.viewer.current_card.id == "detail"
         assert window.runbook_widget.title.text() == "1: Intro"
         assert "Read the first instruction." in window.runbook_widget.instructions.text()
-        assert window.runbook_widget.complete.isHidden()
+        assert not window.runbook_widget.complete.isHidden()
+        assert window.session_summary.counts()["acknowledged_completion"] == 0
         assert "NEXT" in window.boundary.text() and "Context: intro" in window.boundary.text()
         assert window.routing.state == "PAUSED"
         assert window.worker.interrupted
@@ -524,6 +526,228 @@ def test_studio_workspace_runbook_loads_stage_routes_and_session(tmp_path, qapp)
         assert window.viewer.current_card.id == "detail"
         assert "Context: intro" in window.boundary.text()
     finally:
+        window.close()
+
+
+def test_studio_runbook_editor_applies_with_archive_scope_and_preserves_review(tmp_path, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    deck = load_deck(deck_path)
+    workspace = Workspace(
+        "training", "Training Workspace", deck,
+        stages=(
+            Stage("intro", "Intro", "Read the first instruction.", "intro",
+                  (Binding("NEXT", Action(ActionType.NEXT)),), "Continue"),
+            Stage("finish", "Finish", "Manual review only.", "close", (), "Finish"),
+        ),
+    )
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.studio_state_folder = tmp_path / "studio"
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        window.manual_viewer_action(Action(ActionType.BOOKMARK))
+        assert window.session_summary.counts()["applied"] == 1
+        assert tuple(card.id for card in window.viewer.bookmarks) == ("intro",)
+
+        window.runbook_editor.stages.setCurrentRow(1)
+        window.runbook_editor.title.setText("Wrap up")
+        window.runbook_editor.instructions.setPlainText("Confirm the last manual step.")
+        window.runbook_editor._save()
+
+        assert window.workspace.stages[1].title == "Wrap up"
+        assert window.runbook is not None and window.runbook.current_stage is not None
+        assert window.runbook.current_stage.id == "intro"
+        assert tuple(card.id for card in window.viewer.bookmarks) == ("intro",)
+        assert window.session_summary.counts()["applied"] == 0
+        archived = list(window.studio_state_folder.glob("studio-session-summary-*.json"))
+        assert len(archived) == 1
+        payload = json.loads(archived[0].read_text(encoding="utf-8"))
+        assert payload["scope"]["workspace_id"] == "training"
+        assert payload["scope"]["revision_id"].startswith("revision-")
+        assert payload["counts"]["applied"] == 1
+        assert "Shell rejected" not in window.runbook_editor.status.text()
+    finally:
+        window.close()
+
+
+def test_studio_runbook_editor_rejection_preserves_shell_and_widget_state(tmp_path, qapp) -> None:
+    workspace = Workspace(
+        "training", "Training Workspace",
+        stages=(Stage("intro", "Intro", "Read.", None, (), "Continue"),),
+    )
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        trace = SimpleNamespace(frame_count=1, save=Mock(side_effect=OSError("disk full")))
+        window.evaluation_trace = cast(Any, trace)
+        window.trace_path = tmp_path / "trace.json"
+
+        window.runbook_editor.stages.setCurrentRow(0)
+        window.runbook_editor.title.setText("Rejected")
+        window.runbook_editor.instructions.setPlainText("Keep this draft.")
+        window.runbook_editor.continue_label.setText("Retry later")
+        window.runbook_editor._save()
+
+        assert window.workspace.stages[0].title == "Intro"
+        assert window.runbook_editor.editor.workspace.stages[0].title == "Intro"
+        assert window.runbook_editor.title.text() == "Rejected"
+        assert window.runbook_editor.instructions.toPlainText() == "Keep this draft."
+        assert window.runbook_editor.continue_label.text() == "Retry later"
+        assert "Shell rejected runbook change" in window.runbook_editor.status.text()
+        assert "disk full" in window.trace_status.text()
+
+        window.evaluation_trace = cast(Any, trace)
+        window.runbook_editor._new()
+        window.runbook_editor.title.setText("Draft new stage")
+        window.runbook_editor.instructions.setPlainText("Still typing.")
+        window.runbook_editor._save()
+        assert len(window.workspace.stages) == 1
+        assert window.runbook_editor.stages.currentRow() == -1
+        assert window.runbook_editor.title.text() == "Draft new stage"
+        assert window.runbook_editor.instructions.toPlainText() == "Still typing."
+        window.evaluation_trace = None
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("operation", ["move", "delete"])
+def test_rejected_editor_reorder_retains_selection_and_retry_target(operation, monkeypatch, qapp):
+    window = Window(studio=True)
+    _disable_logging(window)
+    workspace = Workspace("review", "Review", stages=(
+        Stage("first", "First", "Read.", None, ()),
+        Stage("second", "Second", "Continue.", None, ()),
+    ))
+    try:
+        assert window.use_studio_workspace(workspace)
+        editor = window.runbook_editor
+        editor.stages.setCurrentRow(0)
+        editor.instructions.setPlainText("Draft retained")
+        monkeypatch.setattr(window, "_archive_session_summary", lambda reason: False)
+        editor._move(1) if operation == "move" else editor._delete()
+        assert editor.editor.workspace == workspace
+        assert editor.stages.currentRow() == 0
+        assert editor.stage_id.text() == "first"
+        assert editor.instructions.toPlainText() == "Draft retained"
+        monkeypatch.setattr(window, "_archive_session_summary", lambda reason: True)
+        editor._save()
+        assert window.workspace.stages[0].instructions == "Draft retained"
+        assert window.workspace.stages[1] == workspace.stages[1]
+    finally:
+        window.close()
+
+
+def test_studio_summary_records_manual_runbook_prechange_context_and_completion(qapp) -> None:
+    workspace = Workspace(
+        "training", "Training Workspace",
+        stages=(
+            Stage("intro", "Intro", "Read.", None, (), "Continue"),
+            Stage("finish", "Finish", "Done.", None, (), "Finish"),
+        ),
+    )
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        first_session = window.manual_session_id
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+
+        assert window.runbook is not None and window.runbook.current_stage is not None
+        assert window.runbook.current_stage.id == "finish"
+        assert window.session_summary.counts()["applied"] == 1
+        outcome = window.session_summary.outcomes[-1]
+        assert outcome.action == Action(ActionType.ADVANCE_STAGE)
+        assert outcome.context_id == "intro"
+        assert outcome.session_id == first_session
+        assert window.session_summary.counts()["acknowledged_completion"] == 0
+
+        window.runbook_widget.complete.click()
+        assert window.session_summary.counts()["acknowledged_completion"] == 1
+        assert window.session_summary.completed_stages == {"finish"}
+    finally:
+        window.close()
+
+
+def test_studio_restore_and_restart_archive_then_reset_summary(tmp_path, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    deck = load_deck(deck_path)
+    workspace = Workspace(
+        "training", "Training Workspace", deck,
+        stages=(
+            Stage("intro", "Intro", "Read.", "intro", (), "Continue"),
+            Stage("finish", "Finish", "Done.", "close", (), "Finish"),
+        ),
+    )
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.studio_state_folder = tmp_path / "studio"
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        session_path = tmp_path / "session.json"
+        assert window.save_studio_session(session_path)
+        window.manual_viewer_action(Action(ActionType.BOOKMARK))
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.session_summary.counts()["applied"] == 2
+
+        assert window.restore_studio_session(session_path)
+        assert window.session_summary.counts()["applied"] == 0
+        assert window.runbook is not None and window.runbook.position == 0
+        archived = list(window.studio_state_folder.glob("studio-session-summary-*.json"))
+        assert len(archived) == 1
+        assert json.loads(archived[0].read_text(encoding="utf-8"))["counts"]["applied"] == 2
+
+        window.manual_viewer_action(Action(ActionType.BOOKMARK))
+        assert window.session_summary.counts()["applied"] == 1
+        window.restart_deck()
+        assert window.session_summary.counts()["applied"] == 0
+        assert window.runbook is not None and window.runbook.position == 0
+        assert len(list(window.studio_state_folder.glob("studio-session-summary-*.json"))) == 2
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("operation", ["restart", "restore", "close"])
+def test_studio_summary_archive_failure_blocks_reset_or_close(operation, tmp_path, monkeypatch, qapp) -> None:
+    deck_path = _deck_file(tmp_path / "deck.json")
+    deck = load_deck(deck_path)
+    workspace = Workspace(
+        "training", "Training Workspace", deck,
+        stages=(Stage("intro", "Intro", "Read.", "intro", (), "Continue"),),
+    )
+    window = Window(model=object(), studio=True)
+    window._log_failed = True
+    window.studio_state_folder = tmp_path / "studio"
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        window.manual_viewer_action(Action(ActionType.BOOKMARK))
+        assert window.session_summary.counts()["applied"] == 1
+        monkeypatch.setattr(window.session_summary, "export", Mock(side_effect=OSError("disk full")))
+
+        if operation == "restart":
+            before = (window.viewer, window.runbook, window.session_summary)
+            window.restart_deck()
+            assert (window.viewer, window.runbook, window.session_summary) == before
+            assert "disk full" in window.feedback.text()
+        elif operation == "restore":
+            session_path = tmp_path / "session.json"
+            assert window.save_studio_session(session_path)
+            assert not window.restore_studio_session(session_path)
+            assert window.session_summary.counts()["applied"] == 1
+            assert "disk full" in window.feedback.text()
+        else:
+            event = FakeCloseEvent()
+            window.closeEvent(event)
+            assert event.ignored and not event.accepted and not window._closing
+            assert "disk full" in window.feedback.text()
+            window._auto_archive_summary_on_close = False
+    finally:
+        window._auto_archive_summary_on_close = False
         window.close()
 
 
@@ -863,6 +1087,40 @@ def test_studio_preview_simulates_without_moving_deck(monkeypatch, qapp) -> None
         assert window.viewer.position == 0
         assert "Studio simulation: NEXT would show next card." in window.feedback.text()
         assert "Card 1 of 10" in window.position.text()
+        assert window.session_summary.counts()["simulated"] == 1
+        assert window.session_summary.outcomes[-1].source == "gesture"
+    finally:
+        window.close()
+
+
+def test_studio_full_summary_pauses_before_consuming_gesture(monkeypatch, qapp) -> None:
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60), studio=True)
+    _disable_logging(window)
+    current = [100.0]
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
+    assert window.routing is not None
+    window.routing.resume()
+    route = Mock(wraps=window.routing.route)
+    cast(Any, window.routing).route = route
+    monkeypatch.setattr(window.session_summary, "ensure_capacity", Mock(side_effect=ValueError("full")))
+    packets = [(_frame(), _studio_prediction(window, i, t, label)) for i, t, label in (
+        (1, 100.0, "NEUTRAL"), (2, 100.15, "NEUTRAL"), (3, 100.31, "NEUTRAL"),
+        (4, 100.45, "NEXT"), (5, 100.60, "NEXT"), (6, 100.75, "NEXT"), (7, 100.90, "NEXT"),
+    )]
+    window.worker = FakeWorker(packets)
+
+    try:
+        for _, prediction in packets:
+            current[0] = prediction.timestamp
+            window.poll()
+
+        route.assert_not_called()
+        assert window.routing.state == "PAUSED"
+        assert window.viewer.position == 0
+        assert window.session_summary.outcomes == []
+        assert "summary full" in window.feedback.text().lower()
     finally:
         window.close()
 
@@ -1227,6 +1485,7 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
     try:
         window.configure_studio(context_id="training-stage")
         assert "Context: training-stage" in window.boundary.text()
+        assert window.deck_tabs.count() == 6
         assert isinstance(window.deck_tools, QGridLayout)
         assert window.deck_tools.itemAtPosition(1, 2) is not None
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0
