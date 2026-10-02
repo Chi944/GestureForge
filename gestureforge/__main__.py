@@ -6,8 +6,11 @@ import sys
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--dataset", type=Path, help="Human collection manifest; omitted for keyboard-only viewer")
+    parser.add_argument("--profile-id", help="Saved Studio profile ID to load from the private profile store")
+    parser.add_argument("--profile-store", type=Path, default=Path(".local/profiles"),
+                        help="Private saved-profile folder for --profile-id")
     parser.add_argument("--algorithm", choices=["knn", "svm"], default="knn")
     parser.add_argument("--multiplier", type=float, default=1.5)
     parser.add_argument("--margin", type=float, default=1.5)
@@ -20,10 +23,26 @@ def main():
     parser.add_argument("--smoke-test", action="store_true", help="Render and close without using the camera")
     parser.add_argument("--screenshot", type=Path, help="Save the app's own window during --smoke-test")
     args = parser.parse_args()
+    explicit_model_flags = {
+        flag for flag in ("--algorithm", "--multiplier", "--margin")
+        if any(token == flag or token.startswith(f"{flag}=") for token in sys.argv[1:])
+    }
+    if args.profile_id:
+        if not args.studio:
+            parser.exit(1, "--profile-id is available only in --studio mode.\n")
+        if args.dataset:
+            parser.exit(1, "--profile-id cannot be used with --dataset.\n")
+        if explicit_model_flags:
+            parser.exit(
+                1,
+                "Saved profiles use their stored model settings; do not pass "
+                "--algorithm, --multiplier or --margin with --profile-id.\n",
+            )
     from .capture import DEFAULT_ASSET
     from .contracts import RoutingMode
     from .features import extract_feature_vector
     from .app import Window, load_personal_model
+    from .profiles import ProfileStore
     from .vocabulary import LEGACY_VOCABULARY
     from PySide6.QtWidgets import QApplication
     from PySide6.QtCore import QTimer
@@ -32,13 +51,29 @@ def main():
     vocabulary = LEGACY_VOCABULARY
     hand = "Right"
     profile = "pilot"
+    profile_display_name = None
     note = "Keyboard demo • collect your gestures before enabling camera control. See the User Guide."
     if args.studio:
         note = (
             "Studio preview • camera control needs a starter or personal dataset. "
-            "Shortcut dispatch, enrolment and workspace persistence are intentionally not enabled here."
+            "Shortcut dispatch, enrolment and profile readiness are intentionally not enabled here; "
+            "workspace progress stays local."
         )
-    if args.dataset:
+    if args.profile_id:
+        try:
+            loaded = ProfileStore(args.profile_store).load(args.profile_id)
+            record = loaded.record
+            settings = record.settings
+            model, hand, profile, vocabulary = loaded.model, record.selected_hand, record.profile_id, record.vocabulary
+            profile_display_name = record.display_name
+            args.algorithm, args.multiplier, args.margin = settings.algorithm, settings.multiplier, settings.margin
+            note = (
+                f"Saved profile: {record.display_name} • ID {record.profile_id} • {hand} hand • "
+                "readiness unverified • local processing"
+            )
+        except (OSError, ValueError, KeyError) as exc:
+            parser.exit(1, f"Cannot load saved profile: {exc}\n")
+    elif args.dataset:
         try:
             model, hand, profile, vocabulary = load_personal_model(
                 args.dataset, args.algorithm, args.multiplier, args.margin, studio=args.studio,
@@ -55,6 +90,7 @@ def main():
         studio=args.studio, studio_mode=RoutingMode(args.studio_mode.upper()),
         vocabulary=vocabulary,
         model_settings=(args.algorithm, args.multiplier, args.margin),
+        profile_display_name=profile_display_name,
     )
     window.show()
     window.raise_()

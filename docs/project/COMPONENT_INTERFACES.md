@@ -67,8 +67,9 @@ switch it implicitly because a button was clicked. Target tests use the same gat
 
 `Runbook(reset_routing=...)` calls its callback BEFORE activation/restoration:
 `reset_routing(stage_or_None, resume_requested) -> bool`. Deston must configure the
-full profile/model/context/binding/mode map via `RoutingSession.configure`. Only
-resume after valid readiness permits it. A stage transition may resume and require
+full profile/model/context/binding/mode map via `RoutingSession.configure`. LIVE
+gesture execution may resume only with valid readiness for that revision;
+Preview/Rehearsal can run the simulated check without prior readiness. A stage transition may resume and require
 NEUTRAL; restoration always requests `False`. Return true only when the reset is
 acknowledged. Exceptions/false preserve stage content. Configure an empty context
 as paused/manual-only; the current coordinator requires a nonempty map, so do not
@@ -115,9 +116,11 @@ The reviewed `ProfileStore` component returns a rebuilt `LoadedProfile` candidat
 see [PROFILE_PERSISTENCE_HANDOFF.md](PROFILE_PERSISTENCE_HANDOFF.md). Hau Jie owns
 the create/rename/load/delete selector widget and Guest/start proposal. Deston owns
 background candidate loading, shell installation and clearing an active deleted
-profile. Successful reconstruction does not establish readiness; the selector and
-LIVE gate are not yet attached. Reuse the existing camera and model-loading
-lifecycle.
+profile. These shell APIs are now implemented: `load_studio_profile`,
+`use_studio_profile`, `prepare_studio_profile_delete` and `clear_studio_profile`.
+Use the documented synchronous prepare/delete/clear sequence and retain state on
+storage failure. Successful reconstruction does not establish readiness; the
+selector and LIVE gate are not yet attached. Reuse the existing camera/model worker.
 
 ## Remaining gates
 

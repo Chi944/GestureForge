@@ -106,3 +106,18 @@ After syncing reviewed main 223b13a on 2 October, the complete suite reports
 source files. Both assignment and Studio startup smoke checks exit 0. These
 checks cover compatibility with the merged profile/settings and Studio updates;
 they do not replace shared-camera integration or participant testing.
+
+## Integration review - 2 October 2026
+
+PR #16 was merged after independent code and architecture review. Commit
+`57d6f5f` repairs two collection lifecycle issues: slot expiry now allows both the
+capture and delivery windows, and Stop/hide/close/capture failure releases capture
+once even if saving fails. Pending trial evidence remains available for retry.
+The repaired component passes 26 generated-observation tests, including delayed
+final slots and both pre-existing and cancellation-triggered save failures.
+Current combined verification is in [verification.json](verification.json).
+
+The component is available on main; it is not yet attached to Studio's shared
+capture worker. GF-P07 stays In Progress until actual shared-camera collection and
+its host lifecycle pass acceptance. Complete the GF-P06 selector using Deston's
+published profile APIs first, then coordinate observation delivery and recording.

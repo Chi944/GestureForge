@@ -1,8 +1,14 @@
 # Shared project routing contract
 
-Project contract version 1 Â· 30 September 2026 Â· Owner Deston
+Project contract version 1 | Design frozen 2 October 2026 | Owner Deston
 
-This is the implemented first integration boundary. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the new routing types separately. Studio now integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore and session-summary export; profile persistence, readiness and real desktop dispatch still need their owned adapters before LIVE use.
+This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore, session-summary export and Quick Actions simulation. Profile persistence is implemented; selector/enrolment widgets, readiness and guarded real dispatch remain separate integration work.
+
+## GF-P02 design freeze - 2 October 2026
+
+Deston's integration baseline adopts the approved [project plan](PROJECT_PLAN.md) and [screen/transition design](TEAM_GUIDE.md#initial-screen-design): Try standard gestures first, optional Personalise, and exactly one typed action per bound stage slot. Reviewed merged PRs #10, #14 and #15 supply the vocabulary, profile and workspace/component interfaces below. Independent acceptance and architecture review reconciled these handoffs with the implementation. This records the approved design and its adoption in reviewed code; it does not claim a separate team meeting or tutor approval.
+
+The final flow is **Try standard gestures -> simulated readiness check -> explicit Start/NEUTRAL -> eligible control**. A failed check offers retry, optional Personalise or manual controls. An unavailable starter shows its reason and preserves manual access. Saved profiles may be loaded without collecting again; loading alone never proves readiness. Preview/Rehearsal can run before readiness, but LIVE gesture execution requires the exact current behaviour revision to pass. Current Studio remains simulation-only. This design freeze does not complete starter evaluation, selector/enrolment, readiness or hardware acceptance.
 
 ## Records and responsibilities
 
@@ -21,14 +27,14 @@ Other opaque IDs are 1â€“64 ASCII letters/digits and `_ . : -`, beginning w
 
 ## Builder handoff records
 
-These records define the integration boundary for GF-P02. Hau Jie owns the profile/readiness storage and widgets; Javier owns shortcut storage and remaining widgets; Deston owns the shell handoff and final acceptance. The current Studio shell has validated workspace/runbook loading, stage editing, navigation persistence and session-summary export for manual Preview/Rehearsal use only.
+These are logical handoffs, not a request for four new Python record classes. Hau Jie owns profile/readiness storage and widgets; Javier owns shortcut storage and component widgets; Deston owns the shell handoff and final acceptance. The table names actual counterparts where they exist; readiness remains a planned interface.
 
 | Handoff | Required fields | Version and loading rule |
 |---|---|---|
-| `ProfileSelection` | `profile_id`, `display_name`, `selected_hand`, `vocabulary`, `model_version`, `readiness_revision` or empty reason | Profile schema starts at version 1. Load validates the complete record and trained model candidate before replacing the active profile. Invalid, corrupt or incompatible files leave the previous profile/model active and paused. |
-| `WorkspaceSelection` | `workspace_id`, `title`, optional `deck`, optional `runbook`, semantic shortcut slots, `workspace_revision` | Workspace schema starts at version 1. Import validates size, schema, IDs, references and excluded fields before replacing active workspace. Failure leaves the previous workspace active and paused. |
-| `RunbookContext` | `context_id`, stage title/instruction, optional card ID, zero to three gesture/action slots, continue/finish path | A stage with no gesture slots uses manual controls with routing paused. Other stage changes are context switches. They call `configure_studio(context_id=..., bindings=...)`, cancel pending holds and require NEUTRAL, but they do not invalidate readiness when the profile/model/binding revision is unchanged. |
-| `ReadinessStatus` | `profile_id`, `model_version`, `readiness_revision`, `binding_revision`, mode, pass/fail/expired status and short reason | Readiness is valid only for the selected hand, training data hash, feature version, classifier/rejection settings, hold/rearm policy and binding map used during the check. Profile/model changes and mapping edits expire it. Selecting a preconfigured stage only switches context. |
+| `profiles.ProfileSelection`, from `LoadedProfile.selection` | `profile_id`, `display_name`, `selected_hand`, `vocabulary`, `model_version`, `readiness_revision`, `readiness_reason` | Schema 1. Metadata alone cannot install a recogniser: the shell needs the complete `LoadedProfile` candidate. Validate before replacement; corrupt or incompatible loads leave the previous profile/model active and paused. |
+| Workspace selection, implemented by `workspace.Workspace` | `id` (workspace identity), `title`, optional `deck`, semantic `shortcuts`, ordered `stages` | Schema 1. There is no separate `WorkspaceSelection` class or stored `workspace_revision` field. Validate the complete value before replacement. The future readiness gate must bind to all authored action meanings; navigation/session revision IDs are not readiness proof. |
+| Runbook context, implemented by `workspace.Stage` and `runbook.Runbook` | `id` (stage/context identity), title/instructions, optional `card_id`, zero to three typed `bindings`; runbook owns continue/finish state | `Window.reset_runbook_stage(stage, resume)` applies the complete context. Empty stages stay manual-only. Other transitions clear holds and require NEUTRAL; selecting an already configured stage does not itself change the authored binding revision. |
+| Readiness status (planned logical handoff) | `profile_id`, `model_version`, `readiness_revision`, `binding_revision`, mode, pass/fail/expired status and short reason | No `ReadinessStatus` class is implemented yet. Bind to selected hand, training hash, feature version, classifier/rejection settings, hold/rearm policy and the complete authored binding map. Profile/model or mapping changes expire it; stage navigation alone does not. |
 
 Atomic save means write a new validated file, replace the old file only after the write succeeds, and keep the last working file available after failures. Loading must never partially replace an active profile, workspace, runbook or binding map.
 
@@ -42,11 +48,11 @@ Use plain PySide signals or direct method calls carrying these records; do not c
 
 | Producer | Signal or call | Shell response |
 |---|---|---|
-| Profile selector | `profile_selected(ProfileSelection)` | Pause, validate model/vocabulary, install with `use_studio_model(...)`, clear old prediction, show selected profile/readiness state. |
-| Profile/enrolment widget | `readiness_changed(ReadinessStatus)` | Update the readiness message and enable LIVE only after Deston's final readiness gate exists. Current Studio keeps PREVIEW/REHEARSAL only. |
-| Workspace widget | `workspace_selected(WorkspaceSelection)` | Pause, validate full workspace, replace visible deck/runbook state only after success, keep local targets unbound until Javier's registry resolves them. |
-| Runbook widget | `stage_selected(RunbookContext)` | Apply the stage context and complete binding map through `configure_studio`; show NEUTRAL-required status. |
-| Shortcut registry | `shortcut_binding_changed(binding_revision)` | Pause and expire readiness because action meanings changed. |
+| Profile selector (widget pending) | Request load by `ProfileStore` and opaque profile ID; publish selection only after successful installation | Shell owns background reconstruction and installs a complete `LoadedProfile`. Metadata-only `ProfileSelection` is for display. Deletion must clear a matching active or pending selection through the shell. |
+| Profile/enrolment widget (pending) | Version-bound readiness result; concrete widget signal not yet implemented | Show pass/fail/expired reason. LIVE remains unavailable until the exact-revision gate is integrated. Preview/Rehearsal may run the check. |
+| `WorkspaceWidget` / `RunbookEditorWidget` | `workspace_changed(Workspace)` | `accept_workspace_widget_change` / `accept_runbook_editor_change` pause and validate before replacing content. Imported targets remain semantic references. |
+| `RunbookWidget` / `Runbook` | `action_requested(Action)`, `previous_stage_requested()`, `completion_acknowledged(stage_id)`; runbook callback `(Stage or None, resume)` | `reset_runbook_stage` applies the complete map and invalidates holds; viewing a tab does not activate it. |
+| `QuickActionsWidget` | `before_publish() -> bool`, then `bindings_changed(...)` after successful local save | Pause before mutation; failed save preserves the registry. Clear active routing and require explicit Use Quick Actions. The future readiness gate must expire changed action meanings. |
 
 ## Minimal use
 
@@ -93,7 +99,7 @@ Manual actions use the same validated target/action handlers, labelled `source=m
 
 Run `.\.venv\Scripts\python.exe -m pytest -q tests/test_controller.py tests/test_project_routing.py tests/test_viewer.py`.
 
-Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter data, profile persistence, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
+Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter release, profile/enrolment widgets, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
 
 ## Current shell adapter (Deston)
 
@@ -105,7 +111,7 @@ Successful application pauses capture, clears the old prediction display, create
 
 The Studio launcher loads schema-1 or schema-2 datasets and passes `bundle.vocabulary` to both `train_model` and `Window`. Explicit vocabulary training produces a data/settings-bound model revision even for legacy IDs. The assignment launcher keeps its existing model-version policy and rejects custom IDs with a request to use `--studio`.
 
-This adapter does not load saved profiles or certify readiness. Hau Jie's future profile adapter must supply the selected vocabulary and matching model revision. Workspace/runbook state is saved through the Studio session file path, and stage changes must pass their complete map through the existing context reset path. Software fixtures verify custom classification-to-simulation integration; live recognition of newly enrolled poses remains to be measured.
+The saved-profile adapter loads a validated `LoadedProfile` with its vocabulary and matching model revision; it does not certify readiness. Hau Jie's selector widget must use the shell-owned lifecycle below. Workspace/runbook state is saved through the Studio session file path, and stage changes must pass their complete map through the existing context reset path. Software fixtures verify custom classification-to-simulation integration; live recognition of newly enrolled poses remains to be measured.
 
 ### Personal dataset selection and model replacement
 
@@ -113,7 +119,7 @@ Studio's **Load personal dataset...** button calls `load_studio_dataset(path)`. 
 
 `use_studio_model(model, hand, profile, vocabulary)` installs a completed candidate on the UI thread. The classifier must expose `predict`, `train_labels`, `model_version` and the existing `config` fields; its labels must match the vocabulary. Validate the candidate and fresh routing snapshot before replacing state. Successful replacement interrupts old capture, clears the old preview/prediction, resets mode to Preview and remains paused. If the current workspace has an active stage, Studio reapplies that stage's bindings when they match the new vocabulary; mismatched or empty stages stay manual-only. Without an active runbook stage, the startup or standalone deck keeps the default three simulated mappings; an imported manual-only workspace stays manual-only. Start stays disabled until the prior camera worker releases; explicit start requires NEUTRAL. Invalid candidates leave the previous model and mappings intact. Failed asynchronous loads leave that selection paused.
 
-Closing stops UI polling; a finishing background load cannot update widgets, start capture or dispatch. This adapter does not create, rename, delete or persist profiles. Hau Jie's profile selector can supply an already trained candidate through this entry point once its lifecycle and readiness contracts are ready.
+Closing stops UI polling; a finishing background load cannot update widgets, start capture or dispatch. `load_studio_profile(store, id)` reconstructs a saved profile through the same worker; `use_studio_profile(candidate)` installs it with its separate display name and stored settings. The selector must request loads by ID rather than train on the GUI thread. For deletion, in one synchronous UI-owner handler call `prepare_studio_profile_delete(id)`; only on true call `store.delete(id)`; only on successful deletion immediately call `clear_studio_profile(id)`. Storage failure retains the old selection. Unrelated pending loads block deletion; matching pending results are invalidated. Clearing an active profile disables camera Start and preserves manual controls. See the [profile handoff](PROFILE_PERSISTENCE_HANDOFF.md) for the full integration sequence.
 
 ### Camera selection and recovery
 

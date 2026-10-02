@@ -32,10 +32,11 @@ Current project foundation on `main`:
 
 | Area | Status |
 | :--- | :--- |
-| Shared routing contract | Implemented and tested in `gestureforge/contracts.py`, `gestureforge/controller.py` and `gestureforge/routing.py` |
+| Shared routing contract | Version-1 design frozen and independently reviewed: Try Now, optional Personalise, one action per slot and explicit context activation; implemented routing preserves stale-event and hold/rearm protection |
 | Custom gesture vocabulary | PR #10 merged: schema-2 collection, kNN/SVM training and evaluation support three custom action IDs plus NEUTRAL; legacy datasets remain supported |
 | Starter feasibility | PR #12's [collection guide](docs/project/STARTER_COLLECTION_GUIDE.md) and PR #13's evaluator are merged; Hau Jie's [three-person baseline checkpoint](docs/project/STARTER_EVALUATION_CHECKPOINT.md) reports collection and comparison, with NEUTRAL/UNKNOWN failures that prevent starter release |
-| Profile persistence | Reviewed PR #14 component supports independent profile metadata and candidate reconstruction; [integration handoff](docs/project/PROFILE_PERSISTENCE_HANDOFF.md). The selector, Guest/start workflow and readiness are still pending |
+| Saved profiles | Reviewed PR #14 persistence now connects to Studio startup and background switching, with safe active-profile clearing; [integration handoff](docs/project/PROFILE_PERSISTENCE_HANDOFF.md). The selector, Guest/start workflow and readiness remain in development |
+| Guided enrolment component | Reviewed PR #16 adds timed collection, invalid-sample feedback and save retry; shared-camera attachment and live acceptance remain ([handoff](docs/project/ENROLMENT_INTERFACE_PROPOSAL.md)) |
 | Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
 | Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
 | Studio preview | Opt-in `--studio` simulation; shows would-be actions without executing gesture-driven viewer or desktop actions |
@@ -49,7 +50,7 @@ Current project foundation on `main`:
 | Workspace/runbook in Studio | Load validated workspaces, edit stages, use Runbook Previous/Continue/Finish/action buttons, and save/restore navigation state while camera control stays paused |
 | Quick Actions in Studio | Private twelve-target library and three gesture slots, explicit **Use Quick Actions** activation, local persistence and simulated target tests; no deck/runbook required |
 | Session summary | Studio records manual/simulated action outcomes and explicit stage completion acknowledgements; export measurement summaries separately from navigation saves |
-| Full Studio workflow | Starter readiness, profiles, readiness scoring and real shortcut dispatch remain to be integrated; the private participant baseline is not a distributable starter |
+| Full Studio workflow | Profile selection, enrolment attachment, starter readiness, readiness scoring and real shortcut dispatch remain to be integrated; the private participant baseline is not a distributable starter |
 
 Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
 
@@ -61,7 +62,9 @@ To inspect the reusable components in their separate developer harness without a
 .\run.cmd --studio --dataset data/local/pilot/manifest.json --multiplier 2 --margin 1.5 --camera 1
 ```
 
-Without a dataset, the manual viewer opens. In Studio, click **Load personal dataset...** and choose your collected `manifest.json`. Loading pauses control and trains locally in the background using the launch settings (`--algorithm`, `--multiplier`, `--margin`). A successful switch keeps a compatible active stage mapped, leaves empty or mismatched stages manual-only, and otherwise keeps the startup deck's default Preview mappings; check the mappings, wait for any previous camera thread to stop, then start explicitly and show NEUTRAL. Failed loads retain the previous selection in a paused state. Numeric gesture data stays local; synthetic fixtures cannot enable camera simulation. This loads existing data; guided enrolment and saved-profile management are still in development.
+Without a dataset, the manual viewer opens. In Studio, click **Load personal dataset...** and choose your collected `manifest.json`. Loading pauses control and trains locally in the background using the launch settings (`--algorithm`, `--multiplier`, `--margin`). A successful switch keeps a compatible active stage mapped, leaves empty or mismatched stages manual-only, and otherwise keeps the startup deck's default Preview mappings; check the mappings, wait for any previous camera thread to stop, then start explicitly and show NEUTRAL. Failed loads retain the previous selection in a paused state. Numeric gesture data stays local; synthetic fixtures cannot enable camera simulation. This loads existing data; the guided enrolment and profile-management UI are still in development.
+
+An existing saved profile can launch with `.\run.cmd --studio --profile-id YOUR_PROFILE_ID --camera 1` (default private store `.local/profiles`; override with `--profile-store PATH`). Use the JSON filename without `.json` as the ID. Its saved classifier settings are authoritative, so do not also pass dataset/algorithm/multiplier/margin arguments. A successful load shows the profile name and stays paused with readiness unverified. The embeddable selector/enrolment UI is still in development; see the [profile handoff](docs/project/PROFILE_PERSISTENCE_HANDOFF.md).
 
 Use **Camera index** and **Use camera and pause** to select another webcam without restarting the application (usually 0 or 1). After the old camera releases, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. The on-screen hint shows the platform-native shortcuts for loading a dataset and starting capture (**Ctrl+O/Ctrl+Enter** on Windows); **Esc** pauses. The loading indicator stays visible while training; camera changes are disabled during that job.
 

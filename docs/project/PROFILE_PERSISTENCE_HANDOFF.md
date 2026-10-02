@@ -3,7 +3,7 @@
 2 October 2026. Hau Jie implementation; Deston review/integration.
 Scope: R01 private profile storage and candidate reconstruction. This is a GF-P06
 component slice, not completion of the guest starter, profile UI or live readiness.
-No other owner's modules have been changed.
+The original PR #14 changed only the persistence component. The reviewed Deston shell adapter below is a subsequent integration slice.
 
 ## Implemented API
 
@@ -66,39 +66,42 @@ larger than 16 KiB. Saves use the existing reviewed atomic storage helper (tempo
 file, flush/fsync, replace). Failure before replacement retains the previous file;
 temporary files are cleaned up. No active shell state is stored in this component.
 
-## Shell integration proposal (no shell edits in this PR)
+## Current shell integration (Deston)
 
-`LoadedProfile` contains `record`, rebuilt `model` and a `selection` property
-returning the shared `ProfileSelection` fields. `readiness_revision` is empty with
-an explicit not-verified reason. Loading a profile never certifies readiness.
+`LoadedProfile` contains `record`, rebuilt `model` and a `selection` property.
+`readiness_revision` is empty with an explicit not-verified reason. Loading a
+profile never certifies readiness. Hau Jie owns the selector widget; use these
+existing shell entry points rather than adding a loader or camera thread:
 
-1. Pause the existing Studio session before selecting/creating/deleting a profile.
-   Respect `Window.pause()` returning false if its evaluation trace could not save.
-2. Run expensive `store.load(id)`/creation in the existing model-loading workflow,
-   off the GUI thread. No second camera or independent application shell is needed.
-3. On success, pass the complete candidate on the GUI thread:
+| Entry point | Result |
+|---|---|
+| `Window.load_studio_profile(store, profile_id)` | Pause and save any evaluation trace, then reconstruct through the existing background model worker. Returns false if busy, closing or preservation fails. |
+| `Window.use_studio_profile(candidate)` | Install a complete `LoadedProfile` on the UI thread; retain name separately from opaque ID, apply stored settings, reset to paused Preview with readiness unverified. Raises on invalid or unavailable installation. |
+| `Window.prepare_studio_profile_delete(profile_id)` | Check the shell can clear this selection and preserve any active trace. False means do not delete storage. |
+| `Window.clear_studio_profile(profile_id)` | After successful deletion, clear a matching active model, invalidate old capture and pending loads, disable camera Start and preserve manual controls. |
 
-   ```python
-   candidate = store.load(profile_id)  # worker; candidate only, not UI mutation
-   selection = candidate.selection
-   window.use_studio_model(candidate.model, selection.selected_hand,
-                           selection.profile_id, selection.vocabulary)
-   ```
+Deletion requires explicit user confirmation explaining that numeric source data
+is retained. In one synchronous UI-owner handler, without yielding to the event
+loop: call `prepare_studio_profile_delete(id)`; only on true call `store.delete(id)`;
+only after successful deletion immediately call `clear_studio_profile(id)`.
+If storage deletion raises, keep the previous shell selection and show the error.
+Do not call clear on a failed delete. An unrelated model load blocks deletion;
+a matching pending load can be cancelled this way and its late result is ignored.
 
-4. Catch storage/validation/training errors and leave the previous selection/model
-   paused. Installation can itself fail, including trace-save failure; only update
-   the visible selected name after `use_studio_model` succeeds. Ignore stale results
-   after close/new selection/deletion using the shell's existing lifecycle rules.
-5. Successful installation remains Preview/paused; explicit Start and NEUTRAL are
-   required. Rehearsal/behaviour readiness and LIVE authorization remain separate.
-6. After deleting an active profile, clear its active selection/model through the
-   shell's agreed integration path; do not leave its in-memory model silently active.
-   This component deliberately cannot manipulate the shell or camera.
+Read/list metadata before displaying entries; one corrupt entry must not hide the
+rest. A load failure leaves the old model selected and paused. Successful loading
+requires explicit Start after camera release and a fresh NEUTRAL hold. Raw dataset
+loading clears saved-profile name/ID metadata. Closing never installs a late
+candidate. Do not infer readiness from successful reconstruction or display text.
+Cosmetic rename alone does not alter the saved model revision.
 
-Display `selection.display_name` separately from the opaque ID. Read failures should
-identify the unusable entry without hiding other saved profiles. Readiness must
-later be bound to hand/model/controller/bindings, not inferred from a successful
-load. Cosmetic rename alone must not invalidate a still-matching readiness record.
+CLI startup is `.\run.cmd --studio --profile-id ID`, optionally
+`--profile-store PATH` (default `.local/profiles`) and `--camera INDEX`. The stored
+model settings are authoritative: dataset/algorithm/multiplier/margin arguments
+cannot accompany a profile ID. The in-app selector, create/rename workflow and
+readiness remain Hau Jie's component work with Deston's shell integration.
+PR #16 supplies the enrolment component; its shared-observation attachment and live
+recording acceptance remain separate. No automatic starter release or LIVE dispatch is added.
 
 ## Verification and remaining acceptance
 
@@ -115,12 +118,13 @@ they do not establish personal accuracy, physical-hand compliance or readiness.
 
 No personal data was modified or copied into Git. No new participant capture,
 visible profile workflow recording or fresh-machine test was performed. The
-profile/enrolment widgets and GUI integration remain to be built/reviewed. Guest
+profile selector and enrolment attachment still require visible integration. Guest
 starter selection remains gated by GF-P28's failed rejection evaluation and
 distribution permission; no ready starter is supplied. GF-P06 must not be marked
 Done based only on this persistence slice.
 
-Actual local checks on 2 October, using the existing Python 3.11 environment and
+Historical PR #14 component checks on 2 October (current integration results are in
+[verification.json](verification.json)), using the existing Python 3.11 environment and
 `PYTHONPATH` pointing to this checkout:
 
 ```text

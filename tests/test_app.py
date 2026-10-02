@@ -1643,6 +1643,64 @@ def test_main_selects_dataset_vocabulary_without_changing_assignment(studio, cus
     assert window.call_args.kwargs["vocabulary"] == vocabulary
 
 
+@pytest.mark.parametrize(
+    "argv, message, code",
+    [
+        (["gestureforge", "--profile-id", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], "--profile-id is available only", 1),
+        (
+            [
+                "gestureforge", "--studio", "--profile-id", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "--dataset", "manifest.json",
+            ],
+            "--profile-id cannot be used with --dataset",
+            1,
+        ),
+        (
+            ["gestureforge", "--studio", "--profile-id", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "--algorithm", "svm"],
+            "Saved profiles use their stored model settings",
+            1,
+        ),
+        (
+            ["gestureforge", "--studio", "--profile-id", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "--mult=2"],
+            "unrecognized arguments",
+            2,
+        ),
+    ],
+)
+def test_main_profile_cli_rejects_conflicts(argv, message, code, monkeypatch, capsys) -> None:
+    from gestureforge import __main__ as launcher
+
+    monkeypatch.setattr(sys, "argv", argv)
+    with pytest.raises(SystemExit) as exc:
+        launcher.main()
+    assert exc.value.code == code
+    assert message in capsys.readouterr().err
+
+
+def test_main_profile_cli_loads_saved_profile_settings(monkeypatch) -> None:
+    from gestureforge import __main__ as launcher
+    import gestureforge.app as app_module
+
+    loaded = _loaded_profile("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Desk profile")
+    application = Mock()
+    application.exec.return_value = 0
+    monkeypatch.setattr("PySide6.QtWidgets.QApplication", Mock(return_value=application))
+    window = Mock()
+    monkeypatch.setattr(app_module, "Window", window)
+    monkeypatch.setattr("gestureforge.profiles.ProfileStore.load", Mock(return_value=loaded))
+    monkeypatch.setattr(sys, "argv", [
+        "gestureforge", "--studio", "--profile-id", loaded.record.profile_id,
+        "--profile-store", "private-profiles",
+    ])
+
+    assert launcher.main() == 0
+    assert window.call_args.args[0] is loaded.model
+    assert window.call_args.args[5] == loaded.record.profile_id
+    assert window.call_args.kwargs["profile_display_name"] == "Desk profile"
+    assert window.call_args.kwargs["model_settings"] == ("knn", 2.0, 1.5)
+    assert "readiness unverified" in window.call_args.args[6]
+
+
 def test_custom_classifier_labels_reach_studio_simulation(monkeypatch, qapp) -> None:
     from gestureforge.fixtures import synthetic_dataset
     from gestureforge.models import train_model
@@ -1839,6 +1897,23 @@ def _candidate_model(vocabulary):
     )
 
 
+def _loaded_profile(profile_id: str, name: str, vocabulary=None, *, hand="Right"):
+    from gestureforge.profiles import ProfileSettings
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    vocabulary = vocabulary or LEGACY_VOCABULARY
+    return SimpleNamespace(
+        record=SimpleNamespace(
+            profile_id=profile_id,
+            display_name=name,
+            selected_hand=hand,
+            vocabulary=vocabulary,
+            settings=ProfileSettings("knn", 2.0, 1.5),
+        ),
+        model=_candidate_model(vocabulary),
+    )
+
+
 def test_studio_background_load_switches_once_and_waits_for_camera_release(monkeypatch, qapp) -> None:
     from threading import Event
     import gestureforge.app as app_module
@@ -1906,6 +1981,162 @@ def test_studio_background_load_switches_once_and_waits_for_camera_release(monke
         release.set()
         if window.model_loader is not None:
             window.model_loader.join(5)
+        window.close()
+
+
+def test_saved_profile_switch_keeps_name_separate_and_raw_dataset_clears_it(qapp) -> None:
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    first = _loaded_profile("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Desk profile", LEGACY_VOCABULARY)
+    custom_vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    second = _loaded_profile("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "Custom profile", custom_vocabulary, hand="Left")
+    dataset_model = _candidate_model(LEGACY_VOCABULARY)
+    window = Window(studio=True)
+    _disable_logging(window)
+    try:
+        window.use_studio_profile(first)
+        assert window.profile == first.record.profile_id
+        assert window.selected_profile_id == first.record.profile_id
+        assert window.selected_profile_name == "Desk profile"
+        assert "Desk profile" in window.camera_status.text()
+        assert "readiness unverified" in window.notice.text()
+
+        window.use_studio_profile(second)
+        assert window.profile == second.record.profile_id
+        assert window.selected_profile_id == second.record.profile_id
+        assert window.chosen_hand == "Left"
+        assert [label.text() for label in window.binding_labels] == ["G1 gesture", "G2 gesture", "G3 gesture"]
+
+        window.use_studio_model(dataset_model, "Right", "P02", LEGACY_VOCABULARY)
+        assert window.profile == "P02"
+        assert window.selected_profile_id is None
+        assert window.selected_profile_name == ""
+        assert "Profile: P02" in window.camera_status.text()
+    finally:
+        window.close()
+
+
+def test_saved_profile_background_load_failure_retains_active_profile(qapp) -> None:
+    active = _loaded_profile("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Active profile")
+    window = Window(studio=True)
+    _disable_logging(window)
+
+    class Store:
+        def load(self, profile_id):
+            raise ValueError("profile checksum mismatch")
+
+    try:
+        window.use_studio_profile(active)
+        assert window.routing is not None
+        old = window.routing.resume()
+        assert window.load_studio_profile(cast(Any, Store()), "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+        assert window.model_loader is not None
+        window.model_loader.join(5)
+        window.poll()
+        assert window.selected_profile_id == active.record.profile_id
+        assert window.routing is not None
+        assert window.routing.snapshot == old
+        assert "Profile not loaded" in window.notice.text()
+        assert window.model_loader is None
+        assert window.load_dataset_button.isEnabled()
+    finally:
+        window.close()
+
+
+def test_clear_saved_profile_blocks_pending_load_and_invalidates_active_packets(monkeypatch, qapp) -> None:
+    from threading import Event
+    import gestureforge.app as app_module
+
+    active = _loaded_profile("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Active profile")
+    pending = _loaded_profile("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "Deleted profile")
+    release = Event()
+    entered = Event()
+
+    class Store:
+        def load(self, profile_id):
+            entered.set()
+            assert release.wait(5)
+            return pending
+
+    window = Window(studio=True)
+    _disable_logging(window)
+    try:
+        window.use_studio_profile(active)
+        assert window.routing is not None
+        old = window.routing.resume()
+        stale_packet = replace(
+            _studio_prediction(window, 1, 100.0, "NEXT"),
+            session_id=old.session_id,
+            profile_id=old.profile_id,
+            model_version=old.model_version,
+        )
+        assert window.load_studio_profile(cast(Any, Store()), pending.record.profile_id)
+        assert entered.wait(5)
+        assert window.prepare_studio_profile_delete(pending.record.profile_id)
+        assert window.clear_studio_profile(pending.record.profile_id)
+        release.set()
+        assert window.model_loader is not None
+        window.model_loader.join(5)
+        window.poll()
+        assert window.selected_profile_id == active.record.profile_id
+        assert window.model is active.model
+        assert "ignored" in window.notice.text()
+
+        assert window.prepare_studio_profile_delete(active.record.profile_id)
+        assert window.clear_studio_profile(active.record.profile_id)
+        assert window.model is None
+        assert window.selected_profile_id is None
+        assert window.routing_manual_only
+        assert window.routing is not None
+        assert window.routing.snapshot.session_id != old.session_id
+        window.worker = FakeWorker([(_frame(), stale_packet)])
+        monkeypatch.setattr(app_module.time, "monotonic", lambda: 100.0)
+        window.poll()
+        assert "Studio simulation" not in window.feedback.text()
+        assert "Manual viewer remains" in window.feedback.text()
+        assert not window.start_button.isEnabled()
+    finally:
+        release.set()
+        if window.model_loader is not None:
+            window.model_loader.join(5)
+        window.close()
+
+
+def test_deleted_profile_retry_pauses_active_capture_and_honors_trace_failure(tmp_path, qapp) -> None:
+    active = _loaded_profile("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Active profile")
+    deleted_id = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    window = Window(studio=True)
+    _disable_logging(window)
+
+    class Store:
+        def load(self, profile_id):
+            raise AssertionError("Deleted profiles must be rejected before storage load.")
+
+    try:
+        window.use_studio_profile(active)
+        assert window.routing is not None
+        window.routing.resume()
+        worker = FakeWorker()
+        window.worker = worker
+        window._deleted_profile_ids.add(deleted_id)
+
+        assert not window.load_studio_profile(cast(Any, Store()), deleted_id)
+        assert worker.interrupted
+        assert window.routing.state == "PAUSED"
+        assert window.model is active.model
+        assert window.selected_profile_id == active.record.profile_id
+        assert window.model_loader is None
+        assert "profile was deleted" in window.notice.text()
+
+        trace = SimpleNamespace(frame_count=1, save=Mock(side_effect=OSError("disk full")))
+        window.evaluation_trace = cast(Any, trace)
+        window.trace_path = tmp_path / "trace.json"
+        assert not window.load_studio_profile(cast(Any, Store()), deleted_id)
+        assert window.evaluation_trace is trace
+        assert "disk full" in window.trace_status.text()
+        assert "profile was deleted" in window.notice.text()
+    finally:
+        window.evaluation_trace = None
         window.close()
 
 

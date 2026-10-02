@@ -1,6 +1,6 @@
 """Assignment desktop shell: one real action, with future scope clearly labelled."""
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, replace
 import json
 from pathlib import Path
@@ -31,6 +31,7 @@ from .javier_widgets import (
     ViewerWidget,
     WorkspaceWidget,
 )
+from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
 from .session_summary import Outcome, SessionSummary
 from .shortcuts import TargetRegistry
@@ -97,15 +98,17 @@ def load_personal_model(path, algorithm="knn", multiplier=1.5, margin=1.5, *, st
 class ModelLoadWorker(Thread):
     """One pending load; no widgets or camera access on this thread."""
 
-    def __init__(self, path, settings):
+    def __init__(self, load: Callable[[], object], *, kind="dataset", profile_id=None):
         super().__init__(daemon=True, name="gestureforge-model-load")
-        self.path, self.settings = path, settings
-        self.result = None
+        self.load = load
+        self.kind = kind
+        self.profile_id = profile_id
+        self.result: object | None = None
         self.error = ""
 
     def run(self):
         try:
-            self.result = load_personal_model(self.path, *self.settings, studio=True)
+            self.result = self.load()
         except Exception as exc:
             self.error = f"{type(exc).__name__}: {exc}"
 
@@ -174,7 +177,8 @@ class Window(QMainWindow):
     def __init__(self, model=None, feature_function=None, chosen_hand="Right", camera_index=0,
                  asset=None, profile="pilot", data_note="No enrolled dataset loaded",
                  studio=False, studio_mode=RoutingMode.PREVIEW,
-                 vocabulary=LEGACY_VOCABULARY, model_settings=("knn", 1.5, 1.5)):
+                 vocabulary=LEGACY_VOCABULARY, model_settings=("knn", 1.5, 1.5),
+                 profile_display_name=None):
         if studio and studio_mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
         if studio:
@@ -207,6 +211,10 @@ class Window(QMainWindow):
         self.worker = None
         self.model_loader = None
         self.model_settings = model_settings
+        self.selected_profile_id = profile if model is not None and profile_display_name is not None else None
+        self.selected_profile_name = profile_display_name or ""
+        self.pending_profile_id = None
+        self._deleted_profile_ids: set[str] = set()
         self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
@@ -880,9 +888,14 @@ class Window(QMainWindow):
         snapshot = self.routing.snapshot
         context_id = self.manual_context_id if self.routing_manual_only else snapshot.context_id
         mode = self.manual_mode if self.routing_manual_only else snapshot.mode
+        profile_text = "none"
+        if self.model is not None:
+            profile_text = self.profile
+            if self.selected_profile_id == self.profile and self.selected_profile_name:
+                profile_text = f"{self.selected_profile_name} ({self.profile})"
         self.camera_status.setText(
             f"Selected camera: {self.camera_index} | Enrolled hand: {self.chosen_hand} | "
-            f"Profile: {self.profile if self.model is not None else 'none'} | "
+            f"Profile: {profile_text} | "
             f"{self.studio_key_hint}"
         )
         active_bindings = self._active_studio_bindings()
@@ -903,7 +916,10 @@ class Window(QMainWindow):
         missing = []
         if self.model is None:
             missing.append("starter/personal recogniser")
-        missing.extend(["profile enrolment", "validated shortcut dispatcher"])
+        missing.append(
+            "profile readiness verification" if self.selected_profile_id else "profile enrolment"
+        )
+        missing.append("validated shortcut dispatcher")
         self.studio_status.setText(
             "Studio preview is running without: " + ", ".join(missing) + "."
         )
@@ -1279,7 +1295,36 @@ class Window(QMainWindow):
         self.apply_camera_button.setEnabled(False)
         self.load_progress.show()
         self.notice.setText("Loading and training locally. Camera control is paused; existing data is unchanged.")
-        self.model_loader = ModelLoadWorker(path, self.model_settings)
+        self.pending_profile_id = None
+        self.model_loader = ModelLoadWorker(
+            lambda: load_personal_model(path, *self.model_settings, studio=True),
+            kind="dataset",
+        )
+        self.model_loader.start()
+        return True
+
+    def load_studio_profile(self, store: ProfileStore, profile_id: str):
+        if not self.studio:
+            raise ValueError("In-app profile loading requires Studio")
+        if self.model_loader is not None or self._closing:
+            return False
+        if not self.pause():
+            return False
+        if profile_id in self._deleted_profile_ids:
+            self.notice.setText("Profile not loaded: profile was deleted. Previous selection retained; control is paused.")
+            return False
+        self.start_button.setEnabled(False)
+        self.load_dataset_button.setEnabled(False)
+        self.apply_bindings_button.setEnabled(False)
+        self.apply_camera_button.setEnabled(False)
+        self.load_progress.show()
+        self.pending_profile_id = profile_id
+        self.notice.setText("Loading saved profile locally. Camera control is paused; existing data is unchanged.")
+        self.model_loader = ModelLoadWorker(
+            lambda: store.load(profile_id),
+            kind="profile",
+            profile_id=profile_id,
+        )
         self.model_loader.start()
         return True
 
@@ -1302,7 +1347,7 @@ class Window(QMainWindow):
                   "timestamp": time.monotonic()})
         return True
 
-    def use_studio_model(self, model, hand, profile, vocabulary):
+    def use_studio_model(self, model, hand, profile, vocabulary, *, profile_display_name=None):
         """Install an already trained candidate atomically; capture resumes only on request."""
         if not self.studio or self.model_loader is not None or self._closing:
             raise ValueError("Studio must be open and idle before changing the model")
@@ -1320,6 +1365,9 @@ class Window(QMainWindow):
         was_manual_only = self.routing_manual_only
         was_quick_actions = self.quick_actions_active
         self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
+        saved_profile = profile_display_name is not None
+        self.selected_profile_id = profile if saved_profile else None
+        self.selected_profile_name = profile_display_name or ""
         self.routing = candidate
         self.routing_manual_only = False
         self.manual_context_id = candidate.snapshot.context_id
@@ -1327,12 +1375,19 @@ class Window(QMainWindow):
         self.manual_mode = candidate.snapshot.mode
         self.received_first_frame = False
         self.preview.clear()
-        self.preview.setText("Camera off\n\nDataset loaded; start and show NEUTRAL")
+        self.preview.setText("Camera off\n\nProfile loaded; start and show NEUTRAL"
+                             if saved_profile else
+                             "Camera off\n\nDataset loaded; start and show NEUTRAL")
         self.prediction.setText("Prediction: awaiting new camera session")
-        self.state.setText("Paused after dataset change. Start and show NEUTRAL.")
+        self.state.setText("Paused after model change. Start and show NEUTRAL.")
         self.detail.setText("Mappings reset to Preview. Check the actions before starting camera simulation.")
-        self.notice.setText(note)
-        self.feedback.setText("Dataset loaded. Gesture actions remain simulations; start explicitly.")
+        self.notice.setText(
+            f"Saved profile: {profile_display_name} | ID {profile} | {hand} hand | readiness unverified | local processing"
+            if saved_profile else note
+        )
+        self.feedback.setText("Profile loaded. Gesture actions remain simulations; start explicitly."
+                              if saved_profile else
+                              "Dataset loaded. Gesture actions remain simulations; start explicitly.")
         self.start_button.setToolTip("Start camera simulation using the loaded personal dataset.")
         self.start_button.setEnabled(self._can_start_studio_camera())
         if self.runbook is not None:
@@ -1350,8 +1405,68 @@ class Window(QMainWindow):
         if was_quick_actions:
             self.use_quick_actions_context()
         self.render_studio_status()
-        self.log({"type": "studio_dataset", "profile": profile, "model_version": model.model_version,
+        self.log({"type": "studio_profile" if saved_profile else "studio_dataset",
+                  "profile": profile, "model_version": model.model_version,
                   "session": candidate.snapshot.session_id, "timestamp": time.monotonic()})
+
+    def use_studio_profile(self, candidate: LoadedProfile):
+        record = candidate.record
+        if record.profile_id in self._deleted_profile_ids:
+            raise ValueError("Profile was deleted before it could be loaded")
+        self.use_studio_model(
+            candidate.model,
+            record.selected_hand,
+            record.profile_id,
+            record.vocabulary,
+            profile_display_name=record.display_name,
+        )
+        settings = record.settings
+        self.model_settings = (settings.algorithm, settings.multiplier, settings.margin)
+
+    def prepare_studio_profile_delete(self, profile_id: str) -> bool:
+        if not self.studio or self._closing:
+            return False
+        if self.model_loader is not None and self.pending_profile_id != profile_id:
+            return False
+        if self.selected_profile_id == profile_id and not self.pause():
+            return False
+        return True
+
+    def clear_studio_profile(self, profile_id: str) -> bool:
+        if not self.prepare_studio_profile_delete(profile_id):
+            return False
+        active = self.selected_profile_id == profile_id
+        self._deleted_profile_ids.add(profile_id)
+        if self.pending_profile_id == profile_id:
+            self.pending_profile_id = None
+        if not active:
+            return True
+        assert self.routing is not None
+        context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
+        mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+        self.model = None
+        self.profile = "pilot"
+        self.selected_profile_id = None
+        self.selected_profile_name = ""
+        self.routing = RoutingSession("pilot", "unversioned", context_id,
+                                      dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)), mode)
+        self.routing_manual_only = True
+        self.manual_context_id = context_id
+        self.manual_session_id = str(uuid4())
+        self.manual_mode = mode
+        self.received_first_frame = False
+        self.preview.clear()
+        self.preview.setText("Camera off\n\nSaved profile deleted; load another profile or dataset")
+        self.prediction.setText("Prediction: awaiting new camera session")
+        self.state.setText("Paused after profile deletion. Manual controls remain available.")
+        self.detail.setText("Active profile was removed. Load another saved profile or personal dataset before camera simulation.")
+        self.notice.setText("Saved profile deleted. Active model cleared; previous camera packets are invalid.")
+        self.feedback.setText("Profile cleared. Manual viewer remains available.")
+        self.start_button.setEnabled(False)
+        self.render_studio_status()
+        self.log({"type": "studio_profile_cleared", "profile": profile_id,
+                  "session": self.routing.snapshot.session_id, "timestamp": time.monotonic()})
+        return True
 
     def poll_model_load(self):
         loader = self.model_loader
@@ -1359,14 +1474,30 @@ class Window(QMainWindow):
             return
         loader.join()
         self.model_loader = None
+        if self._closing:
+            return
         try:
             if loader.error:
                 raise ValueError(loader.error)
             if loader.result is None:
-                raise ValueError("Dataset training returned no model")
-            self.use_studio_model(*loader.result)
+                raise ValueError("Profile loading returned no model" if loader.kind == "profile"
+                                 else "Dataset training returned no model")
+            if loader.kind == "profile":
+                if loader.profile_id != self.pending_profile_id or loader.profile_id in self._deleted_profile_ids:
+                    self.notice.setText("Profile load ignored: selection changed or profile was deleted.")
+                    return
+                self.pending_profile_id = None
+                self.use_studio_profile(loader.result)
+            else:
+                self.pending_profile_id = None
+                self.use_studio_model(*loader.result)
         except (ValueError, AttributeError, TypeError) as exc:
-            self.notice.setText(f"Dataset not loaded: {exc}. Previous selection retained; control is paused.")
+            if loader.kind == "profile":
+                self.pending_profile_id = None
+            self.notice.setText(
+                f"{'Profile' if loader.kind == 'profile' else 'Dataset'} not loaded: "
+                f"{exc}. Previous selection retained; control is paused."
+            )
         finally:
             self.load_dataset_button.setEnabled(True)
             self.apply_bindings_button.setEnabled(True)

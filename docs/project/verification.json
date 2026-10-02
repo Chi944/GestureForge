@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-02T05:55:27.344785+00:00",
+  "timestamp_utc": "2026-10-02T06:47:45.545231+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.261,
+      "seconds": 0.222,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 1.494,
-      "stdout": "Success: no issues found in 54 source files\n",
+      "seconds": 1.258,
+      "stdout": "Success: no issues found in 57 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 130.824,
-      "stdout": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n....................................................................s... [ 50%]\n........................................................................ [ 67%]\n........................................................................ [ 84%]\n..................................................................       [100%]\n425 passed, 1 skipped in 127.18s (0:02:07)\n",
+      "seconds": 75.935,
+      "stdout": "........................................................................ [ 15%]\n........................................................................ [ 31%]\n........................................................................ [ 46%]\n...............................s........................................ [ 62%]\n........................................................................ [ 78%]\n........................................................................ [ 93%]\n.............................                                            [100%]\n460 passed, 1 skipped in 71.76s (0:01:11)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 1.269,
+      "seconds": 4.19,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 1.587,
+      "seconds": 4.479,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 3.249,
+      "seconds": 3.4,
       "stdout": "",
       "stderr": ""
     }
