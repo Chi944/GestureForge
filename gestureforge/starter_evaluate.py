@@ -23,7 +23,7 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def run(root):
+def load_validated_people(root):
     participants = {}
     audit: dict[str, Any] = {}
     hashes: dict[str, Any] = {}
@@ -70,7 +70,10 @@ def run(root):
             hashes[person][folder] = dataset_hashes(bundle)
             bundles.append(bundle)
         participants[person] = merge_datasets(bundles)
+    return participants, audit, hashes
 
+
+def evaluate_people(participants, audit, hashes):
     algorithms: tuple[Algorithm, ...] = ("knn", "svm")
     folds = []
     for held_out in participants:
@@ -136,6 +139,10 @@ def run(root):
                    'No distribution permission or readiness is established by this evaluation'],
         'data_audit': audit, 'input_hashes': hashes, 'folds': folds,
     }
+
+
+def run(root):
+    return evaluate_people(*load_validated_people(root))
 
 
 def main():
