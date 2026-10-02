@@ -3,7 +3,7 @@
 Status: prepared, NOT executed on either laptop in this environment. Do not mark
 these cards Done from fake-adapter tests or Linux offscreen screenshots.
 
-Use `python -m scripts.windows_launch_probe` from USER_GUIDE.md. Preserve each
+Use the existing `python -m scripts.windows_launch_probe` from `docs/COMPONENT_GUIDE.md`. This procedure follows `docs/evidence/WINDOWS_LAUNCH_PROCEDURE.md`. For the 4 October checkpoint, see `OCT4_CHECKPOINT.md`; use a unique `--output` path for every attempt to preserve prior evidence. Preserve each
 machine's actual JSON output under ignored `.local/`, along with pseudonymous
 observer notes. Record source revision, `winver` result, Python version, actual
 camera index, permissions, online/offline conditions, exact commands and visible
