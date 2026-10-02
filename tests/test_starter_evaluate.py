@@ -60,6 +60,10 @@ def test_person_separation_invalid_accounting_and_reproduction(starter_tree, mon
     monkeypatch.setattr(starter, 'train_model', checked_train)
     first = starter.run(starter_tree)
     second = starter.run(starter_tree)
+    from gestureforge.starter_diagnose import diagnose
+    diagnostic = diagnose(first)
+    assert len(diagnostic['folds']) == 6
+    assert diagnostic['folds'][0]['negative_sample_outcomes']['invalid_detection'] == 1
     assert len(first['folds']) == 6
     assert first['data_audit']['P01']['negatives']['invalid'] == 1
     for index, (a, b) in enumerate(zip(first['folds'], second['folds'], strict=True)):
