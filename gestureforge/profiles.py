@@ -49,6 +49,9 @@ class ProfileSettings:
             if (type(value) not in (int, float) or not math.isfinite(value)
                     or (value < minimum if inclusive else value <= minimum)):
                 raise ValueError('invalid finite rejection settings')
+        # Hash the same numeric representation before and after JSON persistence.
+        object.__setattr__(self, 'multiplier', float(self.multiplier))
+        object.__setattr__(self, 'margin', float(self.margin))
 
     def to_dict(self) -> dict:
         return {'preset': 'prototype-default-v1', 'algorithm': self.algorithm,
