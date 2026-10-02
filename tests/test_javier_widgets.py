@@ -137,6 +137,25 @@ def test_quick_missing_target_visible_and_launch_disabled(qt_app, tmp_path: Path
     widget.close()
 
 
+def test_quick_missing_target_test_emits_validation_failure(qt_app, tmp_path: Path) -> None:
+    path = tmp_path / 'reference.txt'
+    path.write_text('fixture')
+    registry = TargetRegistry()
+    registry.configure(Target('reference', 'Reference', TargetKind.FILE, str(path)))
+    widget = QuickActionsWidget(registry)
+    failures: list[tuple[str, str]] = []
+    requests: list[Action] = []
+    widget.target_validation_failed.connect(lambda target_id, reason: failures.append((target_id, reason)))
+    widget.action_requested.connect(requests.append)
+    widget.target_id.setText('reference')
+    path.unlink()
+    click(widget, 'Test selected target')
+    assert failures and failures[0][0] == 'reference'
+    assert path.name in failures[0][1]
+    assert requests == []
+    widget.close()
+
+
 def test_viewer_widget_plain_text_boundary_buttons_and_explicit_remove(qt_app) -> None:
     viewer = Viewer(project_actions=True)
     widget = ViewerWidget(viewer)

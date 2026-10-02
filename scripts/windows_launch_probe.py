@@ -45,6 +45,7 @@ class ProbeWindow(QMainWindow):
         self.worker: CaptureWorker | None = None
         self.captured_frames = 0
         self.rows: list[dict[str, object]] = []
+        self.pending_confirmation_event_id: str | None = None
         self.environment = {
             'laptop_id': laptop_id, 'platform': platform.platform(), 'python': platform.python_version(),
             'utc': datetime.now(timezone.utc).isoformat(), 'camera_index': camera,
@@ -76,6 +77,7 @@ class ProbeWindow(QMainWindow):
         layout.addLayout(controls)
         self.quick = QuickActionsWidget(registry)
         self.quick.action_requested.connect(self.launch)
+        self.quick.target_validation_failed.connect(self.validation_failed)
         self.quick.focus_lost.connect(self.pause)
         layout.addWidget(self.quick)
         self.setCentralWidget(body)
@@ -140,14 +142,22 @@ class ProbeWindow(QMainWindow):
         result = self.gate.manual(str(uuid4()), action)
         self.record('dispatch', target_id=action.shortcut_id, status=result.status, reason=result.reason,
                     event_id=result.event_id)
+        self.pending_confirmation_event_id = result.event_id if result.status == 'launch_requested' else None
         self.message.setText(f'{result.status}: {result.reason or "OS request accepted; observe the actual application and confirm its visible result."}')
 
+    def validation_failed(self, target_id: str, reason: str) -> None:
+        self.pending_confirmation_event_id = None
+        self.record('target_validation_failed', target_id=target_id, reason=reason)
+
     def confirm(self, visible: bool) -> None:
-        dispatches = [row for row in self.rows if row['kind'] == 'dispatch']
-        if not dispatches:
-            self.message.setText('Test a target first, then confirm what actually happened.')
+        if self.pending_confirmation_event_id is None:
+            reason = 'no accepted launch is awaiting observer confirmation'
+            self.record('observer_confirmation_refused', reason=reason)
+            self.message.setText(f'Cannot record observer result: {reason}. Test the target again.')
             return
-        self.record('observer_confirmation', event_id=dispatches[-1]['event_id'], visible=visible)
+        event_id = self.pending_confirmation_event_id
+        self.pending_confirmation_event_id = None
+        self.record('observer_confirmation', event_id=event_id, visible=visible)
         self.message.setText('Observer result recorded. Returning never resumes capture automatically.')
 
     def changeEvent(self, event: QEvent) -> None:
