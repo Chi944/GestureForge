@@ -51,6 +51,19 @@ def test_single_typed_action_routes_once(action: Action) -> None:
         assert session.process(prediction(session, "CUSTOM_POSE", frame, time), time) is None
 
 
+def test_long_profile_ids_produce_recordable_command_ids() -> None:
+    from gestureforge.session_summary import Outcome, SessionSummary
+
+    session = RoutingSession('p' * 64, 'model-v2', 'check', BINDINGS)
+    event = emit(session)
+    result = session.route(event, 0.91)
+    summary = SessionSummary()
+    summary.record(Outcome(event.event_id, event.session_id, 'gesture', 'simulated',
+                           result.simulated_action))
+    assert summary.counts()['simulated'] == 1
+    assert session.route(event, 0.92).rejection_reason == 'duplicate_event'
+
+
 @pytest.mark.parametrize("mode", [RoutingMode.PREVIEW, RoutingMode.REHEARSAL])
 def test_practice_records_would_be_shortcut_without_executable_result(mode: RoutingMode) -> None:
     session = RoutingSession("trainer", "model-v2", "quick-actions", BINDINGS, mode)

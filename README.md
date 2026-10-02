@@ -34,8 +34,8 @@ Current project foundation on `main`:
 | :--- | :--- |
 | Shared routing contract | Version-1 design frozen and independently reviewed: Try Now, optional Personalise, one action per slot and explicit context activation; implemented routing preserves stale-event and hold/rearm protection |
 | Custom gesture vocabulary | PR #10 merged: schema-2 collection, kNN/SVM training and evaluation support three custom action IDs plus NEUTRAL; legacy datasets remain supported |
-| Starter feasibility | PR #12's [collection guide](docs/project/STARTER_COLLECTION_GUIDE.md) and PR #13's evaluator are merged; Hau Jie's [three-person baseline checkpoint](docs/project/STARTER_EVALUATION_CHECKPOINT.md) reports collection and comparison, with NEUTRAL/UNKNOWN failures that prevent starter release |
-| Saved profiles | PR #17's selector is attached in Studio's **Profiles** tab: create/load/rename/delete, background reconstruction and non-destructive Guest/manual switching use the reviewed PR #14 persistence; [selector handoff](docs/project/PROFILE_SELECTOR_HANDOFF.md). Loading stays paused; starter recognition and readiness remain unavailable |
+| Starter feasibility | Hau Jie's [three-person baseline](docs/project/STARTER_EVALUATION_CHECKPOINT.md) and supplied [bounded comparison](docs/project/GF_P11_BOUNDED_COMPARISON.md) identify no qualifying starter; PR #19 was reviewed and repaired without changing those supplied private results |
+| Saved profiles | PR #17's selector is attached in Studio's **Profiles** tab: create/load/rename/delete, background reconstruction and non-destructive Guest/manual switching use the reviewed PR #14 persistence; [selector handoff](docs/project/PROFILE_SELECTOR_HANDOFF.md). Loading stays paused and does not pass readiness; standard gestures remain unavailable |
 | Guided enrolment | Studio's Enrolment tab collects numeric samples through the shared camera, with consent, timed trials, invalid-sample feedback and save retry; live recording acceptance remains ([handoff](docs/project/ENROLMENT_INTERFACE_PROPOSAL.md)) |
 | Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
 | Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
@@ -44,13 +44,15 @@ Current project foundation on `main`:
 | Deck loading and progress | Load validated JSON decks; explicitly save/restore position and bookmarks for the matching deck; control stays paused and failed loads preserve the active deck |
 | In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
 | Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
+| Personal readiness check | A short simulated check requires two protected activations of each enrolled action, zero wrong activations and completion; its session-local result expires when behaviour changes and never enables real dispatch |
+| Windows launch probe | PR #18 supplies [laptop-A native observations](docs/evidence/WINDOWS_RESULTS_2026-10-02.md); review corrected evidence wording and a Windows test assertion, with a focused repair rerun still required |
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
 | Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
 | Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |
 | Workspace/runbook in Studio | Load validated workspaces, edit stages, use Runbook Previous/Continue/Finish/action buttons, and save/restore navigation state while camera control stays paused |
 | Quick Actions in Studio | Private twelve-target library and three gesture slots, explicit **Use Quick Actions** activation, local persistence and simulated target tests; no deck/runbook required |
 | Session summary | Studio records manual/simulated action outcomes and explicit stage completion acknowledgements; export measurement summaries separately from navigation saves |
-| Full Studio workflow | Starter readiness, readiness scoring and real shortcut dispatch remain to be integrated; the private participant baseline is not a distributable starter |
+| Full Studio workflow | Standard-gesture readiness, the longer personal rehearsal and real shortcut dispatch remain; the private participant baseline is not a distributable starter |
 
 Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
 

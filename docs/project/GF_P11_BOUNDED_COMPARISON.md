@@ -4,8 +4,10 @@
 released starter, final independent test, or measurement of executed actions.
 The original fixed-default GF-P28 baseline remains unchanged.
 
-PR #19 supplies this checkpoint. Integration review is checking input-snapshot
-provenance before acceptance. The private results below are Hau Jie's reported
+PR #19 supplies this checkpoint. Review repairs reuse one validated input
+snapshot for the baseline and candidate fits, preserve unchanged SVM model
+revisions, serialize the report before opening its output file, and record
+runtime library versions. The private results below remain Hau Jie's reported
 measurements; they have not been independently rerun in Deston's checkout.
 Current acceptance is tracked in [PROGRESS.md](PROGRESS.md).
 

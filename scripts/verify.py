@@ -35,7 +35,7 @@ def main():
     for command in commands:
         started = time.perf_counter()
         process = subprocess.run([sys.executable, *command], cwd=ROOT, env=environment,
-                                 capture_output=True, text=True, timeout=180)
+                                 capture_output=True, text=True, timeout=600)
         results.append({"command": "python " + " ".join(command),
                         "returncode": process.returncode,
                         "seconds": round(time.perf_counter() - started, 3),

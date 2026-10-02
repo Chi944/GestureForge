@@ -49,7 +49,7 @@ Construct `Dispatcher` with:
 
 - `current()`: the current complete `RoutingSnapshot`.
 - `active()`: true only while current routing is eligible for gesture dispatch.
-- `ready(snapshot)`: Hau Jie's version-bound readiness gate, checked for that exact
+- `ready(snapshot)`: the shell-owned version-bound readiness gate, checked for that exact
   revision. A `RoutingMode.LIVE` snapshot alone does not establish readiness.
 - `pause()`: synchronously call `RoutingSession.pause()`; synchronise runbook pause
   and shell status. Returning/focus gain must never call resume automatically.
@@ -127,7 +127,6 @@ reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HA
 
 ## Remaining gates
 
-Windows live opening, both-laptop evidence and Hau Jie's measured readiness data
-remain required before accepting the integrated product. Keep shared shell,
+PR #18 supplies reported laptop-A launch observations; the repaired evidence probe still needs its focused native rerun. Studio now has a short simulated readiness check for a loaded recogniser. Its session-local result does not attach or authorise the LIVE dispatcher. Standard starter availability, longer personal rehearsal, guarded launch integration and both-laptop evidence remain before accepting the integrated product. Keep shared shell,
 contracts/controller/routing, capture and recognition/profile changes in their
 owned lanes.

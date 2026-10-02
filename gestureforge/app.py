@@ -23,6 +23,7 @@ from .contracts import Action, ActionType, Observation, Prediction, RoutingMode,
 from .controller import Controller
 from .enrolment import EnrolmentPlan
 from .routing import RoutingSession
+from .readiness import ReadinessCheck, behavior_revision
 from .storage import read_json
 from .viewer import Viewer, load_deck
 from .javier_widgets import (
@@ -224,11 +225,17 @@ class Window(QMainWindow):
         self.worker = None
         self.model_loader = None
         self.model_settings = model_settings
+        self.studio_authored_bindings = dict(zip(vocabulary.action_ids, STUDIO_ACTIONS, strict=True))
         self.selected_profile_id = profile if model is not None and profile_display_name is not None else None
         self.selected_profile_name = profile_display_name or ""
         self.pending_profile_id = None
         self._deleted_profile_ids: set[str] = set()
         self._profile_selector_installing = False
+        self.readiness_check: ReadinessCheck | None = None
+        self.readiness_revision = ""
+        self.readiness_pass_revision = ""
+        self._readiness_previous: tuple[bool, str, RoutingMode, dict[str, Action], bool] | None = None
+        self._readiness_switching = False
         self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
@@ -325,6 +332,30 @@ class Window(QMainWindow):
             self.trace_status.setWordWrap(True)
             self.trace_status.setObjectName("muted")
             page.addWidget(self.trace_status)
+            readiness_row = QHBoxLayout()
+            self.readiness_start_button = QPushButton("Start/retry readiness")
+            self.readiness_start_button.setAccessibleName("Start or retry guided readiness check")
+            self.readiness_start_button.setToolTip(
+                "Runs a simulated readiness check: two correct activations for each enrolled action gesture."
+            )
+            self.readiness_start_button.clicked.connect(self.start_readiness_check)
+            readiness_row.addWidget(self.readiness_start_button)
+            self.readiness_finish_button = QPushButton("Finish readiness")
+            self.readiness_finish_button.setAccessibleName("Finish guided readiness check")
+            self.readiness_finish_button.setToolTip("Incomplete checks fail; passed checks remain tied to this profile revision.")
+            self.readiness_finish_button.clicked.connect(self.finish_readiness_check)
+            readiness_row.addWidget(self.readiness_finish_button)
+            page.addLayout(readiness_row)
+            self.readiness_progress = QProgressBar()
+            self.readiness_progress.setRange(0, 6)
+            self.readiness_progress.setValue(0)
+            self.readiness_progress.setAccessibleName("Readiness check progress")
+            page.addWidget(self.readiness_progress)
+            self.readiness_status = QLabel("Readiness check unavailable until a personal recogniser is loaded.")
+            self.readiness_status.setWordWrap(True)
+            self.readiness_status.setObjectName("muted")
+            self.readiness_status.setTextFormat(Qt.TextFormat.PlainText)
+            page.addWidget(self.readiness_status)
             self.load_progress = QProgressBar()
             self.load_progress.setRange(0, 0)
             self.load_progress.setAccessibleName("Loading and training personal dataset")
@@ -528,6 +559,7 @@ class Window(QMainWindow):
             label.setTextFormat(Qt.TextFormat.PlainText)
         if studio:
             self.camera_status.setTextFormat(Qt.TextFormat.PlainText)
+            self.render_readiness_status()
         controls = QHBoxLayout()
         if studio:
             footer = QWidget()
@@ -685,6 +717,228 @@ class Window(QMainWindow):
 
     def _profile_selector_change_blocked(self) -> bool:
         return self._profile_selector_busy() and not self._profile_selector_installing
+
+    def _readiness_bindings(self) -> dict[str, Action]:
+        defaults = dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True))
+        authored: Mapping[str, Action] = self.studio_authored_bindings
+        return {gesture: authored.get(gesture, defaults[gesture]) for gesture in self.vocabulary.action_ids}
+
+    def _readiness_behavior_revision(self) -> str:
+        return behavior_revision(
+            self.profile, self._model_version(), self.chosen_hand,
+            self.workspace, self.quick_registry, self._readiness_bindings(),
+        )
+
+    def _readiness_status_value(self) -> str:
+        check = self.readiness_check
+        return check.status if check is not None else "idle"
+
+    def _readiness_completed_value(self) -> int:
+        check = self.readiness_check
+        return check.completed if check is not None else 0
+
+    def render_readiness_status(self) -> None:
+        if not self.studio or not hasattr(self, "readiness_status"):
+            return
+        revision = self._readiness_behavior_revision() if self.model is not None else ""
+        if self.readiness_check is not None and revision:
+            self.readiness_check.invalidate(revision)
+        self.readiness_progress.setValue(self._readiness_completed_value())
+        if self.model is None or self.routing is None:
+            text = "Readiness unavailable: load a personal recogniser before checking gestures."
+        elif self.readiness_check is not None:
+            check = self.readiness_check
+            status = self._readiness_status_value()
+            expected = check.expected
+            reason = check.reason
+            if status == "running" and expected:
+                text = f"Readiness running: perform {expected}. {self._readiness_completed_value()}/6 complete."
+            elif status == "passed":
+                text = "Readiness passed for this local session revision. Gesture actions still simulate only."
+            elif status in {"failed", "expired"}:
+                text = f"Readiness {status}: {reason or 'retry the guided check'}."
+            else:
+                text = f"Readiness {status}: {self._readiness_completed_value()}/6 complete."
+        elif revision and self.readiness_pass_revision == revision:
+            text = "Readiness passed for this local session revision. Gesture actions still simulate only."
+        else:
+            text = "Readiness not checked: Start/retry requires two correct activations for each action gesture."
+        self.readiness_status.setText(text)
+        self.readiness_start_button.setEnabled(
+            self.model is not None and self.routing is not None
+            and not self._closing and self.model_loader is None
+            and not self._profile_selector_busy() and not self._enrolment_blocks_recognition()
+        )
+        self.readiness_finish_button.setEnabled(self.readiness_check is not None)
+
+    def _invalidate_readiness(self, reason: str) -> bool:
+        if not self.studio or self._readiness_switching:
+            return True
+        check = self.readiness_check
+        if check is not None:
+            check.cancel(reason)
+            if not self._restore_readiness_routing():
+                self.render_readiness_status()
+                return False
+            self.readiness_check = None
+        self._readiness_previous = None
+        self.readiness_revision = ""
+        self.readiness_pass_revision = ""
+        if hasattr(self, "readiness_status"):
+            self.readiness_status.setText(f"Readiness reset: {reason}.")
+            self.readiness_progress.setValue(0)
+            self.render_readiness_status()
+        return True
+
+    def _invalidate_readiness_if_revision_changed(self, reason: str) -> bool:
+        if not self.studio or self.model is None:
+            return self._invalidate_readiness(reason)
+        revision = self._readiness_behavior_revision()
+        check = self.readiness_check
+        if check is not None:
+            check.invalidate(revision)
+            if check.status != "expired":
+                self.render_readiness_status()
+                return True
+        if self.readiness_pass_revision and self.readiness_pass_revision == revision:
+            self.render_readiness_status()
+            return True
+        return self._invalidate_readiness(reason)
+
+    def _record_readiness_trials(self, check: ReadinessCheck) -> None:
+        existing = {trial.id for trial in self.session_summary.trials}
+        for trial in check.trials:
+            if trial.id not in existing:
+                self.session_summary.record_trial(trial)
+                existing.add(trial.id)
+        if hasattr(self, "summary_widget"):
+            self.summary_widget.refresh()
+
+    def _restore_readiness_routing(self) -> bool:
+        previous = self._readiness_previous
+        if previous is None or self.routing is None:
+            return True
+        manual_only, context_id, mode, bindings, quick_actions_active = previous
+        self._readiness_switching = True
+        try:
+            restored = self.configure_studio(context_id=context_id, mode=mode, bindings={} if manual_only else bindings)
+        finally:
+            self._readiness_switching = False
+        if restored:
+            self.quick_actions_active = bool(
+                quick_actions_active and not manual_only and context_id == self.quick_actions_context_id and bindings
+            )
+            self._readiness_previous = None
+            return True
+        self.readiness_status.setText("Readiness finished but prior context was not restored; fix trace storage, then Finish again.")
+        return False
+
+    def _cancel_readiness_check(self, reason: str) -> bool:
+        check = self.readiness_check
+        if check is None or self._readiness_switching:
+            return True
+        check.cancel(reason)
+        self._record_readiness_trials(check)
+        restored = self._restore_readiness_routing()
+        if restored:
+            if check.status == "passed":
+                self.readiness_pass_revision = check.revision
+            else:
+                self.readiness_pass_revision = ""
+            self.readiness_check = None
+            self.readiness_revision = ""
+            self.readiness_progress.setValue(0)
+            self.render_readiness_status()
+        return restored
+
+    def start_readiness_check(self) -> bool:
+        if not self.studio or self._closing or self.model_loader is not None:
+            return False
+        if self.model is None or self.routing is None:
+            self.readiness_status.setText("Readiness unavailable: load a personal recogniser first.")
+            return False
+        if self.readiness_check is not None and not self._cancel_readiness_check("Readiness cancelled before retry."):
+            self.readiness_status.setText("Readiness retry not started: save the current trace first.")
+            return False
+        if self._profile_selector_change_blocked() or self._enrolment_blocks_recognition():
+            self.readiness_status.setText("Readiness not started: finish profile or enrolment work first.")
+            return False
+        if self.worker is not None:
+            if not self.pause():
+                self.readiness_status.setText("Readiness not started: save the current trace or collection first.")
+                return False
+            self.readiness_status.setText("Readiness waiting for camera release; retry once the camera is off.")
+            return False
+        revision = self._readiness_behavior_revision()
+        if not revision:
+            self.readiness_status.setText("Readiness revision unavailable; retry after the engine is ready.")
+            return False
+        snapshot = self.routing.snapshot
+        previous_bindings = dict(snapshot.bindings)
+        self._readiness_previous = (self.routing_manual_only, self.manual_context_id if self.routing_manual_only else snapshot.context_id,
+                                    self.manual_mode if self.routing_manual_only else snapshot.mode, previous_bindings,
+                                    self.quick_actions_active)
+        self._readiness_switching = True
+        try:
+            if not self.configure_studio(
+                context_id="readiness:" + uuid4().hex[:24],
+                mode=RoutingMode.PREVIEW,
+                bindings=self._readiness_bindings(),
+            ):
+                self._readiness_previous = None
+                return False
+        finally:
+            self._readiness_switching = False
+        self.readiness_check = ReadinessCheck(revision, tuple(self.vocabulary.action_ids))
+        self.readiness_revision = revision
+        self.readiness_pass_revision = ""
+        self.readiness_progress.setValue(0)
+        self.feedback.setText("Readiness check started. Actions are simulated only; no OS launch can occur.")
+        self.render_studio_status()
+        self.start_camera()
+        return True
+
+    def finish_readiness_check(self) -> bool:
+        check = self.readiness_check
+        if check is None:
+            self.render_readiness_status()
+            return False
+        check.finish()
+        self._record_readiness_trials(check)
+        status = self._readiness_status_value()
+        revision = self.readiness_revision
+        restored = self._restore_readiness_routing()
+        if not restored:
+            self.feedback.setText("Readiness finished but prior context is retained for recovery; save the trace and press Finish again.")
+            self.render_readiness_status()
+            return False
+        if status == "passed":
+            self.readiness_pass_revision = revision
+            self.feedback.setText("Readiness passed for this local session revision; Studio remains simulation-only.")
+        else:
+            self.readiness_pass_revision = ""
+            self.feedback.setText("Readiness incomplete or failed; retry before relying on rehearsal evidence.")
+        self.readiness_check = None
+        self.readiness_revision = ""
+        self.render_studio_status()
+        return status == "passed"
+
+    def _record_readiness_result(self, event, result) -> None:
+        check = self.readiness_check
+        if check is None or result.simulated_action is None:
+            return
+        revision = self._readiness_behavior_revision()
+        check.record(event, result, revision)
+        status = self._readiness_status_value()
+        if status == "passed":
+            self._record_readiness_trials(check)
+            if self._restore_readiness_routing():
+                self.readiness_pass_revision = revision
+        elif status in {"failed", "expired"}:
+            self._record_readiness_trials(check)
+            self.readiness_pass_revision = ""
+            self._restore_readiness_routing()
+        self.render_studio_status()
 
     def _enrolment_state(self) -> str:
         if not self.studio or not hasattr(self, "enrolment_widget"):
@@ -906,8 +1160,10 @@ class Window(QMainWindow):
             return
         if self._enrolment_tab_selected():
             self.preview.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            if self.worker is not None:
-                self._pause_capture_only()
+            if self.worker is not None or self.readiness_check is not None:
+                if not self.pause():
+                    self.detail.setText("Enrolment not opened: save the current trace or collection first.")
+                    return
             self.prediction.setText("Enrolment mode: camera observations only")
             self.detail.setText(
                 "Request collection, wait for camera preview, then Begin trial. "
@@ -1069,6 +1325,7 @@ class Window(QMainWindow):
             return
         if self.configure_studio(context_id=self.quick_actions_context_id, bindings={}):
             self.quick_actions_active = False
+            self._invalidate_readiness_if_revision_changed("Quick Actions bindings changed")
             self.quick_actions_widget.status.setText(
                 "Quick Actions changed and Studio paused. Click Use Quick Actions to activate valid slots."
             )
@@ -1201,14 +1458,16 @@ class Window(QMainWindow):
         )
         mode_text = mode.value.title()
         if bindings:
-            self.boundary.setText(
+            boundary_text = (
                 f"Studio {mode_text} | Context: {context_id} | Gesture actions simulated; manual deck active.\n"
                 f"{bindings}"
             )
         else:
-            self.boundary.setText(
-                f"Studio {mode_text} | Context: {context_id} | Manual-only stage; no gesture actions are active."
-            )
+            boundary_text = f"Studio {mode_text} | Context: {context_id} | Manual-only stage; no gesture actions are active."
+        if self.readiness_check is not None and self.readiness_check.status == "running":
+            expected = self.readiness_check.expected or "the prompted pose"
+            boundary_text += f"\nReadiness running: perform {expected}. {self.readiness_check.completed}/6 complete."
+        self.boundary.setText(boundary_text)
         missing = []
         if self.model is None:
             missing.append("starter/personal recogniser")
@@ -1220,6 +1479,7 @@ class Window(QMainWindow):
             "Studio preview is running without: " + ", ".join(missing) + "."
         )
         self.mode_picker.setCurrentIndex(self.mode_picker.findData(mode.value))
+        self.render_readiness_status()
         for index, (label, picker) in enumerate(zip(self.binding_labels, self.binding_pickers)):
             active = index < len(active_bindings)
             label.setVisible(active)
@@ -1258,6 +1518,9 @@ class Window(QMainWindow):
             raise ValueError("Wait for the dataset load to finish before changing settings")
         if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
+        if self.readiness_check is not None and not self._readiness_switching:
+            if not self._cancel_readiness_check("Readiness cancelled before Studio settings changed."):
+                return False
         old = self.routing.snapshot
         new_context_id = (self.manual_context_id if self.routing_manual_only else old.context_id) if context_id is None else context_id
         validate_identifier(new_context_id)
@@ -1270,6 +1533,18 @@ class Window(QMainWindow):
             raise ValueError("Bindings must use gestures from the selected dataset vocabulary")
         if new_bindings:
             replace(old, context_id=new_context_id, mode=new_mode, bindings=new_bindings)
+        authored_bindings = None
+        previous_readiness_revision = self._readiness_behavior_revision() if self.model is not None else ""
+        if (
+            bindings is not None and new_bindings and not self._readiness_switching
+            and new_context_id == self.workspace.id
+        ):
+            defaults = dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True))
+            drafted = dict(new_bindings)
+            authored_bindings = {
+                gesture: drafted.get(gesture, self.studio_authored_bindings.get(gesture, defaults[gesture]))
+                for gesture in self.vocabulary.action_ids
+            }
         if not self.pause():
             return False
         self.manual_context_id = new_context_id
@@ -1279,10 +1554,10 @@ class Window(QMainWindow):
         if self.routing_manual_only:
             if self.worker is not None:
                 self.worker.requestInterruption()
-        else:
-            self.routing.configure(
-                self.profile, self._model_version(), new_context_id, dict(new_bindings), new_mode,
-            )
+        routing_bindings = dict(new_bindings) or self._readiness_bindings()
+        self.routing.configure(
+            self.profile, self._model_version(), new_context_id, routing_bindings, new_mode,
+        )
         self.state.setText("Paused after Studio context change. Resume and show NEUTRAL.")
         self.prediction.setText("Prediction: awaiting new camera session")
         self.feedback.setText(
@@ -1297,6 +1572,10 @@ class Window(QMainWindow):
                   "timestamp": time.monotonic()})
         if new_context_id != self.quick_actions_context_id:
             self.quick_actions_active = False
+        if authored_bindings is not None:
+            self.studio_authored_bindings = authored_bindings
+            if previous_readiness_revision != self._readiness_behavior_revision():
+                self._invalidate_readiness("simulation settings changed")
         self.render_studio_status()
         return True
 
@@ -1419,6 +1698,7 @@ class Window(QMainWindow):
             context_id=self.workspace.id,
             bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
         )
+        self._invalidate_readiness("deck changed")
         self.set_deck_file_status(f"Loaded deck: {deck.title}.")
         self.render_card()
         return True
@@ -1537,6 +1817,7 @@ class Window(QMainWindow):
             binding.gesture_id for binding in stage.bindings
             if binding.gesture_id not in self.vocabulary.action_ids
         ] if stage else []
+        self._invalidate_readiness_if_revision_changed("workspace changed")
         if mismatch:
             self.set_deck_file_status(
                 f"Workspace loaded: {workspace.title}. Stage gestures {', '.join(mismatch)} "
@@ -1642,6 +1923,7 @@ class Window(QMainWindow):
             return False
         if not self.configure_studio():
             return False
+        self._invalidate_readiness("camera selection changed")
         self.camera_index = index
         self.camera_picker.setValue(index)
         self.start_button.setEnabled(self._can_start_studio_camera())
@@ -1668,9 +1950,11 @@ class Window(QMainWindow):
                 f"margin {model.config.margin:g} | local processing")
         if not self.pause():
             raise ValueError("Save the current evaluation trace before changing the model")
+        self._invalidate_readiness("model or profile changed")
         was_manual_only = self.routing_manual_only
         was_quick_actions = self.quick_actions_active
         self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
+        self.studio_authored_bindings = dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True))
         saved_profile = profile_display_name is not None
         self.selected_profile_id = profile if saved_profile else None
         self.selected_profile_name = profile_display_name or ""
@@ -1845,6 +2129,7 @@ class Window(QMainWindow):
         if not self.pause():
             self.notice.setText("Guest mode not changed: save the current trace or enrolment trial first.")
             return False
+        self._invalidate_readiness("Guest mode selected")
         self._clear_studio_model_to_manual(
             context_id=context_id,
             mode=mode,
@@ -1874,6 +2159,8 @@ class Window(QMainWindow):
         if not self.prepare_studio_profile_delete(profile_id):
             return False
         active = self.selected_profile_id == profile_id
+        if active:
+            self._invalidate_readiness("active profile deleted")
         self._deleted_profile_ids.add(profile_id)
         if self.pending_profile_id == profile_id:
             self.pending_profile_id = None
@@ -1939,6 +2226,7 @@ class Window(QMainWindow):
             self.apply_camera_button.setEnabled(True)
             self.load_progress.hide()
             self.start_button.setEnabled(self._can_start_studio_camera())
+            self.render_readiness_status()
 
     def card_topic_text(self) -> str:
         title = self.viewer.current_card.title
@@ -2058,8 +2346,11 @@ class Window(QMainWindow):
                   "model": self.model.to_config() if hasattr(self.model, "to_config") else None})
 
     def pause(self):
+        readiness_restored = True
+        if self.studio and self.readiness_check is not None and not self._readiness_switching:
+            readiness_restored = self._cancel_readiness_check("Readiness cancelled; camera paused.")
         enrolment_saved = self._stop_enrolment_for_pause()
-        return self._pause_capture_only() and enrolment_saved
+        return readiness_restored and self._pause_capture_only() and enrolment_saved
 
     def finish_evaluation_trace(self):
         trace = self.evaluation_trace
@@ -2305,6 +2596,7 @@ class Window(QMainWindow):
                             event_id=event.event_id,
                             identity=identity,
                         )
+                        self._record_readiness_result(event, result)
                         self.log({
                             "type": "studio_simulation", "source": "gesture",
                             "event_id": event.event_id, "command": event.command,
@@ -2345,6 +2637,8 @@ class Window(QMainWindow):
             self.worker.wait()
             self.worker = None
             self.finish_evaluation_trace()
+            if self.studio and self.readiness_check is not None:
+                self._cancel_readiness_check(error or "Readiness cancelled; camera stopped.")
             control.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
             if self.studio:

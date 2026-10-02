@@ -53,7 +53,6 @@ class Controller:
         self._neutral_started_at: float | None = None
         self._candidate: _Candidate | None = None
         self._classifier_reject_started_at: float | None = None
-        self._event_counter = 0
 
     @property
     def executable_gesture_ids(self) -> frozenset[str]:
@@ -153,9 +152,8 @@ class Controller:
 
         self.state = "LATCHED"
         self.progress = 1.0
-        self._event_counter += 1
         return CommandEvent(
-            event_id=f"{self.session_id}:{self.profile_id}:{self._event_counter}",
+            event_id=str(uuid.uuid4()),
             session_id=self.session_id,
             profile_id=self.profile_id,
             frame_id=prediction.frame_id,

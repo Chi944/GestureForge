@@ -5,6 +5,11 @@ not a changed model or a new measured result. Private participant data and priva
 reports were not opened for this work. Findings below come from the already
 committed [GF-P28 checkpoint](STARTER_EVALUATION_CHECKPOINT.md) and model code.
 
+This preserves the original diagnostic and experiment proposal. PR #19 now
+supplies the [bounded comparison](GF_P11_BOUNDED_COMPARISON.md), reporting no
+qualifying candidate. Integration review repaired reproducibility and evidence
+consistency; the private measurements are unchanged and have not been rerun here.
+
 ## What the baseline already establishes
 
 | Held-out participant | NEUTRAL result | UNKNOWN valid-feature result | Implication |
@@ -70,10 +75,10 @@ These example paths do not assert that those exact local files exist. No private
 diagnostic run was performed in this implementation session. Software tests use
 generated prediction records and a generated-data run of the existing evaluator.
 
-## Bounded next experiment, before any new final testing
+## Original bounded experiment proposal
 
-Keep the fixed-default baseline intact. Treat the following as a later development
-experiment rather than a retroactive improvement to its reported results:
+The proposal below led to PR #19's bounded development comparison. It preserves
+the fixed-default baseline and does not improve its historical reported results:
 
 1. For each outer held-out person, select settings using only the other two people.
    In inner folds, fit scaler/classifier on one person and validate positives and
@@ -101,11 +106,11 @@ experiment rather than a retroactive improvement to its reported results:
    splitting. Freeze the final configuration before evaluation on the independent
    new participants required by the brief.
 
-Before implementation, inspect permitted saved-case diagnostics to decide whether
-this bounded experiment is worthwhile. If feature overlap prevents useful
-separation, document the limitation; request targeted capture repair only after a
-specific collection defect is evidenced. Do not infer a defect simply from low
-accuracy. Standard feature normalization and the prediction API remain unchanged.
+The supplied comparison found no qualifying setting in this grid. Request
+targeted capture repair only after a specific collection defect is evidenced;
+low accuracy alone does not establish a defect. Standard feature normalization
+and the prediction API remain unchanged. The next delivery work is GF-P07's real
+enrolment walkthrough and GF-P12's longer personal rehearsal, not starter release.
 
 The profile selector is a separate component in this delivery. Shared-camera
 enrolment is now integrated on main and awaits a human walkthrough. No starter
