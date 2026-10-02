@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-02T15:45:43.746239+00:00",
+  "timestamp_utc": "2026-10-02T17:04:28.765464+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.232,
+      "seconds": 0.236,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 2.713,
+      "seconds": 2.132,
       "stdout": "Success: no issues found in 69 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 256.984,
-      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 38%]\n........................................................................ [ 50%]\n................s....................................................... [ 63%]\n........................................................................ [ 76%]\n........................................................................ [ 89%]\n.............................................................            [100%]\n564 passed, 1 skipped in 241.73s (0:04:01)\n",
+      "seconds": 242.599,
+      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 37%]\n........................................................................ [ 50%]\n....................s................................................... [ 63%]\n........................................................................ [ 75%]\n........................................................................ [ 88%]\n...................................................................      [100%]\n570 passed, 1 skipped in 231.07s (0:03:51)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.733,
+      "seconds": 3.804,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 4.234,
+      "seconds": 4.545,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 2.586,
+      "seconds": 2.983,
       "stdout": "",
       "stderr": ""
     }
@@ -56,5 +56,32 @@
   "limitations": [
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
-  ]
+  ],
+  "followup_verification": {
+    "timestamp_utc": "2026-10-02T17:06:16.893643+00:00",
+    "reason": "After the full 570-test run, independent review repaired only unavailable Git-status provenance in packaging. These checks validate that final delta including its new regression.",
+    "checks": [
+      {
+        "command": "python -m pytest -q tests/test_package_release.py",
+        "returncode": 0,
+        "seconds": 5.739,
+        "stdout": ".............                                                            [100%]\n13 passed in 4.78s\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m ruff check gestureforge tests scripts",
+        "returncode": 0,
+        "seconds": 0.213,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 0,
+        "seconds": 0.728,
+        "stdout": "Success: no issues found in 69 source files\n",
+        "stderr": ""
+      }
+    ]
+  }
 }

@@ -1,4 +1,6 @@
 import os
+import json
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -299,5 +301,136 @@ def test_full_summary_stops_manual_request_before_effect(qapp, monkeypatch):
         window.manual_quick_action(action)
         assert launcher.calls == []
         assert "record limit" in window.feedback.text().lower()
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("mode", [RoutingMode.PREVIEW, RoutingMode.LIVE])
+def test_quick_actions_activation_text_and_rebinding_match_mode(qapp, mode):
+    window, launcher = window_with_dispatcher()
+    try:
+        bind_builtin(window)
+        assert window.configure_studio(mode=mode)
+        assert window.use_quick_actions_context()
+        if mode == RoutingMode.LIVE:
+            assert "LIVE manual" in window.feedback.text()
+            assert "Start camera" not in window.quick_actions_widget.status.text()
+        else:
+            assert "simulate" in window.feedback.text()
+        previous = window.routing.snapshot
+        window.quick_actions_widget._publish(window.quick_registry.copy())
+        assert window.routing_manual_only
+        assert window.manual_context_id == window.quick_actions_context_id
+        assert window.routing.snapshot.session_id != previous.session_id
+        assert not window.quick_actions_active
+        assert window.routing.state == "PAUSED"
+        assert launcher.calls == []
+    finally:
+        window.close()
+
+
+def test_invalid_target_test_records_bounded_failure_and_honors_host_guards(qapp, monkeypatch):
+    window, launcher = window_with_dispatcher()
+    try:
+        widget = window.quick_actions_widget
+        widget.target_id.setText("C:/private/unbound-reference.txt")
+        widget._test()
+        outcome = window.session_summary.outcomes[-1]
+        assert outcome.status == "failed"
+        assert outcome.source == "manual"
+        assert outcome.action is None
+        assert "private" not in outcome.reason
+        assert launcher.calls == []
+        with monkeypatch.context() as patch:
+            patch.setattr(window.session_summary, "ensure_capacity", Mock(side_effect=ValueError("record limit reached")))
+            widget._test()
+            assert len(window.session_summary.outcomes) == 1
+            assert "record limit" in window.feedback.text()
+            window._closing = True
+            widget._test()
+            assert len(window.session_summary.outcomes) == 1
+            assert "finish Studio work" in window.feedback.text()
+            window._closing = False
+    finally:
+        window.close()
+
+
+def test_harbor_guest_manual_workflow_recovers_without_context_loss_or_replay(qapp, tmp_path):
+    window = Window(model=None, studio=True)
+    launcher = FakeLauncher()
+    window.dispatcher.launcher = launcher
+    reference = tmp_path / "private-reference.txt"
+    reference.write_text("Fictional reference", encoding="utf-8")
+    try:
+        assert window.load_studio_workspace(Path(__file__).resolve().parents[1] / "assets/harbor_workspace.json")
+        assert window.runbook is not None and window.routing is not None
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        candidate = window.quick_registry.copy()
+        for target in (
+            Target("calculator", "Calculator", TargetKind.BUILTIN, "calculator"),
+            Target("product-reference", "Reference", TargetKind.FILE, str(reference)),
+            Target("resource-folder", "Resources", TargetKind.FOLDER, str(tmp_path)),
+            Target("recovery-reference", "Recovery", TargetKind.FILE, str(reference)),
+        ):
+            candidate.configure(target)
+        window.quick_actions_widget._publish(candidate)
+        assert window.manual_context_id == "intro"
+        assert launcher.calls == []
+
+        for stage_id in ("intro", "budget", "reference", "resources"):
+            assert window.runbook.current_stage.id == stage_id
+            if stage_id != "intro":
+                window.runbook_widget.manual_actions[1].click()
+                assert window.session_summary.outcomes[-1].context_id == stage_id
+                assert window.session_summary.outcomes[-1].status == "launch_requested"
+            window.runbook_widget.complete.click()
+            window.runbook_widget.continue_button.click()
+            assert window.runbook.paused and window.routing.state == "PAUSED"
+        assert len(launcher.calls) == 3
+        assert window.session_summary.counts()["acknowledged_completion"] == 4
+
+        window.runbook_widget.manual_actions[2].click()
+        assert [card.id for card in window.viewer.bookmarks] == ["discussion"]
+        reference.unlink()  # Only the disposable fixture is moved/missing.
+        window.quick_actions_widget.target_id.setText("recovery-reference")
+        window.quick_actions_widget._test()
+        failure = window.session_summary.outcomes[-1]
+        assert failure.status == "failed" and failure.context_id == "discussion"
+        assert failure.action == Action(ActionType.OPEN_SHORTCUT, "recovery-reference")
+        assert len(launcher.calls) == 3
+
+        reference.write_text("Restored fictional reference", encoding="utf-8")
+        previous_session = window.routing.snapshot.session_id
+        window.quick_actions_widget._publish(window.quick_registry.copy())
+        assert window.manual_context_id == "discussion"
+        assert window.routing.snapshot.session_id != previous_session
+        assert window.manual_mode == RoutingMode.LIVE
+        assert len(launcher.calls) == 3
+        window.runbook_widget.manual_actions[1].click()
+        assert window.session_summary.outcomes[-1].context_id == "discussion"
+        assert len(launcher.calls) == 4
+        window.runbook_widget.complete.click()
+
+        before_reload = tmp_path / "before-reload.json"
+        window.session_summary.export(before_reload)
+        payload = before_reload.read_text(encoding="utf-8")
+        assert str(reference) not in payload and "private-reference" not in payload
+        assert json.loads(payload)["counts"]["failed"] == 1
+        saved = tmp_path / "session.json"
+        assert window.save_studio_session(saved)
+        assert window.restore_studio_session(saved)
+        assert window.runbook.current_stage.id == "discussion"
+        assert [card.id for card in window.viewer.bookmarks] == ["discussion"]
+        assert window.runbook.paused and window.routing.state == "PAUSED"
+        assert len(launcher.calls) == 4
+        assert window.session_summary.outcomes == []
+        window.runbook_widget.continue_button.click()
+        window.runbook_widget.complete.click()
+        window.runbook_widget.continue_button.click()
+        assert window.runbook.finished
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.session_summary.outcomes[-1].status == "unchanged"
+        assert len(launcher.calls) == 4
+        assert window.worker is None
     finally:
         window.close()

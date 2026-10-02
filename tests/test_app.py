@@ -813,14 +813,17 @@ def test_studio_quick_actions_activate_explicitly_and_simulate_with_custom_vocab
     window.quick_actions_widget.state_path = window.studio_state_folder / "quick-actions-targets.json"
 
     try:
+        assert window.routing is not None
+        previous = window.routing.snapshot
         candidate = window.quick_registry.copy()
         candidate.configure(Target("calculator", "Calculator", TargetKind.BUILTIN, "calculator"))
         candidate.bind_quick(("calculator", None, None))
         window.quick_actions_widget._publish(candidate)
 
         assert window.quick_actions_widget.state_path.exists()
-        assert window.routing_manual_only
-        assert window.manual_context_id == window.quick_actions_context_id
+        assert window.routing.snapshot.context_id == previous.context_id
+        assert window.routing.snapshot.bindings == previous.bindings
+        assert not window.quick_actions_active
         assert "Use Quick Actions" in window.quick_actions_widget.status.text()
 
         assert window.use_quick_actions_context()

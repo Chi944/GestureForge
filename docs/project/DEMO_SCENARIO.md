@@ -2,11 +2,11 @@
 
 Owner: Deston · GF-P32 · Authored 30 September 2026
 
-This is fictional product content and a test protocol, not measured results. The ten-card deck is `assets/corporate_demo_deck.json`; the local reference is `assets/corporate_reference.txt`. Javier integrates these through the validated workspace/runbook importer. The current Studio preview does not yet execute this runbook, persist bookmarks or open resources.
+This is fictional product content and a test protocol, not measured results. The ten-card deck is `assets/corporate_demo_deck.json`; the local reference is `assets/corporate_reference.txt`. Load the supplied `assets/harbor_workspace.json` in Studio to use the six-stage runbook. Explicit **Live (manual controls)** supports manual stage/deck actions, bookmarks, saved sessions and validated Windows resource requests. Preview/Rehearsal simulates typed requests. LIVE gestures remain blocked until the longer personal readiness handoff is integrated.
 
 ## Six-stage runbook
 
-These are authoring instructions for the agreed stage editor, not a second executable workspace schema. G1/G2/G3 mean the selected profile's three action IDs; display the actual gesture names and current action meanings. Map every slot explicitly. Stage changes show the linked card and require neutral; they never open a resource automatically. Previous-stage and Continue/Finish buttons are always present.
+The supplied workspace implements the mappings below. G1/G2/G3 mean the selected profile's three action IDs; display the actual gesture names and current action meanings. A vocabulary mismatch leaves gestures unavailable while the manual stage buttons remain usable. Stage changes show the linked card and stay paused; gesture simulation requires an explicit Start and neutral rearm. Stages never open a resource automatically. Previous-stage and Continue/Finish buttons are always present.
 
 | Stage / linked card | Presenter instruction | G1 | G2 | G3 | Completion evidence |
 |---|---|---|---|---|---|
@@ -29,6 +29,19 @@ Cards `outcomes`, `team`, `recovery` and `resume` supply supporting instructions
 - Camera is a separate handoff check: pause, confirm capture-worker shutdown, request Windows Camera launch, return, close the other camera consumer as necessary, and resume manually. Do not make this a prerequisite for the six-stage product task.
 
 Portable workspaces export only semantic shortcut IDs and labels. Paths, URLs, personal profiles and target bindings stay on each machine. Test each binding using a button before enabling its gesture. Record `launch requested`, failure or explicit task acknowledgement separately.
+
+## Manual walkthrough available now
+
+This is a development acceptance run, separate from the later participant comparison. No webcam, profile or new gesture samples are needed.
+
+1. Run `.\run.cmd --studio`, choose **Load workspace...** and select `assets/harbor_workspace.json`. Select **Live (manual controls)** in **Studio action mode**, then **Apply and pause**.
+2. In **Quick Actions**, create the four required targets above using their exact opaque IDs. Save each target. Local target edits pause Studio and preserve the active runbook stage. **Use Quick Actions** explicitly switches to standalone slots; it is unnecessary for this runbook walkthrough.
+3. Return to **Runbook**. Perform stages 1–4 using their labelled action buttons and **Continue**. Observe each opened application/resource yourself; use **I completed this stage's task** only after the requested task succeeds. A launch request alone is not completion. No camera restart is needed for manual buttons.
+4. At **discussion**, bookmark once. Move only the disposable recovery reference aside and request it. Confirm a useful failure and an increased **Failed** count. Restore/rebind that test file, verify the context still says `discussion`, then explicitly retry once. Repairing or returning to Studio must not open it automatically.
+5. Export the current results from **Session summary** before **Save session...** and **Restore session...**. Reload must preserve the discussion stage and bookmark, remain paused and replay no launch. Restoration archives the previous results locally and starts a new summary; keep both segments for the walkthrough record.
+6. Continue to **finish**, review the results, acknowledge actual completion and select **Finish**. Export the final segment. Record the source commit, Windows version, device, actual failures/retries and observed outcomes under ignored `experiments/local/`. Do not label this manual run as gesture or participant-study success.
+
+`tests/test_app_dispatch.py` also runs the six-stage Guest/manual flow with a fake launcher and disposable files, including repair, context attribution, save/reload and no replay. That regression checks software integration; it does not prove that an external application appeared or a person completed its task.
 
 ## Evaluation procedure fixed before collection
 

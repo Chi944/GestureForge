@@ -529,6 +529,7 @@ class Window(QMainWindow):
             )
             self.quick_actions_widget.set_gesture_ids(tuple(self.vocabulary.action_ids))
             self.quick_actions_widget.action_requested.connect(self.manual_quick_action)
+            self.quick_actions_widget.target_validation_failed.connect(self.record_quick_target_failure)
             self.quick_actions_widget.bindings_changed.connect(self.accept_quick_bindings_change)
             self.quick_actions_widget.focus_lost.connect(self.pause)
             quick_layout.addWidget(self.quick_actions_widget)
@@ -1360,8 +1361,7 @@ class Window(QMainWindow):
         self.dispatcher.runbook = self.runbook
         self.dispatcher.summary = self.session_summary
 
-    def _dispatch_action(self, action: Action, *, event_id: str | None = None,
-                         source: str = "manual"):
+    def _can_request_manual_action(self) -> bool:
         if (
             not self.studio or self.routing is None or self._closing
             or self.model_loader is not None or self._profile_selector_change_blocked()
@@ -1369,7 +1369,14 @@ class Window(QMainWindow):
             or (self.isVisible() and not self.isActiveWindow())
         ):
             self.feedback.setText("Action not requested: finish Studio work before dispatch.")
+            return False
+        return True
+
+    def _dispatch_action(self, action: Action, *, event_id: str | None = None,
+                         source: str = "manual"):
+        if not self._can_request_manual_action():
             return None
+        assert self.routing is not None
         if not self._reserve_session_record():
             return None
         mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
@@ -1449,9 +1456,11 @@ class Window(QMainWindow):
         return True
 
     def accept_quick_bindings_change(self, _bindings) -> None:
-        if not self.studio:
+        if not self.studio or self.routing is None:
             return
-        if self.configure_studio(context_id=self.quick_actions_context_id, bindings={}):
+        context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
+        # Rebinding a runbook resource must not replace the current stage context.
+        if self.configure_studio(bindings={} if context_id == self.quick_actions_context_id else None):
             self.quick_actions_active = False
             self._invalidate_readiness_if_revision_changed("Quick Actions bindings changed")
             self.quick_actions_widget.status.setText(
@@ -1472,11 +1481,18 @@ class Window(QMainWindow):
             return False
         if bindings:
             self.quick_actions_active = True
-            self.feedback.setText("Quick Actions active for gesture simulation. Manual target tests also simulate.")
-            self.quick_actions_widget.status.setText("Quick Actions active. Start camera explicitly and show NEUTRAL.")
+            live = self.manual_mode == RoutingMode.LIVE
+            self.feedback.setText(
+                "Quick Actions active. LIVE manual target requests can open local resources; gestures remain blocked."
+                if live else "Quick Actions active for gesture simulation. Manual target tests also simulate."
+            )
+            self.quick_actions_widget.status.setText(
+                "Use a target button to request one launch. Acknowledge completion separately."
+                if live else "Quick Actions active. Start camera explicitly and show NEUTRAL to simulate."
+            )
             return True
         self.quick_actions_active = False
-        self.feedback.setText("Quick Actions has no valid slots; manual target tests still simulate.")
+        self.feedback.setText("Quick Actions has no valid slots. Bind a local target, then activate the slots.")
         self.quick_actions_widget.status.setText("Quick Actions paused: bind at least one valid local target.")
         return False
 
@@ -1486,11 +1502,17 @@ class Window(QMainWindow):
             or action.shortcut_id is None or self.model_loader is not None or self._closing
         ):
             return
-        try:
-            self.quick_registry.resolve(action.shortcut_id)
-        except (ValueError, OSError):
-            pass
         self._dispatch_action(action, source="Quick Action")
+
+    def record_quick_target_failure(self, target_id: str, _reason: str) -> None:
+        if not self._can_request_manual_action():
+            return
+        # Only saved opaque IDs enter exports; form text and OS errors may contain paths.
+        action = next((Action(ActionType.OPEN_SHORTCUT, target.id)
+                       for target in self.quick_registry.targets if target.id == target_id), None)
+        reason = "Target test failed: missing, unbound or invalid target. Repair the local binding and test again."
+        if self._record_session_outcome(source="manual", status="failed", action=action, reason=reason):
+            self.feedback.setText(reason)
 
     def accept_workspace_widget_change(self, workspace: Workspace) -> None:
         if not self.use_studio_workspace(workspace):

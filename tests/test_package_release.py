@@ -23,6 +23,62 @@ def test_source_package_excludes_untracked_private_data(tmp_path, monkeypatch):
     assert not any(name.startswith("gestureforge/data/local/") for name in names)
 
 
+def test_project_package_is_separate_studio_handoff_without_private_data(tmp_path, monkeypatch):
+    root = _source_repo(tmp_path)
+    _tracked_studio_files(root)
+    _pilot_dataset(root)
+    source_target = root / "releases" / package_release.SOURCE_ARCHIVE
+    private_target = root / "releases" / package_release.PRIVATE_ARCHIVE
+    source_target.parent.mkdir()
+    source_target.write_bytes(b"assignment source")
+    private_target.write_bytes(b"private marker")
+    monkeypatch.setattr(package_release, "ROOT", root)
+
+    package_release.main(["--project"])
+
+    assert source_target.read_bytes() == b"assignment source"
+    assert private_target.read_bytes() == b"private marker"
+    names = _zip_names(root / "releases" / package_release.PROJECT_ARCHIVE)
+    assert "gestureforge/assets/demo_deck.json" in names
+    assert "gestureforge/gestureforge/app.py" in names
+    assert "gestureforge/experiments/pilot.json" in names
+    assert not any(name.startswith("gestureforge/data/local/") for name in names)
+
+    manifest = json.loads((root / "releases/gestureforge-studio-source.json").read_text())
+    assert manifest["archive"] == package_release.PROJECT_ARCHIVE
+    assert manifest["label"] == "development Studio source handoff"
+    assert "Not a final release or release acceptance package" in manifest["note"]
+    assert manifest["source_commit"] is None
+    assert manifest["source_dirty"] is True
+    assert "No source commit" in manifest["source_state_note"]
+
+
+def test_project_and_pilot_modes_are_mutually_exclusive():
+    with pytest.raises(SystemExit) as exc:
+        package_release.main(["--project", "--include-pilot"])
+
+    assert exc.value.code == 2
+
+
+def test_source_state_keeps_dirty_unknown_when_status_fails(tmp_path, monkeypatch):
+    def fake_git_output(_root: Path, *args: str) -> str | None:
+        if args == ("rev-parse", "HEAD"):
+            return "abc123"
+        if args == ("status", "--porcelain"):
+            return None
+        raise AssertionError(args)
+
+    monkeypatch.setattr(package_release, "_git_output", fake_git_output)
+
+    state = package_release._source_state(tmp_path)
+
+    assert state == {
+        "source_commit": "abc123",
+        "source_dirty": None,
+        "source_state_note": "Git status was unavailable; source_dirty is unknown.",
+    }
+
+
 @pytest.mark.parametrize("folder", [".local", ".cache"])
 def test_source_package_refuses_accidentally_tracked_working_files(tmp_path, folder):
     root = _source_repo(tmp_path)
@@ -118,6 +174,18 @@ def _source_repo(root: Path) -> Path:
     subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.DEVNULL)
     subprocess.run(["git", "add", "README.md", "experiments/pilot.json"], cwd=root, check=True)
     return root
+
+
+def _tracked_studio_files(root: Path) -> None:
+    (root / "assets").mkdir()
+    (root / "gestureforge").mkdir()
+    (root / "assets/demo_deck.json").write_text("{}\n", encoding="utf-8")
+    (root / "gestureforge/app.py").write_text("STUDIO = True\n", encoding="utf-8")
+    subprocess.run(
+        ["git", "add", "assets/demo_deck.json", "gestureforge/app.py"],
+        cwd=root,
+        check=True,
+    )
 
 
 def _pilot_dataset(root: Path):

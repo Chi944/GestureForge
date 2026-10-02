@@ -2,6 +2,20 @@
 
 The graded source contains the application, tests, guides, traceability and measured evidence. Reports, declaration, prompt and decision logs, participant samples, environments, working drafts and archived checklists stay out of GitHub and the source ZIP.
 
+## Studio development handoff
+
+For the current project work, run this from the reviewed project checkout:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/package_release.py --project
+```
+
+This writes `releases/gestureforge-studio-source.zip` and a matching JSON manifest with archive checksum, source commit and working-tree state. It includes tracked Studio source, guides, tests and corporate assets; no participant data, profiles, local target paths, Word reports or environments. A dirty checkout is labelled as uncommitted work based on the reported commit. Commit reviewed files before creating a reproducible handoff.
+
+The Studio ZIP is a development source handoff, not final release acceptance. It does not replace either assignment archive. On another Windows laptop, extract it, open `gestureforge`, run `setup.cmd` with internet for the initial dependencies/model download, then `run.cmd --studio`. Rebind local targets on that machine and follow the [manual walkthrough](../docs/project/DEMO_SCENARIO.md#manual-walkthrough-available-now). Test offline use after setup separately. macOS uses the [Apple Silicon setup](../README.md#apple-silicon-mac); Windows external shortcuts remain unsupported there. Do not combine `--project` with `--include-pilot`.
+
+## Retained assignment packages
+
 After staging only reviewed submission files:
 
 ```powershell

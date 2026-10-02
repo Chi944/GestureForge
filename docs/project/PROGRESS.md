@@ -1,6 +1,6 @@
 # GestureForge Studio progress
 
-Snapshot: 2 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 3 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
 
 ## Completion measure
 
@@ -92,10 +92,18 @@ This advances **GF-P16 to In Progress**. It deliberately keeps LIVE camera Start
 
 Final local verification passes **564 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (69 source files), assignment/Studio startup and synthetic evaluation. Independent code review approves the final slice and architecture review returns CLEAR. Review repaired shortcut-label lookup, the footer's bypass of simulation, stage pause state and misleading mode/log messages. Regression checks cover acknowledgement failure/retry, retained duplicate IDs, capacity/preservation guards and the longer-readiness boundary. A native Windows UI check at 900x620 confirmed Preview leaves the deck unchanged, manual LIVE advances and bookmarks with capture off, and the layout has no horizontal overflow. External-launch tests use fake adapters; no new native target or webcam acceptance is claimed.
 
+## Current integration — runbook recovery and Studio handoff
+
+The latest integration fixes preserve the active deck/runbook context when a local resource is repaired; explicit standalone Quick Actions still requires reactivation after edits. Failed **Test selected target** validation now enters the session summary with a bounded reason and no private path/form text. LIVE instructions describe manual launches correctly. The six-stage Harbor regression covers Guest/manual actions, missing-target recovery, context attribution, bookmarks, paused save/reload and no replay through a fake launcher. Follow the [manual Windows walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now) for actual opening and task observations.
+
+`scripts/package_release.py --project` prepares a separate development Studio ZIP and checksum/source-state manifest, preserving the assignment archive names. It carries tracked source and assets without private samples/profiles or Word documents. This advances handoff preparation, not GF-P23's fresh-machine/stability acceptance or GF-P27's final submission. No additional full task is accepted; percentages above are unchanged.
+
+Local verification passed **570 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (69 source files), both startup modes and synthetic evaluation. Review then corrected an unavailable Git-status result being reported as clean: the final packaging check passes **13 tests**, including that new regression, and full-repository lint/types pass again. Both independent review lanes approved the final change. These checks use fake launch adapters and generated fixtures, not new native launches, webcam observations or participant measurements.
+
 ## Next deliverables
 
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Complete GF-P07's real Enrolment walkthrough and GF-P12's longer personal rehearsal/negative-interval protocol using the shared controller and summary records. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.
 - **Javier:** GF-P05 is accepted. Verify the integrated manual LIVE path for GF-P13/GF-P34, including each target type, missing-target failure, Camera shutdown/recovery and no action replay on focus return; then record GF-P19's checks on both laptops. Preserve PR18's existing native evidence. P03 is reported collected in PR #13; collect repair data only for a diagnosed defect. Sync main into `codex/javier-shortcuts`; do not reapply the delivered patch or duplicate Deston's shell integration.
-- **Deston:** Profiles and shared-camera Enrolment are attached. Validate the short check with real personal gestures, review Hau Jie's longer GF-P12 readiness handoff and attach its exact revision-bound result before enabling LIVE gestures. Use the integrated manual LIVE controls to verify the supplied scenario with Javier now. Own interface design, integration review, verification and release decisions; complete live acceptance using actual participant and Windows checks.
+- **Deston:** run the six-stage manual walkthrough with Javier now; no webcam or new data is needed for it. Retain both summary segments around reload and record actual openings, failures, acknowledgements and recovery. Then validate the short check with real personal gestures, review Hau Jie's longer GF-P12 readiness handoff and attach its exact revision-bound result before enabling LIVE gestures. Own interface design, integration review, verification and release decisions; complete live acceptance using actual participant and Windows checks.
 
 Use [TEAM_GUIDE.md](TEAM_GUIDE.md) and the individual briefs for file ownership, test expectations and PR rules. Teammates push their own branches; Deston reviews and merges into main. Move cards to Done only with linked acceptance evidence.
