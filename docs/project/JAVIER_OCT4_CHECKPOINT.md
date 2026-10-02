@@ -1,8 +1,8 @@
 # Javier — 4 October 2026 checkpoint
 
-Prepared 2 October. Current priorities: GF-P05 native Windows launch evidence and demonstrated component defects. Studio shell integration remains Deston's responsibility. This checkpoint preserves Javier's PR #15 handoff and its historical Linux software results; it does not replace current integration verification or add hardware evidence.
+Prepared 2 October. This checkpoint preserves Javier's PR #15 handoff and its historical Linux software results. Later PR #18 supplies [laptop-A observations and the accepted GF-P05 repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md); those native observations were not independently repeated by integration review. Current priorities are GF-P13/GF-P34's dispatcher and Quick Actions integration contract, followed by GF-P19's integrated both-laptop evidence. Studio shell integration remains Deston's responsibility.
 
-## Recorded checkpoint state
+## Historical PR #15 checkpoint state
 
 - DONE: sync reviewed main `a6fe7b6` into `codex/javier-shortcuts` as `1034089`, preserving branch work and history without reapplying the ZIP.
 - DONE: combined Linux/Python 3.12 offscreen checks: 373 tests, Ruff, mypy and four startup smokes pass. Exact output: [historical software checks](../evidence/javier-oct4-software-checks.json).
@@ -35,9 +35,9 @@ Standard UNKNOWN sequence for reference: trials 1–3 index finger only; 4–6 i
 
 For an agreed repair batch, privately transfer its manifests and each exact `feature_file` referenced by them to Hau Jie, with internal-use permission and actual setup notes. A complete three-part batch contains six current files; verify any transfer includes all files referenced by the supplied manifests. Do not upload numeric participant features, private consent, detailed evaluation outputs or local probe logs to a PR. No transfer has been sent by this assistant; it requires the actual dataset and a verified private destination.
 
-## Real Windows launches and recovery
+## Original Windows probe checklist (reference)
 
-Follow the canonical [Windows launch procedure](../evidence/WINDOWS_LAUNCH_PROCEDURE.md). Use a unique output filename per attempt, since the existing probe writes to its chosen path:
+GF-P05's later accepted evidence supersedes this checklist as a pending task; no repeat of that probe is requested. Retain the steps below as reference. Future GF-P19 runs follow the canonical [Windows launch procedure](../evidence/WINDOWS_LAUNCH_PROCEDURE.md) and use a unique output filename per attempt:
 
 ```powershell
 .\.venv\Scripts\python.exe -m scripts.windows_launch_probe --laptop-id laptop-A --camera 0 --output ".local\windows-probe-laptop-A-oct4-01.json"

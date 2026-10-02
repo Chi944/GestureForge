@@ -1,6 +1,6 @@
 # Javier Windows evidence — 2 October 2026
 
-Source branch: `codex/javier-shortcuts` at `675d693` before the evidence-fix commit.
+Initial run source branch: `codex/javier-shortcuts` at `675d693` before the evidence-fix commit.
 Raw evidence remains in the ignored local `.local/` directory and is not committed.
 
 ## Environment
@@ -33,7 +33,19 @@ Raw evidence remains in the ignored local `.local/` directory and is not committ
 1. A failed Camera dispatch could receive an observer `visible=true` confirmation because confirmation always targeted the latest dispatch. The probe now keeps a pending confirmation only for `launch_requested` outcomes and refuses absent, failed, or duplicate confirmations.
 2. Quick Actions displayed missing-target validation failures but the probe did not persist them. The widget now emits a validation-failure signal and the probe records `target_validation_failed` with the target ID and reason.
 
-Regression tests cover both paths. These fixes need a fresh Windows probe run before their new JSON event shapes can be treated as Windows-verified.
+Regression tests cover both paths.
+
+## Post-fix verification rerun
+
+A focused rerun started at `2026-10-02T10:20:58Z` on the same laptop and package versions. It recorded:
+
+- a failed Camera dispatch after `camera_handoff_refused`;
+- `observer_confirmation_refused` when a visible confirmation was attempted for that failed dispatch;
+- `target_validation_failed` for the moved disposable TXT;
+- a new `launch_requested` dispatch after restoration, followed by `visible=true` confirmation and manual-return recovery; and
+- clean `probe_closed` shutdown.
+
+Javier reports these corrected JSON evidence paths verified on Windows. Integration review accepted this supplied observer record; it did not independently repeat the native run. The raw rerun remains in ignored `.local/` storage and is not committed.
 
 ## Remaining limitations / NOT RUN
 

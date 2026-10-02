@@ -45,7 +45,7 @@ Current project foundation on `main`:
 | In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
 | Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
 | Personal readiness check | A short simulated check requires two protected activations of each enrolled action, zero wrong activations and completion; its session-local result expires when behaviour changes and never enables real dispatch |
-| Windows launch probe | PR #18 supplies [laptop-A native observations](docs/evidence/WINDOWS_RESULTS_2026-10-02.md); review corrected evidence wording and a Windows test assertion, with a focused repair rerun still required |
+| Windows launch probe | GF-P05 accepted from PR #18's supplied [laptop-A observations and repair rerun](docs/evidence/WINDOWS_RESULTS_2026-10-02.md): visible targets, Camera release/reacquisition and recorded failure/recovery; integrated both-laptop checks remain under GF-P19 |
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
 | Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
 | Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |

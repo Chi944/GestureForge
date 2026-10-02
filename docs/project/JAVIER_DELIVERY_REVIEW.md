@@ -1,6 +1,8 @@
 # Javier component delivery review
 
-Reviewed 1 October 2026 by Deston's integration track using Codex. This is software acceptance for reusable components, not final task, Windows-device or end-to-end product acceptance.
+Reviewed 1 October 2026 by Deston's integration track using Codex. That checkpoint established software acceptance for reusable components, not Windows-device or end-to-end product acceptance.
+
+Current update, 2 October: GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md). The rerun covers the corrected confirmation and missing-target/recovery evidence paths. Native observations remain attributed to Javier; integration review did not independently reproduce them. GF-P13/GF-P34 attachment and GF-P19's broader both-laptop evidence remain separate.
 
 ## Source and accepted boundary
 
@@ -19,14 +21,14 @@ Accepted components: validated decks and bookmarks; atomic JSON storage; portabl
 | Probe could close while its capture thread was still running | Ignore close until capture shutdown is acknowledged; fake-worker timeout/retry regression |
 | A Windows adapter test hard-coded POSIX separators | Use the native Path representation in the assertion |
 
-Windows/Python 3.11 verification is recorded in `docs/project/verification.json`, including tests, Ruff, mypy, assignment/Studio smoke tests and synthetic classifier evaluation. Launch adapters in automated tests are mocked. The probe was not run against hardware.
+At the original review, Windows/Python 3.11 verification covered tests, Ruff, mypy, assignment/Studio smoke tests and synthetic classifier evaluation. Launch adapters in automated tests were mocked; the probe had not yet been run against hardware. Current repository verification is recorded in `docs/project/verification.json`; the later supplied native evidence is linked above.
 
 ## Remaining integration gates
 
-- **Hau Jie:** deliver GF-P06 profile selection/lifecycle and revision-bound readiness. Each person performs their own gestures; Hau Jie owns protocol and quality checks. The [PR #13 checkpoint](STARTER_EVALUATION_CHECKPOINT.md) supplies Hau Jie's P02/P03 collection/validation evidence and poor recognition/rejection results. The evaluator is reviewed and locally tested; private participant measurements are not independently reproduced here. Do not ask Javier to recollect P03 unless Hau Jie requests repair data.
-- **Javier:** run GF-P05 on Windows and later GF-P19 on both laptops. Demonstrate visible Calculator, Camera, permitted file/folder/HTTPS opening, camera release, focus pause, manual recovery and error paths. Use `docs/evidence/WINDOWS_LAUNCH_PROCEDURE.md`; do not replace these with unit tests.
-- **Deston:** manual browsing, custom deck loading, viewer progress save/restore, validated workspace loading, Runbook manual Previous/Continue/Finish/actions and workspace/deck session save/restore are now attached to Studio. Continue profile/readiness and real dispatch integration; respect pause/save failures, stage reset, empty bindings and local target revisions. Real gesture dispatch still waits for readiness integration, followed by the six-stage scenario and live evaluation. No LIVE bypass is added to compensate for missing readiness.
+- **Hau Jie:** profile selection/lifecycle is attached. Complete the real enrolment walkthrough and GF-P12's longer personal rehearsal with revision-bound results. Hau Jie owns protocol and quality checks; private participant measurements are not independently reproduced here. Do not ask Javier to recollect P03 unless Hau Jie requests repair data.
+- **Javier:** prepare GF-P13/GF-P34's bounded dispatcher and Quick Actions integration contract and focused tests with Deston, using [COMPONENT_INTERFACES.md](COMPONENT_INTERFACES.md). GF-P05 is complete. Later GF-P19 verifies integrated target, focus, Camera and error/recovery behaviour on both laptops using the Windows launch procedure.
+- **Deston:** the manual viewer, workspace/runbook, Profiles, Enrolment and Quick Actions are attached. Complete guarded dispatch integration; respect pause/save failures, stage reset, empty bindings and local target revisions. The short simulated readiness check does not enable LIVE or replace the longer personal rehearsal. The six-stage scenario and live evaluation remain separate gates.
 
-Keep teammate branches separate and submit subsequent work through PRs. Component preparation moves Javier's relevant cards to In Progress, not Done. This preserves the original completed-task progress calculation.
+Keep teammate branches separate and submit subsequent work through PRs. At the original review, component preparation alone left the relevant tasks In Progress. Current task acceptance and completed-task progress are recorded in [PROGRESS.md](PROGRESS.md).
 
 The original delivery's PR/video drafts remain local. No private samples, reports, prompt logs or decision logs are included in this change.

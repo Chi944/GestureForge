@@ -127,6 +127,6 @@ reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HA
 
 ## Remaining gates
 
-PR #18 supplies reported laptop-A launch observations; the repaired evidence probe still needs its focused native rerun. Studio now has a short simulated readiness check for a loaded recogniser. Its session-local result does not attach or authorise the LIVE dispatcher. Standard starter availability, longer personal rehearsal, guarded launch integration and both-laptop evidence remain before accepting the integrated product. Keep shared shell,
+GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md); no further GF-P05 rerun is pending. Javier next prepares GF-P13/GF-P34's attachment against this contract, with focused tests for exact snapshots, readiness revisions, duplicate/stale requests, capture-release refusal and simulation-only outcomes. Deston owns shell attachment. Studio's short simulated readiness result does not attach or authorise the LIVE dispatcher. Standard starter availability, longer personal rehearsal, guarded launch integration and GF-P19's broader both-laptop evidence remain before accepting the integrated product. Keep shared shell,
 contracts/controller/routing, capture and recognition/profile changes in their
 owned lanes.
