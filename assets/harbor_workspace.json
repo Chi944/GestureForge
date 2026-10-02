@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "id": "harbor-onboarding",
+  "title": "Harbor Desk — fictional corporate onboarding",
+  "deck": {
+    "schema_version": 1,
+    "deck_id": "harbor-onboarding",
+    "title": "Harbor Desk: a fictional team onboarding demo",
+    "cards": [
+      {
+        "id": "welcome",
+        "title": "Welcome to Harbor Desk",
+        "body": "Harbor Desk is a fictional product used only for this demonstration. Learn a six-step onboarding workflow, try approved local resources and return to the presentation safely."
+      },
+      {
+        "id": "outcomes",
+        "title": "What you will practise",
+        "body": "Navigate a short briefing, estimate a training budget, open a reference and resource folder, bookmark a question, and recover from an unavailable resource. All prices and product claims are invented."
+      },
+      {
+        "id": "team",
+        "title": "Your example team",
+        "body": "A fictional team has eight new colleagues. Each person needs two training sessions. No real employee, customer or company information is used."
+      },
+      {
+        "id": "budget",
+        "title": "Estimate the training budget",
+        "body": "Each fictional session costs 15 credits per person. Open Calculator and calculate 8 × 2 × 15 = 240 credits. Return to GestureForge and explicitly resume. Opening Calculator alone does not complete the task."
+      },
+      {
+        "id": "reference",
+        "title": "Find the onboarding reference",
+        "body": "Open the locally bound product reference. Find the fictional escalation contact: the training coordinator. Return, resume and acknowledge that you found the answer."
+      },
+      {
+        "id": "resources",
+        "title": "Locate the resource folder",
+        "body": "Open the locally bound demo resource folder. Find corporate_reference.txt. Return and resume. The shared workspace stores a semantic resource slot; each computer chooses its own folder."
+      },
+      {
+        "id": "discussion",
+        "title": "Save a discussion point",
+        "body": "Bookmark this card for later discussion. Repeating BOOKMARK must keep one bookmark. Use the bookmark review list to return to it after the demonstration."
+      },
+      {
+        "id": "recovery",
+        "title": "Recover without guessing",
+        "body": "The evaluator will make a dedicated test reference unavailable. Attempt to open it, read the failure message and use the manual retry or rebind path. Do not delete or rename genuine user files."
+      },
+      {
+        "id": "resume",
+        "title": "Pause, save and resume",
+        "body": "Pause and reload the demo. Check the saved position and bookmark. Gesture control must remain paused and no resource may reopen automatically. Resume explicitly and show NEUTRAL before another command."
+      },
+      {
+        "id": "finish",
+        "title": "Review the session",
+        "body": "Review completed steps, launch requests, failures and retries. A launch request is not proof of task completion. Discuss one recognition limitation and the manual alternative."
+      }
+    ]
+  },
+  "shortcuts": [
+    {
+      "id": "calculator",
+      "label": "Calculator"
+    },
+    {
+      "id": "product-reference",
+      "label": "Product reference"
+    },
+    {
+      "id": "resource-folder",
+      "label": "Resource folder"
+    },
+    {
+      "id": "recovery-reference",
+      "label": "Disposable recovery reference"
+    },
+    {
+      "id": "product-help",
+      "label": "Optional fictional placeholder help"
+    },
+    {
+      "id": "camera",
+      "label": "Camera handoff example"
+    }
+  ],
+  "quick_bindings": [
+    {
+      "gesture_id": "G1",
+      "action": {
+        "kind": "OPEN_SHORTCUT",
+        "shortcut_id": "calculator"
+      }
+    },
+    {
+      "gesture_id": "G2",
+      "action": {
+        "kind": "OPEN_SHORTCUT",
+        "shortcut_id": "product-reference"
+      }
+    },
+    {
+      "gesture_id": "G3",
+      "action": {
+        "kind": "OPEN_SHORTCUT",
+        "shortcut_id": "resource-folder"
+      }
+    }
+  ],
+  "stages": [
+    {
+      "id": "intro",
+      "title": "Welcome",
+      "instructions": "Explain the fictional Harbor Desk purpose. Browse the outcomes and team cards, then continue.",
+      "card_id": "welcome",
+      "continue_label": "Continue",
+      "bindings": [
+        {
+          "gesture_id": "G1",
+          "action": {
+            "kind": "NEXT"
+          }
+        },
+        {
+          "gesture_id": "G2",
+          "action": {
+            "kind": "PREVIOUS"
+          }
+        },
+        {
+          "gesture_id": "G3",
+          "action": {
+            "kind": "ADVANCE_STAGE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "budget",
+      "title": "Training budget",
+      "instructions": "Open Calculator, calculate 8 × 2 × 15 = 240 credits. Return, explicitly resume, then acknowledge the actual answer.",
+      "card_id": "budget",
+      "continue_label": "Continue",
+      "bindings": [
+        {
+          "gesture_id": "G1",
+          "action": {
+            "kind": "ADVANCE_STAGE"
+          }
+        },
+        {
+          "gesture_id": "G2",
+          "action": {
+            "kind": "OPEN_SHORTCUT",
+            "shortcut_id": "calculator"
+          }
+        },
+        {
+          "gesture_id": "G3",
+          "action": {
+            "kind": "BOOKMARK"
+          }
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "title": "Product reference",
+      "instructions": "Open the locally bound reference. Find the fictional training coordinator, return and acknowledge the result.",
+      "card_id": "reference",
+      "continue_label": "Continue",
+      "bindings": [
+        {
+          "gesture_id": "G1",
+          "action": {
+            "kind": "ADVANCE_STAGE"
+          }
+        },
+        {
+          "gesture_id": "G2",
+          "action": {
+            "kind": "OPEN_SHORTCUT",
+            "shortcut_id": "product-reference"
+          }
+        },
+        {
+          "gesture_id": "G3",
+          "action": {
+            "kind": "BOOKMARK"
+          }
+        }
+      ]
+    },
+    {
+      "id": "resources",
+      "title": "Resource folder",
+      "instructions": "Open the local resource folder. Find corporate_reference.txt. Return, explicitly resume and acknowledge completion.",
+      "card_id": "resources",
+      "continue_label": "Continue",
+      "bindings": [
+        {
+          "gesture_id": "G1",
+          "action": {
+            "kind": "ADVANCE_STAGE"
+          }
+        },
+        {
+          "gesture_id": "G2",
+          "action": {
+            "kind": "OPEN_SHORTCUT",
+            "shortcut_id": "resource-folder"
+          }
+        },
+        {
+          "gesture_id": "G3",
+          "action": {
+            "kind": "BOOKMARK"
+          }
+        }
+      ]
+    },
+    {
+      "id": "discussion",
+      "title": "Discussion and recovery",
+      "instructions": "Bookmark this point once. Attempt the unavailable disposable reference, rebind or restore it and retry. Pause, save and restore: remain paused with no launch replay. Never move genuine user files.",
+      "card_id": "discussion",
+      "continue_label": "Continue",
+      "bindings": [
+        {
+          "gesture_id": "G1",
+          "action": {
+            "kind": "ADVANCE_STAGE"
+          }
+        },
+        {
+          "gesture_id": "G2",
+          "action": {
+            "kind": "OPEN_SHORTCUT",
+            "shortcut_id": "recovery-reference"
+          }
+        },
+        {
+          "gesture_id": "G3",
+          "action": {
+            "kind": "BOOKMARK"
+          }
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "title": "Session review",
+      "instructions": "Review simulated triggers, real launch requests, failures, retries and explicit acknowledgements. Explain one recognition limitation and the manual fallback.",
+      "card_id": "finish",
+      "continue_label": "Finish",
+      "bindings": [
+        {
+          "gesture_id": "G1",
+          "action": {
+            "kind": "ADVANCE_STAGE"
+          }
+        },
+        {
+          "gesture_id": "G2",
+          "action": {
+            "kind": "PREVIOUS"
+          }
+        },
+        {
+          "gesture_id": "G3",
+          "action": {
+            "kind": "BOOKMARK"
+          }
+        }
+      ]
+    }
+  ]
+}
