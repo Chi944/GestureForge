@@ -77,6 +77,7 @@ existing shell entry points rather than adding a loader or camera thread:
 |---|---|
 | `Window.load_studio_profile(store, profile_id)` | Pause and save any evaluation trace, then reconstruct through the existing background model worker. Returns false if busy, closing or preservation fails. |
 | `Window.use_studio_profile(candidate)` | Install a complete `LoadedProfile` on the UI thread; retain name separately from opaque ID, apply stored settings, reset to paused Preview with readiness unverified. Raises on invalid or unavailable installation. |
+| `Window.use_studio_guest()` | Return to paused manual control without deleting any saved profile or numeric dataset. Returns false while loading/closing or if a trace/enrolment trial cannot be preserved; retain the widget's previous selection on false. |
 | `Window.prepare_studio_profile_delete(profile_id)` | Check the shell can clear this selection and preserve any active trace. False means do not delete storage. |
 | `Window.clear_studio_profile(profile_id)` | After successful deletion, clear a matching active model, invalidate old capture and pending loads, disable camera Start and preserve manual controls. |
 
@@ -94,6 +95,22 @@ requires explicit Start after camera release and a fresh NEUTRAL hold. Raw datas
 loading clears saved-profile name/ID metadata. Closing never installs a late
 candidate. Do not infer readiness from successful reconstruction or display text.
 Cosmetic rename alone does not alter the saved model revision.
+
+Guest switching is separate from deletion: call `use_studio_guest()`, never
+`store.delete()` or `clear_studio_profile()` for this choice. It unloads either a
+saved profile or an ad-hoc dataset, invalidates the old capture session, and keeps
+the deck position/bookmarks, workspace, runbook, session summary and local targets.
+The same saved profile can subsequently be loaded again. Guest remains manual-only
+while no released starter is available; it does not pass readiness or resume capture.
+A pending model load must finish before switching. Publish the widget's Guest
+selection only after the method returns true.
+
+Hau Jie reports a completed local selector with create/load/rename/delete,
+Guest/manual mode and unavailable-starter messaging. At this integration check on
+2 October, `profile_widget.py`, its tests and handoff were not in the local checkout
+or the published `codex/hau-jie-profiles` branch (`57d6f5f`). Push those files on
+that branch and open a focused PR so Deston can attach the actual interface. The
+reported 473-test run has not been reproduced here without those files.
 
 CLI startup is `.\run.cmd --studio --profile-id ID`, optionally
 `--profile-store PATH` (default `.local/profiles`) and `--camera INDEX`. The stored

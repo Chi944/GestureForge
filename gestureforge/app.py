@@ -1150,7 +1150,7 @@ class Window(QMainWindow):
         snapshot = self.routing.snapshot
         context_id = self.manual_context_id if self.routing_manual_only else snapshot.context_id
         mode = self.manual_mode if self.routing_manual_only else snapshot.mode
-        profile_text = "none"
+        profile_text = "Guest/manual"
         if self.model is not None:
             profile_text = self.profile
             if self.selected_profile_id == self.profile and self.selected_profile_name:
@@ -1685,6 +1685,59 @@ class Window(QMainWindow):
         settings = record.settings
         self.model_settings = (settings.algorithm, settings.multiplier, settings.margin)
 
+    def _clear_studio_model_to_manual(
+        self, *, context_id: str, mode: RoutingMode, bindings: Mapping[str, Action],
+    ) -> None:
+        preserved_bindings = dict(bindings) or dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True))
+        self.model = None
+        self.profile = "pilot"
+        self.selected_profile_id = None
+        self.selected_profile_name = ""
+        self.routing = RoutingSession(
+            "pilot", "unversioned", context_id,
+            preserved_bindings, mode,
+        )
+        self.routing_manual_only = True
+        self.manual_context_id = context_id
+        self.manual_session_id = str(uuid4())
+        self.manual_mode = mode
+        self.received_first_frame = False
+        self.preview.clear()
+        self.prediction.setText("Prediction: awaiting new camera session")
+        self.start_button.setEnabled(False)
+        self.render_studio_status()
+
+    def use_studio_guest(self) -> bool:
+        """Unload the active Studio model/profile and keep manual-only project state."""
+        if not self.studio or self._closing:
+            return False
+        if self.model_loader is not None:
+            self.notice.setText("Guest mode not changed: wait for the current model/profile load to finish.")
+            return False
+        if self.routing is None:
+            return False
+        context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
+        mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+        bindings = {} if self.routing_manual_only else dict(self.routing.snapshot.bindings)
+        previous_profile = self.selected_profile_id or self.profile
+        if not self.pause():
+            self.notice.setText("Guest mode not changed: save the current trace or enrolment trial first.")
+            return False
+        self._clear_studio_model_to_manual(
+            context_id=context_id,
+            mode=mode,
+            bindings=bindings,
+        )
+        self.preview.setText("Camera off\n\nGuest mode active; load a profile or dataset to use gestures")
+        self.state.setText("Paused in Guest mode. Manual controls remain available.")
+        self.detail.setText("Guest mode unloads the active recogniser. Deck, workspace, runbook, summary and target settings remain available.")
+        self.notice.setText("Guest mode active. Active model cleared; saved files were not deleted.")
+        self.feedback.setText("Guest mode active. Manual viewer remains available.")
+        assert self.routing is not None
+        self.log({"type": "studio_guest", "profile": previous_profile,
+                  "session": self.routing.snapshot.session_id, "timestamp": time.monotonic()})
+        return True
+
     def prepare_studio_profile_delete(self, profile_id: str) -> bool:
         if not self.studio or self._closing:
             return False
@@ -1706,26 +1759,18 @@ class Window(QMainWindow):
         assert self.routing is not None
         context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
         mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
-        self.model = None
-        self.profile = "pilot"
-        self.selected_profile_id = None
-        self.selected_profile_name = ""
-        self.routing = RoutingSession("pilot", "unversioned", context_id,
-                                      dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)), mode)
-        self.routing_manual_only = True
-        self.manual_context_id = context_id
-        self.manual_session_id = str(uuid4())
-        self.manual_mode = mode
-        self.received_first_frame = False
-        self.preview.clear()
+        bindings = {} if self.routing_manual_only else dict(self.routing.snapshot.bindings)
+        self._clear_studio_model_to_manual(
+            context_id=context_id,
+            mode=mode,
+            bindings=bindings,
+        )
         self.preview.setText("Camera off\n\nSaved profile deleted; load another profile or dataset")
-        self.prediction.setText("Prediction: awaiting new camera session")
         self.state.setText("Paused after profile deletion. Manual controls remain available.")
         self.detail.setText("Active profile was removed. Load another saved profile or personal dataset before camera simulation.")
         self.notice.setText("Saved profile deleted. Active model cleared; previous camera packets are invalid.")
         self.feedback.setText("Profile cleared. Manual viewer remains available.")
-        self.start_button.setEnabled(False)
-        self.render_studio_status()
+        assert self.routing is not None
         self.log({"type": "studio_profile_cleared", "profile": profile_id,
                   "session": self.routing.snapshot.session_id, "timestamp": time.monotonic()})
         return True
