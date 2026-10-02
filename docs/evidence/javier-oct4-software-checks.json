@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-02T05:37:30.750492+00:00",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "main_revision": "a6fe7b6e59b5ba91dd38651c3350862f4602164e",
+  "prior_branch_revision": "cc27c49a0cc5be70ad04c8a550de8a3c5bac61b1",
+  "hardware_tests": "NOT RUN: Linux environment; Windows laptop and participant required",
+  "checks": [
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m ruff check gestureforge tests scripts",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m mypy gestureforge scripts tests",
+      "exit_code": 0,
+      "stdout": "Success: no issues found in 52 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q",
+      "exit_code": 0,
+      "stdout": "........................................................................ [ 19%]\n........................................................................ [ 38%]\n........................................................................ [ 57%]\n........................................................................ [ 77%]\n........................................................................ [ 96%]\n.............                                                            [100%]\n373 passed in 13.95s\n",
+      "stderr": ""
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m gestureforge --smoke-test",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support raise()\n"
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m gestureforge --studio --smoke-test",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support raise()\n"
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m gestureforge.javier_preview --smoke-test",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support propagateSizeHints()\n"
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m gestureforge.javier_preview --quick-only --smoke-test",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "This plugin does not support propagateSizeHints()\n"
+    }
+  ]
+}

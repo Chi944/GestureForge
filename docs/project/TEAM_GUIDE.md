@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-30 September 2026 Â· Project deadline 7 November 2026
+Updated 2 October 2026 Â· Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -12,11 +12,13 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 
 ## Responsibilities and editing boundaries
 
-| Member | Owns | First work | Reviewer |
+| Member | Owns | Current next step | Reviewer |
 |---|---|---|---|
-| Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | GF-P01 baseline, GF-P02 interfaces and screen design, then GF-P10 shell integration | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P03 merged in PR #10; next GF-P28 starter feasibility | Deston |
-| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | GF-P05 Windows launch probes, GF-P08 viewer, GF-P09 workspace | Deston |
+| Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | Quick Actions simulation attached; next integrate the profile selector/readiness, then guarded real dispatch | Teammate review; Deston makes final release decision |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P06 selector widget and Guest/start path using reviewed PR #14 persistence; investigate baseline NEUTRAL/UNKNOWN failures | Deston |
+| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | GF-P05 actual Windows probe evidence and defects in the components already merged through PR #11 | Deston |
+
+PR #10's vocabulary work, PR #13's evaluator and PR #14's reviewed [profile persistence component](PROFILE_PERSISTENCE_HANDOFF.md) are integrated. Hau Jie's [starter checkpoint](STARTER_EVALUATION_CHECKPOINT.md) reports the three-person collection and baseline comparison; neither classifier is ready for release. Preserve the baseline and private inputs, and request targeted repair collection only for a diagnosed defect. The profile selector, guided enrolment and readiness are still separate work. Javier's existing components do not need rebuilding; his [4 October checkpoint](JAVIER_OCT4_CHECKPOINT.md) preserves the historical Linux software run and current native Windows follow-up. Use [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv) for each task's accepted status and remaining evidence.
 
 Do not rewrite another owner's files to make a demo work. Put a required shared-interface change on the relevant Trello card for Deston to resolve. Own your module's tests and explanations; Deston's final checks do not replace them. Use AI tools to implement and investigate, then read and understand the generated code and report actual assistance.
 
@@ -26,7 +28,7 @@ Do not rewrite another owner's files to make a demo work. Put a required shared-
 - Personal profiles optionally enrol three action poses plus reserved NEUTRAL. Personalisation is not authentication. Reusing another person's profile is not guaranteed to work.
 - Three gesture IDs map to named actions. Names/targets can change without retraining. Always show what each gesture currently does.
 - Quick Actions works without a deck or runbook. Up to twelve locally configured app/file/folder/HTTPS shortcuts; three active gesture slots.
-- The viewer supports NEXT, PREVIOUS and idempotent BOOKMARK in the project. These are still assignment-preview-only where the current application has not yet been extended.
+- Studio's manual viewer supports NEXT, PREVIOUS and idempotent BOOKMARK. Studio gesture actions remain simulated; the assignment entry point retains NEXT-only gesture dispatch.
 - Optional runbooks contain up to twelve ordered stages, instructions/card reference and up to three single actions. No scripts, loops, chained macros or automatic external launch when entering a stage.
 - Preview/enrolment/rehearsal cannot dispatch real actions. Changing a profile/model/workspace/mapping invalidates old work. Stage changes clear a hold and require NEUTRAL. Focus loss pauses; returning requires explicit resume.
 - Local core features work offline after setup. Websites and external apps' own online features may require internet. No direct PowerPoint integration is promised.
@@ -44,7 +46,9 @@ Deston owns the shell; teammates provide embeddable PySide6 widgets instead of s
 | Demo Studio | Card title/body and distinctive card transition, ordered stages/instructions and bookmarks | Current stage and gesture meanings; manual Next/Previous/Bookmark/Continue; pause |
 | Session Review | Correct/wrong/missed trials, would-be actions, retries and acknowledged task completion | Export results; distinguish simulated events from real launch requests |
 
-The current Studio shell includes a simulation-mode selector and draft gesture mappings. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace the profile, readiness or workspace components assigned to the builders.
+The current Studio shell includes a simulation-mode selector, draft gesture mappings, workspace loading, Edit runbook, Runbook, Session summary, runbook session files and Quick Actions. Apply and pause validates an ad-hoc mapping, stops capture and requires neutral on resume; those draft mappings are not persisted. Quick Actions saves its private target library and three slot choices locally; **Use Quick Actions** explicitly validates and activates them, while target edits pause and clear routing until reactivation. Its target tests and gesture actions remain simulations. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace profile/readiness work or LIVE shortcut dispatch.
+
+Use **Edit runbook** for authored stage edits and **Session summary** / **Export session results** for local measurement archives. These exports are separate from Studio's explicit saved runbook navigation/session files; navigation position is not autosaved. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; archive failure blocks the operation and keeps counts visible. Successful restore/restart starts a fresh review summary. Do not commit those archives.
 
 Screen transitions use the same small rule set:
 
@@ -94,7 +98,7 @@ Each review must include: requirement/task IDs; what works; exact tests and resu
 
 | Dates | Gate |
 |---|---|
-| 30 Sepâ€“4 Oct | Shared foundation, starter feasibility and consent, Windows launch probes, capacity and participant recruitment |
+| 30 Sepâ€“4 Oct | Shared foundation, [starter evaluation checkpoint](STARTER_EVALUATION_CHECKPOINT.md), GF-P06 profile selection/readiness, Windows launch probes, capacity and participant recruitment |
 | 5â€“11 Oct | Profiles/enrolment, viewer/workspaces and first integration |
 | 12â€“18 Oct | Shortcuts, runbooks, rehearsal and summaries integrated; feature freeze |
 | 19â€“25 Oct | Frozen-data evaluation, system tasks and replay |

@@ -1,25 +1,27 @@
-# Javier component guide — review build
+# Component guide — review build
 
-This build supplies viewer, workspace/runbook, target library, dispatcher and
-session-review components. It preserves the original assignment and simulation
-Studio entry points. Deston still needs to attach the new widgets to the shared
-shell and Hau Jie's readiness/profile workflow. It is not the accepted final release.
+This guide covers the standalone component harness for viewer, workspace/runbook,
+target library, dispatcher and session-review components. The common Studio guides
+remain canonical for the attached manual browser and deck progress flow. Remaining
+live shortcut/runbook dispatch still depends on readiness/profile integration and
+native Windows evidence.
 
 ## Install and inspect on Windows
 
-Use 64-bit Python 3.11, as required by the team guide. Extract the delivered archive,
-open the `source` folder in PowerShell and run:
+Use 64-bit Python 3.11, as required by the team guide. From the repository root,
+follow the normal setup in the [user guide](USER_GUIDE.md), then run:
 
 ```powershell
 .\setup.cmd
 .\.venv\Scripts\python.exe -m gestureforge.javier_preview
 ```
 
-The original commands remain `run.cmd` for the assignment and `run.cmd --studio`
-for Deston's simulation preview. The new component preview needs no dataset,
-trained model, camera or enrolment. Setup still needs internet for dependencies and
-the landmark asset. The software checks shipped with this package used Linux and
-Python 3.12; they do not establish a Windows 3.11 install or live-camera result.
+The normal commands remain `run.cmd` for the assignment and `run.cmd --studio`
+for Studio. The component preview needs no dataset, trained model, camera or
+enrolment. Setup still needs internet for dependencies and the landmark asset.
+The [original component checks](evidence/component-delivery-checks.json) used
+Linux/Python 3.12; current Windows verification is tracked in
+`docs/project/verification.json` and the Windows launch procedure below.
 
 For standalone empty-content Quick Actions inspection:
 
@@ -69,7 +71,7 @@ an opaque ID, title, authored instruction, optional valid card reference, up to 
 single action mappings, and a nonempty Continue label. The last stage has a visible
 Finish button. No scripts, loops, chains or arbitrary target paths are supported.
 Edits reset and pause the preview routing context. Real attachment must follow
-`INTERFACE_PROPOSAL.md`.
+the [component interfaces](project/COMPONENT_INTERFACES.md).
 
 A portable workspace uses schema version 1 and at most 1 MiB of JSON. Its content is
 only the deck, stages, semantic shortcut IDs/labels and gesture action mappings.
@@ -118,7 +120,7 @@ appropriate confirmation button. OS acceptance alone is labelled `launch_request
 Return manually; close Windows Camera if it holds the device; click explicit resume
 to reacquire capture. Focus loss pauses routing, and focus gain never resumes it.
 No classifier action launches anything in this probe. Repeat on laptop-B with a
-separate output filename. See `WINDOWS_EVIDENCE.md` for the required actual checks.
+separate output filename. See the [Windows launch procedure](evidence/WINDOWS_LAUNCH_PROCEDURE.md) for the required actual checks.
 
 ## Recovery and operating limits
 

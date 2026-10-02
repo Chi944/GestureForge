@@ -3,10 +3,10 @@ GF-P01,30 Sep-4 Oct,Deston,R14,Preserve assignment baseline and review existing 
 GF-P02,30 Sep-4 Oct,Deston,R07 R11 R15 R16 R21,Freeze starter personal workspace and runbook contracts plus screens,GF-P01,Try Now optional Personalise and one-action-per-stage-slot rules agreed,In Progress,8
 GF-P03,30 Sep-4 Oct,Hau Jie,R01 R03,Prove custom vocabulary and legacy dataset import,GF-P02,PR #10 merged; legacy inputs and three custom action IDs plus NEUTRAL verified by tests/test_vocabulary.py,Done,5
 GF-P05,30 Sep-4 Oct,Javier,R08,Probe Windows app file folder HTTPS targets and Camera handoff,,All target types visibly open; errors and launch-request status correct; webcam release and resume verified,In Progress,5
-GF-P06,5-11 Oct,Hau Jie,R01 R15,Implement profile lifecycle and starter selection,GF-P03,Guest start and two saved profiles reload independently; no account required,Backlog,10
+GF-P06,5-11 Oct,Hau Jie,R01 R15,Implement profile lifecycle and starter selection,GF-P03,Guest start and two saved profiles reload independently; no account required,In Progress,10
 GF-P07,5-11 Oct,Hau Jie,R02,Implement guided enrolment and collection widgets,GF-P06,Three poses plus NEUTRAL collected with actions disabled and clear invalid feedback,Backlog,10
-GF-P08,5-11 Oct,Javier,R05,Complete viewer navigation bookmarks and persistence,GF-P02,All commands boundary and bookmark reload tests pass,In Progress,7
-GF-P09,5-11 Oct,Javier,R06 R12 R16,Implement validated deck workspace and stage schemas,GF-P08,Runbook card and shortcut references round trip; bad imports preserve active workspace,In Progress,8
+GF-P08,5-11 Oct,Javier,R05,Complete viewer navigation bookmarks and persistence,GF-P02,All commands boundary and bookmark reload tests pass,Done,7
+GF-P09,5-11 Oct,Javier,R06 R12 R16,Implement validated deck workspace and stage schemas,GF-P08,Runbook card and shortcut references round trip; bad imports preserve active workspace,Done,8
 GF-P10,5-11 Oct,Deston,R07 R11 R13 R15,Integrate Try Now profile and deck/session shell,GF-P06 GF-P08 GF-P28,Guest check requires two correct simulated actions per pose and neutral rearming with zero wrong actions; UNKNOWN-only fails; snapshot switches cancel old events,In Progress,8
 GF-P11,12-18 Oct,Hau Jie,R03,Refine rejection and profile-aware evaluator,GF-P07,Train-only preprocessing label-aware reports and UNKNOWN misses verified,Backlog,8
 GF-P12,12-18 Oct,Hau Jie,R04,Implement optional personal rehearsal and targeted recollection,GF-P11,Real controller with recording dispatcher counts would-be actions; readiness covers behaviour settings,Backlog,8
@@ -23,8 +23,8 @@ GF-P24,2-6 Nov,Hau Jie,R03 R15,Complete recognition personalisation and evaluati
 GF-P25,2-6 Nov,Javier,R14 R20,Complete guide and demo video draft,GF-P23,Guide-only setup and complete demo including limitation and recovery,Backlog,8
 GF-P26,2-6 Nov,Deston,R14 R20,Review report subsystem matrix declaration and ten-minute presentation,GF-P23 GF-P24 GF-P25,All rubric deliverables accurate all three contributions recorded and rehearsal complete,Backlog,10
 GF-P27,2-6 Nov,Deston,R14,Package submit and download-check final release,GF-P26,Permitted assets included no secrets and downloaded LMS files verified,Backlog,3
-GF-P28,30 Sep-4 Oct,Hau Jie,R03 R15,Collect consented starter spike and test person-separated recognition,GF-P02,Three-person development split excludes validation person; distribution permission and first-use risks recorded,In Progress,10
-GF-P29,5-11 Oct,Javier,R07 R16,Implement stage editor and explicit runbook execution,GF-P09 GF-P02,Create reorder delete stages; one typed action per slot; stage changes require neutral; no replay on reload,In Progress,12
+GF-P28,30 Sep-4 Oct,Hau Jie,R03 R15,Collect consented starter spike and test person-separated recognition,GF-P02,Three-person development split excludes validation person; distribution permission and first-use risks recorded,Review-Test,10
+GF-P29,5-11 Oct,Javier,R07 R16,Implement stage editor and explicit runbook execution,GF-P09 GF-P02,Create reorder delete stages; one typed action per slot; stage changes require neutral; no replay on reload,Done,12
 GF-P31,12-18 Oct,Javier,R04 R19,Implement rehearsal and session summary from event records,GF-P12 GF-P29,Displayed counts match recorded would-be and real outcomes; opening app is not task completion,In Progress,6
 GF-P32,5-11 Oct,Deston,R20,Author fictional six-stage corporate scenario and evaluation protocol,GF-P02,Complete deck runbook instructions and shortcut task sequence; evaluation measures and recruitment dependency recorded,Done,6
 GF-P34,12-18 Oct,Javier,R08 R11 R12 R13 R21,Implement standalone Quick Actions and file folder HTTPS target bindings,GF-P13 GF-P10,Twelve named targets and three active slots start and reload with no deck/runbook; dispatch validation; local rebinding; focus loss pauses,In Progress,6

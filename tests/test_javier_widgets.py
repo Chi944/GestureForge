@@ -11,8 +11,8 @@ from gestureforge.javier_preview import PreviewWindow
 from gestureforge.javier_widgets import QuickActionsWidget, RunbookEditorWidget, RunbookWidget, ViewerWidget
 from gestureforge.runbook import Runbook
 from gestureforge.shortcuts import Target, TargetKind, TargetRegistry
-from gestureforge.viewer import Viewer
-from gestureforge.workspace import Stage, Workspace, WorkspaceStore
+from gestureforge.viewer import Card, Deck, Viewer
+from gestureforge.workspace import ShortcutSlot, Stage, Workspace, WorkspaceStore
 
 
 @pytest.fixture(scope='module')
@@ -243,4 +243,84 @@ def test_workspace_widget_rejects_partial_import_without_emitting_or_rebinding(q
     source = Path(__file__).resolve().parent.parent / 'assets' / 'harbor_workspace.json'
     assert widget.import_path(source)
     assert changes and widget.store.active.id == 'harbor-onboarding'
+    widget.close()
+
+
+@pytest.mark.parametrize('quick_only', [True, False])
+def test_workspace_import_replaces_deck_stage_choices_and_remains_paused(qt_app, tmp_path, quick_only) -> None:
+    window = PreviewWindow(quick_only=quick_only, state_dir=tmp_path)
+    window.registry.configure(Target('local', 'Private local target', TargetKind.BUILTIN, 'calculator'))
+    window.registry.bind_quick(('local', None, None))
+    window.resume()
+    candidate = Workspace(
+        'replacement',
+        'Imported content',
+        Deck(1, 'new-deck', 'New deck', (Card('new-card', 'New title', 'New body'),)),
+        shortcuts=(ShortcutSlot('semantic', 'Bind this resource locally'),),
+        stages=(Stage('new-stage', 'New stage', 'Read then finish.', 'new-card', ()),),
+    )
+    path = tmp_path / 'workspace.json'
+    WorkspaceStore(candidate).export_file(path)
+    assert window.workspace_widget.import_path(path)
+    assert window.workspace == candidate
+    assert window.viewer and window.viewer.current_card.id == 'new-card'
+    assert window.gate.viewer is window.viewer
+    assert window.viewer_widget and 'New title' in window.viewer_widget.title.text()
+    assert window.runbook.current_stage is not None and window.runbook.current_stage.id == 'new-stage'
+    assert window.editor_widget.editor.workspace == candidate
+    assert window.editor_widget.card.findData('new-card') > 0
+    combo = window.editor_widget.action_fields[0][1]
+    assert Action(ActionType.OPEN_SHORTCUT, 'semantic') in [combo.itemData(i) for i in range(combo.count())]
+    assert window.registry.quick_slots == ('local', None, None)
+    assert len(window.registry.targets) == 1
+    assert window.session.state == 'PAUSED' and window.runbook.paused
+    assert window.gate.summary.outcomes == []
+    window.replace_workspace(Workspace('empty', 'No content'))
+    assert window.viewer is None and window.viewer_widget is None and window.gate.viewer is None
+    assert window.editor_widget.card.count() == 1
+    combo = window.editor_widget.action_fields[0][1]
+    assert Action(ActionType.NEXT) not in [combo.itemData(i) for i in range(combo.count())]
+    assert not window.runbook_widget.continue_button.isEnabled()
+    window.close()
+
+
+def test_stage_edit_keeps_viewer_bookmarks_and_updates_export(qt_app, tmp_path) -> None:
+    window = PreviewWindow(state_dir=tmp_path)
+    window.inspect_viewer(Action(ActionType.BOOKMARK))
+    prior_viewer = window.viewer
+    window.editor_widget.stages.setCurrentRow(0)
+    window.editor_widget.title.setText('Edited first stage')
+    click(window.editor_widget, 'Save stage')
+    assert window.viewer is not None and window.viewer is prior_viewer and window.viewer.bookmarks
+    assert window.workspace.stages[0].title == 'Edited first stage'
+    assert window.workspace_widget.store.active == window.workspace
+    assert window.editor_widget.stages.currentRow() == 0
+    assert window.session.state == 'PAUSED'
+    window.close()
+
+
+def test_invalid_workspace_import_preserves_active_review_state(qt_app, tmp_path) -> None:
+    window = PreviewWindow(state_dir=tmp_path)
+    window.resume()
+    workspace, viewer, runbook, snapshot = window.workspace, window.viewer, window.runbook, window.session.snapshot
+    path = tmp_path / 'bad.json'
+    path.write_text('{"schema_version": 99}')
+    assert not window.workspace_widget.import_path(path)
+    assert (window.workspace, window.viewer, window.runbook, window.session.snapshot) == (
+        workspace, viewer, runbook, snapshot,
+    )
+    assert window.session.state != 'PAUSED'
+    window.close()
+
+
+def test_editing_imported_stage_preserves_all_action_bindings(qt_app) -> None:
+    root = Path(__file__).resolve().parent.parent
+    workspace = WorkspaceStore(Workspace('empty', 'Empty')).import_file(root / 'assets' / 'harbor_workspace.json')
+    widget = RunbookEditorWidget(workspace)
+    widget.stages.setCurrentRow(0)
+    before = workspace.stages[0].bindings
+    assert tuple(combo.currentData() for _, combo in widget.action_fields) == tuple(b.action for b in before)
+    widget.title.setText('Only the title changed')
+    click(widget, 'Save stage')
+    assert widget.editor.workspace.stages[0].bindings == before
     widget.close()

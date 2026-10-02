@@ -37,6 +37,13 @@ class SessionSummary:
         self.trials: list[Trial] = []
         self.completed_stages: set[str] = set()
         self.retries = 0
+        self.scope: dict[str, str] = {}
+
+    def set_scope(self, **values: str) -> None:
+        for key, value in values.items():
+            validate_identifier(key)
+            text(value, 240, empty=True)
+        self.scope = dict(values)
 
     def ensure_capacity(self) -> None:
         if len(self.outcomes) >= 10000:
@@ -85,7 +92,7 @@ class SessionSummary:
         return result
 
     def export(self, path: Path) -> None:
-        atomic_write_json(path, {'schema_version': 1, 'counts': self.counts(),
+        atomic_write_json(path, {'schema_version': 1, 'scope': self.scope, 'counts': self.counts(),
                                 'outcomes': [{'event_id': o.event_id, 'session_id': o.session_id,
                                               'source': o.source, 'status': o.status,
                                               'action': action_json(o.action) if o.action else None,

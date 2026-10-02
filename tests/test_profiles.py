@@ -55,6 +55,18 @@ def test_round_trip_rebuild_and_cosmetic_rename(numeric_fixture, tmp_path, algor
     assert store.list_ids() == (profile_id,)
 
 
+@pytest.mark.parametrize('multiplier,margin', [(2, 1.5), (2.0, 1), (2, 1)])
+def test_integer_settings_reload_the_same_model(numeric_fixture, tmp_path, multiplier, margin):
+    bundle = numeric_fixture()
+    store = ProfileStore(tmp_path / 'profiles')
+    created = store.create('Integer settings', bundle.manifest_path, 'Right', consent=True,
+                           settings=ProfileSettings(multiplier=multiplier, margin=margin))
+    loaded = store.load(created.record.profile_id)
+    assert loaded.record == created.record
+    assert loaded.model.model_version == created.model.model_version
+    assert loaded.model.predict(bundle.features[0]) == created.model.predict(bundle.features[0])
+
+
 def test_two_profiles_delete_independently_without_deleting_data(numeric_fixture, tmp_path):
     bundle = numeric_fixture()
     source = bundle.manifest_path

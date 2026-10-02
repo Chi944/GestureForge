@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from uuid import uuid4
 
 from PySide6.QtCore import QEvent, QObject, Qt, Signal
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QComboBox, QFileDialog, QFormLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListWidget, QPushButton, QTextEdit, QVBoxLayout, QWidget,
+    QApplication, QCheckBox, QComboBox, QFileDialog, QFormLayout, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QListWidget, QPushButton, QSizePolicy, QTextEdit, QVBoxLayout, QWidget,
 )
 
 from .contracts import Action, ActionType, validate_gesture_id
@@ -28,6 +28,13 @@ def plain_label(value: str = '') -> QLabel:
 
 def action_label(action: Action) -> str:
     return action.kind.value.replace('_', ' ').title() + (f': {action.shortcut_id}' if action.shortcut_id else '')
+
+
+def combo_data_index(combo: QComboBox, value: object) -> int:
+    for index in range(combo.count()):
+        if combo.itemData(index) == value:
+            return index
+    return -1
 
 
 class ViewerWidget(QWidget):
@@ -87,9 +94,14 @@ class QuickActionsWidget(QWidget):
     focus_lost = Signal()
 
     def __init__(self, registry: TargetRegistry, state_path: Path | None = None,
-                 parent: QWidget | None = None) -> None:
+                 parent: QWidget | None = None, *,
+                 before_publish: Callable[[], bool] | None = None) -> None:
         super().__init__(parent)
         self.registry, self.state_path = registry, state_path
+        self.before_publish = before_publish
+        self.setObjectName('manualViewer')
+        self.setMinimumWidth(0)
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
         self.gesture_ids = ('G1', 'G2', 'G3')
         layout = QVBoxLayout(self)
         layout.addWidget(plain_label('Quick Actions · up to twelve local targets · three gesture slots'))
@@ -124,17 +136,17 @@ class QuickActionsWidget(QWidget):
         form.addRow('Opaque shortcut ID', self.target_id)
         form.addRow('Display label', self.label)
         form.addRow('Target type', self.kind)
-        form.addRow('Local path / HTTPS / calculator / camera', self.value)
+        form.addRow('Target value', self.value)
         form.addRow(self.trusted)
         layout.addLayout(form)
-        row = QHBoxLayout()
-        for label, callback in [('Browse', self._browse), ('New', self._new),
-                                ('Save target', self._save_target), ('Delete target', self._delete),
-                                ('Test selected target', self._test)]:
+        button_grid = QGridLayout()
+        for index, (label, callback) in enumerate([('Browse', self._browse), ('New', self._new),
+                                                   ('Save target', self._save_target), ('Delete target', self._delete),
+                                                   ('Test selected target', self._test)]):
             button = QPushButton(label)
             button.clicked.connect(callback)
-            row.addWidget(button)
-        layout.addLayout(row)
+            button_grid.addWidget(button, index // 3, index % 3)
+        layout.addLayout(button_grid)
         app = QApplication.instance()
         if app is not None:
             app.installEventFilter(self)
@@ -210,6 +222,8 @@ class QuickActionsWidget(QWidget):
         button.setToolTip('Request one action through the shell dispatcher' if enabled else label)
 
     def _publish(self, candidate: TargetRegistry) -> None:
+        if self.before_publish is not None and not self.before_publish():
+            raise ValueError('shell rejected target change; save trace or retry after pause')
         if self.state_path:
             candidate.save(self.state_path)
         self.registry.replace_with(candidate)
@@ -298,6 +312,7 @@ class RunbookEditorWidget(QWidget):
     def __init__(self, workspace: Workspace, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.editor = RunbookEditor(workspace)
+        self.change_accepted = True
         layout = QVBoxLayout(self)
         self.stages = QListWidget()
         self.stages.currentRowChanged.connect(self._select)
@@ -306,27 +321,19 @@ class RunbookEditorWidget(QWidget):
         self.stage_id, self.title, self.continue_label = QLineEdit(), QLineEdit(), QLineEdit('Continue')
         self.instructions = QTextEdit()
         self.card = QComboBox()
-        self.card.addItem('No card', None)
-        if workspace.deck:
-            for card in workspace.deck.cards:
-                self.card.addItem(f'{card.title} ({card.id})', card.id)
+        self._populate_card_choices()
         self.action_fields: list[tuple[QLineEdit, QComboBox]] = []
         form.addRow('Stage ID', self.stage_id)
         form.addRow('Stage title', self.title)
         form.addRow('Authored instructions', self.instructions)
         form.addRow('Linked card', self.card)
-        form.addRow('Visible Continue / Finish label', self.continue_label)
+        form.addRow('Continue / Finish label', self.continue_label)
         for index in range(3):
             gesture = QLineEdit(f'G{index + 1}')
+            gesture.setMinimumWidth(65)
+            gesture.setMaximumWidth(80)
             combo = QComboBox()
-            combo.addItem('Unbound', None)
-            for kind in ActionType:
-                if kind != ActionType.OPEN_SHORTCUT:
-                    if workspace.deck is None and kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK}:
-                        continue
-                    combo.addItem(action_label(Action(kind)), Action(kind))
-            for slot in workspace.shortcuts:
-                combo.addItem(f'Open {slot.label}', Action(ActionType.OPEN_SHORTCUT, slot.id))
+            self._populate_action_choices(combo)
             row = QHBoxLayout()
             row.addWidget(gesture)
             row.addWidget(combo)
@@ -342,6 +349,38 @@ class RunbookEditorWidget(QWidget):
         layout.addLayout(row)
         self.status = plain_label('Editing never executes actions. Apply changes through the shell routing reset.')
         layout.addWidget(self.status)
+        self._refresh()
+        self._new()
+
+    def _populate_card_choices(self) -> None:
+        selected = self.card.currentData()
+        self.card.clear()
+        self.card.addItem('No card', None)
+        if self.editor.workspace.deck:
+            for card in self.editor.workspace.deck.cards:
+                self.card.addItem(f'{card.title} ({card.id})', card.id)
+        index = self.card.findData(selected)
+        self.card.setCurrentIndex(index if index >= 0 else 0)
+
+    def _populate_action_choices(self, combo: QComboBox) -> None:
+        selected = combo.currentData()
+        combo.clear()
+        combo.addItem('Unbound', None)
+        for kind in ActionType:
+            if kind != ActionType.OPEN_SHORTCUT:
+                if self.editor.workspace.deck is None and kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK}:
+                    continue
+                combo.addItem(action_label(Action(kind)), Action(kind))
+        for slot in self.editor.workspace.shortcuts:
+            combo.addItem(f'Open {slot.label}', Action(ActionType.OPEN_SHORTCUT, slot.id))
+        index = combo_data_index(combo, selected)
+        combo.setCurrentIndex(index if index >= 0 else 0)
+
+    def set_workspace(self, workspace: Workspace) -> None:
+        self.editor = RunbookEditor(workspace)
+        self._populate_card_choices()
+        for _, combo in self.action_fields:
+            self._populate_action_choices(combo)
         self._refresh()
         self._new()
 
@@ -374,19 +413,50 @@ class RunbookEditorWidget(QWidget):
             if index < len(stage.bindings):
                 binding = stage.bindings[index]
                 gesture.setText(binding.gesture_id)
-                combo.setCurrentIndex(combo.findData(binding.action))
+                combo.setCurrentIndex(combo_data_index(combo, binding.action))
             else:
                 gesture.setText(f'G{index + 1}')
                 combo.setCurrentIndex(0)
 
-    def _changed(self, row: int = -1) -> None:
+    def _capture_form(self) -> tuple[str, str, str, str, object, tuple[tuple[str, object], ...]]:
+        return (
+            self.stage_id.text(), self.title.text(), self.instructions.toPlainText(), self.continue_label.text(),
+            self.card.currentData(),
+            tuple((gesture.text(), combo.currentData()) for gesture, combo in self.action_fields),
+        )
+
+    def _restore_form(self, draft: tuple[str, str, str, str, object, tuple[tuple[str, object], ...]]) -> None:
+        stage_id, title, instructions, continue_label, card_id, bindings = draft
+        self.stage_id.setText(stage_id)
+        self.title.setText(title)
+        self.instructions.setPlainText(instructions)
+        self.continue_label.setText(continue_label)
+        index = self.card.findData(card_id)
+        self.card.setCurrentIndex(index if index >= 0 else 0)
+        for (gesture, combo), (gesture_id, action) in zip(self.action_fields, bindings, strict=True):
+            gesture.setText(gesture_id)
+            index = combo_data_index(combo, action)
+            combo.setCurrentIndex(index if index >= 0 else 0)
+
+    def _changed(self, previous: Workspace, row: int = -1) -> None:
+        draft = self._capture_form()
+        selected_row = self.stages.currentRow()
+        self.change_accepted = True
         self.workspace_changed.emit(self.editor.workspace)
+        if not self.change_accepted:
+            self.editor = RunbookEditor(previous)
+            self._refresh()
+            self.stages.setCurrentRow(selected_row)
+            self._restore_form(draft)
+            self.status.setText('Shell rejected runbook change; prior workspace retained.')
+            return
         self._refresh()
         self.stages.setCurrentRow(row)
-        self.status.setText('Validated workspace changed. Shell must reset routing before activation.')
+        self.status.setText('Validated workspace changed. Apply through the shell routing reset.')
 
     def _save(self) -> None:
         try:
+            previous = self.editor.workspace
             stage = Stage(self.stage_id.text(), self.title.text(), self.instructions.toPlainText(),
                           self.card.currentData(), tuple(Binding(gesture.text(), combo.currentData())
                           for gesture, combo in self.action_fields if combo.currentData() is not None),
@@ -397,22 +467,24 @@ class RunbookEditorWidget(QWidget):
                 row = len(self.editor.workspace.stages) - 1
             else:
                 self.editor.update(row, stage)
-            self._changed(row)
+            self._changed(previous, row)
         except ValueError as exc:
             self.status.setText(f'Invalid stage: {exc}')
 
     def _delete(self) -> None:
         try:
+            previous = self.editor.workspace
             self.editor.delete(self.stages.currentRow())
-            self._changed()
+            self._changed(previous)
         except ValueError as exc:
             self.status.setText(str(exc))
 
     def _move(self, offset: int) -> None:
         try:
+            previous = self.editor.workspace
             row = self.stages.currentRow()
             self.editor.move(row, row + offset)
-            self._changed(row + offset)
+            self._changed(previous, row + offset)
         except ValueError as exc:
             self.status.setText(str(exc))
 
@@ -473,13 +545,15 @@ class RunbookWidget(QWidget):
 
 
 class SessionSummaryWidget(QWidget):
-    def __init__(self, summary: SessionSummary, parent: QWidget | None = None) -> None:
+    def __init__(self, summary: SessionSummary, parent: QWidget | None = None,
+                 default_folder: Path | None = None, scope_text: str | None = None) -> None:
         super().__init__(parent)
         self.summary = summary
+        self.default_folder = default_folder
         layout = QVBoxLayout(self)
         self.counts = plain_label()
         layout.addWidget(self.counts)
-        layout.addWidget(plain_label('Launch requested means Windows accepted an open request. Only explicit acknowledgement records task completion.'))
+        layout.addWidget(plain_label(scope_text or 'Launch requested means Windows accepted an open request. Only explicit acknowledgement records task completion.'))
         refresh = QPushButton('Refresh measured results')
         refresh.clicked.connect(self.refresh)
         layout.addWidget(refresh)
@@ -492,7 +566,10 @@ class SessionSummaryWidget(QWidget):
         self.counts.setText('\n'.join(f'{key.replace("_", " ").title()}: {value}' for key, value in self.summary.counts().items()))
 
     def _export(self) -> None:
-        path, _ = QFileDialog.getSaveFileName(self, 'Export measured session', '', 'JSON (*.json)')
+        suggested = ''
+        if self.default_folder is not None:
+            suggested = str(self.default_folder / 'studio-session-summary.json')
+        path, _ = QFileDialog.getSaveFileName(self, 'Export measured session', suggested, 'JSON (*.json)')
         if path:
             try:
                 self.summary.export(Path(path))
@@ -508,6 +585,7 @@ class WorkspaceWidget(QWidget):
         from .workspace import WorkspaceStore
         super().__init__(parent)
         self.store = WorkspaceStore(workspace)
+        self.import_accepted = True
         layout = QVBoxLayout(self)
         self.details = plain_label()
         layout.addWidget(self.details)
@@ -531,8 +609,15 @@ class WorkspaceWidget(QWidget):
 
     def import_path(self, path: Path) -> bool:
         try:
+            previous = self.store.active
             candidate = self.store.import_file(path)
+            self.import_accepted = True
             self.workspace_changed.emit(candidate)
+            if not self.import_accepted:
+                self.store.active = previous
+                self.refresh()
+                self.status.setText('Shell rejected activation; prior workspace retained.')
+                return False
             self.refresh()
             self.status.setText('Validated content staged. Local targets are unbound until configured on this machine. Shell activation must reset routing and stay paused.')
             return True

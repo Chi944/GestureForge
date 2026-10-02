@@ -16,13 +16,14 @@ from PySide6.QtWidgets import QApplication, QHBoxLayout, QMainWindow, QPushButto
 from .contracts import Action, ActionType, RoutingMode
 from .dispatcher import Dispatcher
 from .javier_widgets import (
-    QuickActionsWidget, RunbookEditorWidget, RunbookWidget, SessionSummaryWidget, ViewerWidget, plain_label,
+    QuickActionsWidget, RunbookEditorWidget, RunbookWidget, SessionSummaryWidget,
+    ViewerWidget, WorkspaceWidget, plain_label,
 )
 from .routing import RoutingSession
 from .runbook import Runbook
 from .shortcuts import TargetRegistry
 from .viewer import Viewer
-from .workspace import Stage, Workspace, WorkspaceStore
+from .workspace import Stage, Workspace, WorkspaceStore, validate_workspace
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -63,6 +64,9 @@ class PreviewWindow(QMainWindow):
             controls.addWidget(button)
         layout.addLayout(controls)
         self.tabs = QTabWidget()
+        self.workspace_widget = WorkspaceWidget(self.workspace)
+        self.workspace_widget.workspace_changed.connect(self.replace_workspace)
+        self.tabs.addTab(self.workspace_widget, 'Workspace')
         self.quick_widget = QuickActionsWidget(self.registry, self.state_dir / 'targets.json')
         self.quick_widget.action_requested.connect(self.request)
         self.quick_widget.focus_lost.connect(self.pause)
@@ -78,11 +82,10 @@ class PreviewWindow(QMainWindow):
         self.runbook_widget.action_requested.connect(self.inspect_runbook)
         self.runbook_widget.previous_stage_requested.connect(self.previous_stage)
         self.runbook_widget.completion_acknowledged.connect(self.gate.summary.acknowledge_completion)
-        if not quick_only:
-            self.tabs.addTab(self.runbook_widget, 'Runbook inspection')
-            self.editor_widget = RunbookEditorWidget(self.workspace)
-            self.editor_widget.workspace_changed.connect(self.replace_workspace)
-            self.tabs.addTab(self.editor_widget, 'Stage editor')
+        self.tabs.addTab(self.runbook_widget, 'Runbook inspection')
+        self.editor_widget = RunbookEditorWidget(self.workspace)
+        self.editor_widget.workspace_changed.connect(self.replace_workspace)
+        self.tabs.addTab(self.editor_widget, 'Stage editor')
         self.summary_widget = SessionSummaryWidget(self.gate.summary)
         self.tabs.addTab(self.summary_widget, 'Session review')
         self.tabs.currentChanged.connect(self.context_changed)
@@ -149,12 +152,40 @@ class PreviewWindow(QMainWindow):
         self.refresh()
 
     def replace_workspace(self, workspace: Workspace) -> None:
+        workspace = validate_workspace(workspace)
+        viewer = (
+            self.viewer
+            if self.viewer and self.viewer.deck == workspace.deck
+            else Viewer(workspace.deck, project_actions=True)
+            if workspace.deck
+            else None
+        )
+        runbook = Runbook(workspace, self.reset_stage, viewer)
         self.pause()
+        runbook.activate(resume=False)
+        self.tabs.blockSignals(True)
+        try:
+            if self.viewer_widget and viewer is None:
+                self.tabs.removeTab(self.tabs.indexOf(self.viewer_widget))
+                self.viewer_widget.deleteLater()
+                self.viewer_widget = None
+            elif self.viewer_widget and viewer:
+                self.viewer_widget.viewer = viewer
+            elif viewer:
+                self.viewer_widget = ViewerWidget(viewer)
+                self.viewer_widget.action_requested.connect(self.inspect_viewer)
+                self.tabs.insertTab(self.tabs.indexOf(self.runbook_widget), self.viewer_widget, 'Viewer inspection')
+        finally:
+            self.tabs.blockSignals(False)
         self.workspace = workspace
-        self.runbook = Runbook(workspace, self.reset_stage, self.viewer)
+        self.viewer, self.runbook = viewer, runbook
+        self.gate.viewer = self.viewer
         self.gate.runbook = self.runbook
         self.runbook_widget.runbook = self.runbook
-        self.runbook.activate(resume=False)
+        self.workspace_widget.set_workspace(workspace)
+        if self.editor_widget.editor.workspace != workspace:
+            self.editor_widget.set_workspace(workspace)
+        self.status.setText('Workspace applied; simulation paused. Local targets stay on this machine; imports never open them.')
         self.refresh()
 
     def refresh(self) -> None:
