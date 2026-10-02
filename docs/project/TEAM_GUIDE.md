@@ -15,7 +15,7 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 | Member | Owns | First work | Reviewer |
 |---|---|---|---|
 | Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | GF-P01 baseline, GF-P02 interfaces and screen design, then GF-P10 shell integration | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P03 merged in PR #10; next GF-P28 starter feasibility | Deston |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P03 merged in PR #10; PR #13 checkpoint documents starter evidence; next GF-P06 profile selection/readiness | Deston |
 | Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | GF-P05 Windows launch probes, GF-P08 viewer, GF-P09 workspace | Deston |
 
 Do not rewrite another owner's files to make a demo work. Put a required shared-interface change on the relevant Trello card for Deston to resolve. Own your module's tests and explanations; Deston's final checks do not replace them. Use AI tools to implement and investigate, then read and understand the generated code and report actual assistance.
@@ -44,7 +44,9 @@ Deston owns the shell; teammates provide embeddable PySide6 widgets instead of s
 | Demo Studio | Card title/body and distinctive card transition, ordered stages/instructions and bookmarks | Current stage and gesture meanings; manual Next/Previous/Bookmark/Continue; pause |
 | Session Review | Correct/wrong/missed trials, would-be actions, retries and acknowledged task completion | Export results; distinguish simulated events from real launch requests |
 
-The current Studio shell includes a simulation-mode selector and draft gesture mappings. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace the profile, readiness or workspace components assigned to the builders.
+The current Studio shell includes a simulation-mode selector, draft gesture mappings, workspace loading, Edit runbook, Runbook, Session summary and runbook session files. Apply and pause validates the mapping, stops capture and requires neutral on resume; mappings are not persisted yet. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. This does not replace profile/readiness work or LIVE shortcut dispatch.
+
+Use **Edit runbook** for authored stage edits and **Session summary** / **Export session results** for local measurement archives. These exports are separate from Studio's explicit saved runbook navigation/session files; navigation position is not autosaved. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; archive failure blocks the operation and keeps counts visible. Successful restore/restart starts a fresh review summary. Do not commit those archives.
 
 Screen transitions use the same small rule set:
 
@@ -94,7 +96,7 @@ Each review must include: requirement/task IDs; what works; exact tests and resu
 
 | Dates | Gate |
 |---|---|
-| 30 Sepâ€“4 Oct | Shared foundation, starter feasibility and consent, Windows launch probes, capacity and participant recruitment |
+| 30 Sepâ€“4 Oct | Shared foundation, [starter evaluation checkpoint](STARTER_EVALUATION_CHECKPOINT.md), GF-P06 profile selection/readiness, Windows launch probes, capacity and participant recruitment |
 | 5â€“11 Oct | Profiles/enrolment, viewer/workspaces and first integration |
 | 12â€“18 Oct | Shortcuts, runbooks, rehearsal and summaries integrated; feature freeze |
 | 19â€“25 Oct | Frozen-data evaluation, system tasks and replay |

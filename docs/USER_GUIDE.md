@@ -9,15 +9,15 @@ Status: assignment guide aligned to implemented entry points. Software verificat
 
 GestureForge is a local desktop prototype for recognising a small personal set of static hand gestures from a webcam and controlling a card viewer. The assignment release executes NEXT only. PREVIOUS and BOOKMARK may appear as recognised labels but are preview-only until the final project release.
 
-GestureForge controls its own fixed ten-card deck. It is not connected to Microsoft PowerPoint; PowerPoint/OS control is outside the agreed scope.
+The assignment controls its supplied ten-card deck and does not connect to Microsoft PowerPoint. The Studio extension supports custom content; approved desktop shortcuts are a project integration feature, with live dispatch still disabled in the current shell.
 
 ## Requirements
 
 ### Project Studio preview
 
-Launch `.\run.cmd --studio` for the current project build. Click **Load personal dataset...** and select an existing personal `manifest.json`; no restart is required. Loading pauses control and trains locally in the background. After success, check the reset Preview mappings, click **Start camera control** and hold NEUTRAL until READY. Switching datasets requires another explicit start and neutral hold. If loading fails, the previous model stays selected and paused.
+Launch `.\run.cmd --studio` for the current project build. Click **Load personal dataset...** and select an existing personal `manifest.json`; no restart is required. Loading pauses control and trains locally in the background. After success, check the Preview mappings. A compatible active stage keeps its authored mappings; an empty or incompatible stage stays manual-only. When Start is enabled, click **Start camera control** and hold NEUTRAL until READY. Switching datasets requires another explicit start and neutral hold. If loading fails, the previous model stays selected and paused.
 
-The loader uses your launch settings, for example `.\run.cmd --studio --algorithm knn --multiplier 2 --margin 1.5 --camera 1`. It accepts one participant's numeric collection data, including custom gesture vocabularies, and rejects synthetic fixtures. It does not create or save profiles yet. All Studio gesture actions are simulations; the manual card buttons still work. See the [project progress](project/PROGRESS.md) for remaining functionality.
+The loader uses your launch settings, for example `.\run.cmd --studio --algorithm knn --multiplier 2 --margin 1.5 --camera 1`. It accepts one participant's numeric collection data, including custom gesture vocabularies, and rejects synthetic fixtures. It does not create or save profiles yet. All Studio gesture actions are simulations; the manual card and runbook buttons still work. See the [project progress](project/PROGRESS.md) for remaining functionality.
 
 In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause**. Editing the number alone does not change capture. Applying a different index stops the old worker and clears its predictions; wait for release before Start becomes available. Start explicitly and hold NEUTRAL again. Camera changes preserve your active mappings and simulation mode. The selection is not saved across launches; use `--camera` for a launch default.
 
@@ -256,7 +256,13 @@ The current software verification summary is recorded in `docs\evidence\verifica
 
 ## Final Project Preview
 
-The final project guide will add profile creation, in-app practice, PREVIOUS and BOOKMARK execution, custom JSON deck loading, saved state, and recovery from corrupted files.
+Run `.\run.cmd --studio` for the project preview. The shared file-control grid above the content tabs provides **Load deck...**, **Save progress...**, **Restore progress...**, **Load workspace...**, **Save session...** and **Restore session...**. The **Manual browse / bookmarks** tab provides Previous, Next, Bookmark and bookmark review/removal. Try `assets/corporate_demo_deck.json` for deck-only browsing or `assets/harbor_workspace.json` for a workspace with runbook stages. An invalid deck, workspace or incompatible progress/session file leaves the current content intact and displays an error.
+
+**Save progress...** writes only the loaded deck's card identifiers, current position and bookmarks; restore requires the same deck to be loaded and leaves camera control paused. A custom deck load creates a manual deck workspace and detaches any previous runbook. Restart keeps the loaded deck but returns to the first card, clears bookmarks in memory and resets the current stage context. Changes are not saved automatically; save again when needed.
+
+The **Runbook** tab shows the current stage instructions and manual buttons for Previous, Continue/Finish and any stage actions. Manual stage actions only display simulated requests; they do not launch files, folders, websites or applications. **Save session...** stores the current workspace plus runbook stage/finished state and matching deck position/bookmarks. Before **Restore session...**, load the same workspace first; restore validates that match, stays paused and does not auto-detect a workspace from the session file. A workspace whose stage gestures do not match the loaded vocabulary stays manual-only; loading a compatible model reapplies the current stage bindings. Preview/Rehearsal gestures remain simulations. Profile creation, guided practice, readiness-gated real actions and desktop shortcut dispatch remain in development.
+
+Use **Edit runbook** to create, save, delete or reorder authored stages. Accepted edits reset the active workspace/runbook and keep deck review state when the deck did not change. Use **Session summary** to refresh counts and **Export session results** to save a local JSON measurement archive. Counts cover Studio manual card/runbook actions plus gesture simulation/rejection events; bookmark list review/removal and live OS dispatch are outside this summary. Zero correct/wrong/missed counts mean no measured trials were recorded in that summary. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; if archiving fails, the change or close is blocked and counts remain visible. Successful restore/restart starts a fresh review summary. Session summary exports are separate from **Save session...** / **Restore session...**, which explicitly save and restore runbook navigation state; position is not autosaved.
 
 ## Rejection settings and historical results
 

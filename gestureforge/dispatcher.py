@@ -76,8 +76,11 @@ class Dispatcher:
         if result.action is None or result.simulated_action is not None:
             return outcome('rejected', 'LIVE requires a real routed action')
         try:
-            if source == 'gesture' and (not self.active() or not self.ready(snapshot)):
-                return outcome('rejected', 'paused or readiness check required')
+            if source == 'gesture':
+                if not self.active() or not self.ready(snapshot):
+                    return outcome('rejected', 'paused or readiness check required')
+                if not self.active() or snapshot != self.current():
+                    return outcome('rejected', 'context/readiness changed before action')
             action = result.action
             if action.kind == ActionType.OPEN_SHORTCUT:
                 if action.shortcut_id is None:
@@ -91,8 +94,13 @@ class Dispatcher:
                         raise DispatchFailure('Capture shutdown not acknowledged; Camera was not opened. Close competing camera apps, release capture and retry manually.')
                 # Pause is synchronous. Camera preparation may re-enter the UI and
                 # change context: compare the ENTIRE snapshot before the side effect.
-                if snapshot != self.current() or (source == 'gesture' and not self.ready(snapshot)):
+                if snapshot != self.current():
                     return outcome('rejected', 'context/readiness changed before launch')
+                if source == 'gesture':
+                    if not self.ready(snapshot):
+                        return outcome('rejected', 'context/readiness changed before launch')
+                    if snapshot != self.current():
+                        return outcome('rejected', 'context/readiness changed before launch')
                 target, resolved = self.registry.resolve(action.shortcut_id)
                 self.launcher.open(target, resolved)
                 return outcome('launch_requested')

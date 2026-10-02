@@ -160,6 +160,11 @@ class ProbeWindow(QMainWindow):
             self.worker.requestInterruption()
             acknowledged = self.worker.wait(5000)
             self.record('probe_close_shutdown', acknowledged=acknowledged)
+            if not acknowledged:
+                self.message.setText('Camera shutdown is still in progress. Keep this window open and retry closing after capture stops.')
+                event.ignore()
+                return
+        self.timer.stop()
         self.record('probe_closed')
         super().closeEvent(event)
 

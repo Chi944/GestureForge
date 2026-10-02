@@ -146,6 +146,18 @@ class QuickActionsWidget(QWidget):
                 self.status.setText(f'Could not restore local targets: {exc}. Rebind or select a valid file.')
         self.refresh()
 
+    def showEvent(self, event: Any) -> None:
+        app = QApplication.instance()
+        if app is not None:
+            app.installEventFilter(self)
+        super().showEvent(event)
+
+    def closeEvent(self, event: Any) -> None:
+        app = QApplication.instance()
+        if app is not None:
+            app.removeEventFilter(self)
+        super().closeEvent(event)
+
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if event.type() == QEvent.Type.ApplicationDeactivate or (
             event.type() == QEvent.Type.WindowDeactivate and watched is self.window()
@@ -281,6 +293,7 @@ class RunbookEditorWidget(QWidget):
     def __init__(self, workspace: Workspace, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.editor = RunbookEditor(workspace)
+        self.change_accepted = True
         layout = QVBoxLayout(self)
         self.stages = QListWidget()
         self.stages.currentRowChanged.connect(self._select)
@@ -289,15 +302,19 @@ class RunbookEditorWidget(QWidget):
         self.stage_id, self.title, self.continue_label = QLineEdit(), QLineEdit(), QLineEdit('Continue')
         self.instructions = QTextEdit()
         self.card = QComboBox()
+        self._populate_card_choices()
         self.action_fields: list[tuple[QLineEdit, QComboBox]] = []
         form.addRow('Stage ID', self.stage_id)
         form.addRow('Stage title', self.title)
         form.addRow('Authored instructions', self.instructions)
         form.addRow('Linked card', self.card)
-        form.addRow('Visible Continue / Finish label', self.continue_label)
+        form.addRow('Continue / Finish label', self.continue_label)
         for index in range(3):
             gesture = QLineEdit(f'G{index + 1}')
+            gesture.setMinimumWidth(65)
+            gesture.setMaximumWidth(80)
             combo = QComboBox()
+            self._populate_action_choices(combo)
             row = QHBoxLayout()
             row.addWidget(gesture)
             row.addWidget(combo)
@@ -315,25 +332,35 @@ class RunbookEditorWidget(QWidget):
         layout.addWidget(self.status)
         self.set_workspace(workspace)
 
-    def set_workspace(self, workspace: Workspace) -> None:
-        """Synchronise imported content without emitting an edit or action."""
-        self.editor = RunbookEditor(workspace)
+    def _populate_card_choices(self) -> None:
+        selected = self.card.currentData()
         self.card.clear()
         self.card.addItem('No card', None)
-        if workspace.deck:
-            for card in workspace.deck.cards:
+        if self.editor.workspace.deck:
+            for card in self.editor.workspace.deck.cards:
                 self.card.addItem(f'{card.title} ({card.id})', card.id)
-        for _, combo in self.action_fields:
-            combo.clear()
-            combo.addItem('Unbound', None)
-            for kind in ActionType:
-                if kind == ActionType.OPEN_SHORTCUT:
-                    continue
-                if workspace.deck is None and kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK}:
+        index = self.card.findData(selected)
+        self.card.setCurrentIndex(index if index >= 0 else 0)
+
+    def _populate_action_choices(self, combo: QComboBox) -> None:
+        selected = combo.currentData()
+        combo.clear()
+        combo.addItem('Unbound', None)
+        for kind in ActionType:
+            if kind != ActionType.OPEN_SHORTCUT:
+                if self.editor.workspace.deck is None and kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK}:
                     continue
                 combo.addItem(action_label(Action(kind)), Action(kind))
-            for slot in workspace.shortcuts:
-                combo.addItem(f'Open {slot.label}', Action(ActionType.OPEN_SHORTCUT, slot.id))
+        for slot in self.editor.workspace.shortcuts:
+            combo.addItem(f'Open {slot.label}', Action(ActionType.OPEN_SHORTCUT, slot.id))
+        index = next((i for i in range(combo.count()) if combo.itemData(i) == selected), -1)
+        combo.setCurrentIndex(index if index >= 0 else 0)
+
+    def set_workspace(self, workspace: Workspace) -> None:
+        self.editor = RunbookEditor(workspace)
+        self._populate_card_choices()
+        for _, combo in self.action_fields:
+            self._populate_action_choices(combo)
         self._refresh()
         self._new()
 
@@ -374,14 +401,45 @@ class RunbookEditorWidget(QWidget):
                 gesture.setText(f'G{index + 1}')
                 combo.setCurrentIndex(0)
 
-    def _changed(self, row: int = -1) -> None:
+    def _capture_form(self) -> tuple[str, str, str, str, object, tuple[tuple[str, object], ...]]:
+        return (
+            self.stage_id.text(), self.title.text(), self.instructions.toPlainText(), self.continue_label.text(),
+            self.card.currentData(),
+            tuple((gesture.text(), combo.currentData()) for gesture, combo in self.action_fields),
+        )
+
+    def _restore_form(self, draft: tuple[str, str, str, str, object, tuple[tuple[str, object], ...]]) -> None:
+        stage_id, title, instructions, continue_label, card_id, bindings = draft
+        self.stage_id.setText(stage_id)
+        self.title.setText(title)
+        self.instructions.setPlainText(instructions)
+        self.continue_label.setText(continue_label)
+        index = self.card.findData(card_id)
+        self.card.setCurrentIndex(index if index >= 0 else 0)
+        for (gesture, combo), (gesture_id, action) in zip(self.action_fields, bindings, strict=True):
+            gesture.setText(gesture_id)
+            index = next((i for i in range(combo.count()) if combo.itemData(i) == action), -1)
+            combo.setCurrentIndex(index if index >= 0 else 0)
+
+    def _changed(self, previous: Workspace, row: int = -1) -> None:
+        draft = self._capture_form()
+        selected_row = self.stages.currentRow()
+        self.change_accepted = True
         self.workspace_changed.emit(self.editor.workspace)
+        if not self.change_accepted:
+            self.editor = RunbookEditor(previous)
+            self._refresh()
+            self.stages.setCurrentRow(selected_row)
+            self._restore_form(draft)
+            self.status.setText('Shell rejected runbook change; prior workspace retained.')
+            return
         self._refresh()
         self.stages.setCurrentRow(row)
-        self.status.setText('Validated workspace changed. Shell must reset routing before activation.')
+        self.status.setText('Validated workspace changed. Apply through the shell routing reset.')
 
     def _save(self) -> None:
         try:
+            previous = self.editor.workspace
             stage = Stage(self.stage_id.text(), self.title.text(), self.instructions.toPlainText(),
                           self.card.currentData(), tuple(Binding(gesture.text(), combo.currentData())
                           for gesture, combo in self.action_fields if combo.currentData() is not None),
@@ -392,22 +450,24 @@ class RunbookEditorWidget(QWidget):
                 row = len(self.editor.workspace.stages) - 1
             else:
                 self.editor.update(row, stage)
-            self._changed(row)
+            self._changed(previous, row)
         except ValueError as exc:
             self.status.setText(f'Invalid stage: {exc}')
 
     def _delete(self) -> None:
         try:
+            previous = self.editor.workspace
             self.editor.delete(self.stages.currentRow())
-            self._changed()
+            self._changed(previous)
         except ValueError as exc:
             self.status.setText(str(exc))
 
     def _move(self, offset: int) -> None:
         try:
+            previous = self.editor.workspace
             row = self.stages.currentRow()
             self.editor.move(row, row + offset)
-            self._changed(row + offset)
+            self._changed(previous, row + offset)
         except ValueError as exc:
             self.status.setText(str(exc))
 
@@ -468,13 +528,15 @@ class RunbookWidget(QWidget):
 
 
 class SessionSummaryWidget(QWidget):
-    def __init__(self, summary: SessionSummary, parent: QWidget | None = None) -> None:
+    def __init__(self, summary: SessionSummary, parent: QWidget | None = None,
+                 default_folder: Path | None = None, scope_text: str | None = None) -> None:
         super().__init__(parent)
         self.summary = summary
+        self.default_folder = default_folder
         layout = QVBoxLayout(self)
         self.counts = plain_label()
         layout.addWidget(self.counts)
-        layout.addWidget(plain_label('Launch requested means Windows accepted an open request. Only explicit acknowledgement records task completion.'))
+        layout.addWidget(plain_label(scope_text or 'Launch requested means Windows accepted an open request. Only explicit acknowledgement records task completion.'))
         refresh = QPushButton('Refresh measured results')
         refresh.clicked.connect(self.refresh)
         layout.addWidget(refresh)
@@ -487,7 +549,10 @@ class SessionSummaryWidget(QWidget):
         self.counts.setText('\n'.join(f'{key.replace("_", " ").title()}: {value}' for key, value in self.summary.counts().items()))
 
     def _export(self) -> None:
-        path, _ = QFileDialog.getSaveFileName(self, 'Export measured session', '', 'JSON (*.json)')
+        suggested = ''
+        if self.default_folder is not None:
+            suggested = str(self.default_folder / 'studio-session-summary.json')
+        path, _ = QFileDialog.getSaveFileName(self, 'Export measured session', suggested, 'JSON (*.json)')
         if path:
             try:
                 self.summary.export(Path(path))
@@ -503,6 +568,7 @@ class WorkspaceWidget(QWidget):
         from .workspace import WorkspaceStore
         super().__init__(parent)
         self.store = WorkspaceStore(workspace)
+        self.import_accepted = True
         layout = QVBoxLayout(self)
         self.details = plain_label()
         layout.addWidget(self.details)
@@ -526,8 +592,15 @@ class WorkspaceWidget(QWidget):
 
     def import_path(self, path: Path) -> bool:
         try:
+            previous = self.store.active
             candidate = self.store.import_file(path)
+            self.import_accepted = True
             self.workspace_changed.emit(candidate)
+            if not self.import_accepted:
+                self.store.active = previous
+                self.refresh()
+                self.status.setText('Shell rejected activation; prior workspace retained.')
+                return False
             self.refresh()
             self.status.setText('Validated content staged. Local targets are unbound until configured on this machine. Shell activation must reset routing and stay paused.')
             return True

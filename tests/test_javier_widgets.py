@@ -69,6 +69,44 @@ def test_quick_target_editor_and_slot_only_emit_requests(qt_app, tmp_path: Path)
     widget.close()
 
 
+def test_quick_save_failure_does_not_publish_registry_or_callbacks(qt_app, tmp_path: Path) -> None:
+    state = tmp_path / 'state-as-dir'
+    state.mkdir()
+    registry = TargetRegistry()
+    widget = QuickActionsWidget(registry, state)
+    changes: list[Any] = []
+    widget.bindings_changed.connect(changes.append)
+    widget.target_id.setText('calculator')
+    widget.label.setText('Calculator')
+    widget.kind.setCurrentIndex(widget.kind.findData(TargetKind.BUILTIN))
+    widget.value.setText('calculator')
+    click(widget, 'Save target')
+    assert registry.targets == ()
+    assert changes == []
+    assert 'Cannot save target' in widget.status.text()
+    registry.configure(Target('calculator', 'Calculator', TargetKind.BUILTIN, 'calculator'))
+    widget.refresh()
+    widget.slots[0].setCurrentIndex(widget.slots[0].findData('calculator'))
+    assert registry.quick_slots == (None, None, None) and changes == []
+    click(widget, 'Delete target')
+    assert len(registry.targets) == 1 and changes == []
+    assert widget.registry is registry
+    widget.close()
+
+
+def test_quick_closed_widget_no_longer_emits_focus_lost(qt_app) -> None:
+    widget = QuickActionsWidget(TargetRegistry())
+    pauses: list[bool] = []
+    widget.focus_lost.connect(lambda: pauses.append(True))
+    widget.close()
+    QApplication.sendEvent(qt_app, QEvent(QEvent.Type.ApplicationDeactivate))
+    assert pauses == []
+    widget.show()
+    QApplication.sendEvent(qt_app, QEvent(QEvent.Type.ApplicationDeactivate))
+    assert pauses
+    widget.close()
+
+
 def test_quick_invalid_target_and_lost_focus_signal(qt_app) -> None:
     widget = QuickActionsWidget(TargetRegistry())
     widget.target_id.setText('site')

@@ -34,16 +34,24 @@ Current project foundation on `main`:
 | :--- | :--- |
 | Shared routing contract | Implemented and tested in `gestureforge/contracts.py`, `gestureforge/controller.py` and `gestureforge/routing.py` |
 | Custom gesture vocabulary | PR #10 merged: schema-2 collection, kNN/SVM training and evaluation support three custom action IDs plus NEUTRAL; legacy datasets remain supported |
+| Starter collection protocol | [Shared pose and recording guide](docs/project/STARTER_COLLECTION_GUIDE.md) accepted in PR #12; three-member collection and person-separated model comparison remain in progress |
 | Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
 | Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
 | Studio preview | Opt-in `--studio` simulation; shows would-be actions without executing gesture-driven viewer or desktop actions |
+| Manual card browser | Studio's **Manual browse / bookmarks** tab supports Previous, Next, bookmarking, reviewing and removing bookmarks without a dataset |
+| Deck loading and progress | Load validated JSON decks; explicitly save/restore position and bookmarks for the matching deck; control stays paused and failed loads preserve the active deck |
 | In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
 | Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
 | Persistent control bar | Studio keeps Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
+| Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
 | Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |
-| Full Studio workflow | Starter data, profiles, readiness scoring, runbooks, persistence and real shortcut dispatch remain to be integrated |
+| Workspace/runbook in Studio | Load validated workspaces, edit stages, use Runbook Previous/Continue/Finish/action buttons, and save/restore navigation state while camera control stays paused |
+| Session summary | Studio records manual/simulated action outcomes and explicit stage completion acknowledgements; export measurement summaries separately from navigation saves |
+| Full Studio workflow | Starter data, profiles, readiness scoring and real shortcut dispatch remain to be integrated |
 
 Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
+
+To inspect the remaining standalone components without a webcam or dataset, run `.\.venv\Scripts\python.exe -m gestureforge.javier_preview` (add `--quick-only` for an empty Quick Actions workspace). This developer harness is separate from the Studio shell and never opens applications. See the [component guide](docs/COMPONENT_GUIDE.md) and [integration review](docs/project/JAVIER_DELIVERY_REVIEW.md).
 
 ```powershell
 .\run.cmd --studio
@@ -51,11 +59,19 @@ Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Jav
 .\run.cmd --studio --dataset data/local/pilot/manifest.json --multiplier 2 --margin 1.5 --camera 1
 ```
 
-Without a dataset, the manual viewer opens. In Studio, click **Load personal dataset...** and choose your collected `manifest.json`. Loading pauses control and trains locally in the background using the launch settings (`--algorithm`, `--multiplier`, `--margin`). A successful switch resets the action mappings and mode to Preview; check the mappings, wait for any previous camera thread to stop, then start explicitly and show NEUTRAL. Failed loads retain the previous selection in a paused state. Numeric gesture data stays local; synthetic fixtures cannot enable camera simulation. This loads existing data; guided enrolment and saved-profile management are still in development.
+Without a dataset, the manual viewer opens. In Studio, click **Load personal dataset...** and choose your collected `manifest.json`. Loading pauses control and trains locally in the background using the launch settings (`--algorithm`, `--multiplier`, `--margin`). A successful switch keeps a compatible active stage mapped, leaves empty or mismatched stages manual-only, and otherwise keeps the startup deck's default Preview mappings; check the mappings, wait for any previous camera thread to stop, then start explicitly and show NEUTRAL. Failed loads retain the previous selection in a paused state. Numeric gesture data stays local; synthetic fixtures cannot enable camera simulation. This loads existing data; guided enrolment and saved-profile management are still in development.
 
-Use **Camera index** and **Use camera and pause** to select another webcam without restarting the application (usually 0 or 1). After the old camera releases, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. **Ctrl+O** opens dataset selection, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The loading indicator stays visible while training; camera changes are disabled during that job.
+Use **Camera index** and **Use camera and pause** to select another webcam without restarting the application (usually 0 or 1). After the old camera releases, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. The on-screen hint shows the platform-native shortcuts for loading a dataset and starting capture (**Ctrl+O/Ctrl+Enter** on Windows); **Esc** pauses. The loading indicator stays visible while training; camera changes are disabled during that job.
 
-Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio dropdowns to choose Preview/Rehearsal and the simulated action for each gesture, then click **Apply and pause**. Draft edits do not change active control. Applying stops capture and requires a new NEUTRAL hold on resume. Mappings are temporary and are not saved. Context switching remains an integration API until runbooks are connected. Default launch without `--studio` preserves assignment behaviour.
+Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio dropdowns to choose Preview/Rehearsal and the simulated action for each gesture, then click **Apply and pause**. Draft edits do not change active control. Applying stops capture and requires a new NEUTRAL hold on resume. Mappings are temporary and are not saved. Runbook stage changes switch the active context but still simulate actions only. Default launch without `--studio` preserves assignment behaviour.
+
+Use **Manual browse / bookmarks** beside the Card tab to inspect the deck with buttons. Double-click a bookmark, or select it and press Enter, to revisit its card. Select a bookmark before removing it. Both tabs share the same deck.
+
+The shared file-control grid above the tabs includes **Load deck...**, **Save progress...**, **Restore progress...**, **Load workspace...**, **Save session...** and **Restore session...**. **Load deck...** accepts the supplied `assets/corporate_demo_deck.json` or your own validated deck JSON. **Save progress...** writes the current position and bookmarks, with an ignored local folder suggested. **Restore progress...** restores them only for the matching loaded deck and stays paused. Load the same deck first after reopening the app; the progress file does not contain the deck itself. Restart deck keeps the current deck, returns to its first card and clears bookmarks in memory.
+
+Use **Load workspace...** for a validated workspace JSON such as `assets/harbor_workspace.json`. A custom deck load creates a manual deck workspace and detaches any previous runbook. The **Runbook** tab exposes manual Previous, Continue/Finish and stage action buttons; buttons move stages or display simulated requests without launching desktop resources. **Save session...** writes the current workspace, runbook stage/finished state and deck position/bookmarks. Before **Restore session...**, load the same workspace first; restore validates that match, restores paused and does not auto-detect a workspace from the session file. If a stage uses gesture IDs outside the loaded vocabulary, Studio keeps that stage manual-only; loading a compatible model reapplies the current stage bindings. Preview/Rehearsal still only displays would-be actions, and real OS dispatch remains disabled.
+
+Use **Edit runbook** to create, save, delete or reorder authored stages; accepted edits reset the current workspace/runbook while preserving deck review state when the deck is unchanged. Use **Session summary** to refresh counts and **Export session results** to write a local JSON measurement archive. Counts cover Studio manual card/runbook actions plus gesture simulation/rejection events; zero trial counts mean no measured trials were recorded in that summary. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; if archiving fails, the change or close is blocked and counts stay visible. Successful restore/restart starts a fresh review summary. Summary exports are separate from **Save session...** / **Restore session...**, which save runbook navigation state explicitly; position is not autosaved.
 
 [Approved plan](docs/project/PROJECT_PLAN.md) Â· [Progress](docs/project/PROGRESS.md) Â· [Team guide](docs/project/TEAM_GUIDE.md) Â· [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) Â· [Javier brief](docs/project/JAVIER_HANDOFF.md) Â· [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
 
@@ -69,7 +85,7 @@ Verify the project without overwriting historical assignment evidence:
 
 [Current project checks](docs/project/verification.json) record software evidence. They do not establish live-camera performance or completion of remaining features.
 
-For the controller evaluation, use `scripts/replay_controller.py --trace PATH --output PATH` with the environment's Python. The [evaluation guide](docs/project/DEMO_SCENARIO.md#controller-replay-tool-gf-p20-preparation) defines the trace/annotation format and scoring. Existing command-only logs cannot replace full prediction traces. This tool prepares the final evaluation; real participant collection and workflow comparisons remain outstanding.
+For the controller evaluation, use `scripts/replay_controller.py --trace PATH --output PATH` with the environment's Python. The [evaluation guide](docs/project/DEMO_SCENARIO.md#controller-replay-tool-gf-p20-preparation) defines the trace/annotation format and scoring. In Studio, opt into **Record evaluation trace** before Start, then Pause to save a local unannotated trace. The guide explains independent annotation before scoring. Existing command-only logs cannot replace full prediction traces. This tool prepares the final evaluation; real participant collection and workflow comparisons remain outstanding.
 
 ## Run the prototype
 
@@ -104,7 +120,7 @@ python3.11 scripts/setup_macos.py
 bash run.sh
 ```
 
-Setup installs the pinned dependencies and verifies the hand model. Do not copy a Windows `.venv` or run Python through Rosetta. See the [Mac guide](docs/MACOS.md) for Python installation, camera permissions and personal gesture collection.
+Setup installs the pinned dependencies, verifies the hand model and briefly opens both GUI modes to check startup. Run `bash run.sh --studio` for the project preview. Do not copy a Windows `.venv` or run Python through Rosetta. See the [Mac guide](docs/MACOS.md) for Python installation, camera permissions and personal gesture collection.
 
 After collecting your own dataset in `data/local/mac-pilot`, check the camera and launch gesture control:
 
@@ -115,7 +131,7 @@ bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multi
 
 Allow camera access for the launching application when macOS asks. Without a personal dataset, the viewer opens with keyboard/mouse controls and camera control stays disabled.
 
-All 41 pinned packages resolved for Apple Silicon/Python 3.11. The [current project checks](docs/project/verification.json) record the Windows test, lint, type-checking, GUI-smoke and synthetic-evaluation results. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
+All 41 pinned packages resolved for Apple Silicon/Python 3.11 in the [refreshed 1 October check](docs/project/macos-compatibility.json). Studio uses native keyboard shortcut labels; the planned desktop shortcut launcher is Windows-specific, while the Mac target covers the viewer, personal classifier and Studio simulation. The [current project checks](docs/project/verification.json) record the Windows test, lint, type-checking, GUI-smoke and synthetic-evaluation results. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
 
 ### Use gesture control
 
@@ -167,7 +183,7 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 
 ```powershell
 # Automated tests, lint, type checks, GUI smoke and synthetic software checks
-.\.venv\Scripts\python.exe scripts/verify.py
+.\.venv\Scripts\python.exe scripts/verify.py --output docs/project/verification.json --synthetic-output experiments/local/project-software-check.json
 
 # Reproduce the recommended v3 comparison from the private P01 package
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/reproduced-pilot-v3.json

@@ -35,7 +35,7 @@ class Target:
 # Selection is an explicit trust decision, not a malware sandbox. Known launchers
 # and interpreters are excluded, including versioned Python names.
 DENIED_APPS = frozenset({
-    'cmd', 'powershell', 'pwsh', 'wscript', 'cscript', 'mshta', 'rundll32', 'regsvr32',
+    'cmd', 'powershell', 'powershell_ise', 'pwsh', 'wscript', 'cscript', 'mshta', 'rundll32', 'regsvr32',
     'bash', 'sh', 'wsl', 'node', 'nodejs', 'ruby', 'perl', 'java', 'javaw', 'php',
     'msiexec', 'reg', 'schtasks', 'wmic', 'conhost', 'wt', 'hh', 'installutil', 'msbuild',
     'py', 'pyw', 'pypy', 'pypyw',
@@ -146,6 +146,16 @@ class TargetRegistry:
     @property
     def targets(self) -> tuple[Target, ...]:
         return tuple(self._targets.values())
+
+    def copy(self) -> 'TargetRegistry':
+        candidate = TargetRegistry()
+        candidate._targets = dict(self._targets)
+        candidate.quick_slots = self.quick_slots
+        return candidate
+
+    def replace_with(self, candidate: 'TargetRegistry') -> None:
+        self._targets = dict(candidate._targets)
+        self.quick_slots = candidate.quick_slots
 
     def configure(self, target: Target) -> None:
         validate_target(target)

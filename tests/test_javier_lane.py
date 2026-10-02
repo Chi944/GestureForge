@@ -308,7 +308,8 @@ def test_valid_https(url: str) -> None:
 
 
 @pytest.mark.parametrize('name', ['cmd.exe', 'powershell.exe', 'python.exe', 'python3.11.exe',
-                                   'node.exe', 'wscript.exe', 'rundll32.exe', 'test.bat', 'test.lnk'])
+                                   'powershell_ise.exe', 'node.exe', 'wscript.exe', 'rundll32.exe',
+                                   'test.bat', 'test.lnk'])
 def test_shell_interpreter_script_apps_rejected(tmp_path: Path, name: str) -> None:
     path = tmp_path / name
     path.write_text('fake fixture only')
@@ -472,6 +473,44 @@ def test_stale_snapshot_and_dedup_generation_and_owner_thread() -> None:
     assert len(errors) == 1 and viewer.position == 1
 
 
+@pytest.mark.parametrize('changed', ['context', 'pause'])
+def test_readiness_context_change_blocks_viewer_side_effect(changed: str) -> None:
+    gate, session, os, viewer, _ = dispatcher()
+    snapshot = session.snapshot
+
+    def change(snapshot):
+        if changed == 'context':
+            session.configure('profile', 'model', 'other', {'G1': Action(ActionType.PREVIOUS)}, RoutingMode.LIVE)
+        else:
+            session.pause()
+        return True
+
+    gate.ready = change
+    outcome = gate.dispatch(RoutingResult('stale-viewer', action=Action(ActionType.NEXT)), snapshot)
+    assert outcome.status == 'rejected' and 'readiness changed' in outcome.reason
+    assert viewer.position == 0 and os.calls == []
+
+
+def test_post_camera_readiness_context_change_blocks_launch() -> None:
+    gate, session, os, _, acknowledgements = dispatcher()
+    calls = 0
+
+    def change_on_second_ready(snapshot):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            session.configure('profile', 'model', 'other', {'G1': Action(ActionType.NEXT)}, RoutingMode.LIVE)
+        return True
+
+    gate.ready = change_on_second_ready
+    outcome = gate.dispatch(
+        RoutingResult('stale-launch', action=Action(ActionType.OPEN_SHORTCUT, 'camera')),
+        session.snapshot,
+    )
+    assert outcome.status == 'rejected' and 'before launch' in outcome.reason
+    assert os.calls == [] and acknowledgements == ['released']
+
+
 def test_failed_launch_preserves_runbook_stage() -> None:
     gate, session, os, viewer, _ = dispatcher()
     gate.runbook = Runbook(workspace(), lambda stage, resume: True, viewer)
@@ -539,7 +578,7 @@ def test_windows_adapter_uses_fixed_builtin_targets_and_safe_native_request(monk
     launcher = shortcuts.WindowsLauncher()
     launcher.open(Target('calc', 'Calculator', TargetKind.BUILTIN, 'calculator'), 'ignored')
     launcher.open(Target('cam', 'Camera', TargetKind.BUILTIN, 'camera'), 'ignored')
-    assert calls == [('/Windows/System32/calc.exe', 'open'), ('microsoft.windows.camera:', 'open')]
+    assert calls == [(str(Path('/Windows/System32') / 'calc.exe'), 'open'), ('microsoft.windows.camera:', 'open')]
 
 
 def test_project_viewer_event_bookmarks_and_previous_are_idempotent() -> None:
