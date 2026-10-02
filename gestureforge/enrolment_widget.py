@@ -139,8 +139,14 @@ class EnrolmentWidget(QWidget):
             self.session.stop(self.clock(), 'Capture stopped: ' + reason[:450])
         self.pending_plan = None
         self.feedback.setText(reason)
-        self.capture_release_requested.emit(request_id)
+        self._release_capture_once()
         self.refresh()
+
+    def _release_capture_once(self):
+        if self.request_id and not self.announced:
+            self.announced = True
+            self.timer.stop()
+            self.capture_release_requested.emit(self.request_id)
 
     def receive_observation(self, observation: Observation):
         if self.session is not None:
@@ -164,10 +170,13 @@ class EnrolmentWidget(QWidget):
 
     def stop_collection(self):
         if self.session is not None:
+            was_terminal = self.session.state in ('complete', 'cancelled')
             self.session.stop(self.clock())
+            if not was_terminal:
+                self._release_capture_once()
         elif self.pending_plan is not None:
             self.pending_plan = None
-            self.capture_release_requested.emit(self.request_id)
+            self._release_capture_once()
             self.request_id = ''  # stale capture acknowledgements cannot start collection
             self.feedback.setText('Collection request cancelled.')
         self.refresh()
@@ -202,9 +211,7 @@ class EnrolmentWidget(QWidget):
         self.cue.setText(cue)
         self.feedback.setText(session.feedback)
         if state in ('complete', 'cancelled') and not self.announced:
-            self.announced = True
-            self.timer.stop()
-            self.capture_release_requested.emit(self.request_id)
+            self._release_capture_once()
             if state == 'complete':
                 self.dataset_saved.emit(session.manifest)
 

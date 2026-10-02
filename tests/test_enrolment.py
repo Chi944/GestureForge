@@ -79,6 +79,42 @@ def test_absent_camera_preserves_five_slots(plan, tmp_path):
     assert not bundle.valid_records()
 
 
+def test_timer_waits_for_latest_eligible_delivery_before_expiring_slot(plan, tmp_path):
+    session = EnrolmentSession(plan, tmp_path, 'capture1', 'TEST', consent=True)
+    session.begin(0.)
+    session.advance(2.41)
+    session.advance(2.50, observation(2.39, 1))
+    session.advance(5.)
+    records = load_dataset(session.manifest).records
+    assert records[0].valid
+    assert records[0].timestamp == 2.39
+
+
+def test_final_slot_waits_for_delivery_window_before_save(plan, tmp_path):
+    session = EnrolmentSession(plan, tmp_path, 'capture1', 'TEST', consent=True)
+    session.begin(0.)
+    for index, offset in enumerate(OFFSETS[:-1]):
+        at = 2. + offset + .01
+        session.advance(at, observation(at, index))
+    session.advance(4.01)
+    assert session.state == 'hold'
+    assert not session.manifest.exists()
+    session.advance(4.10, observation(3.99, 10))
+    bundle = load_dataset(session.manifest)
+    assert session.state == 'release'
+    assert len(bundle.valid_records()) == 5
+
+
+def test_late_timestamp_stays_invalid_after_delivery_window(plan, tmp_path):
+    session = EnrolmentSession(plan, tmp_path, 'capture1', 'TEST', consent=True)
+    session.begin(0.)
+    session.advance(2.61, observation(2.41, 1))
+    session.advance(5.)
+    records = load_dataset(session.manifest).records
+    assert not records[0].valid
+    assert records[0].validity_reason == 'missed scheduled timestamp'
+
+
 @pytest.mark.parametrize('change', [dict(session_id='old'), dict(profile_id='old'),
                                     dict(timestamp=0.), dict(timestamp=999.)])
 def test_stale_and_wrong_generation_rejected(plan, tmp_path, change):
@@ -175,4 +211,120 @@ def test_widget_host_handshake_cancel_and_no_camera(tmp_path):
         assert widget.form.isEnabled()
         assert not list(tmp_path.rglob('*.json'))
     finally:
+        widget.close()
+
+
+@pytest.mark.parametrize('action', ['stop', 'hide', 'close'])
+def test_widget_cancels_save_error_capture_once_and_retries(action, tmp_path, monkeypatch):
+    os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    from PySide6.QtGui import QCloseEvent, QHideEvent
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.enrolment_widget import EnrolmentWidget
+    app = QApplication.instance() or QApplication([])
+    assert app is not None
+    now = 0.
+    widget = EnrolmentWidget(tmp_path, clock=lambda: now)
+    requests = []
+    releases: list[str] = []
+    widget.capture_requested.connect(lambda plan, token: requests.append((plan, token)))
+    widget.capture_release_requested.connect(releases.append)
+    save = enrolment.save_dataset
+    def fail(*args, **kwargs):
+        raise OSError('disk full')
+    try:
+        widget.participant.setText('TEST')
+        widget.setup.setText('Software fixture')
+        widget.consent.setChecked(True)
+        widget.request_collection()
+        token = requests[0][1]
+        assert widget.attach_capture(token, 'capture1', 'TEST')
+        widget.begin_trial()
+        monkeypatch.setattr(enrolment, 'save_dataset', fail)
+        for index, offset in enumerate(OFFSETS):
+            now = 2. + offset + .01
+            widget.receive_observation(observation(now, index))
+        now = 4.1
+        widget.tick()
+        assert widget.session is not None
+        assert widget.session.state == 'save_error'
+        assert not releases
+        if action == 'stop':
+            widget.stop_collection()
+        elif action == 'hide':
+            widget.hideEvent(QHideEvent())
+        else:
+            event = QCloseEvent()
+            widget.closeEvent(event)
+            assert not event.isAccepted()
+        assert widget.session.state == 'save_error'
+        assert releases == [token]
+        assert widget.retry_button.isEnabled()
+        widget.stop_collection()
+        assert releases == [token]
+        monkeypatch.setattr(enrolment, 'save_dataset', save)
+        now = 4.2
+        widget.retry_save()
+        assert widget.session.state == 'cancelled'
+        assert releases == [token]
+        assert len(load_dataset(widget.session.manifest).records) == 5
+    finally:
+        monkeypatch.setattr(enrolment, 'save_dataset', save)
+        widget.session = None
+        widget.close()
+
+
+@pytest.mark.parametrize('action', ['stop', 'hide', 'close'])
+def test_widget_stop_induced_save_failure_releases_capture_once(action, tmp_path, monkeypatch):
+    os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    from PySide6.QtGui import QCloseEvent, QHideEvent
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.enrolment_widget import EnrolmentWidget
+    app = QApplication.instance() or QApplication([])
+    assert app is not None
+    now = 0.
+    widget = EnrolmentWidget(tmp_path, clock=lambda: now)
+    requests = []
+    releases: list[str] = []
+    widget.capture_requested.connect(lambda plan, token: requests.append((plan, token)))
+    widget.capture_release_requested.connect(releases.append)
+    save = enrolment.save_dataset
+    def fail(*args, **kwargs):
+        raise OSError('disk full')
+    try:
+        widget.participant.setText('TEST')
+        widget.setup.setText('Software fixture')
+        widget.consent.setChecked(True)
+        widget.request_collection()
+        token = requests[0][1]
+        assert widget.attach_capture(token, 'capture1', 'TEST')
+        widget.begin_trial()
+        now = 2.21
+        widget.receive_observation(observation(now, 1))
+        monkeypatch.setattr(enrolment, 'save_dataset', fail)
+        now = 2.3
+        if action == 'stop':
+            widget.stop_collection()
+        elif action == 'hide':
+            widget.hideEvent(QHideEvent())
+        else:
+            event = QCloseEvent()
+            widget.closeEvent(event)
+            assert not event.isAccepted()
+        assert widget.session is not None
+        assert widget.session.state == 'save_error'
+        assert len(widget.session.pending_records) == 5
+        assert releases == [token]
+        widget.stop_collection()
+        assert releases == [token]
+        monkeypatch.setattr(enrolment, 'save_dataset', save)
+        now = 2.4
+        widget.retry_save()
+        assert widget.session.state == 'cancelled'
+        bundle = load_dataset(widget.session.manifest)
+        assert len(bundle.records) == 5
+        assert len(bundle.valid_records()) == 1
+        assert releases == [token]
+    finally:
+        monkeypatch.setattr(enrolment, 'save_dataset', save)
+        widget.session = None
         widget.close()

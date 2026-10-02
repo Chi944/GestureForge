@@ -15,6 +15,8 @@ from .storage import text
 from .vocabulary import GestureVocabulary
 
 OFFSETS = (.2, .6, 1., 1.4, 1.8)
+DELIVERY_TOLERANCE = .2
+SLOT_TOLERANCE = .2
 
 
 @dataclass(frozen=True)
@@ -129,7 +131,7 @@ class EnrolmentSession:
                 and type(observation.frame_id) is int and observation.frame_id > self.last_frame
                 and math.isfinite(observation.timestamp)
                 and self.last_timestamp < observation.timestamp <= now
-                and now - observation.timestamp <= .2)
+                and now - observation.timestamp <= DELIVERY_TOLERANCE)
             if usable:
                 self.last_frame = observation.frame_id
                 self.last_timestamp = observation.timestamp
@@ -140,7 +142,8 @@ class EnrolmentSession:
         self.state = 'hold'
         while len(self.pending_records) < 5:
             due = self.start + OFFSETS[len(self.pending_records)]
-            if usable and observation is not None and due <= observation.timestamp <= due + .2:
+            if (usable and observation is not None
+                    and due <= observation.timestamp <= due + SLOT_TOLERANCE):
                 try:
                     feature = extract_feature_vector(observation, self.plan.hand)
                     reason = ''
@@ -149,7 +152,7 @@ class EnrolmentSession:
                 self._slot(feature, reason, observation.timestamp)
                 self.feedback = 'Valid sample' if feature is not None else 'Invalid: ' + reason
                 usable = False  # a frame can fill only one scheduled slot
-            elif now > due + .2:
+            elif now > due + SLOT_TOLERANCE + DELIVERY_TOLERANCE:
                 self._slot(None, 'missed scheduled timestamp', due)
                 self.feedback = 'Invalid: no fresh sample at the scheduled time'
             else:
