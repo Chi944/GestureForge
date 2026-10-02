@@ -1,9 +1,12 @@
 # GF-P07 guided enrolment interface proposal
 
 Local component delivery, 2 October 2026. Owner: Hau Jie. Integration: Deston.
-PR #14 profile persistence is still a separate review dependency. This work stays
-local while that PR is open so its review diff remains unchanged. It is not yet
-connected to Studio and does not establish GF-P07 live acceptance.
+PR #14 profile persistence is now merged, including the reviewed settings
+canonicalisation fix. This component is submitted for interface review against
+main 223b13a. The updated member brief prioritises the GF-P06 profile selector and
+agreement on its boundary before GF-P07 integration. This proposal does not
+replace that work. It is not yet connected to Studio and does not establish
+GF-P07 live acceptance.
 
 ## Components
 
@@ -97,3 +100,9 @@ PYTHONPATH): `python -m pytest -q tests/test_enrolment.py` reports 17 passed;
 source files). The preview renderer explicitly loaded the Windows Segoe UI font
 because the offscreen platform initially lacked a usable default font; this does
 not change application font settings. These are local software checks.
+
+After syncing reviewed main 223b13a on 2 October, the complete suite reports
+442 passed, 1 skipped in 71.63s; Ruff passes and mypy reports no issues in 57
+source files. Both assignment and Studio startup smoke checks exit 0. These
+checks cover compatibility with the merged profile/settings and Studio updates;
+they do not replace shared-camera integration or participant testing.
