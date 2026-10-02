@@ -8,6 +8,31 @@ from gestureforge.fixtures import synthetic_dataset
 from gestureforge.models import class_distance_thresholds, train_model
 
 
+def test_candidate_hyperparameters_change_revision() -> None:
+    from gestureforge.vocabulary import LEGACY_VOCABULARY
+
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    train_features, train_labels, _ = bundle.training_data()
+    base = train_model(train_features, train_labels, vocabulary=LEGACY_VOCABULARY)
+    tuned = train_model(train_features, train_labels, vocabulary=LEGACY_VOCABULARY,
+                        knn_k=3, knn_weights='uniform')
+    assert base.model_version != tuned.model_version
+    assert tuned.estimator.get_params()['n_neighbors'] == 3
+    assert tuned.estimator.get_params()['weights'] == 'uniform'
+    assert train_model(train_features, train_labels, knn_k=3).model_version != 'prototype-v2'
+
+
+def test_reject_invalid_candidate_hyperparameters() -> None:
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    train_features, train_labels, _ = bundle.training_data()
+    with pytest.raises(ValueError, match='knn_k'):
+        train_model(train_features, train_labels, knn_k=0)
+    with pytest.raises(ValueError, match='svm_c'):
+        train_model(train_features, train_labels, svm_c=0)
+    with pytest.raises(ValueError, match='svm_gamma'):
+        train_model(train_features, train_labels, svm_gamma=-0.1)
+
+
 def test_train_model_knn_predicts_synthetic_validation_samples() -> None:
     bundle = synthetic_dataset(trials_per_label_per_split=2)
     train_features, train_labels, _ = bundle.training_data()

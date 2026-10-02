@@ -130,6 +130,10 @@ def train_model(
     *,
     groups: list[str] | np.ndarray | None = None,
     vocabulary: GestureVocabulary | None = None,
+    knn_k: int = 5,
+    knn_weights: Literal["uniform", "distance"] = "distance",
+    svm_c: float = 1.0,
+    svm_gamma: Literal["scale"] | float = "scale",
 ) -> PrototypeGestureModel:
     """Train the assignment's default kNN or SVM model.
 
@@ -148,8 +152,17 @@ def train_model(
         raise ValueError("features and labels must have the same length")
     if len(feature_matrix) == 0:
         raise ValueError("cannot train a model with no samples")
-    if algorithm == "knn" and len(feature_matrix) < 5:
-        raise ValueError("kNN training requires at least 5 samples")
+    if isinstance(knn_k, bool) or not isinstance(knn_k, int) or knn_k < 1:
+        raise ValueError("knn_k must be a positive integer")
+    if knn_weights not in ("uniform", "distance"):
+        raise ValueError("knn_weights must be uniform or distance")
+    if not np.isfinite(svm_c) or svm_c <= 0:
+        raise ValueError("svm_c must be finite and positive")
+    if svm_gamma != "scale" and (not isinstance(svm_gamma, (int, float)) or
+                                  not np.isfinite(svm_gamma) or svm_gamma <= 0):
+        raise ValueError("svm_gamma must be scale or a finite positive number")
+    if algorithm == "knn" and len(feature_matrix) < knn_k:
+        raise ValueError(f"kNN training requires at least {knn_k} samples")
     if not np.isfinite(multiplier) or multiplier <= 0:
         raise ValueError("rejection multiplier must be finite and positive")
     if not np.isfinite(margin) or margin < 1.0:
@@ -170,7 +183,7 @@ def train_model(
     total_start = perf_counter()
     fit_start = perf_counter()
     scaled = scaler.fit_transform(feature_matrix)
-    estimator = _make_estimator(algorithm)
+    estimator = _make_estimator(algorithm, knn_k, knn_weights, svm_c, svm_gamma)
     estimator.fit(scaled, label_vector)
     estimator_fit_seconds = perf_counter() - fit_start
     threshold_start = perf_counter()
@@ -178,10 +191,12 @@ def train_model(
     threshold_seconds = perf_counter() - threshold_start
     fit_seconds = perf_counter() - total_start
     model_version = MARGIN_MODEL_VERSION if margin > 1.0 else MODEL_VERSION
-    if vocabulary is not None:
+    nondefault_estimator = (knn_k != 5 or knn_weights != "distance") if algorithm == "knn" else (
+        svm_c != 1.0 or svm_gamma != "scale")
+    if vocabulary is not None or nondefault_estimator:
         revision = sha256(feature_matrix.tobytes())
         revision.update(json.dumps({
-            "labels": label_vector.tolist(), "vocabulary": vocabulary.to_dict(),
+            "labels": label_vector.tolist(), "vocabulary": selected.to_dict(),
             "feature_version": FEATURE_VERSION, "implementation": model_version,
             "algorithm": algorithm, "params": estimator.get_params(deep=False),
             "multiplier": multiplier, "margin": margin,
@@ -233,11 +248,17 @@ def class_distance_thresholds(
     return thresholds
 
 
-def _make_estimator(algorithm: Algorithm) -> KNeighborsClassifier | SVC:
+def _make_estimator(
+    algorithm: Algorithm,
+    knn_k: int = 5,
+    knn_weights: Literal["uniform", "distance"] = "distance",
+    svm_c: float = 1.0,
+    svm_gamma: Literal["scale"] | float = "scale",
+) -> KNeighborsClassifier | SVC:
     if algorithm == "knn":
-        return KNeighborsClassifier(n_neighbors=5, weights="distance")
+        return KNeighborsClassifier(n_neighbors=knn_k, weights=knn_weights)
     if algorithm == "svm":
-        return SVC(C=1, gamma="scale", kernel="rbf")
+        return SVC(C=svm_c, gamma=svm_gamma, kernel="rbf")
     raise ValueError(f"unknown algorithm {algorithm}")
 
 

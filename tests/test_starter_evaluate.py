@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from gestureforge import starter_evaluate as starter
+from gestureforge import starter_compare as comparison
 from gestureforge.dataset import SampleRecord, save_dataset
 from gestureforge.vocabulary import LEGACY_VOCABULARY
 
@@ -76,6 +77,60 @@ def test_person_separation_invalid_accounting_and_reproduction(starter_tree, mon
             assert a['negative_metrics']['invalid_detection_samples'] == 1
             invalid = [p for p in a['sample_predictions'] if p['reason'] == 'no_hand']
             assert invalid and all(p['scored_label'] == 'UNKNOWN' for p in invalid)
+
+
+def test_bounded_comparison_keeps_inner_and_outer_people_separate(starter_tree, monkeypatch):
+    monkeypatch.setattr(comparison, 'candidate_grid', lambda: (
+        comparison.Candidate('knn', knn_k=3, multiplier=1.0),
+        comparison.Candidate('svm', svm_c=0.1, multiplier=1.0),
+    ))
+    original = comparison.train_model
+    calls = []
+
+    def checked_train(x, labels, **kwargs):
+        people = {group.split('-')[0] for group in kwargs['groups']}
+        assert 1 <= len(people) <= 2
+        assert 'UNKNOWN' not in labels
+        calls.append(people)
+        return original(x, labels, **kwargs)
+
+    monkeypatch.setattr(comparison, 'train_model', checked_train)
+    result = comparison.compare(starter_tree)
+    assert len(result['candidate_grid']) == 2
+    assert len(result['folds']) == 3
+    assert len(calls) >= 12
+    for fold in result['folds']:
+        held_out = fold['held_out']
+        assert held_out not in fold['training_people']
+        assert len(fold['candidates']) == 2
+        for candidate in fold['candidates']:
+            assert {score['validation_person'] for score in candidate['inner_scores']} == set(
+                fold['training_people'])
+            for score in candidate['inner_scores']:
+                assert score['fit_person'] != score['validation_person']
+                assert score['positive_trials'] == 64
+                expected_valid = 39 if score['validation_person'] == 'P01' else 40
+                assert score['valid_unknown_samples'] == expected_valid
+                assert score['invalid_detection_samples'] == 40 - expected_valid
+        if fold['outer_result'] is not None:
+            assert fold['outer_result']['score']['positive_trials'] == 64
+
+
+def test_no_qualifying_candidate_does_not_fit_outer(starter_tree, monkeypatch):
+    monkeypatch.setattr(comparison, 'candidate_grid', lambda: (
+        comparison.Candidate('knn', knn_k=3),))
+    monkeypatch.setattr(comparison, '_qualifies', lambda scores: False)
+    result = comparison.compare(starter_tree)
+    assert all(fold['selected_order'] is None and fold['outer_result'] is None
+               for fold in result['folds'])
+
+
+def test_candidate_grid_is_bounded_and_frozen():
+    grid = comparison.candidate_grid()
+    assert len(grid) == 48
+    assert len(set(grid)) == 48
+    assert grid[0].algorithm == 'knn'
+    assert grid[-1].algorithm == 'svm'
 
 
 @pytest.mark.parametrize('field,value', [('participant_id', 'P99'), ('hand', 'Left'),
