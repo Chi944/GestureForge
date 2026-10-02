@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from uuid import uuid4
 
 from PySide6.QtCore import QEvent, QObject, Qt, Signal
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QComboBox, QFileDialog, QFormLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListWidget, QPushButton, QTextEdit, QVBoxLayout, QWidget,
+    QApplication, QCheckBox, QComboBox, QFileDialog, QFormLayout, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QListWidget, QPushButton, QSizePolicy, QTextEdit, QVBoxLayout, QWidget,
 )
 
 from .contracts import Action, ActionType, validate_gesture_id
@@ -28,6 +28,13 @@ def plain_label(value: str = '') -> QLabel:
 
 def action_label(action: Action) -> str:
     return action.kind.value.replace('_', ' ').title() + (f': {action.shortcut_id}' if action.shortcut_id else '')
+
+
+def combo_data_index(combo: QComboBox, value: object) -> int:
+    for index in range(combo.count()):
+        if combo.itemData(index) == value:
+            return index
+    return -1
 
 
 class ViewerWidget(QWidget):
@@ -87,9 +94,14 @@ class QuickActionsWidget(QWidget):
     focus_lost = Signal()
 
     def __init__(self, registry: TargetRegistry, state_path: Path | None = None,
-                 parent: QWidget | None = None) -> None:
+                 parent: QWidget | None = None, *,
+                 before_publish: Callable[[], bool] | None = None) -> None:
         super().__init__(parent)
         self.registry, self.state_path = registry, state_path
+        self.before_publish = before_publish
+        self.setObjectName('manualViewer')
+        self.setMinimumWidth(0)
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
         self.gesture_ids = ('G1', 'G2', 'G3')
         layout = QVBoxLayout(self)
         layout.addWidget(plain_label('Quick Actions · up to twelve local targets · three gesture slots'))
@@ -124,17 +136,17 @@ class QuickActionsWidget(QWidget):
         form.addRow('Opaque shortcut ID', self.target_id)
         form.addRow('Display label', self.label)
         form.addRow('Target type', self.kind)
-        form.addRow('Local path / HTTPS / calculator / camera', self.value)
+        form.addRow('Target value', self.value)
         form.addRow(self.trusted)
         layout.addLayout(form)
-        row = QHBoxLayout()
-        for label, callback in [('Browse', self._browse), ('New', self._new),
-                                ('Save target', self._save_target), ('Delete target', self._delete),
-                                ('Test selected target', self._test)]:
+        button_grid = QGridLayout()
+        for index, (label, callback) in enumerate([('Browse', self._browse), ('New', self._new),
+                                                   ('Save target', self._save_target), ('Delete target', self._delete),
+                                                   ('Test selected target', self._test)]):
             button = QPushButton(label)
             button.clicked.connect(callback)
-            row.addWidget(button)
-        layout.addLayout(row)
+            button_grid.addWidget(button, index // 3, index % 3)
+        layout.addLayout(button_grid)
         app = QApplication.instance()
         if app is not None:
             app.installEventFilter(self)
@@ -210,6 +222,8 @@ class QuickActionsWidget(QWidget):
         button.setToolTip('Request one action through the shell dispatcher' if enabled else label)
 
     def _publish(self, candidate: TargetRegistry) -> None:
+        if self.before_publish is not None and not self.before_publish():
+            raise ValueError('shell rejected target change; save trace or retry after pause')
         if self.state_path:
             candidate.save(self.state_path)
         self.registry.replace_with(candidate)
@@ -359,7 +373,7 @@ class RunbookEditorWidget(QWidget):
                 combo.addItem(action_label(Action(kind)), Action(kind))
         for slot in self.editor.workspace.shortcuts:
             combo.addItem(f'Open {slot.label}', Action(ActionType.OPEN_SHORTCUT, slot.id))
-        index = combo.findData(selected)
+        index = combo_data_index(combo, selected)
         combo.setCurrentIndex(index if index >= 0 else 0)
 
     def set_workspace(self, workspace: Workspace) -> None:
@@ -399,7 +413,7 @@ class RunbookEditorWidget(QWidget):
             if index < len(stage.bindings):
                 binding = stage.bindings[index]
                 gesture.setText(binding.gesture_id)
-                combo.setCurrentIndex(combo.findData(binding.action))
+                combo.setCurrentIndex(combo_data_index(combo, binding.action))
             else:
                 gesture.setText(f'G{index + 1}')
                 combo.setCurrentIndex(0)
@@ -421,7 +435,7 @@ class RunbookEditorWidget(QWidget):
         self.card.setCurrentIndex(index if index >= 0 else 0)
         for (gesture, combo), (gesture_id, action) in zip(self.action_fields, bindings, strict=True):
             gesture.setText(gesture_id)
-            index = combo.findData(action)
+            index = combo_data_index(combo, action)
             combo.setCurrentIndex(index if index >= 0 else 0)
 
     def _changed(self, previous: Workspace, row: int = -1) -> None:

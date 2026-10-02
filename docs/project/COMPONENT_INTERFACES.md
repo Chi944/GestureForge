@@ -14,15 +14,34 @@ verification is `verification.json`.
 | `WorkspaceWidget` | validated `Workspace` | `workspace_changed(Workspace)` stages a fully validated import; `set_workspace()` synchronises authored edits. No target import. |
 | `RunbookEditorWidget` | validated `Workspace` | `workspace_changed(Workspace)` after create/edit/reorder/delete; editor mutations never execute an action. |
 | `RunbookWidget` | `Runbook` | `action_requested(Action)`, `previous_stage_requested()`, `completion_acknowledged(stage_id)`; `refresh()` after outcomes. |
-| `QuickActionsWidget` | private `TargetRegistry`, optional local state path | `action_requested(Action)`, `bindings_changed(tuple[(gesture_id, target_id_or_None), ...])`, `focus_lost()`; `set_gesture_ids()` accepts Hau Jie's actual three IDs. |
+| `QuickActionsWidget` | private `TargetRegistry`, optional local state path and keyword-only `before_publish() -> bool` | `action_requested(Action)`, `bindings_changed(tuple[(gesture_id, target_id_or_None), ...])`, `focus_lost()`; `set_gesture_ids()` accepts Hau Jie's actual three IDs. |
 | `SessionSummaryWidget` | `SessionSummary` | measured counts and explicit JSON export; `refresh()` after outcomes/trials. |
 
-Requests do not execute OS work. Manual requests must use one `Dispatcher.manual`
+Requests do not execute OS work. For real-action integration, manual requests must use one `Dispatcher.manual`
 with a fresh UUID and `source=manual`, on the UI owner thread. Gesture dispatch must
 immediately pass `RoutingSession.route`'s result AND the snapshot captured for that
 same process/route call. Never persist/queue a result or look up the latest snapshot
 later to restamp old work. All real viewer, stage and external actions share one
 dispatcher instance and a bounded event-ID gate, retained across context changes.
+
+## Current Studio Quick Actions attachment
+
+Studio supplies the registry and private `.local/studio/quick-actions-targets.json`
+state path. `before_publish` pauses capture before an atomic target/slot save; a
+failed pause, active model load or closing shell refuses the change. Failed saves
+leave the shared registry unchanged. `bindings_changed` clears active routing and
+requires explicit **Use Quick Actions** activation. That button validates nonempty
+slots and configures the complete map through `Window.configure_studio`; absent
+or invalid targets leave routing paused/manual-only. The current vocabulary
+supplies all three gesture IDs, including after a dataset switch.
+
+Slot buttons and **Test selected target** call Studio
+`manual_quick_action(Action)` for simulated/failed summary outcomes. No dispatcher
+or launcher is attached to this simulation path. Gesture activation requires the
+normal explicit Start and NEUTRAL, works independently of deck/runbook content and
+keeps Preview/Rehearsal only. Tab selection itself does not activate a context.
+Target values stay in the private local registry, outside workspace/session
+exports. Reopening restores the library without activating it or replaying work.
 
 ## Dispatcher attachment (requires GF-P10/GF-P12 review)
 
@@ -89,6 +108,16 @@ is separately bounded at 10,000 rows and checked before side effects. Never evic
 consumed IDs within a session. `Dispatcher` is not a security boundary against a
 caller constructing forged Python records; only route-issued gesture results and
 fresh manual requests belong at this trusted shell boundary.
+
+## Profile persistence handoff
+
+The reviewed `ProfileStore` component returns a rebuilt `LoadedProfile` candidate;
+see [PROFILE_PERSISTENCE_HANDOFF.md](PROFILE_PERSISTENCE_HANDOFF.md). Hau Jie owns
+the create/rename/load/delete selector widget and Guest/start proposal. Deston owns
+background candidate loading, shell installation and clearing an active deleted
+profile. Successful reconstruction does not establish readiness; the selector and
+LIVE gate are not yet attached. Reuse the existing camera and model-loading
+lifecycle.
 
 ## Remaining gates
 

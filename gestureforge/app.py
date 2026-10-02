@@ -24,6 +24,7 @@ from .routing import RoutingSession
 from .storage import read_json
 from .viewer import Viewer, load_deck
 from .javier_widgets import (
+    QuickActionsWidget,
     RunbookEditorWidget,
     RunbookWidget,
     SessionSummaryWidget,
@@ -32,6 +33,7 @@ from .javier_widgets import (
 )
 from .runbook import Runbook
 from .session_summary import Outcome, SessionSummary
+from .shortcuts import TargetRegistry
 from .vocabulary import LEGACY_VOCABULARY
 from .workspace import Workspace, parse_workspace
 from .traces import EvaluationTrace
@@ -58,6 +60,7 @@ REJECTION_MESSAGES = {
 }
 
 STUDIO_ACTIONS = (Action(ActionType.NEXT), Action(ActionType.PREVIOUS), Action(ActionType.BOOKMARK))
+DEFAULT_STUDIO_STATE_FOLDER = Path(__file__).resolve().parent.parent / ".local/studio"
 
 
 def validate_camera_index(index):
@@ -213,7 +216,10 @@ class Window(QMainWindow):
         self.evaluation_trace: EvaluationTrace | None = None
         self.trace_path: Path | None = None
         self.trace_folder = Path(__file__).resolve().parent.parent / "experiments/local/controller-traces"
-        self.studio_state_folder = Path(__file__).resolve().parent.parent / ".local/studio"
+        self.studio_state_folder = DEFAULT_STUDIO_STATE_FOLDER
+        self.quick_actions_context_id = f"quick-actions:{uuid4().hex[:8]}"
+        self.quick_actions_active = False
+        self.quick_registry = TargetRegistry()
         self._set_session_summary_scope()
         self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
@@ -395,7 +401,7 @@ class Window(QMainWindow):
                 self.session_summary,
                 default_folder=self.studio_state_folder,
                 scope_text=(
-                    "Counts cover Studio manual card/runbook actions plus gesture simulation/rejection events. "
+                    "Counts cover Studio manual card/runbook/Quick Actions plus gesture simulation/rejection events. "
                     "Bookmark list review/removal and live OS dispatch are outside this summary. "
                     "Only explicit acknowledgement records task completion."
                 ),
@@ -404,6 +410,25 @@ class Window(QMainWindow):
             self.summary_widget.setMinimumWidth(0)
             self.summary_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             self.deck_tabs.addTab(self.summary_widget, "Session summary")
+            self.quick_actions_page = QWidget()
+            self.quick_actions_page.setObjectName("manualViewer")
+            self.quick_actions_page.setMinimumWidth(0)
+            self.quick_actions_page.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            quick_layout = QVBoxLayout(self.quick_actions_page)
+            self.use_quick_actions_button = QPushButton("Use Quick Actions")
+            self.use_quick_actions_button.clicked.connect(self.use_quick_actions_context)
+            quick_layout.addWidget(self.use_quick_actions_button)
+            self.quick_actions_widget = QuickActionsWidget(
+                self.quick_registry,
+                self.studio_state_folder / "quick-actions-targets.json",
+                before_publish=self.prepare_quick_action_change,
+            )
+            self.quick_actions_widget.set_gesture_ids(tuple(self.vocabulary.action_ids))
+            self.quick_actions_widget.action_requested.connect(self.manual_quick_action)
+            self.quick_actions_widget.bindings_changed.connect(self.accept_quick_bindings_change)
+            self.quick_actions_widget.focus_lost.connect(self.pause)
+            quick_layout.addWidget(self.quick_actions_widget)
+            self.deck_tabs.addTab(self.quick_actions_page, "Quick Actions")
             self.deck_tabs.currentChanged.connect(lambda _index: self.render_card())
             self.deck_tabs.setMinimumWidth(0)
             self.deck_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
@@ -713,6 +738,89 @@ class Window(QMainWindow):
             self.summary_widget.summary = self.session_summary
             self.summary_widget.refresh()
 
+    def _quick_action_bindings(self) -> dict[str, Action]:
+        if not self.studio:
+            return {}
+        bindings = {}
+        for gesture, slot in zip(self.vocabulary.action_ids, self.quick_registry.quick_slots, strict=True):
+            if slot is None:
+                continue
+            self.quick_registry.resolve(slot)
+            bindings[gesture] = Action(ActionType.OPEN_SHORTCUT, slot)
+        return bindings
+
+    def prepare_quick_action_change(self) -> bool:
+        if not self.studio:
+            return True
+        if self.model_loader is not None or self._closing:
+            self.set_deck_file_status("Quick Actions not changed: wait for Studio to be idle.")
+            return False
+        if not self.pause():
+            self.set_deck_file_status("Quick Actions not changed: save the current evaluation trace first.")
+            return False
+        return True
+
+    def accept_quick_bindings_change(self, _bindings) -> None:
+        if not self.studio:
+            return
+        if self.configure_studio(context_id=self.quick_actions_context_id, bindings={}):
+            self.quick_actions_active = False
+            self.quick_actions_widget.status.setText(
+                "Quick Actions changed and Studio paused. Click Use Quick Actions to activate valid slots."
+            )
+
+    def use_quick_actions_context(self) -> bool:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        try:
+            bindings = self._quick_action_bindings()
+        except (ValueError, OSError) as exc:
+            self.configure_studio(context_id=self.quick_actions_context_id, bindings={})
+            self.quick_actions_active = False
+            self.quick_actions_widget.status.setText(f"Quick Actions paused: repair target before activation: {exc}")
+            return False
+        if not self.configure_studio(context_id=self.quick_actions_context_id, bindings=bindings):
+            return False
+        if bindings:
+            self.quick_actions_active = True
+            self.feedback.setText("Quick Actions active for gesture simulation. Manual target tests also simulate.")
+            self.quick_actions_widget.status.setText("Quick Actions active. Start camera explicitly and show NEUTRAL.")
+            return True
+        self.quick_actions_active = False
+        self.feedback.setText("Quick Actions has no valid slots; manual target tests still simulate.")
+        self.quick_actions_widget.status.setText("Quick Actions paused: bind at least one valid local target.")
+        return False
+
+    def manual_quick_action(self, action: Action) -> None:
+        if (
+            not self.studio or action.kind != ActionType.OPEN_SHORTCUT
+            or action.shortcut_id is None or self.model_loader is not None or self._closing
+        ):
+            return
+        identity = self._session_outcome_identity()
+        if not self._reserve_session_record():
+            return
+        try:
+            target, _ = self.quick_registry.resolve(action.shortcut_id)
+        except (ValueError, OSError) as exc:
+            self.feedback.setText(f"Quick Action not ready: {exc}")
+            self._record_session_outcome(
+                source="manual",
+                status="failed",
+                action=action,
+                reason="quick_action_unavailable",
+                identity=identity,
+            )
+            return
+        self.feedback.setText(f"Studio simulation: Quick Action would open {target.label}.")
+        self._record_session_outcome(
+            source="manual",
+            status="simulated",
+            action=action,
+            reason="manual_quick_action",
+            identity=identity,
+        )
+
     def accept_workspace_widget_change(self, workspace: Workspace) -> None:
         if not self.use_studio_workspace(workspace):
             self.workspace_widget.import_accepted = False
@@ -873,6 +981,8 @@ class Window(QMainWindow):
                   "context": new_context_id, "mode": new_mode.value,
                   "bindings": {gesture: asdict(action) for gesture, action in new_bindings},
                   "timestamp": time.monotonic()})
+        if new_context_id != self.quick_actions_context_id:
+            self.quick_actions_active = False
         self.render_studio_status()
         return True
 
@@ -1208,6 +1318,7 @@ class Window(QMainWindow):
         if not self.pause():
             raise ValueError("Save the current evaluation trace before changing the model")
         was_manual_only = self.routing_manual_only
+        was_quick_actions = self.quick_actions_active
         self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
         self.routing = candidate
         self.routing_manual_only = False
@@ -1234,6 +1345,10 @@ class Window(QMainWindow):
                     context_id=self.workspace.id,
                     bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
                 )
+        if hasattr(self, "quick_actions_widget"):
+            self.quick_actions_widget.set_gesture_ids(tuple(self.vocabulary.action_ids))
+        if was_quick_actions:
+            self.use_quick_actions_context()
         self.render_studio_status()
         self.log({"type": "studio_dataset", "profile": profile, "model_version": model.model_version,
                   "session": candidate.snapshot.session_id, "timestamp": time.monotonic()})
@@ -1713,5 +1828,7 @@ class Window(QMainWindow):
         if self.worker is not None and not self.worker.wait(3000):
             self.log({"type": "camera_shutdown_timeout", "timestamp": time.monotonic(),
                       "note": "Native driver stalled; daemon worker will end with process exit."})
+        if self.studio and hasattr(self, "quick_actions_widget"):
+            self.quick_actions_widget.close()
         self.timer.stop()
         event.accept()

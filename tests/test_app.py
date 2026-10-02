@@ -21,6 +21,7 @@ from PySide6.QtWidgets import QApplication, QGridLayout, QPushButton
 
 from gestureforge.app import STUDIO_ACTIONS, Window
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
+from gestureforge.shortcuts import Target, TargetKind
 from gestureforge.vocabulary import GestureVocabulary
 from gestureforge.viewer import load_deck
 from gestureforge.workspace import Binding, Stage, Workspace, workspace_json
@@ -30,6 +31,12 @@ from gestureforge.workspace import Binding, Stage, Workspace, workspace_json
 def qapp():
     app = QApplication.instance() or QApplication([])
     yield app
+
+
+@pytest.fixture(autouse=True)
+def isolated_studio_state(tmp_path, monkeypatch):
+    import gestureforge.app as app_module
+    monkeypatch.setattr(app_module, "DEFAULT_STUDIO_STATE_FOLDER", tmp_path / "studio-default")
 
 
 def test_studio_keyboard_hint_matches_native_shortcuts(qapp):
@@ -783,6 +790,161 @@ def test_studio_deckless_workspace_is_honest_manual_only(tmp_path, qapp) -> None
         window.close()
 
 
+def test_studio_quick_actions_activate_explicitly_and_simulate_with_custom_vocabulary(tmp_path, qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.studio_state_folder = tmp_path / "studio"
+    window.quick_actions_widget.state_path = window.studio_state_folder / "quick-actions-targets.json"
+
+    try:
+        candidate = window.quick_registry.copy()
+        candidate.configure(Target("calculator", "Calculator", TargetKind.BUILTIN, "calculator"))
+        candidate.bind_quick(("calculator", None, None))
+        window.quick_actions_widget._publish(candidate)
+
+        assert window.quick_actions_widget.state_path.exists()
+        assert window.routing_manual_only
+        assert window.manual_context_id == window.quick_actions_context_id
+        assert "Use Quick Actions" in window.quick_actions_widget.status.text()
+
+        assert window.use_quick_actions_context()
+        assert window.routing is not None
+        assert not window.routing_manual_only
+        assert window.routing.snapshot.context_id == window.quick_actions_context_id
+        assert dict(window.routing.snapshot.bindings) == {
+            "NEXT": Action(ActionType.OPEN_SHORTCUT, "calculator"),
+        }
+
+        vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+        window.use_studio_model(_candidate_model(vocabulary), "Right", "P02", vocabulary)
+
+        assert window.routing is not None
+        assert window.routing.snapshot.context_id == window.quick_actions_context_id
+        assert dict(window.routing.snapshot.bindings) == {
+            "G1": Action(ActionType.OPEN_SHORTCUT, "calculator"),
+        }
+        assert window.quick_actions_widget.launch_buttons[0].text().startswith("G1:")
+        window.quick_actions_widget.launch_buttons[0].click()
+        assert window.session_summary.counts()["simulated"] == 1
+        assert window.session_summary.counts()["launch_requested"] == 0
+        assert "would open Calculator" in window.feedback.text()
+    finally:
+        window.close()
+
+
+def test_studio_quick_actions_change_failure_preserves_routing_and_registry(tmp_path, monkeypatch, qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.quick_actions_widget.state_path = tmp_path / "targets.json"
+    assert window.routing is not None
+    before = window.routing.snapshot
+    monkeypatch.setattr(window, "pause", Mock(return_value=False))
+
+    try:
+        window.quick_actions_widget.target_id.setText("calculator")
+        window.quick_actions_widget.label.setText("Calculator")
+        window.quick_actions_widget.kind.setCurrentIndex(window.quick_actions_widget.kind.findData(TargetKind.BUILTIN))
+        window.quick_actions_widget.value.setText("calculator")
+        window.quick_actions_widget._save_target()
+
+        assert window.quick_registry.targets == ()
+        assert not window.quick_actions_widget.state_path.exists()
+        assert window.routing.snapshot == before
+        assert window.manual_context_id == "demo-studio"
+        assert "Cannot save target" in window.quick_actions_widget.status.text()
+    finally:
+        window.close()
+
+
+def test_studio_quick_actions_busy_shell_rejects_before_private_write(tmp_path, qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.quick_actions_widget.state_path = tmp_path / "targets.json"
+    window.model_loader = object()
+
+    try:
+        window.quick_actions_widget.target_id.setText("calculator")
+        window.quick_actions_widget.label.setText("Calculator")
+        window.quick_actions_widget.kind.setCurrentIndex(window.quick_actions_widget.kind.findData(TargetKind.BUILTIN))
+        window.quick_actions_widget.value.setText("calculator")
+        window.quick_actions_widget._save_target()
+
+        assert window.quick_registry.targets == ()
+        assert not window.quick_actions_widget.state_path.exists()
+        assert "Cannot save target" in window.quick_actions_widget.status.text()
+        assert not window.use_quick_actions_context()
+        window.manual_quick_action(Action(ActionType.OPEN_SHORTCUT, "calculator"))
+        assert window.session_summary.outcomes == []
+    finally:
+        window.model_loader = None
+        window.close()
+
+
+def test_studio_quick_actions_storage_failure_does_not_commit_or_rebind(tmp_path, qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    state = tmp_path / "state-as-dir"
+    state.mkdir()
+    window.quick_actions_widget.state_path = state
+    assert window.routing is not None
+    before = window.routing.snapshot
+
+    try:
+        window.quick_actions_widget.target_id.setText("calculator")
+        window.quick_actions_widget.label.setText("Calculator")
+        window.quick_actions_widget.kind.setCurrentIndex(window.quick_actions_widget.kind.findData(TargetKind.BUILTIN))
+        window.quick_actions_widget.value.setText("calculator")
+        window.quick_actions_widget._save_target()
+
+        assert window.quick_registry.targets == ()
+        assert window.routing.snapshot == before
+        assert window.manual_context_id == "demo-studio"
+        assert "Cannot save target" in window.quick_actions_widget.status.text()
+    finally:
+        window.close()
+
+
+def test_studio_quick_actions_deckless_reload_and_exports_keep_targets_private(tmp_path, qapp) -> None:
+    workspace = Workspace(
+        "quick-only", "Quick Only",
+        stages=(Stage("manual", "Manual", "Use the target test button.", None, ()),),
+    )
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    window.studio_state_folder = tmp_path / "studio"
+    window.quick_actions_widget.state_path = window.studio_state_folder / "quick-actions-targets.json"
+
+    try:
+        assert window.use_studio_workspace(workspace)
+        candidate = window.quick_registry.copy()
+        candidate.configure(Target("site", "Private Site", TargetKind.WEBSITE, "https://example.com/private"))
+        candidate.bind_quick(("site", None, None))
+        window.quick_actions_widget._publish(candidate)
+        assert window.use_quick_actions_context()
+        window.manual_quick_action(Action(ActionType.OPEN_SHORTCUT, "site"))
+
+        session_path = tmp_path / "session.json"
+        summary_path = tmp_path / "summary.json"
+        assert window.save_studio_session(session_path)
+        window.session_summary.export(summary_path)
+        exported = session_path.read_text(encoding="utf-8") + summary_path.read_text(encoding="utf-8")
+
+        assert "https://example.com/private" not in exported
+        assert "site" in exported
+        assert window.quick_actions_widget.state_path.exists()
+
+        assert window.restore_studio_session(session_path)
+        assert window.deck_available is False
+        assert window.use_quick_actions_context()
+        assert window.routing is not None
+        assert window.routing.snapshot.context_id == window.quick_actions_context_id
+        assert dict(window.routing.snapshot.bindings) == {
+            "NEXT": Action(ActionType.OPEN_SHORTCUT, "site"),
+        }
+    finally:
+        window.close()
+
+
 def test_studio_empty_workspace_stays_manual_only_after_model_reload(qapp) -> None:
     window = Window(model=object(), studio=True)
     _disable_logging(window)
@@ -798,6 +960,37 @@ def test_studio_empty_workspace_stays_manual_only_after_model_reload(qapp) -> No
         assert window.routing_manual_only
         assert not window.start_button.isEnabled()
         assert "Context: empty" in window.boundary.text()
+    finally:
+        window.close()
+
+
+def test_stage_named_quick_actions_does_not_reactivate_shortcuts_on_model_reload(qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    workspace = Workspace(
+        "training", "Training", window.viewer.deck,
+        stages=(Stage("quick-actions", "Coincidental ID", "Read manually.", "card-01",
+                      (Binding("NEXT", Action(ActionType.NEXT)),)),),
+    )
+
+    try:
+        candidate = window.quick_registry.copy()
+        candidate.configure(Target("calculator", "Calculator", TargetKind.BUILTIN, "calculator"))
+        candidate.bind_quick(("calculator", None, None))
+        window.quick_actions_widget._publish(candidate)
+        assert not window.quick_actions_active
+        assert window.use_studio_workspace(workspace)
+        assert window.routing is not None
+        assert window.routing.snapshot.context_id == "quick-actions"
+        assert window.routing.snapshot.context_id != window.quick_actions_context_id
+
+        vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+        window.use_studio_model(_candidate_model(vocabulary), "Right", "P02", vocabulary)
+
+        assert not window.quick_actions_active
+        assert window.routing_manual_only
+        assert window.manual_context_id == "quick-actions"
+        assert window.manual_context_id != window.quick_actions_context_id
     finally:
         window.close()
 
@@ -1180,6 +1373,23 @@ def test_studio_focus_loss_pauses_and_invalidates_worker(monkeypatch, qapp) -> N
         window.close()
 
 
+def test_studio_successful_close_detaches_quick_actions_focus_filter(monkeypatch, qapp) -> None:
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    focus_lost = Mock()
+    window.quick_actions_widget.focus_lost.connect(focus_lost)
+    pause = Mock(wraps=window.pause)
+    monkeypatch.setattr(window, "pause", pause)
+    event = FakeCloseEvent()
+
+    window.closeEvent(event)
+    QApplication.sendEvent(qapp, QEvent(QEvent.Type.ApplicationDeactivate))
+
+    assert event.accepted
+    assert pause.call_count == 1
+    focus_lost.assert_not_called()
+
+
 def test_window_poll_executes_next_only_after_neutral_and_hold(monkeypatch, qapp) -> None:
     import gestureforge.app as app_module
 
@@ -1485,7 +1695,7 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
     try:
         window.configure_studio(context_id="training-stage")
         assert "Context: training-stage" in window.boundary.text()
-        assert window.deck_tabs.count() == 6
+        assert window.deck_tabs.count() == 7
         assert isinstance(window.deck_tools, QGridLayout)
         assert window.deck_tools.itemAtPosition(1, 2) is not None
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0
