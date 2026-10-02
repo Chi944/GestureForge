@@ -2,7 +2,7 @@
 
 Project contract version 1 | Design frozen 2 October 2026 | Owner Deston
 
-This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore, session-summary export and Quick Actions simulation. Profile persistence is implemented; selector/enrolment widgets, readiness and guarded real dispatch remain separate integration work.
+This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore, session-summary export, Quick Actions simulation and shared-camera enrolment. Profile persistence is implemented; the selector, readiness and guarded real dispatch remain separate integration work.
 
 ## GF-P02 design freeze - 2 October 2026
 
@@ -49,7 +49,8 @@ Use plain PySide signals or direct method calls carrying these records; do not c
 | Producer | Signal or call | Shell response |
 |---|---|---|
 | Profile selector (widget pending) | Request load by `ProfileStore` and opaque profile ID; publish selection only after successful installation | Shell owns background reconstruction and installs a complete `LoadedProfile`. Metadata-only `ProfileSelection` is for display. Deletion must clear a matching active or pending selection through the shell. |
-| Profile/enrolment widget (pending) | Version-bound readiness result; concrete widget signal not yet implemented | Show pass/fail/expired reason. LIVE remains unavailable until the exact-revision gate is integrated. Preview/Rehearsal may run the check. |
+| `EnrolmentWidget` | `capture_requested(plan, request_id)`, `capture_release_requested(request_id)`, `dataset_saved(path)` | Shell pauses actions, retires the previous worker and starts observation-only capture. First matching observation acknowledges readiness to collect. Completion reports a private manifest, never model installation or readiness. See [enrolment handoff](ENROLMENT_INTERFACE_PROPOSAL.md). |
+| Readiness widget (pending) | Version-bound readiness result; concrete widget signal not yet implemented | Show pass/fail/expired reason. LIVE remains unavailable until the exact-revision gate is integrated. Preview/Rehearsal may run the check. |
 | `WorkspaceWidget` / `RunbookEditorWidget` | `workspace_changed(Workspace)` | `accept_workspace_widget_change` / `accept_runbook_editor_change` pause and validate before replacing content. Imported targets remain semantic references. |
 | `RunbookWidget` / `Runbook` | `action_requested(Action)`, `previous_stage_requested()`, `completion_acknowledged(stage_id)`; runbook callback `(Stage or None, resume)` | `reset_runbook_stage` applies the complete map and invalidates holds; viewing a tab does not activate it. |
 | `QuickActionsWidget` | `before_publish() -> bool`, then `bindings_changed(...)` after successful local save | Pause before mutation; failed save preserves the registry. Clear active routing and require explicit Use Quick Actions. The future readiness gate must expire changed action meanings. |
@@ -99,7 +100,7 @@ Manual actions use the same validated target/action handlers, labelled `source=m
 
 Run `.\.venv\Scripts\python.exe -m pytest -q tests/test_controller.py tests/test_project_routing.py tests/test_viewer.py`.
 
-Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter release, profile/enrolment widgets, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
+Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter release, the profile selector, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
 
 ## Current shell adapter (Deston)
 

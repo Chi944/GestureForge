@@ -7,7 +7,7 @@ from uuid import uuid4
 from PySide6.QtCore import QTimer, Signal, Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit, QComboBox,
-    QSpinBox, QCheckBox, QPushButton, QProgressBar, QHBoxLayout,
+    QSpinBox, QCheckBox, QPushButton, QProgressBar, QGridLayout,
 )
 
 from .contracts import Observation
@@ -36,6 +36,7 @@ class EnrolmentWidget(QWidget):
         layout.addWidget(self.notice)
         self.form = QWidget()
         form = QFormLayout(self.form)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
         self.participant = QLineEdit()
         self.participant.setPlaceholderText('P02 — use a participant ID')
         form.addRow('&Participant ID', self.participant)
@@ -61,8 +62,11 @@ class EnrolmentWidget(QWidget):
         self.setup.setMaxLength(500)
         self.setup.setPlaceholderText('Describe lighting, background and camera position')
         form.addRow('Collection &conditions', self.setup)
-        self.consent = QCheckBox('I agree to local numeric feature collection and internal evaluation.')
+        self.consent = QCheckBox('I agree to this collection and evaluation.')
         form.addRow(self.consent)
+        consent_scope = QLabel('Consent covers local numeric gesture features for internal evaluation. No photos or video.')
+        consent_scope.setWordWrap(True)
+        form.addRow(consent_scope)
         layout.addWidget(self.form)
         self.cue = QLabel('Describe three distinct poses and NEUTRAL, then request collection.')
         self.cue.setTextFormat(Qt.TextFormat.PlainText)
@@ -76,13 +80,13 @@ class EnrolmentWidget(QWidget):
         self.feedback.setTextFormat(Qt.TextFormat.PlainText)
         self.feedback.setWordWrap(True)
         layout.addWidget(self.feedback)
-        buttons = QHBoxLayout()
+        buttons = QGridLayout()
         self.request_button = QPushButton('Request collection')
         self.begin_button = QPushButton('Begin trial')
         self.retry_button = QPushButton('Retry save')
         self.cancel_button = QPushButton('Stop collection')
-        for button in (self.request_button, self.begin_button, self.retry_button, self.cancel_button):
-            buttons.addWidget(button)
+        for index, button in enumerate((self.request_button, self.begin_button, self.retry_button, self.cancel_button)):
+            buttons.addWidget(button, index // 2, index % 2)
         layout.addLayout(buttons)
         self.request_button.clicked.connect(self.request_collection)
         self.begin_button.clicked.connect(self.begin_trial)
@@ -186,6 +190,7 @@ class EnrolmentWidget(QWidget):
         state = session.state if session else 'idle'
         busy = self.pending_plan is not None or state not in ('idle', 'complete', 'cancelled')
         self.form.setEnabled(not busy)
+        self.form.setVisible(not busy)
         self.request_button.setEnabled(not busy)
         self.begin_button.setEnabled(state == 'prepare')
         self.retry_button.setEnabled(state == 'save_error')

@@ -56,8 +56,8 @@ def main():
     if args.studio:
         note = (
             "Studio preview • camera control needs a starter or personal dataset. "
-            "Shortcut dispatch, enrolment and profile readiness are intentionally not enabled here; "
-            "workspace progress stays local."
+            "Use Enrolment to collect numeric samples; shortcut dispatch and profile readiness "
+            "remain in development. Workspace progress stays local."
         )
     if args.profile_id:
         try:

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from threading import Event, Lock, Thread
 import time
+from typing import cast
 from uuid import uuid4
 
 import cv2
@@ -18,8 +19,9 @@ from PySide6.QtWidgets import (
 )
 
 from .capture import HandCamera
-from .contracts import Action, ActionType, Prediction, RoutingMode, validate_identifier
+from .contracts import Action, ActionType, Observation, Prediction, RoutingMode, validate_identifier
 from .controller import Controller
+from .enrolment import EnrolmentPlan
 from .routing import RoutingSession
 from .storage import read_json
 from .viewer import Viewer, load_deck
@@ -31,6 +33,7 @@ from .javier_widgets import (
     ViewerWidget,
     WorkspaceWidget,
 )
+from .enrolment_widget import EnrolmentWidget
 from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
 from .session_summary import Outcome, SessionSummary
@@ -62,6 +65,7 @@ REJECTION_MESSAGES = {
 
 STUDIO_ACTIONS = (Action(ActionType.NEXT), Action(ActionType.PREVIOUS), Action(ActionType.BOOKMARK))
 DEFAULT_STUDIO_STATE_FOLDER = Path(__file__).resolve().parent.parent / ".local/studio"
+DEFAULT_ENROLMENT_FOLDER = Path(__file__).resolve().parent.parent / "data/local/enrolment"
 
 
 def validate_camera_index(index):
@@ -116,7 +120,10 @@ class ModelLoadWorker(Thread):
 class CaptureWorker(Thread):
     """One bounded mailbox prevents a slow interface accumulating old frames."""
 
-    def __init__(self, model, feature_function, chosen_hand, camera_index, asset, session, profile):
+    def __init__(
+        self, model, feature_function, chosen_hand, camera_index, asset, session, profile, *,
+        observation_only=False,
+    ):
         # No Qt objects live in this thread. A broken native camera driver must
         # not prevent process exit; normal shutdown still releases its handles.
         super().__init__(daemon=True, name="gestureforge-camera")
@@ -128,6 +135,7 @@ class CaptureWorker(Thread):
         self.asset = asset
         self.session = session
         self.profile = profile
+        self.observation_only = observation_only
         self._lock = Lock()
         self._latest = None
         self.error = ""
@@ -155,6 +163,10 @@ class CaptureWorker(Thread):
             with HandCamera(self.asset, self.camera_index, self.session, self.profile) as camera:
                 while not self.isInterruptionRequested():
                     frame, observation = camera.read()
+                    if self.observation_only:
+                        with self._lock:
+                            self._latest = (frame, observation)
+                        continue
                     try:
                         if self.feature_function is None:
                             raise ValueError("Feature extractor unavailable")
@@ -225,6 +237,15 @@ class Window(QMainWindow):
         self.trace_path: Path | None = None
         self.trace_folder = Path(__file__).resolve().parent.parent / "experiments/local/controller-traces"
         self.studio_state_folder = DEFAULT_STUDIO_STATE_FOLDER
+        self.enrolment_root = DEFAULT_ENROLMENT_FOLDER
+        self.pending_enrolment_plan = None
+        self.pending_enrolment_request_id = ""
+        self.enrolment_request_id = ""
+        self.enrolment_capture_session = ""
+        self.enrolment_capture_profile = ""
+        self.enrolment_capture_attached = False
+        self.enrolment_capture_started_at = 0.0
+        self.enrolment_received_first_frame = False
         self.quick_actions_context_id = f"quick-actions:{uuid4().hex[:8]}"
         self.quick_actions_active = False
         self.quick_registry = TargetRegistry()
@@ -418,6 +439,14 @@ class Window(QMainWindow):
             self.summary_widget.setMinimumWidth(0)
             self.summary_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             self.deck_tabs.addTab(self.summary_widget, "Session summary")
+            self.enrolment_widget = EnrolmentWidget(self.enrolment_root)
+            self.enrolment_widget.setObjectName("manualViewer")
+            self.enrolment_widget.setMinimumWidth(0)
+            self.enrolment_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.enrolment_widget.capture_requested.connect(self.start_enrolment_capture)
+            self.enrolment_widget.capture_release_requested.connect(self.release_enrolment_capture)
+            self.enrolment_widget.dataset_saved.connect(self.enrolment_dataset_saved)
+            self.deck_tabs.addTab(self.enrolment_widget, "Enrolment")
             self.quick_actions_page = QWidget()
             self.quick_actions_page.setObjectName("manualViewer")
             self.quick_actions_page.setMinimumWidth(0)
@@ -437,7 +466,7 @@ class Window(QMainWindow):
             self.quick_actions_widget.focus_lost.connect(self.pause)
             quick_layout.addWidget(self.quick_actions_widget)
             self.deck_tabs.addTab(self.quick_actions_page, "Quick Actions")
-            self.deck_tabs.currentChanged.connect(lambda _index: self.render_card())
+            self.deck_tabs.currentChanged.connect(self.on_studio_tab_changed)
             self.deck_tabs.setMinimumWidth(0)
             self.deck_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             columns.addWidget(self.deck_tabs, 1)
@@ -630,7 +659,240 @@ class Window(QMainWindow):
         return getattr(self.model, "model_version", "unversioned")
 
     def _can_start_studio_camera(self) -> bool:
-        return self.model is not None and self.worker is None and not self.routing_manual_only
+        return (
+            self.model is not None and self.worker is None and self.model_loader is None
+            and not self._closing and not self.routing_manual_only and not self._enrolment_blocks_recognition()
+        )
+
+    def _enrolment_state(self) -> str:
+        if not self.studio or not hasattr(self, "enrolment_widget"):
+            return "idle"
+        session = self.enrolment_widget.session
+        return session.state if session is not None else "idle"
+
+    def _enrolment_tab_selected(self) -> bool:
+        if not self.studio or not hasattr(self, "enrolment_widget"):
+            return False
+        return self.deck_tabs.currentWidget() is self.enrolment_widget
+
+    def _enrolment_blocks_recognition(self) -> bool:
+        if not self.studio or not hasattr(self, "enrolment_widget"):
+            return False
+        if self._enrolment_tab_selected():
+            return True
+        state = self._enrolment_state()
+        return bool(
+            self.pending_enrolment_request_id
+            or self.enrolment_request_id
+            or self.enrolment_widget.pending_plan is not None
+            or state not in ("idle", "complete", "cancelled")
+        )
+
+    def _display_capture_frame(self, frame) -> None:
+        rgb = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
+        height, width, channels = rgb.shape
+        image = QImage(rgb.data, width, height, width * channels,
+                       QImage.Format.Format_RGB888).copy()
+        self.preview.setPixmap(QPixmap.fromImage(image).scaled(
+            self.preview.size(), Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
+        ))
+
+    def _pause_capture_only(self) -> bool:
+        if self.routing is not None:
+            self.routing.pause()
+        else:
+            self.controller.pause()
+        if self.worker is not None:
+            self.worker.requestInterruption()
+        saved = self.finish_evaluation_trace()
+        if self.studio:
+            self.record_trace.setEnabled(self.worker is None and self.evaluation_trace is None)
+            self.preview.clear()
+            self.preview.setText("Camera stopping..." if self.worker else "Camera off")
+        self.progress.setValue(0)
+        self.state.setText("Paused • camera stopping" if self.worker else "Paused")
+        self.log({"type": "pause", "timestamp": time.monotonic()})
+        return saved
+
+    def _clear_enrolment_capture(self) -> None:
+        self.enrolment_request_id = ""
+        self.enrolment_capture_session = ""
+        self.enrolment_capture_profile = ""
+        self.enrolment_capture_attached = False
+        self.enrolment_capture_started_at = 0.0
+        self.enrolment_received_first_frame = False
+
+    def _retire_enrolment_capture(self, request_id: str) -> bool:
+        if request_id == self.pending_enrolment_request_id:
+            self.pending_enrolment_plan = None
+            self.pending_enrolment_request_id = ""
+            self.start_button.setEnabled(self._can_start_studio_camera() and not self._enrolment_blocks_recognition())
+            return True
+        if request_id != self.enrolment_request_id:
+            return False
+        if self.worker is not None and getattr(self.worker, "observation_only", False):
+            self.worker.requestInterruption()
+        self._clear_enrolment_capture()
+        self.start_button.setEnabled(self._can_start_studio_camera() and not self._enrolment_blocks_recognition())
+        return True
+
+    def _fail_enrolment_capture(self, reason: str) -> None:
+        request_id = self.enrolment_request_id
+        if request_id and hasattr(self, "enrolment_widget"):
+            self.enrolment_widget.capture_failed(request_id, reason)
+        if request_id == self.enrolment_request_id:
+            self._retire_enrolment_capture(request_id)
+        self.detail.setText(reason)
+
+    def start_enrolment_capture(self, plan, request_id: str) -> None:
+        if (
+            not request_id
+            or not hasattr(self, "enrolment_widget")
+            or self.enrolment_widget.request_id != request_id
+            or self.enrolment_widget.pending_plan is not plan
+        ):
+            return
+        if not self.studio or self._closing or self.model_loader is not None:
+            self.enrolment_widget.capture_failed(request_id, "Studio is busy; retry enrolment when the shell is idle.")
+            return
+        if self._enrolment_state() == "save_error":
+            self.enrolment_widget.capture_failed(request_id, "Retry the unsaved enrolment trial before starting another capture.")
+            return
+        if not self._pause_capture_only():
+            self.enrolment_widget.capture_failed(request_id, "Save the current evaluation trace before enrolment.")
+            return
+        self.pending_enrolment_plan = plan
+        self.pending_enrolment_request_id = request_id
+        if self.worker is not None:
+            self.state.setText("Waiting for previous camera release before enrolment.")
+            self.preview.setText("Camera stopping...\n\nEnrolment will start after release.")
+            self.start_button.setEnabled(False)
+            return
+        self._start_pending_enrolment_if_ready()
+
+    def _start_pending_enrolment_if_ready(self) -> bool:
+        plan = self.pending_enrolment_plan
+        if self.worker is not None or not self.pending_enrolment_request_id or plan is None:
+            return False
+        request_id = self.pending_enrolment_request_id
+        if (
+            self._closing
+            or not hasattr(self, "enrolment_widget")
+            or self.enrolment_widget.pending_plan is not plan
+            or self.enrolment_widget.request_id != request_id
+            or self.deck_tabs.currentWidget() is not self.enrolment_widget
+        ):
+            self.pending_enrolment_plan = None
+            self.pending_enrolment_request_id = ""
+            return False
+        plan = cast(EnrolmentPlan, plan)
+        capture_profile = plan.participant
+        capture_hand = plan.hand
+        self.pending_enrolment_plan = None
+        self.pending_enrolment_request_id = ""
+        capture_session = "enrol-" + uuid4().hex
+        self.enrolment_request_id = request_id
+        self.enrolment_capture_session = capture_session
+        self.enrolment_capture_profile = capture_profile
+        self.enrolment_capture_attached = False
+        self.enrolment_capture_started_at = time.monotonic()
+        self.enrolment_received_first_frame = False
+        self.last_result_at = self.enrolment_capture_started_at
+        self.received_first_frame = False
+        self.worker = CaptureWorker(
+            None, None, capture_hand, self.camera_index, self.asset, capture_session, capture_profile,
+            observation_only=True,
+        )
+        self.worker.start()
+        self.start_button.setEnabled(False)
+        self.state.setText("Opening camera for enrolment • gesture routing paused")
+        self.preview.setText(f"Opening camera {self.camera_index} for enrolment...")
+        return True
+
+    def release_enrolment_capture(self, request_id: str) -> None:
+        self._retire_enrolment_capture(request_id)
+
+    def enrolment_dataset_saved(self, manifest) -> None:
+        message = f"Enrolment session saved: {manifest}"
+        self.feedback.setText(message)
+        self.enrolment_widget.feedback.setText(message)
+        self.enrolment_widget.cue.setText("Session saved. Review the manifest path below before training separately.")
+
+    def _show_enrolment_retry_required(self) -> None:
+        if not self.studio or not hasattr(self, "enrolment_widget"):
+            return
+        self.deck_tabs.setCurrentWidget(self.enrolment_widget)
+        self.enrolment_widget.feedback.setText("Retry saving the unsaved enrolment trial before leaving or changing context.")
+        self.detail.setText("Retry save in Enrolment, or keep this window open until the trial is saved.")
+        self.state.setText("Enrolment save pending")
+
+    def _scroll_enrolment_controls_into_view(self) -> None:
+        if not self.studio or not hasattr(self, "studio_scroll"):
+            return
+        request_id = self.enrolment_request_id
+
+        def scroll_to_bottom() -> None:
+            if (
+                self._closing or not self._enrolment_tab_selected()
+                or not request_id or request_id != self.enrolment_request_id
+            ):
+                return
+            bar = self.studio_scroll.verticalScrollBar()
+            bar.setValue(bar.maximum())
+
+        QTimer.singleShot(0, scroll_to_bottom)
+
+    def _stop_enrolment_for_pause(self) -> bool:
+        if not self.studio or not hasattr(self, "enrolment_widget"):
+            return True
+        state = self._enrolment_state()
+        if state == "save_error":
+            self.enrolment_widget.stop_collection()
+            if self.enrolment_request_id:
+                self._retire_enrolment_capture(self.enrolment_request_id)
+            self._show_enrolment_retry_required()
+            return False
+        if (
+            self.pending_enrolment_request_id or self.enrolment_request_id
+            or self.enrolment_widget.pending_plan is not None
+            or state not in ("idle", "complete", "cancelled")
+        ):
+            self.enrolment_widget.stop_collection()
+            if self._enrolment_state() == "save_error":
+                if self.enrolment_request_id:
+                    self._retire_enrolment_capture(self.enrolment_request_id)
+                self._show_enrolment_retry_required()
+                return False
+        return True
+
+    def on_studio_tab_changed(self, _index: int) -> None:
+        self.render_card()
+        if not self.studio:
+            return
+        if self._enrolment_tab_selected():
+            self.preview.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+            if self.worker is not None:
+                self._pause_capture_only()
+            self.prediction.setText("Enrolment mode: camera observations only")
+            self.detail.setText(
+                "Request collection, wait for camera preview, then Begin trial. "
+                "No gestures are routed and no model is trained here."
+            )
+            self.studio_status.setText("Personal enrolment saves a local manifest only; readiness remains unverified.")
+        else:
+            self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            if not self._stop_enrolment_for_pause():
+                return
+        if not self._enrolment_tab_selected() and self.worker is None:
+            self.prediction.setText(
+                "Prediction: awaiting new camera session"
+                if self.model is not None else
+                "Camera control unavailable: no gesture dataset loaded"
+            )
+            self.detail.setText("Start -> neutral pose -> hold a bound gesture -> return to neutral")
+            self.render_studio_status()
+        self.start_button.setEnabled(self._can_start_studio_camera() and not self._enrolment_blocks_recognition())
 
     def action_text(self, action: Action) -> str:
         if action.kind == ActionType.OPEN_SHORTCUT:
@@ -1588,7 +1850,7 @@ class Window(QMainWindow):
     def start_camera(self):
         if (
             self.model is None or self.worker is not None or self.model_loader is not None
-            or self._closing or (self.studio and self.routing_manual_only)
+            or self._closing or (self.studio and (self.routing_manual_only or self._enrolment_blocks_recognition()))
         ):
             return
         if not self.finish_evaluation_trace():
@@ -1621,21 +1883,8 @@ class Window(QMainWindow):
                   "model": self.model.to_config() if hasattr(self.model, "to_config") else None})
 
     def pause(self):
-        if self.routing is not None:
-            self.routing.pause()
-        else:
-            self.controller.pause()
-        if self.worker is not None:
-            self.worker.requestInterruption()
-        saved = self.finish_evaluation_trace()
-        if self.studio:
-            self.record_trace.setEnabled(self.worker is None and self.evaluation_trace is None)
-            self.preview.clear()
-            self.preview.setText("Camera stopping..." if self.worker else "Camera off")
-        self.progress.setValue(0)
-        self.state.setText("Paused • camera stopping" if self.worker else "Paused")
-        self.log({"type": "pause", "timestamp": time.monotonic()})
-        return saved
+        enrolment_saved = self._stop_enrolment_for_pause()
+        return self._pause_capture_only() and enrolment_saved
 
     def finish_evaluation_trace(self):
         trace = self.evaluation_trace
@@ -1807,6 +2056,10 @@ class Window(QMainWindow):
             return
         self.poll_model_load()
         if self.worker is None:
+            self._start_pending_enrolment_if_ready()
+            return
+        if getattr(self.worker, "observation_only", False):
+            self.poll_enrolment_capture()
             return
         control = self.routing or self.controller
         packet = self.worker.take_latest()
@@ -1821,14 +2074,7 @@ class Window(QMainWindow):
             frame, prediction = packet
             self.last_result_at = time.monotonic()
             self.received_first_frame = True
-            rgb = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
-            height, width, channels = rgb.shape
-            image = QImage(rgb.data, width, height, width * channels,
-                           QImage.Format.Format_RGB888).copy()
-            self.preview.setPixmap(QPixmap.fromImage(image).scaled(
-                self.preview.size(), Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            ))
+            self._display_capture_frame(frame)
             display = prediction.label if prediction.accepted else "Unrecognised"
             if not self.studio and prediction.label in {"PREVIOUS", "BOOKMARK"} and prediction.accepted:
                 display += " (preview only)"
@@ -1934,7 +2180,59 @@ class Window(QMainWindow):
                     self.detail.setText(f"Capture stopped: {error}\n"
                                         "Check the hand model, camera connection and permissions; close other "
                                         "camera apps. Retry Start or choose another camera index.")
-            self.start_button.setEnabled(self.model is not None and self.model_loader is None and not self.routing_manual_only)
+            self.start_button.setEnabled(self._can_start_studio_camera())
+            self._start_pending_enrolment_if_ready()
+
+    def poll_enrolment_capture(self):
+        worker = self.worker
+        if worker is None:
+            return
+        now = time.monotonic()
+        request_id = self.enrolment_request_id
+        packet = worker.take_latest()
+        if packet is not None and request_id:
+            frame, observation = packet
+            if not isinstance(observation, Observation):
+                self._fail_enrolment_capture("Camera returned an invalid enrolment observation.")
+                return
+            if (
+                not worker.isInterruptionRequested()
+                and observation.session_id == self.enrolment_capture_session
+                and observation.profile_id == self.enrolment_capture_profile
+            ):
+                self._display_capture_frame(frame)
+                self.last_result_at = now
+                self.enrolment_received_first_frame = True
+                if not self.enrolment_capture_attached:
+                    if not self.enrolment_widget.attach_capture(
+                        request_id, self.enrolment_capture_session, self.enrolment_capture_profile,
+                    ):
+                        self._retire_enrolment_capture(request_id)
+                        return
+                    self.enrolment_capture_attached = True
+                    self._scroll_enrolment_controls_into_view()
+                self.enrolment_widget.receive_observation(observation)
+        if request_id and not worker.isInterruptionRequested():
+            elapsed = now - (self.last_result_at if self.enrolment_received_first_frame else self.enrolment_capture_started_at)
+            limit = 2 if self.enrolment_received_first_frame else 20
+            if elapsed > limit:
+                self._fail_enrolment_capture("Enrolment camera stalled. Check the camera and retry collection.")
+                return
+        if worker.isFinished():
+            error = worker.error
+            worker.wait()
+            self.worker = None
+            if request_id == self.enrolment_request_id:
+                if error:
+                    self.enrolment_widget.capture_failed(request_id, error)
+                elif not worker.isInterruptionRequested():
+                    self.enrolment_widget.capture_failed(request_id, "Camera stopped")
+                self._clear_enrolment_capture()
+            self.preview.clear()
+            self.preview.setText("Camera off\n\nStart explicitly to reconnect")
+            self.state.setText(error or "Paused • camera released")
+            self.start_button.setEnabled(self._can_start_studio_camera())
+            self._start_pending_enrolment_if_ready()
 
     def changeEvent(self, event):
         if self.studio and event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
@@ -1944,7 +2242,10 @@ class Window(QMainWindow):
 
     def closeEvent(self, event):
         self._closing = True
-        self.pause()
+        if not self.pause():
+            self._closing = False
+            event.ignore()
+            return
         if self.evaluation_trace is not None:
             self._closing = False
             event.ignore()
@@ -1961,5 +2262,7 @@ class Window(QMainWindow):
                       "note": "Native driver stalled; daemon worker will end with process exit."})
         if self.studio and hasattr(self, "quick_actions_widget"):
             self.quick_actions_widget.close()
+        if self.studio and hasattr(self, "enrolment_widget"):
+            self.enrolment_widget.close()
         self.timer.stop()
         event.accept()

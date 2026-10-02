@@ -154,6 +154,111 @@ def test_capture_worker_mailbox_keeps_only_latest_packet() -> None:
     assert worker.take_latest() is None
 
 
+def test_capture_worker_observation_only_bypasses_model_and_releases_camera(monkeypatch) -> None:
+    import gestureforge.app as app_module
+    from gestureforge.app import CaptureWorker
+
+    frame: np.ndarray = np.zeros((4, 4, 3), dtype=np.uint8)
+    observation = Observation(
+        session_id="session",
+        profile_id="pilot",
+        frame_id=7,
+        timestamp=12.5,
+        hand_count=0,
+        handedness=None,
+        landmarks=None,
+        validity_reason="no_hand",
+    )
+    released = []
+    worker_box: list[CaptureWorker] = []
+
+    class FakeCamera:
+        def __init__(self, *args):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            released.append(True)
+
+        def read(self):
+            worker_box[0].requestInterruption()
+            return frame, observation
+
+    class ModelShouldNotRun:
+        def predict(self, features):
+            raise AssertionError("model should not run in observation-only mode")
+
+    def extract_should_not_run(observation, hand):
+        raise AssertionError("extractor should not run in observation-only mode")
+
+    monkeypatch.setattr(app_module, "HandCamera", FakeCamera)
+    worker = CaptureWorker(
+        model=ModelShouldNotRun(),
+        feature_function=extract_should_not_run,
+        chosen_hand="Right",
+        camera_index=0,
+        asset=None,
+        session="session",
+        profile="pilot",
+        observation_only=True,
+    )
+    worker_box.append(worker)
+
+    worker.run()
+    packet = worker.take_latest()
+
+    assert worker.error == ""
+    assert released == [True]
+    assert packet == (frame, observation)
+    assert packet[1] is observation
+    assert packet[1].timestamp == 12.5
+    assert packet[1].validity_reason == "no_hand"
+    assert worker.take_latest() is None
+
+
+def test_capture_worker_observation_only_allows_no_model_or_extractor(monkeypatch) -> None:
+    import gestureforge.app as app_module
+    from gestureforge.app import CaptureWorker
+
+    frame: np.ndarray = np.zeros((4, 4, 3), dtype=np.uint8)
+    observation = Observation("session", "pilot", 1, 1.0, 1, "Right", np.ones((21, 3)), "")
+    worker_box: list[CaptureWorker] = []
+
+    class FakeCamera:
+        def __init__(self, *args):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+        def read(self):
+            worker_box[0].requestInterruption()
+            return frame, observation
+
+    monkeypatch.setattr(app_module, "HandCamera", FakeCamera)
+    worker = CaptureWorker(
+        model=None,
+        feature_function=None,
+        chosen_hand="Right",
+        camera_index=0,
+        asset=None,
+        session="session",
+        profile="pilot",
+        observation_only=True,
+    )
+    worker_box.append(worker)
+
+    worker.run()
+
+    assert worker.error == ""
+    assert worker.take_latest() == (frame, observation)
+
+
 def test_capture_worker_without_feature_function_yields_rejected_prediction(monkeypatch) -> None:
     import gestureforge.app as app_module
     from gestureforge.app import CaptureWorker

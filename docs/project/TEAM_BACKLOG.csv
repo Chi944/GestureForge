@@ -4,7 +4,7 @@ GF-P02,30 Sep-4 Oct,Deston,R07 R11 R15 R16 R21,Freeze starter personal workspace
 GF-P03,30 Sep-4 Oct,Hau Jie,R01 R03,Prove custom vocabulary and legacy dataset import,GF-P02,PR #10 merged; legacy inputs and three custom action IDs plus NEUTRAL verified by tests/test_vocabulary.py,Done,5
 GF-P05,30 Sep-4 Oct,Javier,R08,Probe Windows app file folder HTTPS targets and Camera handoff,,All target types visibly open; errors and launch-request status correct; webcam release and resume verified,In Progress,5
 GF-P06,5-11 Oct,Hau Jie,R01 R15,Implement profile lifecycle and starter selection,GF-P03,Guest start and two saved profiles reload independently; no account required,In Progress,10
-GF-P07,5-11 Oct,Hau Jie,R02,Implement guided enrolment and collection widgets,GF-P06,Three poses plus NEUTRAL collected with actions disabled and clear invalid feedback,In Progress,10
+GF-P07,5-11 Oct,Hau Jie,R02,Implement guided enrolment and collection widgets,GF-P06,Three poses plus NEUTRAL collected with actions disabled and clear invalid feedback; shared-camera host integrated with generated lifecycle checks; real recording walkthrough remains,In Progress,10
 GF-P08,5-11 Oct,Javier,R05,Complete viewer navigation bookmarks and persistence,GF-P02,All commands boundary and bookmark reload tests pass,Done,7
 GF-P09,5-11 Oct,Javier,R06 R12 R16,Implement validated deck workspace and stage schemas,GF-P08,Runbook card and shortcut references round trip; bad imports preserve active workspace,Done,8
 GF-P10,5-11 Oct,Deston,R07 R11 R13 R15,Integrate Try Now profile and deck/session shell,GF-P06 GF-P08 GF-P28,Guest check requires two correct simulated actions per pose and neutral rearming with zero wrong actions; UNKNOWN-only fails; snapshot switches cancel old events,In Progress,8

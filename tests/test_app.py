@@ -1753,7 +1753,7 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
     try:
         window.configure_studio(context_id="training-stage")
         assert "Context: training-stage" in window.boundary.text()
-        assert window.deck_tabs.count() == 7
+        assert window.deck_tabs.count() == 8
         assert isinstance(window.deck_tools, QGridLayout)
         assert window.deck_tools.itemAtPosition(1, 2) is not None
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0

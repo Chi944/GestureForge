@@ -1,12 +1,10 @@
-# GF-P07 guided enrolment interface proposal
+# GF-P07 guided enrolment integration
 
-Local component delivery, 2 October 2026. Owner: Hau Jie. Integration: Deston.
-PR #14 profile persistence is now merged, including the reviewed settings
-canonicalisation fix. This component is submitted for interface review against
-main 223b13a. The updated member brief prioritises the GF-P06 profile selector and
-agreement on its boundary before GF-P07 integration. This proposal does not
-replace that work. It is not yet connected to Studio and does not establish
-GF-P07 live acceptance.
+Component owner: Hau Jie. Shared-camera integration: Deston, 2 October 2026.
+Reviewed PR #16 is attached to Studio's Enrolment tab using the existing capture
+worker. Collection works without a loaded classifier; profile selection and
+readiness remain separate work. Generated-observation tests verify software
+lifecycle behaviour, not GF-P07 live recording acceptance.
 
 ## Components
 
@@ -24,7 +22,7 @@ private output root supplied by the shell. The suggested root is
 persistence; raw camera frames/video are never written. Do not export or commit
 these directories. Consent is for numeric collection/internal evaluation only.
 
-## Proposed host interface
+## Host interface
 
 | API / signal | Host responsibility |
 |---|---|
@@ -36,12 +34,13 @@ these directories. Consent is for numeric collection/internal evaluation only.
 | `capture_release_requested(request_id)` | Stop forwarding/release that collection generation. Keep action routing paused; do not automatically resume live gestures. Ignore releases for old generations. |
 | `dataset_saved(manifest_path)` | One notification after full session completion. Show saved counts, then offer the later profile/training step; this is not a trained model or readiness signal. |
 
-The current capture worker exposes predictions for the existing UI; this proposal
-requires Deston's reviewed observation-delivery adapter. Do not start a second
-camera thread or route enrolment observations through action dispatch. Host methods
-must reject stale requests/results after screen changes and shutdown. The widget
-cannot enforce the state of an external dispatcher; the host handshake is a
-required integration condition, not proof supplied by a checkbox or signal.
+The shared `CaptureWorker` has an observation-only mode for collection. It retains
+one latest-result mailbox and bypasses classification, routing, evaluation traces
+and action summaries. The shell waits for the previous worker to finish before
+opening a fresh capture session with the plan's participant and hand. Only the
+first matching observation acknowledges the widget; thread creation alone does
+not prove camera availability. Stale requests, releases and packets are ignored.
+Do not start a second camera thread or route enrolment through action dispatch.
 
 Before closing the parent shell, call `stop_collection()` and check whether
 `widget.session.state == 'save_error'`. If so, keep the widget and pending trial
@@ -89,7 +88,7 @@ missing camera output, generation and frame filtering, independent validation,
 fault/stop preservation, save-failure retry and the widget's consent/capture
 handshake. An offscreen preview was inspected for readable labels and controls.
 No new personal data was collected, and no physical-camera workflow recording
-was produced. The host adapter, profile selector, camera retest and short workflow
+was produced. The profile selector, camera retest and short workflow
 recording remain necessary before integrated acceptance. GF-P28's rejection
 limitations are unchanged.
 
@@ -117,7 +116,15 @@ The repaired component passes 26 generated-observation tests, including delayed
 final slots and both pre-existing and cancellation-triggered save failures.
 Current combined verification is in [verification.json](verification.json).
 
-The component is available on main; it is not yet attached to Studio's shared
-capture worker. GF-P07 stays In Progress until actual shared-camera collection and
-its host lifecycle pass acceptance. Complete the GF-P06 selector using Deston's
-published profile APIs first, then coordinate observation delivery and recording.
+The component is attached to Studio's shared capture worker. Pause, focus loss,
+leaving the tab, camera faults and close cancel collection without automatically
+resuming recognition. Failed saves keep the trial and widget alive for retry;
+the parent cannot close or replace the model/context while the write is unresolved.
+The selected profile, hand, vocabulary and mappings are retained by collection.
+Each session writes under ignored `data/local/enrolment`, with no raw recording.
+
+GF-P07 stays In Progress pending real-camera collection and its recording
+walkthrough. Hau Jie can finish the GF-P06 selector against the published APIs
+without rebuilding this host adapter. After a completed TRAIN collection, users
+can explicitly load its manifest through the existing dataset button; automatic
+profile creation and readiness are not implemented by this slice.

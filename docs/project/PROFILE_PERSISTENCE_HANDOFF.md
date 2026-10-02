@@ -100,8 +100,8 @@ CLI startup is `.\run.cmd --studio --profile-id ID`, optionally
 model settings are authoritative: dataset/algorithm/multiplier/margin arguments
 cannot accompany a profile ID. The in-app selector, create/rename workflow and
 readiness remain Hau Jie's component work with Deston's shell integration.
-PR #16 supplies the enrolment component; its shared-observation attachment and live
-recording acceptance remain separate. No automatic starter release or LIVE dispatch is added.
+PR #16's enrolment component is attached through the shell's shared observation
+worker; real recording acceptance remains. No automatic starter release or LIVE dispatch is added.
 
 ## Verification and remaining acceptance
 
@@ -118,7 +118,7 @@ they do not establish personal accuracy, physical-hand compliance or readiness.
 
 No personal data was modified or copied into Git. No new participant capture,
 visible profile workflow recording or fresh-machine test was performed. The
-profile selector and enrolment attachment still require visible integration. Guest
+profile selector still requires visible integration; enrolment is now a Studio tab. Guest
 starter selection remains gated by GF-P28's failed rejection evaluation and
 distribution permission; no ready starter is supplied. GF-P06 must not be marked
 Done based only on this persistence slice.
