@@ -86,6 +86,7 @@ class QuickActionsWidget(QWidget):
     action_requested = Signal(object)
     bindings_changed = Signal(object)
     focus_lost = Signal()
+    target_validation_failed = Signal(str, str)
 
     def __init__(self, registry: TargetRegistry, state_path: Path | None = None,
                  parent: QWidget | None = None) -> None:
@@ -284,7 +285,9 @@ class QuickActionsWidget(QWidget):
             self.status.setText(f'Test requested for {target.label}: {resolved}. This does not confirm completion.')
             self.action_requested.emit(Action(ActionType.OPEN_SHORTCUT, target.id))
         except (ValueError, OSError) as exc:
-            self.status.setText(f'Cannot test target: {exc}')
+            reason = str(exc)
+            self.status.setText(f'Cannot test target: {reason}')
+            self.target_validation_failed.emit(self.target_id.text().strip(), reason)
 
 
 class RunbookEditorWidget(QWidget):
