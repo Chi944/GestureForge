@@ -17,7 +17,7 @@ verification is `verification.json`.
 | `QuickActionsWidget` | private `TargetRegistry`, optional local state path and keyword-only `before_publish() -> bool` | `action_requested(Action)`, `bindings_changed(tuple[(gesture_id, target_id_or_None), ...])`, `focus_lost()`; `set_gesture_ids()` accepts Hau Jie's actual three IDs. |
 | `SessionSummaryWidget` | `SessionSummary` | measured counts and explicit JSON export; `refresh()` after outcomes/trials. |
 
-Requests do not execute OS work. For real-action integration, manual requests must use one `Dispatcher.manual`
+Widget signals do not execute OS work. Studio routes typed manual requests through one persistent `Dispatcher.manual`
 with a fresh UUID and `source=manual`, on the UI owner thread. Gesture dispatch must
 immediately pass `RoutingSession.route`'s result AND the snapshot captured for that
 same process/route call. Never persist/queue a result or look up the latest snapshot
@@ -36,21 +36,24 @@ or invalid targets leave routing paused/manual-only. The current vocabulary
 supplies all three gesture IDs, including after a dataset switch.
 
 Slot buttons and **Test selected target** call Studio
-`manual_quick_action(Action)` for simulated/failed summary outcomes. No dispatcher
-or launcher is attached to this simulation path. Gesture activation requires the
-normal explicit Start and NEUTRAL, works independently of deck/runbook content and
-keeps Preview/Rehearsal only. Tab selection itself does not activate a context.
+`manual_quick_action(Action)` through the persistent dispatcher. Preview/Rehearsal
+produce simulated outcomes only; explicit LIVE permits manual validated Windows
+launch requests without a recogniser. Unsupported platforms report an external-launch
+failure while the manual viewer remains usable. Gesture simulation requires explicit
+Start and NEUTRAL and works independently of deck/runbook content. Live gestures
+remain blocked pending the full personal readiness handoff. Tab selection does not activate a context.
 Target values stay in the private local registry, outside workspace/session
 exports. Reopening restores the library without activating it or replaying work.
 
-## Dispatcher attachment (requires GF-P10/GF-P12 review)
+## Attached manual dispatcher and pending gesture gate
 
-Construct `Dispatcher` with:
+Studio retains one `Dispatcher` across context changes, with these boundaries:
 
 - `current()`: the current complete `RoutingSnapshot`.
 - `active()`: true only while current routing is eligible for gesture dispatch.
 - `ready(snapshot)`: the shell-owned version-bound readiness gate, checked for that exact
-  revision. A `RoutingMode.LIVE` snapshot alone does not establish readiness.
+  revision. It currently refuses live gestures; neither a `RoutingMode.LIVE` snapshot
+  nor the preliminary six-activation check supplies GF-P12's full personal readiness.
 - `pause()`: synchronously call `RoutingSession.pause()`; synchronise runbook pause
   and shell status. Returning/focus gain must never call resume automatically.
 - `release_capture(snapshot)`: request shutdown of the existing capture worker and
@@ -64,13 +67,18 @@ Manual buttons can work while gesture routing is paused and without recognition
 readiness. Preview/rehearsal manual requests still produce only `simulated` results.
 Real manual shortcuts require the shell's explicitly chosen LIVE mode; do not
 switch it implicitly because a button was clicked. Target tests use the same gate.
+Typed viewer actions and Continue/ADVANCE_STAGE also simulate in Preview/Rehearsal
+and execute only as manual LIVE requests. Previous-stage navigation, bookmark
+review/removal, restart and restore remain explicit navigation operations outside
+typed dispatch; none launches a target. Stage transitions stay paused, with no
+deferred automatic resume.
 
 `Runbook(reset_routing=...)` calls its callback BEFORE activation/restoration:
 `reset_routing(stage_or_None, resume_requested) -> bool`. Deston must configure the
 full profile/model/context/binding/mode map via `RoutingSession.configure`. LIVE
-gesture execution may resume only with valid readiness for that revision;
-Preview/Rehearsal can run the simulated check without prior readiness. A stage transition may resume and require
-NEUTRAL; restoration always requests `False`. Return true only when the reset is
+gesture execution requires valid full personal readiness for that revision;
+the current gate refuses it. Preview/Rehearsal can run the simulated check without
+prior readiness. Stage transitions and restoration stay paused. Return true only when the reset is
 acknowledged. Exceptions/false preserve stage content. Configure an empty context
 as paused/manual-only; the current coordinator requires a nonempty map, so do not
 invent an enabled gesture binding to fill an empty map. The inspection harness
@@ -78,8 +86,9 @@ uses a visibly simulated placeholder solely to satisfy that API.
 
 When a binding/profile/model/workspace changes, pause/reset routing and invalidate
 readiness as required. Stage selection alone resets the hold/generation. Retain
-assignment controller defaults and its entry point. Do not attach LIVE until the
-readiness/capture/focus callbacks have integration evidence.
+assignment controller defaults and its entry point. Manual LIVE is attached;
+enabling live gestures still requires the full personal readiness handoff and
+integration evidence for readiness/capture/focus callbacks.
 
 SessionSummary accepts `Trial` records of Hau Jie's MEASURED expected/observed
 canonical labels (UNKNOWN/None are misses). It does not predict trial scores or
@@ -122,11 +131,11 @@ Use the documented synchronous prepare/delete/clear sequence and retain state on
 storage failure. Guest unloads the model without deleting saved files. The shell
 handles cosmetic rename and explicit Preview-start notifications and blocks competing
 setup operations while the selector is busy. Successful reconstruction stays paused
-and does not establish readiness; the LIVE gate is not yet attached. Saved loading
+and does not establish readiness; live gestures remain blocked. Saved loading
 reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HANDOFF.md).
 
 ## Remaining gates
 
-GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md); no further GF-P05 rerun is pending. Javier next prepares GF-P13/GF-P34's attachment against this contract, with focused tests for exact snapshots, readiness revisions, duplicate/stale requests, capture-release refusal and simulation-only outcomes. Deston owns shell attachment. Studio's short simulated readiness result does not attach or authorise the LIVE dispatcher. Standard starter availability, longer personal rehearsal, guarded launch integration and GF-P19's broader both-laptop evidence remain before accepting the integrated product. Keep shared shell,
+GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md); no further GF-P05 rerun is pending. Javier should sync main and verify the attached GF-P13/GF-P34 manual path, including exact snapshots, duplicate/stale requests, capture-release refusal and simulation-only outcomes, then record GF-P19's integrated Windows cases. Hau Jie supplies the longer personal protocol and measured revision-bound readiness result; Deston owns its shell gate. The short six-activation result is preliminary and cannot authorise live gestures. Standard starter availability, full personal readiness and broader both-laptop evidence remain separate. Keep shared shell,
 contracts/controller/routing, capture and recognition/profile changes in their
 owned lanes.

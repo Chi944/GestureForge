@@ -1,6 +1,7 @@
 """Assignment desktop shell: one real action, with future scope clearly labelled."""
 
 from collections.abc import Callable, Mapping
+import os
 from dataclasses import asdict, replace
 import json
 from pathlib import Path
@@ -21,6 +22,7 @@ from PySide6.QtWidgets import (
 from .capture import HandCamera
 from .contracts import Action, ActionType, Observation, Prediction, RoutingMode, validate_identifier
 from .controller import Controller
+from .dispatcher import DispatchFailure, Dispatcher
 from .enrolment import EnrolmentPlan
 from .routing import RoutingSession
 from .readiness import ReadinessCheck, behavior_revision
@@ -39,7 +41,7 @@ from .profile_widget import ProfileSelectorWidget
 from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
 from .session_summary import Outcome, SessionSummary
-from .shortcuts import TargetRegistry
+from .shortcuts import Target, TargetRegistry, WindowsLauncher
 from .vocabulary import LEGACY_VOCABULARY
 from .workspace import Workspace, parse_workspace
 from .traces import EvaluationTrace
@@ -68,6 +70,11 @@ REJECTION_MESSAGES = {
 STUDIO_ACTIONS = (Action(ActionType.NEXT), Action(ActionType.PREVIOUS), Action(ActionType.BOOKMARK))
 DEFAULT_STUDIO_STATE_FOLDER = Path(__file__).resolve().parent.parent / ".local/studio"
 DEFAULT_ENROLMENT_FOLDER = Path(__file__).resolve().parent.parent / "data/local/enrolment"
+
+
+class UnsupportedLauncher:
+    def open(self, target: Target, resolved: str) -> None:
+        raise DispatchFailure("LIVE desktop launch is available on Windows only; use manual controls on this platform.")
 
 
 def validate_camera_index(index):
@@ -259,6 +266,19 @@ class Window(QMainWindow):
         self.quick_actions_context_id = f"quick-actions:{uuid4().hex[:8]}"
         self.quick_actions_active = False
         self.quick_registry = TargetRegistry()
+        launcher = WindowsLauncher() if os.name == "nt" else UnsupportedLauncher()
+        self.dispatcher = Dispatcher(
+            self.quick_registry,
+            launcher,
+            self._dispatcher_snapshot,
+            self._dispatcher_active,
+            self._gesture_live_ready,
+            self._dispatcher_pause,
+            self._release_capture_for_dispatch,
+            self.viewer,
+            self.runbook,
+            self.session_summary,
+        )
         self._set_session_summary_scope()
         self.studio_key_hint = "Ctrl+O: load dataset | Ctrl+Enter: start | Esc: pause"
         container = QWidget()
@@ -365,10 +385,11 @@ class Window(QMainWindow):
             settings = QGridLayout()
             page.addLayout(settings)
             self.mode_picker = QComboBox()
-            self.mode_picker.setAccessibleName("Simulation mode")
-            for mode in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
-                self.mode_picker.addItem(mode.value.title(), mode.value)
-            mode_label = QLabel("Simulation mode")
+            self.mode_picker.setAccessibleName("Studio action mode")
+            for mode in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL, RoutingMode.LIVE):
+                label = "Live (manual controls)" if mode == RoutingMode.LIVE else mode.value.title()
+                self.mode_picker.addItem(label, mode.value)
+            mode_label = QLabel("Studio action mode")
             mode_label.setBuddy(self.mode_picker)
             settings.addWidget(mode_label, 0, 0)
             settings.addWidget(self.mode_picker, 1, 0)
@@ -385,7 +406,7 @@ class Window(QMainWindow):
             self.apply_bindings_button = QPushButton("Apply and pause")
             self.apply_bindings_button.clicked.connect(self.apply_studio_settings)
             self.apply_bindings_button.setToolTip(
-                "Apply these simulation settings, stop the camera and require neutral on resume."
+                "Apply these action settings, stop the camera and require neutral on resume."
             )
             settings.addWidget(self.apply_bindings_button, 1, 4)
             settings_note = QLabel("Draft settings apply only when you click Apply and pause. Nothing is saved yet.")
@@ -464,8 +485,9 @@ class Window(QMainWindow):
                 self.session_summary,
                 default_folder=self.studio_state_folder,
                 scope_text=(
-                    "Counts cover Studio manual card/runbook/Quick Actions plus gesture simulation/rejection events. "
-                    "Bookmark list review/removal and live OS dispatch are outside this summary. "
+                    "Counts cover Studio manual card/runbook/Quick Actions, live manual launch requests, "
+                    "and gesture simulation/rejection events. "
+                    "Bookmark list review/removal and OS completion are outside this summary. "
                     "Only explicit acknowledgement records task completion."
                 ),
             )
@@ -706,10 +728,13 @@ class Window(QMainWindow):
         return getattr(self.model, "model_version", "unversioned")
 
     def _can_start_studio_camera(self) -> bool:
+        mode = None
+        if self.routing is not None:
+            mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
         return (
             self.model is not None and self.worker is None and self.model_loader is None
             and not self._closing and not self.routing_manual_only and not self._enrolment_blocks_recognition()
-            and not self._profile_selector_busy()
+            and not self._profile_selector_busy() and mode != RoutingMode.LIVE
         )
 
     def _profile_selector_busy(self) -> bool:
@@ -1186,6 +1211,10 @@ class Window(QMainWindow):
 
     def action_text(self, action: Action) -> str:
         if action.kind == ActionType.OPEN_SHORTCUT:
+            if action.shortcut_id:
+                for target in self.quick_registry.targets:
+                    if target.id == action.shortcut_id:
+                        return f"open {target.label}"
             return f"open shortcut {action.shortcut_id}"
         return {
             ActionType.NEXT: "show next card",
@@ -1235,6 +1264,8 @@ class Window(QMainWindow):
     def _reset_session_summary(self) -> None:
         self.session_summary = SessionSummary()
         self._set_session_summary_scope()
+        if hasattr(self, "dispatcher"):
+            self.dispatcher.summary = self.session_summary
         if hasattr(self, "summary_widget"):
             self.summary_widget.summary = self.session_summary
             self.summary_widget.refresh()
@@ -1284,6 +1315,101 @@ class Window(QMainWindow):
         snapshot = self.routing.snapshot
         return snapshot.session_id, snapshot.context_id, snapshot.model_version
 
+    def _dispatcher_snapshot(self):
+        assert self.routing is not None
+        return self.routing.snapshot
+
+    def _dispatcher_active(self) -> bool:
+        return bool(
+            self.routing is not None
+            and not self.routing_manual_only
+            and self.routing.state != "PAUSED"
+            and not self._closing
+        )
+
+    def _gesture_live_ready(self, _snapshot) -> bool:
+        # GF-P10's six-gesture check is a short simulation check only. GF-P12
+        # owns longer LIVE personal readiness, so routed gestures cannot launch.
+        return False
+
+    def _dispatcher_pause(self) -> None:
+        if not self.pause():
+            raise DispatchFailure("Save the current trace or enrolment trial before dispatching.")
+
+    def _release_capture_for_dispatch(self, snapshot) -> bool:
+        if self.routing is None or snapshot != self.routing.snapshot:
+            return False
+        worker = self.worker
+        if worker is None:
+            return True
+        worker.requestInterruption()
+        if not worker.wait(750) or not worker.isFinished() or self.worker is not worker:
+            return False
+        if self.routing is None or snapshot != self.routing.snapshot:
+            return False
+        self.worker = None
+        self.received_first_frame = False
+        self.record_trace.setEnabled(self.evaluation_trace is None)
+        self.preview.clear()
+        self.preview.setText("Camera off\n\nManual request released capture")
+        self.start_button.setEnabled(self._can_start_studio_camera())
+        return True
+
+    def _sync_dispatcher_refs(self) -> None:
+        self.dispatcher.viewer = self.viewer if self.deck_available else None
+        self.dispatcher.runbook = self.runbook
+        self.dispatcher.summary = self.session_summary
+
+    def _dispatch_action(self, action: Action, *, event_id: str | None = None,
+                         source: str = "manual"):
+        if (
+            not self.studio or self.routing is None or self._closing
+            or self.model_loader is not None or self._profile_selector_change_blocked()
+            or self._enrolment_blocks_recognition()
+            or (self.isVisible() and not self.isActiveWindow())
+        ):
+            self.feedback.setText("Action not requested: finish Studio work before dispatch.")
+            return None
+        if not self._reserve_session_record():
+            return None
+        mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+        if mode == RoutingMode.LIVE and not self.finish_evaluation_trace():
+            self.feedback.setText("Action not requested: save the current evaluation trace first.")
+            return None
+        self._sync_dispatcher_refs()
+        outcome = self.dispatcher.manual(event_id or f"manual-{uuid4()}", action)
+        if hasattr(self, "summary_widget"):
+            self.summary_widget.refresh()
+        self._handle_dispatch_outcome(outcome, action, source=source)
+        return outcome
+
+    def _handle_dispatch_outcome(self, outcome: Outcome, action: Action, *, source: str) -> None:
+        if outcome.status == "simulated":
+            self.feedback.setText(f"Studio simulation: {source} would {self.action_text(action)}.")
+        elif outcome.status == "launch_requested":
+            self.feedback.setText("LIVE manual request sent to Windows. Acknowledge completion separately.")
+        elif outcome.status in {"applied", "unchanged"}:
+            if action.kind == ActionType.ADVANCE_STAGE and self.runbook is not None:
+                self.runbook.paused = True
+            self._refresh_workspace_widgets()
+            self.render_card()
+            if action.kind == ActionType.ADVANCE_STAGE:
+                self.feedback.setText("Runbook advanced." if outcome.status == "applied" else "Runbook did not change.")
+            else:
+                self.feedback.setText(
+                    f"Manual {action.kind.value}: now showing {self.card_topic_text()}."
+                    if outcome.status == "applied" and action.kind != ActionType.BOOKMARK
+                    else f"Manual {action.kind.value}: {self.action_text(action)}."
+                    if outcome.status == "applied"
+                    else f"Manual {action.kind.value}: no change."
+                )
+        elif outcome.status == "duplicate":
+            self.feedback.setText("Action already consumed; request a fresh manual action.")
+        elif outcome.status == "rejected":
+            self.feedback.setText(f"Action rejected: {outcome.reason}")
+        else:
+            self.feedback.setText(f"Action failed: {outcome.reason}")
+
     def _refresh_workspace_widgets(self, *, refresh_editor: bool = False) -> None:
         if not self.studio:
             return
@@ -1297,6 +1423,8 @@ class Window(QMainWindow):
         if hasattr(self, "summary_widget"):
             self.summary_widget.summary = self.session_summary
             self.summary_widget.refresh()
+        if hasattr(self, "dispatcher"):
+            self._sync_dispatcher_refs()
 
     def _quick_action_bindings(self) -> dict[str, Action]:
         if not self.studio:
@@ -1358,29 +1486,11 @@ class Window(QMainWindow):
             or action.shortcut_id is None or self.model_loader is not None or self._closing
         ):
             return
-        identity = self._session_outcome_identity()
-        if not self._reserve_session_record():
-            return
         try:
-            target, _ = self.quick_registry.resolve(action.shortcut_id)
-        except (ValueError, OSError) as exc:
-            self.feedback.setText(f"Quick Action not ready: {exc}")
-            self._record_session_outcome(
-                source="manual",
-                status="failed",
-                action=action,
-                reason="quick_action_unavailable",
-                identity=identity,
-            )
-            return
-        self.feedback.setText(f"Studio simulation: Quick Action would open {target.label}.")
-        self._record_session_outcome(
-            source="manual",
-            status="simulated",
-            action=action,
-            reason="manual_quick_action",
-            identity=identity,
-        )
+            self.quick_registry.resolve(action.shortcut_id)
+        except (ValueError, OSError):
+            pass
+        self._dispatch_action(action, source="Quick Action")
 
     def accept_workspace_widget_change(self, workspace: Workspace) -> None:
         if not self.use_studio_workspace(workspace):
@@ -1426,8 +1536,8 @@ class Window(QMainWindow):
             return True
         if not self.configure_studio(context_id=stage.id if stage else self.workspace.id, bindings=bindings):
             return False
-        if resume and not self.routing_manual_only:
-            self.start_camera()
+        if self.runbook is not None:
+            self.runbook.paused = True
         return True
 
     def render_studio_status(self):
@@ -1456,14 +1566,24 @@ class Window(QMainWindow):
             f"{gesture}: would {self.action_text(action)}"
             for gesture, action in active_bindings
         )
-        mode_text = mode.value.title()
+        mode_text = "Live (manual controls)" if mode == RoutingMode.LIVE else mode.value.title()
         if bindings:
+            behavior_text = (
+                "Gestures blocked pending longer readiness; Live manual controls active."
+                if mode == RoutingMode.LIVE
+                else "All typed manual and gesture requests simulate."
+            )
             boundary_text = (
-                f"Studio {mode_text} | Context: {context_id} | Gesture actions simulated; manual deck active.\n"
+                f"Studio {mode_text} | Context: {context_id} | {behavior_text}\n"
                 f"{bindings}"
             )
         else:
-            boundary_text = f"Studio {mode_text} | Context: {context_id} | Manual-only stage; no gesture actions are active."
+            manual_text = (
+                "Live manual controls active; no gesture actions are active."
+                if mode == RoutingMode.LIVE
+                else "Manual-only stage; typed requests simulate and no gesture actions are active."
+            )
+            boundary_text = f"Studio {mode_text} | Context: {context_id} | {manual_text}"
         if self.readiness_check is not None and self.readiness_check.status == "running":
             expected = self.readiness_check.expected or "the prompted pose"
             boundary_text += f"\nReadiness running: perform {expected}. {self.readiness_check.completed}/6 complete."
@@ -1471,13 +1591,19 @@ class Window(QMainWindow):
         missing = []
         if self.model is None:
             missing.append("starter/personal recogniser")
-        missing.append(
-            "profile readiness verification" if self.selected_profile_id else "profile enrolment"
-        )
-        missing.append("validated shortcut dispatcher")
-        self.studio_status.setText(
-            "Studio preview is running without: " + ", ".join(missing) + "."
-        )
+        revision = self._readiness_behavior_revision() if self.model is not None else ""
+        if self.selected_profile_id and self.readiness_pass_revision == revision:
+            missing.append("longer LIVE gesture readiness")
+        else:
+            missing.append("profile readiness verification" if self.selected_profile_id else "profile enrolment")
+        if mode == RoutingMode.LIVE:
+            self.studio_status.setText(
+                "Manual LIVE controls available. Gesture control unavailable: " + ", ".join(missing) + "."
+            )
+        else:
+            self.studio_status.setText(
+                "Studio preview is running without: " + ", ".join(missing) + "."
+            )
         self.mode_picker.setCurrentIndex(self.mode_picker.findData(mode.value))
         self.render_readiness_status()
         for index, (label, picker) in enumerate(zip(self.binding_labels, self.binding_pickers)):
@@ -1516,8 +1642,8 @@ class Window(QMainWindow):
             raise ValueError("Wait for the profile selector to finish before changing settings")
         if self.model_loader is not None:
             raise ValueError("Wait for the dataset load to finish before changing settings")
-        if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
-            raise ValueError("Studio currently supports simulation modes only")
+        if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL, RoutingMode.LIVE):
+            raise ValueError("Studio supports Preview, Rehearsal or explicit Live manual mode only")
         if self.readiness_check is not None and not self._readiness_switching:
             if not self._cancel_readiness_check("Readiness cancelled before Studio settings changed."):
                 return False
@@ -1558,7 +1684,11 @@ class Window(QMainWindow):
         self.routing.configure(
             self.profile, self._model_version(), new_context_id, routing_bindings, new_mode,
         )
-        self.state.setText("Paused after Studio context change. Resume and show NEUTRAL.")
+        self.state.setText(
+            "Manual LIVE ready; gesture control remains unavailable."
+            if new_mode == RoutingMode.LIVE
+            else "Paused after Studio context change. Resume and show NEUTRAL."
+        )
         self.prediction.setText("Prediction: awaiting new camera session")
         self.feedback.setText(
             "Manual-only stage active; use the buttons."
@@ -2309,6 +2439,13 @@ class Window(QMainWindow):
             self.notice.setText("Event logging failed. Check disk space and folder permissions.")
 
     def start_camera(self):
+        if self.studio and self.routing is not None:
+            mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+            if mode == RoutingMode.LIVE:
+                self.notice.setText("Live gesture launch is unavailable until longer personal readiness is completed.")
+                self.detail.setText("Use manual controls in Live mode, or switch back to Preview/Rehearsal for camera simulation.")
+                self.start_button.setEnabled(False)
+                return
         if (
             self.model is None or self.worker is not None or self.model_loader is not None
             or self._closing or (self.studio and (
@@ -2374,7 +2511,8 @@ class Window(QMainWindow):
         if self.studio and not self.deck_available:
             self.feedback.setText("No deck is loaded for this workspace.")
             return
-        if self.studio and not self._reserve_session_record():
+        if self.studio:
+            self.manual_viewer_action(Action(ActionType.NEXT))
             return
         old_topic = self.card_topic_text()
         moved = self.viewer.next_keyboard()
@@ -2383,13 +2521,6 @@ class Window(QMainWindow):
             f"Now showing {self.card_topic_text()} (from {old_topic})."
             if moved else f"Still showing {old_topic}; the assignment deck does not wrap."
         )
-        if self.studio:
-            self._record_session_outcome(
-                source="manual",
-                status="applied" if moved else "unchanged",
-                action=Action(ActionType.NEXT),
-                reason="keyboard_or_mouse",
-            )
         self.log({"type": "command", "source": "keyboard_or_mouse", "command": "NEXT",
                   "position": self.viewer.position, "timestamp": time.monotonic()})
 
@@ -2399,66 +2530,28 @@ class Window(QMainWindow):
         if not self.deck_available:
             self.feedback.setText("No deck is loaded for this workspace.")
             return
-        if not self._reserve_session_record():
-            return
-        old_topic = self.card_topic_text()
-        moved = self.viewer.apply_action(action)
-        self.render_card()
-        self.feedback.setText(
-            f"Manual {action.kind.value}: now showing {self.card_topic_text()} (from {old_topic})."
-            if moved and action.kind != ActionType.BOOKMARK
-            else f"Manual {action.kind.value}: {self.action_text(action)}."
-            if moved
-            else f"Manual {action.kind.value}: no change."
-        )
-        self._record_session_outcome(
-            source="manual",
-            status="applied" if moved else "unchanged",
-            action=action,
-            reason="manual_viewer",
-        )
-        self.log({"type": "command", "source": "manual_viewer", "command": action.kind.value,
-                  "position": self.viewer.position, "timestamp": time.monotonic()})
+        outcome = self._dispatch_action(action, source="Manual viewer")
+        if outcome is not None:
+            self.log({"type": "manual_dispatch", "source": "manual_viewer", "command": action.kind.value,
+                      "status": outcome.status, "position": self.viewer.position, "timestamp": time.monotonic()})
 
     def manual_runbook_action(self, action):
         if not self.studio or self.runbook is None:
             return
         if action.kind == ActionType.ADVANCE_STAGE:
-            if not self._reserve_session_record():
-                return
-            identity = self._session_outcome_identity()
-            try:
-                changed = self.runbook.advance()
-            except ValueError as exc:
-                self.feedback.setText(f"Runbook not advanced: {exc}")
-                self._record_session_outcome(
-                    source="manual", status="failed", action=action,
-                    reason=f"runbook_advance: {exc}", identity=identity,
-                )
-                return
-            self._refresh_workspace_widgets()
-            self.render_card()
-            self.feedback.setText("Runbook finished." if self.runbook.finished else "Runbook advanced.")
-            self._record_session_outcome(
-                source="manual",
-                status="applied" if changed else "unchanged",
-                action=action,
-                reason="runbook_continue_or_finish",
-                identity=identity,
-            )
-            self.log({"type": "runbook_advance", "stage": self.runbook.current_stage.id
-                      if self.runbook.current_stage else None, "timestamp": time.monotonic()})
+            outcome = self._dispatch_action(action, source="Runbook")
+            if outcome is not None:
+                self.log({"type": "manual_dispatch", "source": "runbook", "command": action.kind.value,
+                          "status": outcome.status, "stage": self.runbook.current_stage.id
+                          if self.runbook.current_stage else None, "timestamp": time.monotonic()})
             return
         if action.kind in {ActionType.NEXT, ActionType.PREVIOUS, ActionType.BOOKMARK} and self.deck_available:
             self.manual_viewer_action(action)
             return
-        if not self._reserve_session_record():
-            return
-        self.feedback.setText(f"Manual {self.action_text(action)} is simulated; no OS action is launched.")
-        self._record_session_outcome(
-            source="manual", status="simulated", action=action, reason="manual_runbook_action",
-        )
-        self.log({"type": "manual_simulation", "action": action.kind.value, "timestamp": time.monotonic()})
+        outcome = self._dispatch_action(action, source="Runbook")
+        if outcome is not None:
+            self.log({"type": "manual_dispatch", "source": "runbook", "command": action.kind.value,
+                      "status": outcome.status, "timestamp": time.monotonic()})
 
     def previous_runbook_stage(self):
         if not self.studio or self.runbook is None:
@@ -2475,6 +2568,7 @@ class Window(QMainWindow):
             )
             return
         if changed:
+            self.runbook.paused = True
             self._refresh_workspace_widgets()
             self.render_card()
             self.feedback.setText("Previous runbook stage restored.")
@@ -2578,23 +2672,19 @@ class Window(QMainWindow):
                                 "Return to neutral between commands. Esc pauses immediately.")
             if event:
                 if self.routing is not None:
-                    identity = self._session_outcome_identity()
                     if not self._reserve_session_record():
                         self.pause()
                         return
+                    snapshot = self.routing.snapshot
                     result = self.routing.route(event, time.monotonic())
-                    if result.simulated_action is not None:
-                        action = self.action_text(result.simulated_action)
+                    self._sync_dispatcher_refs()
+                    outcome = self.dispatcher.dispatch(result, snapshot, source="gesture")
+                    if hasattr(self, "summary_widget"):
+                        self.summary_widget.refresh()
+                    action = result.simulated_action or result.action
+                    if outcome.status == "simulated" and result.simulated_action is not None:
                         self.feedback.setText(
-                            f"Studio simulation: {event.command} would {action}."
-                        )
-                        self._record_session_outcome(
-                            source="gesture",
-                            status="simulated",
-                            action=result.simulated_action,
-                            reason=f"gesture {event.command}",
-                            event_id=event.event_id,
-                            identity=identity,
+                            f"Studio simulation: {event.command} would {self.action_text(result.simulated_action)}."
                         )
                         self._record_readiness_result(event, result)
                         self.log({
@@ -2603,18 +2693,14 @@ class Window(QMainWindow):
                             "action": result.simulated_action.kind.value,
                             "timestamp": time.monotonic(),
                         })
-                    elif result.rejection_reason:
-                        self.feedback.setText(
-                            f"Studio routing rejected {event.command}: {result.rejection_reason}."
-                        )
-                        self._record_session_outcome(
-                            source="gesture",
-                            status="rejected",
-                            action=None,
-                            reason=result.rejection_reason,
-                            event_id=event.event_id,
-                            identity=identity,
-                        )
+                    elif outcome.status == "launch_requested":
+                        self.feedback.setText("LIVE gesture launch requested.")
+                    elif outcome.status in {"applied", "unchanged"} and action is not None:
+                        self._handle_dispatch_outcome(outcome, action, source="gesture")
+                    elif outcome.status == "rejected":
+                        self.feedback.setText(f"Studio routing rejected {event.command}: {outcome.reason}.")
+                    elif outcome.status in {"failed", "duplicate"}:
+                        self.feedback.setText(f"Studio routing {outcome.status}: {outcome.reason}.")
                 else:
                     old_topic = self.card_topic_text()
                     moved = self.viewer.apply(event)
@@ -2632,9 +2718,10 @@ class Window(QMainWindow):
             if self.studio:
                 self.detail.setText("Close other camera apps and check the cable/permissions. "
                                     "Wait for release, then retry Start or select another camera index.")
-        if self.worker.isFinished():
-            error = self.worker.error
-            self.worker.wait()
+        worker = self.worker
+        if worker is not None and worker.isFinished():
+            error = worker.error
+            worker.wait()
             self.worker = None
             self.finish_evaluation_trace()
             if self.studio and self.readiness_check is not None:

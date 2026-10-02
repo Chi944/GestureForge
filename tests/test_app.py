@@ -205,6 +205,10 @@ def _disable_logging(window: Window) -> None:
     window._auto_archive_summary_on_close = False
 
 
+def _set_live_manual(window: Window) -> None:
+    assert window.configure_studio(mode=RoutingMode.LIVE)
+
+
 def _deck_file(path: Path, *, deck_id: str = "deck-test", title: str = "Demo <b>Deck</b>") -> Path:
     path.write_text(json.dumps({
         "schema_version": 1,
@@ -307,6 +311,7 @@ def test_studio_manual_viewer_browses_bookmarks_and_resyncs_after_restart(qapp) 
         assert widget is not None
         assert widget.viewer is window.viewer
         assert window.start_button.isEnabled() is False
+        _set_live_manual(window)
 
         widget.buttons[ActionType.PREVIOUS].click()
         assert window.viewer.position == 0
@@ -383,6 +388,7 @@ def test_studio_custom_deck_and_progress_round_trip(tmp_path, qapp) -> None:
         assert window.card_body.text() == "Body <i>one</i>"
         assert window.card_title.textFormat() == Qt.TextFormat.PlainText
         assert window.card_body.textFormat() == Qt.TextFormat.PlainText
+        _set_live_manual(window)
 
         window.manual_viewer_action(Action(ActionType.NEXT))
         window.manual_viewer_action(Action(ActionType.BOOKMARK))
@@ -418,6 +424,7 @@ def test_studio_bad_deck_or_progress_preserves_current_selection(tmp_path, qapp)
 
     try:
         assert window.load_studio_deck(good)
+        _set_live_manual(window)
         window.manual_viewer_action(Action(ActionType.NEXT))
         assert window.viewer.position == 1
         assert not window.load_studio_deck(bad)
@@ -429,6 +436,7 @@ def test_studio_bad_deck_or_progress_preserves_current_selection(tmp_path, qapp)
         _disable_logging(other)
         try:
             assert other.load_studio_deck(wrong)
+            _set_live_manual(other)
             other.manual_viewer_action(Action(ActionType.NEXT))
             assert other.save_studio_progress(wrong_progress)
         finally:
@@ -456,6 +464,7 @@ def test_studio_restore_pauses_and_ignores_stale_worker_packet(tmp_path, qapp) -
 
     try:
         assert window.load_studio_deck(deck_path)
+        _set_live_manual(window)
         window.manual_viewer_action(Action(ActionType.NEXT))
         assert window.save_studio_progress(progress)
         window.manual_viewer_action(Action(ActionType.NEXT))
@@ -496,6 +505,7 @@ def test_studio_workspace_runbook_loads_stage_routes_and_session(tmp_path, qapp)
 
     try:
         assert window.load_studio_workspace(workspace_path)
+        _set_live_manual(window)
         assert window.runbook is not None
         assert window.viewer is window.runbook.viewer
         assert window.viewer.current_card.id == "detail"
@@ -515,7 +525,7 @@ def test_studio_workspace_runbook_loads_stage_routes_and_session(tmp_path, qapp)
         assert window.viewer.current_card.id == "close"
         assert window.routing_manual_only
         assert not window.start_button.isEnabled()
-        assert "Manual-only stage" in window.boundary.text()
+        assert "Live manual controls active" in window.boundary.text()
 
         assert window.save_studio_session(session_path)
         window.previous_runbook_stage()
@@ -553,6 +563,7 @@ def test_studio_runbook_editor_applies_with_archive_scope_and_preserves_review(t
 
     try:
         assert window.use_studio_workspace(workspace)
+        _set_live_manual(window)
         window.manual_viewer_action(Action(ActionType.BOOKMARK))
         assert window.session_summary.counts()["applied"] == 1
         assert tuple(card.id for card in window.viewer.bookmarks) == ("intro",)
@@ -660,7 +671,9 @@ def test_studio_summary_records_manual_runbook_prechange_context_and_completion(
 
     try:
         assert window.use_studio_workspace(workspace)
-        first_session = window.manual_session_id
+        _set_live_manual(window)
+        assert window.routing is not None
+        first_session = window.routing.snapshot.session_id
         window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
 
         assert window.runbook is not None and window.runbook.current_stage is not None
@@ -695,6 +708,7 @@ def test_studio_restore_and_restart_archive_then_reset_summary(tmp_path, qapp) -
 
     try:
         assert window.use_studio_workspace(workspace)
+        _set_live_manual(window)
         session_path = tmp_path / "session.json"
         assert window.save_studio_session(session_path)
         window.manual_viewer_action(Action(ActionType.BOOKMARK))
@@ -732,6 +746,7 @@ def test_studio_summary_archive_failure_blocks_reset_or_close(operation, tmp_pat
 
     try:
         assert window.use_studio_workspace(workspace)
+        _set_live_manual(window)
         window.manual_viewer_action(Action(ActionType.BOOKMARK))
         assert window.session_summary.counts()["applied"] == 1
         monkeypatch.setattr(window.session_summary, "export", Mock(side_effect=OSError("disk full")))
@@ -768,6 +783,7 @@ def test_studio_deckless_workspace_is_honest_manual_only(tmp_path, qapp) -> None
 
     try:
         assert window.use_studio_workspace(workspace)
+        _set_live_manual(window)
         assert not window.deck_available
         assert not window.card_frame.isEnabled()
         assert window.card_title.text() == "Quick Only"
@@ -1132,6 +1148,7 @@ def test_studio_progress_save_honors_trace_and_atomic_failures(tmp_path, monkeyp
     _disable_logging(window)
 
     try:
+        _set_live_manual(window)
         window.record_trace.setChecked(True)
         assert window.routing is not None
         window.routing.resume()
@@ -1140,7 +1157,7 @@ def test_studio_progress_save_honors_trace_and_atomic_failures(tmp_path, monkeyp
         window.manual_viewer_action(Action(ActionType.NEXT))
         assert not window.save_studio_progress(progress)
         assert progress.read_text(encoding="utf-8") == '{"kept": true}\n'
-        assert window.viewer.position == 1
+        assert window.viewer.position == 0
         assert "Progress not saved" in window.feedback.text()
 
         window.evaluation_trace = None
@@ -1776,17 +1793,16 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
         window.close()
 
 
-def test_studio_rejects_live_mode_at_both_entry_points(qapp) -> None:
+def test_studio_rejects_startup_live_mode_but_allows_explicit_manual_live(qapp) -> None:
     with pytest.raises(ValueError, match="simulation modes only"):
         Window(studio=True, studio_mode=RoutingMode.LIVE)
     window = Window(studio=True)
     _disable_logging(window)
     try:
         assert window.routing is not None
-        original = window.routing.snapshot
-        with pytest.raises(ValueError, match="simulation modes only"):
-            window.configure_studio(mode=RoutingMode.LIVE)
-        assert window.routing.snapshot == original
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert window.routing.snapshot.mode == RoutingMode.LIVE
+        assert "Live (manual controls)" in window.boundary.text()
     finally:
         window.close()
 
@@ -2311,6 +2327,7 @@ def test_studio_camera_failure_clears_preview_and_preserves_manual_controls(monk
         assert "Camera disconnected" in window.detail.text()
         assert "permissions" in window.detail.text()
         assert window.start_button.isEnabled()
+        _set_live_manual(window)
         window.next_card()
         assert window.viewer.position == 1
     finally:
