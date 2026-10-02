@@ -34,6 +34,7 @@ from .javier_widgets import (
     WorkspaceWidget,
 )
 from .enrolment_widget import EnrolmentWidget
+from .profile_widget import ProfileSelectorWidget
 from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
 from .session_summary import Outcome, SessionSummary
@@ -190,7 +191,7 @@ class Window(QMainWindow):
                  asset=None, profile="pilot", data_note="No enrolled dataset loaded",
                  studio=False, studio_mode=RoutingMode.PREVIEW,
                  vocabulary=LEGACY_VOCABULARY, model_settings=("knn", 1.5, 1.5),
-                 profile_display_name=None):
+                 profile_display_name=None, profile_store=None, loaded_profile=None):
         if studio and studio_mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
             raise ValueError("Studio currently supports simulation modes only")
         if studio:
@@ -227,6 +228,7 @@ class Window(QMainWindow):
         self.selected_profile_name = profile_display_name or ""
         self.pending_profile_id = None
         self._deleted_profile_ids: set[str] = set()
+        self._profile_selector_installing = False
         self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
@@ -237,6 +239,7 @@ class Window(QMainWindow):
         self.trace_path: Path | None = None
         self.trace_folder = Path(__file__).resolve().parent.parent / "experiments/local/controller-traces"
         self.studio_state_folder = DEFAULT_STUDIO_STATE_FOLDER
+        self.profile_store = profile_store or ProfileStore(self.studio_state_folder.parent / "profiles")
         self.enrolment_root = DEFAULT_ENROLMENT_FOLDER
         self.pending_enrolment_plan = None
         self.pending_enrolment_request_id = ""
@@ -439,6 +442,17 @@ class Window(QMainWindow):
             self.summary_widget.setMinimumWidth(0)
             self.summary_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             self.deck_tabs.addTab(self.summary_widget, "Session summary")
+            self.profile_selector = ProfileSelectorWidget(self.profile_store, host=self)
+            self.profile_selector.setObjectName("manualViewer")
+            self.profile_selector.setMinimumWidth(0)
+            self.profile_selector.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.profile_selector.busy_changed.connect(self.set_profile_selector_busy)
+            self.profile_selector.profile_selected.connect(lambda _selection: self.sync_profile_selector())
+            self.profile_selector.guest_selected.connect(lambda: self.sync_profile_selector())
+            self.profile_selector.profile_renamed.connect(self.rename_studio_profile)
+            self.profile_selector.profile_deleted.connect(lambda _profile_id: self.sync_profile_selector())
+            self.profile_selector.start_requested.connect(self.request_profile_preview_start)
+            self.deck_tabs.addTab(self.profile_selector, "Profiles")
             self.enrolment_widget = EnrolmentWidget(self.enrolment_root)
             self.enrolment_widget.setObjectName("manualViewer")
             self.enrolment_widget.setMinimumWidth(0)
@@ -654,6 +668,7 @@ class Window(QMainWindow):
         """)
         self.render_studio_status()
         self.render_card()
+        self.sync_profile_selector(loaded_profile)
 
     def _model_version(self) -> str:
         return getattr(self.model, "model_version", "unversioned")
@@ -662,7 +677,14 @@ class Window(QMainWindow):
         return (
             self.model is not None and self.worker is None and self.model_loader is None
             and not self._closing and not self.routing_manual_only and not self._enrolment_blocks_recognition()
+            and not self._profile_selector_busy()
         )
+
+    def _profile_selector_busy(self) -> bool:
+        return bool(self.studio and hasattr(self, "profile_selector") and self.profile_selector.busy)
+
+    def _profile_selector_change_blocked(self) -> bool:
+        return self._profile_selector_busy() and not self._profile_selector_installing
 
     def _enrolment_state(self) -> str:
         if not self.studio or not hasattr(self, "enrolment_widget"):
@@ -753,7 +775,10 @@ class Window(QMainWindow):
             or self.enrolment_widget.pending_plan is not plan
         ):
             return
-        if not self.studio or self._closing or self.model_loader is not None:
+        if (
+            not self.studio or self._closing or self.model_loader is not None
+            or self._profile_selector_change_blocked()
+        ):
             self.enrolment_widget.capture_failed(request_id, "Studio is busy; retry enrolment when the shell is idle.")
             return
         if self._enrolment_state() == "save_error":
@@ -785,6 +810,15 @@ class Window(QMainWindow):
         ):
             self.pending_enrolment_plan = None
             self.pending_enrolment_request_id = ""
+            return False
+        if self._profile_selector_change_blocked():
+            self.enrolment_widget.capture_failed(
+                request_id, "Studio is busy; retry enrolment when the shell is idle."
+            )
+            if request_id == self.pending_enrolment_request_id:
+                self.pending_enrolment_plan = None
+                self.pending_enrolment_request_id = ""
+            self.detail.setText("Studio is busy; retry enrolment when the shell is idle.")
             return False
         plan = cast(EnrolmentPlan, plan)
         capture_profile = plan.participant
@@ -1022,7 +1056,7 @@ class Window(QMainWindow):
     def prepare_quick_action_change(self) -> bool:
         if not self.studio:
             return True
-        if self.model_loader is not None or self._closing:
+        if self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
             self.set_deck_file_status("Quick Actions not changed: wait for Studio to be idle.")
             return False
         if not self.pause():
@@ -1040,7 +1074,7 @@ class Window(QMainWindow):
             )
 
     def use_quick_actions_context(self) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing:
+        if not self.studio or self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
             return False
         try:
             bindings = self._quick_action_bindings()
@@ -1218,6 +1252,8 @@ class Window(QMainWindow):
                          bindings: Mapping[str, Action] | None = None) -> bool:
         if self.routing is None:
             return False
+        if self._profile_selector_change_blocked():
+            raise ValueError("Wait for the profile selector to finish before changing settings")
         if self.model_loader is not None:
             raise ValueError("Wait for the dataset load to finish before changing settings")
         if mode is not None and mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
@@ -1361,7 +1397,7 @@ class Window(QMainWindow):
             self.restore_studio_session(Path(path))
 
     def load_studio_deck(self, path: Path) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing:
+        if not self.studio or self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
             return False
         if not self.pause():
             self.set_deck_file_status("Deck not loaded: save the current evaluation trace first.")
@@ -1424,7 +1460,7 @@ class Window(QMainWindow):
         return True
 
     def load_studio_workspace(self, path: Path) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing:
+        if not self.studio or self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
             return False
         if not self.pause():
             self.set_deck_file_status("Workspace not loaded: save the current evaluation trace first.")
@@ -1443,7 +1479,7 @@ class Window(QMainWindow):
         preserve_deck_review: bool = False,
         reason: str = "Workspace not loaded",
     ) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing:
+        if not self.studio or self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
             return False
         if not self.pause():
             self.set_deck_file_status(f"{reason}: save the current evaluation trace first.")
@@ -1547,7 +1583,9 @@ class Window(QMainWindow):
     def load_studio_dataset(self, path):
         if not self.studio:
             raise ValueError("In-app dataset loading requires Studio")
-        if self.model_loader is not None or self._closing:
+        if self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
+            if self._profile_selector_change_blocked():
+                self.notice.setText("Dataset not loaded: wait for the profile selector to finish.")
             return False
         if not self.pause():
             return False
@@ -1568,7 +1606,9 @@ class Window(QMainWindow):
     def load_studio_profile(self, store: ProfileStore, profile_id: str):
         if not self.studio:
             raise ValueError("In-app profile loading requires Studio")
-        if self.model_loader is not None or self._closing:
+        if self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
+            if self._profile_selector_change_blocked():
+                self.notice.setText("Profile not loaded: wait for the profile selector to finish.")
             return False
         if not self.pause():
             return False
@@ -1594,6 +1634,8 @@ class Window(QMainWindow):
         if not self.studio or self._closing:
             raise ValueError("Camera selection requires an open Studio window")
         validate_camera_index(index)
+        if self._profile_selector_change_blocked():
+            raise ValueError("Wait for the profile selector to finish before changing camera")
         if self.model_loader is not None:
             raise ValueError("Wait for the dataset load to finish before changing camera")
         if index == self.camera_index:
@@ -1613,6 +1655,8 @@ class Window(QMainWindow):
         """Install an already trained candidate atomically; capture resumes only on request."""
         if not self.studio or self.model_loader is not None or self._closing:
             raise ValueError("Studio must be open and idle before changing the model")
+        if self._profile_selector_change_blocked():
+            raise ValueError("Wait for the profile selector to finish before changing the model")
         if hand not in ("Left", "Right") or not callable(getattr(model, "predict", None)):
             raise ValueError("A trained model and Left/Right hand are required")
         if set(model.train_labels) != set(vocabulary.labels):
@@ -1652,24 +1696,29 @@ class Window(QMainWindow):
                               "Dataset loaded. Gesture actions remain simulations; start explicitly.")
         self.start_button.setToolTip("Start camera simulation using the loaded personal dataset.")
         self.start_button.setEnabled(self._can_start_studio_camera())
-        if self.runbook is not None:
-            if self.runbook.current_stage is not None:
-                self.reset_runbook_stage(self.runbook.current_stage, False)
-            elif was_manual_only:
-                self.configure_studio(context_id=self.workspace.id, bindings={})
-            else:
-                self.configure_studio(
-                    context_id=self.workspace.id,
-                    bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
-                )
-        if hasattr(self, "quick_actions_widget"):
-            self.quick_actions_widget.set_gesture_ids(tuple(self.vocabulary.action_ids))
-        if was_quick_actions:
-            self.use_quick_actions_context()
+        self._profile_selector_installing = True
+        try:
+            if self.runbook is not None:
+                if self.runbook.current_stage is not None:
+                    self.reset_runbook_stage(self.runbook.current_stage, False)
+                elif was_manual_only:
+                    self.configure_studio(context_id=self.workspace.id, bindings={})
+                else:
+                    self.configure_studio(
+                        context_id=self.workspace.id,
+                        bindings=dict(zip(self.vocabulary.action_ids, STUDIO_ACTIONS, strict=True)),
+                    )
+            if hasattr(self, "quick_actions_widget"):
+                self.quick_actions_widget.set_gesture_ids(tuple(self.vocabulary.action_ids))
+            if was_quick_actions:
+                self.use_quick_actions_context()
+        finally:
+            self._profile_selector_installing = False
         self.render_studio_status()
         self.log({"type": "studio_profile" if saved_profile else "studio_dataset",
                   "profile": profile, "model_version": model.model_version,
                   "session": candidate.snapshot.session_id, "timestamp": time.monotonic()})
+        self.sync_profile_selector()
 
     def use_studio_profile(self, candidate: LoadedProfile):
         record = candidate.record
@@ -1684,6 +1733,76 @@ class Window(QMainWindow):
         )
         settings = record.settings
         self.model_settings = (settings.algorithm, settings.multiplier, settings.margin)
+        self.sync_profile_selector(candidate)
+
+    def sync_profile_selector(self, loaded: LoadedProfile | None = None) -> None:
+        if not self.studio or not hasattr(self, "profile_selector"):
+            return
+        selector = self.profile_selector
+        if loaded is not None:
+            selector.loaded = loaded
+            selector._current_label()
+        elif self.selected_profile_id is None:
+            selector.loaded = None
+            selector._current_label()
+            if self.model is not None:
+                selector.current.setText("Ad-hoc dataset loaded in Studio; saved profiles unchanged.")
+        else:
+            if (
+                selector.loaded is not None
+                and selector.loaded.record.profile_id == self.selected_profile_id
+                and self.model is selector.loaded.model
+            ):
+                selector._current_label()
+            else:
+                selector.loaded = None
+                selector.current.setText(
+                    f"Loaded: {self.selected_profile_name or self.selected_profile_id} · {self.chosen_hand} hand"
+                )
+        selector.refresh()
+        selector._controls()
+
+    def rename_studio_profile(self, record) -> None:
+        if self.selected_profile_id != record.profile_id:
+            self.sync_profile_selector()
+            return
+        self.selected_profile_name = record.display_name
+        self.notice.setText("Profile renamed. Active model and readiness state were not changed.")
+        self.render_studio_status()
+        self.sync_profile_selector()
+
+    def set_profile_selector_busy(self, busy: bool) -> None:
+        if not self.studio:
+            return
+        self.load_dataset_button.setEnabled(not busy and self.model_loader is None and not self._closing)
+        self.apply_bindings_button.setEnabled(not busy and self.model_loader is None and not self._closing)
+        self.apply_camera_button.setEnabled(not busy and self.model_loader is None and not self._closing)
+        self.start_button.setEnabled(False if busy else self._can_start_studio_camera())
+
+    def request_profile_preview_start(self, selection) -> None:
+        if not self.studio or self._closing:
+            return
+        if self.model_loader is not None or self.worker is not None:
+            self.notice.setText("Preview not started: wait for the current load or camera release.")
+            return
+        if self.routing is None or self.routing_manual_only or self.model is None:
+            self.notice.setText("Preview not started: load the selected profile first.")
+            return
+        snapshot = self.routing.snapshot
+        if (
+            selection.profile_id != self.selected_profile_id
+            or selection.profile_id != self.profile
+            or selection.model_version != self._model_version()
+            or snapshot.mode != RoutingMode.PREVIEW
+        ):
+            self.notice.setText("Preview not started: selected profile, model, or mode no longer matches.")
+            return
+        if self._profile_selector_busy() or self._enrolment_blocks_recognition():
+            self.notice.setText("Preview not started: finish profile or enrolment work first.")
+            return
+        self.raise_()
+        self.activateWindow()
+        self.start_camera()
 
     def _clear_studio_model_to_manual(
         self, *, context_id: str, mode: RoutingMode, bindings: Mapping[str, Action],
@@ -1711,6 +1830,9 @@ class Window(QMainWindow):
         """Unload the active Studio model/profile and keep manual-only project state."""
         if not self.studio or self._closing:
             return False
+        if self._profile_selector_change_blocked():
+            self.notice.setText("Guest mode not changed: wait for the profile selector to finish.")
+            return False
         if self.model_loader is not None:
             self.notice.setText("Guest mode not changed: wait for the current model/profile load to finish.")
             return False
@@ -1736,6 +1858,7 @@ class Window(QMainWindow):
         assert self.routing is not None
         self.log({"type": "studio_guest", "profile": previous_profile,
                   "session": self.routing.snapshot.session_id, "timestamp": time.monotonic()})
+        self.sync_profile_selector()
         return True
 
     def prepare_studio_profile_delete(self, profile_id: str) -> bool:
@@ -1773,6 +1896,7 @@ class Window(QMainWindow):
         assert self.routing is not None
         self.log({"type": "studio_profile_cleared", "profile": profile_id,
                   "session": self.routing.snapshot.session_id, "timestamp": time.monotonic()})
+        self.sync_profile_selector()
         return True
 
     def poll_model_load(self):
@@ -1794,7 +1918,11 @@ class Window(QMainWindow):
                     self.notice.setText("Profile load ignored: selection changed or profile was deleted.")
                     return
                 self.pending_profile_id = None
-                self.use_studio_profile(loader.result)
+                self._profile_selector_installing = True
+                try:
+                    self.use_studio_profile(loader.result)
+                finally:
+                    self._profile_selector_installing = False
             else:
                 self.pending_profile_id = None
                 self.use_studio_model(*loader.result)
@@ -1895,7 +2023,9 @@ class Window(QMainWindow):
     def start_camera(self):
         if (
             self.model is None or self.worker is not None or self.model_loader is not None
-            or self._closing or (self.studio and (self.routing_manual_only or self._enrolment_blocks_recognition()))
+            or self._closing or (self.studio and (
+                self.routing_manual_only or self._enrolment_blocks_recognition() or self._profile_selector_busy()
+            ))
         ):
             return
         if not self.finish_evaluation_trace():
@@ -2307,6 +2437,8 @@ class Window(QMainWindow):
                       "note": "Native driver stalled; daemon worker will end with process exit."})
         if self.studio and hasattr(self, "quick_actions_widget"):
             self.quick_actions_widget.close()
+        if self.studio and hasattr(self, "profile_selector"):
+            self.profile_selector.close()
         if self.studio and hasattr(self, "enrolment_widget"):
             self.enrolment_widget.close()
         self.timer.stop()

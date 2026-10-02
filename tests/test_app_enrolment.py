@@ -135,6 +135,63 @@ def test_enrolment_queued_scroll_stays_with_current_request(interruption, monkey
         window.close()
 
 
+
+def test_profile_selector_busy_rejects_immediate_enrolment_without_camera_worker(tmp_path, monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    monkeypatch.setattr(app_module, "DEFAULT_ENROLMENT_FOLDER", tmp_path / "enrolment")
+    workers: list[FakeWorker] = []
+    monkeypatch.setattr(app_module, "CaptureWorker", capture_factory(workers))
+    window = app_module.Window(studio=True)
+    pause = Mock(wraps=window._pause_capture_only)
+    monkeypatch.setattr(window, "_pause_capture_only", pause)
+    try:
+        widget = fill_enrolment_form(window)
+        window.profile_selector._future = Mock()
+        widget.request_collection()
+
+        assert workers == []
+        pause.assert_not_called()
+        assert window.pending_enrolment_request_id == ""
+        assert window.enrolment_request_id == ""
+        assert widget.pending_plan is None
+        assert "Studio is busy" in widget.feedback.text()
+    finally:
+        window.profile_selector._future = None
+        window.close()
+
+
+def test_profile_selector_busy_rejects_queued_enrolment_without_camera_worker(tmp_path, monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    monkeypatch.setattr(app_module, "DEFAULT_ENROLMENT_FOLDER", tmp_path / "enrolment")
+    workers: list[FakeWorker] = []
+    monkeypatch.setattr(app_module, "CaptureWorker", capture_factory(workers))
+    window = app_module.Window(studio=True)
+    retiring = FakeWorker(observation_only=False)
+    window.worker = retiring
+    try:
+        widget = fill_enrolment_form(window)
+        widget.request_collection()
+        assert retiring.interrupted
+        assert window.pending_enrolment_request_id
+        assert widget.pending_plan is not None
+        assert workers == []
+
+        window.profile_selector._future = Mock()
+        window.worker = None
+        assert not window._start_pending_enrolment_if_ready()
+
+        assert workers == []
+        assert window.pending_enrolment_request_id == ""
+        assert window.enrolment_request_id == ""
+        assert widget.pending_plan is None
+        assert "Studio is busy" in widget.feedback.text()
+    finally:
+        window.profile_selector._future = None
+        window.worker = None
+        window.close()
+
 def test_enrolment_request_hands_off_single_worker_and_attaches_on_first_matching_frame(tmp_path, monkeypatch, qapp):
     import gestureforge.app as app_module
     from gestureforge.app import Window

@@ -1,8 +1,9 @@
 # GF-P06 profile persistence: integration handoff
 
 2 October 2026. Hau Jie implementation; Deston review/integration.
-Scope: R01 private profile storage and candidate reconstruction. This is a GF-P06
-component slice, not completion of the guest starter, profile UI or live readiness.
+Scope: R01 private profile storage and candidate reconstruction. PR #17's
+[selector](PROFILE_SELECTOR_HANDOFF.md) now exposes this API in Studio's Profiles
+tab. Starter recognition and live readiness remain separate work.
 The original PR #14 changed only the persistence component. The reviewed Deston shell adapter below is a subsequent integration slice.
 
 ## Implemented API
@@ -105,18 +106,21 @@ while no released starter is available; it does not pass readiness or resume cap
 A pending model load must finish before switching. Publish the widget's Guest
 selection only after the method returns true.
 
-Hau Jie reports a completed local selector with create/load/rename/delete,
-Guest/manual mode and unavailable-starter messaging. At this integration check on
-2 October, `profile_widget.py`, its tests and handoff were not in the local checkout
-or the published `codex/hau-jie-profiles` branch (`57d6f5f`). Push those files on
-that branch and open a focused PR so Deston can attach the actual interface. The
-reported 473-test run has not been reproduced here without those files.
+PR #17 publishes `ProfileSelectorWidget`, its tests and
+[handoff](PROFILE_SELECTOR_HANDOFF.md). It is attached to Studio's Profiles tab
+for create/load/rename/delete and Guest/manual selection. Creation fits in a
+background worker; saved loading uses the existing shell worker. Busy notifications
+block competing load/start/setup operations. The shell refreshes cosmetic names
+and validates explicit Preview-start requests against the selected model, mode and
+camera lifecycle. Successful installation remains paused and requires fresh NEUTRAL
+after explicit start. Unavailable standard gestures stay disabled with a reason.
 
 CLI startup is `.\run.cmd --studio --profile-id ID`, optionally
-`--profile-store PATH` (default `.local/profiles`) and `--camera INDEX`. The stored
+`--profile-store PATH` (default `.local/profiles`) and `--camera INDEX`. The selected
+store is shared with the Profiles tab, including when no startup profile is given. The stored
 model settings are authoritative: dataset/algorithm/multiplier/margin arguments
-cannot accompany a profile ID. The in-app selector, create/rename workflow and
-readiness remain Hau Jie's component work with Deston's shell integration.
+cannot accompany a profile ID. The in-app selector handles explicit creation and
+renaming; neither operation supplies a starter or certifies readiness.
 PR #16's enrolment component is attached through the shell's shared observation
 worker; real recording acceptance remains. No automatic starter release or LIVE dispatch is added.
 
@@ -133,12 +137,13 @@ labels, then verifies a failed profile load retains the previous model in paused
 Preview with no camera worker. Synthetic fixtures demonstrate implementation only;
 they do not establish personal accuracy, physical-hand compliance or readiness.
 
-No personal data was modified or copied into Git. No new participant capture,
-visible profile workflow recording or fresh-machine test was performed. The
-profile selector still requires visible integration; enrolment is now a Studio tab. Guest
-starter selection remains gated by GF-P28's failed rejection evaluation and
-distribution permission; no ready starter is supplied. GF-P06 must not be marked
-Done based only on this persistence slice.
+At the persistence-only checkpoint, no personal data was modified or copied into
+Git, and no new participant capture, visible profile workflow recording or
+fresh-machine test was performed. PR #17's selector is now attached; current
+integrated verification belongs in [PROGRESS.md](PROGRESS.md). Guest starter
+recognition remains gated by GF-P28's failed rejection evaluation and distribution
+permission; no ready starter is supplied. Persistence alone does not establish
+the complete GF-P06 workflow or readiness.
 
 Historical PR #14 component checks on 2 October (current integration results are in
 [verification.json](verification.json)), using the existing Python 3.11 environment and

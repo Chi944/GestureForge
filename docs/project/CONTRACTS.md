@@ -2,7 +2,7 @@
 
 Project contract version 1 | Design frozen 2 October 2026 | Owner Deston
 
-This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore, session-summary export, Quick Actions simulation and shared-camera enrolment. Profile persistence is implemented; the selector, readiness and guarded real dispatch remain separate integration work.
+This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates manual deck browsing, workspace loading, stage editing, runbook session save/restore, session-summary export, Quick Actions simulation, shared-camera enrolment and the Profiles selector. Profile persistence and Guest/manual switching are implemented; readiness and guarded real dispatch remain separate integration work.
 
 ## GF-P02 design freeze - 2 October 2026
 
@@ -48,7 +48,7 @@ Use plain PySide signals or direct method calls carrying these records; do not c
 
 | Producer | Signal or call | Shell response |
 |---|---|---|
-| Profile selector (widget pending) | Request load by `ProfileStore` and opaque profile ID; publish selection only after successful installation | Shell owns background reconstruction and installs a complete `LoadedProfile`. Metadata-only `ProfileSelection` is for display. Deletion must clear a matching active or pending selection through the shell. |
+| `ProfileSelectorWidget` (Profiles tab) | Request load by `ProfileStore` and opaque profile ID; publish selection only after successful installation | Shell owns saved-model reconstruction and installs a complete `LoadedProfile`; creation fits in the component's background worker. Busy notifications serialize competing setup operations. Metadata-only `ProfileSelection` is for display. Deletion clears a matching active or pending selection through the shell; Guest unloads without deleting storage. |
 | `EnrolmentWidget` | `capture_requested(plan, request_id)`, `capture_release_requested(request_id)`, `dataset_saved(path)` | Shell pauses actions, retires the previous worker and starts observation-only capture. First matching observation acknowledges readiness to collect. Completion reports a private manifest, never model installation or readiness. See [enrolment handoff](ENROLMENT_INTERFACE_PROPOSAL.md). |
 | Readiness widget (pending) | Version-bound readiness result; concrete widget signal not yet implemented | Show pass/fail/expired reason. LIVE remains unavailable until the exact-revision gate is integrated. Preview/Rehearsal may run the check. |
 | `WorkspaceWidget` / `RunbookEditorWidget` | `workspace_changed(Workspace)` | `accept_workspace_widget_change` / `accept_runbook_editor_change` pause and validate before replacing content. Imported targets remain semantic references. |
@@ -100,7 +100,7 @@ Manual actions use the same validated target/action handlers, labelled `source=m
 
 Run `.\.venv\Scripts\python.exe -m pytest -q tests/test_controller.py tests/test_project_routing.py tests/test_viewer.py`.
 
-Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter release, the profile selector, the complete GUI workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
+Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. These are software checks. An opt-in Studio shell now integrates simulation routing and focus-loss pause. Starter release, the complete readiness workflow, readiness scoring, actual launch handling and human/hardware evaluation remain assigned work; no test here establishes new-user recognition quality or Windows launch success.
 
 ## Current shell adapter (Deston)
 
@@ -112,7 +112,7 @@ Successful application pauses capture, clears the old prediction display, create
 
 The Studio launcher loads schema-1 or schema-2 datasets and passes `bundle.vocabulary` to both `train_model` and `Window`. Explicit vocabulary training produces a data/settings-bound model revision even for legacy IDs. The assignment launcher keeps its existing model-version policy and rejects custom IDs with a request to use `--studio`.
 
-The saved-profile adapter loads a validated `LoadedProfile` with its vocabulary and matching model revision; it does not certify readiness. Hau Jie's selector widget must use the shell-owned lifecycle below. Workspace/runbook state is saved through the Studio session file path, and stage changes must pass their complete map through the existing context reset path. Software fixtures verify custom classification-to-simulation integration; live recognition of newly enrolled poses remains to be measured.
+The saved-profile adapter loads a validated `LoadedProfile` with its vocabulary and matching model revision; it does not certify readiness. Hau Jie's selector is attached in Profiles using the shell-owned lifecycle below. `--profile-store PATH` selects the same private store for startup and the tab. Cosmetic rename notifications refresh the shell label without retraining. Explicit Preview-start requests must match the selected profile/model and Preview mode, wait for camera release and require fresh NEUTRAL; installation alone never resumes capture. Workspace/runbook state is saved through the Studio session file path, and stage changes must pass their complete map through the existing context reset path. Software fixtures verify custom classification-to-simulation integration; live recognition of newly enrolled poses remains to be measured.
 
 ### Personal dataset selection and model replacement
 
@@ -122,7 +122,7 @@ Studio's **Load personal dataset...** button calls `load_studio_dataset(path)`. 
 
 Closing stops UI polling; a finishing background load cannot update widgets, start capture or dispatch. `load_studio_profile(store, id)` reconstructs a saved profile through the same worker; `use_studio_profile(candidate)` installs it with its separate display name and stored settings. The selector must request loads by ID rather than train on the GUI thread. For deletion, in one synchronous UI-owner handler call `prepare_studio_profile_delete(id)`; only on true call `store.delete(id)`; only on successful deletion immediately call `clear_studio_profile(id)`. Storage failure retains the old selection. Unrelated pending loads block deletion; matching pending results are invalidated. Clearing an active profile disables camera Start and preserves manual controls. See the [profile handoff](PROFILE_PERSISTENCE_HANDOFF.md) for the full integration sequence.
 
-`use_studio_guest()` is the separate non-destructive switch to manual control. It pauses capture, preserves pending trace/enrolment evidence, clears the in-memory recogniser and invalidates the old capture identity without deleting profile or dataset files. It retains the workspace, deck/bookmarks, runbook, summary and targets. Busy loading, closing or failed preservation returns false; the selector must retain its previous selection until true. A saved profile can be loaded again afterwards. No starter or readiness pass is implied. The visible selector is awaiting publication and attachment.
+`use_studio_guest()` is the separate non-destructive switch to manual control. It pauses capture, preserves pending trace/enrolment evidence, clears the in-memory recogniser and invalidates the old capture identity without deleting profile or dataset files. It retains the workspace, deck/bookmarks, runbook, summary and targets. Busy loading, closing or failed preservation returns false; the selector must retain its previous selection until true. A saved profile can be loaded again afterwards. No starter or readiness pass is implied. The Profiles tab exposes this as **Use Guest (manual only)**; unavailable standard gestures remain disabled with a reason.
 
 ### Camera selection and recovery
 

@@ -2,8 +2,8 @@
 
 Component owner: Hau Jie. Shared-camera integration: Deston, 2 October 2026.
 Reviewed PR #16 is attached to Studio's Enrolment tab using the existing capture
-worker. Collection works without a loaded classifier; profile selection and
-readiness remain separate work. Generated-observation tests verify software
+worker. Collection works without a loaded classifier; saved profile selection is
+available separately in Profiles, and readiness remains separate work. Generated-observation tests verify software
 lifecycle behaviour, not GF-P07 live recording acceptance.
 
 ## Components
@@ -88,8 +88,8 @@ missing camera output, generation and frame filtering, independent validation,
 fault/stop preservation, save-failure retry and the widget's consent/capture
 handshake. An offscreen preview was inspected for readable labels and controls.
 No new personal data was collected, and no physical-camera workflow recording
-was produced. The profile selector, camera retest and short workflow
-recording remain necessary before integrated acceptance. GF-P28's rejection
+was produced. A camera retest and short workflow recording remain necessary for
+GF-P07 acceptance. GF-P28's rejection
 limitations are unchanged.
 
 Local verification (2 October, existing Python 3.11 environment, this checkout on
@@ -124,7 +124,8 @@ The selected profile, hand, vocabulary and mappings are retained by collection.
 Each session writes under ignored `data/local/enrolment`, with no raw recording.
 
 GF-P07 stays In Progress pending real-camera collection and its recording
-walkthrough. Hau Jie can finish the GF-P06 selector against the published APIs
-without rebuilding this host adapter. After a completed TRAIN collection, users
-can explicitly load its manifest through the existing dataset button; automatic
-profile creation and readiness are not implemented by this slice.
+walkthrough. The GF-P06 selector is attached separately in Profiles without
+rebuilding this host adapter. After a completed TRAIN collection, users can
+explicitly load its manifest through the existing dataset button or create a
+saved profile from it in Profiles. Collection does not automatically create a
+profile, install a model or establish readiness.

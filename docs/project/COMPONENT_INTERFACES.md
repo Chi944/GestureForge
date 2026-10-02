@@ -114,13 +114,16 @@ fresh manual requests belong at this trusted shell boundary.
 
 The reviewed `ProfileStore` component returns a rebuilt `LoadedProfile` candidate;
 see [PROFILE_PERSISTENCE_HANDOFF.md](PROFILE_PERSISTENCE_HANDOFF.md). Hau Jie owns
-the create/rename/load/delete selector widget and Guest/start proposal. Deston owns
+the create/rename/load/delete selector widget attached in Studio's Profiles tab. Deston owns
 background candidate loading, shell installation and clearing an active deleted
 profile. These shell APIs are now implemented: `load_studio_profile`,
-`use_studio_profile`, `prepare_studio_profile_delete` and `clear_studio_profile`.
+`use_studio_profile`, `use_studio_guest`, `prepare_studio_profile_delete` and `clear_studio_profile`.
 Use the documented synchronous prepare/delete/clear sequence and retain state on
-storage failure. Successful reconstruction does not establish readiness; the
-selector and LIVE gate are not yet attached. Reuse the existing camera/model worker.
+storage failure. Guest unloads the model without deleting saved files. The shell
+handles cosmetic rename and explicit Preview-start notifications and blocks competing
+setup operations while the selector is busy. Successful reconstruction stays paused
+and does not establish readiness; the LIVE gate is not yet attached. Saved loading
+reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HANDOFF.md).
 
 ## Remaining gates
 

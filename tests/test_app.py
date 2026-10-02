@@ -1698,6 +1698,8 @@ def test_main_profile_cli_loads_saved_profile_settings(monkeypatch) -> None:
     assert window.call_args.args[5] == loaded.record.profile_id
     assert window.call_args.kwargs["profile_display_name"] == "Desk profile"
     assert window.call_args.kwargs["model_settings"] == ("knn", 2.0, 1.5)
+    assert window.call_args.kwargs["profile_store"].root.name == "private-profiles"
+    assert window.call_args.kwargs["loaded_profile"] is loaded
     assert "readiness unverified" in window.call_args.args[6]
 
 
@@ -1753,7 +1755,7 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
     try:
         window.configure_studio(context_id="training-stage")
         assert "Context: training-stage" in window.boundary.text()
-        assert window.deck_tabs.count() == 8
+        assert window.deck_tabs.count() == 9
         assert isinstance(window.deck_tools, QGridLayout)
         assert window.deck_tools.itemAtPosition(1, 2) is not None
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0

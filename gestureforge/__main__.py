@@ -52,6 +52,8 @@ def main():
     hand = "Right"
     profile = "pilot"
     profile_display_name = None
+    profile_store = ProfileStore(args.profile_store)
+    loaded_profile = None
     note = "Keyboard demo • collect your gestures before enabling camera control. See the User Guide."
     if args.studio:
         note = (
@@ -61,7 +63,8 @@ def main():
         )
     if args.profile_id:
         try:
-            loaded = ProfileStore(args.profile_store).load(args.profile_id)
+            loaded = profile_store.load(args.profile_id)
+            loaded_profile = loaded
             record = loaded.record
             settings = record.settings
             model, hand, profile, vocabulary = loaded.model, record.selected_hand, record.profile_id, record.vocabulary
@@ -91,6 +94,8 @@ def main():
         vocabulary=vocabulary,
         model_settings=(args.algorithm, args.multiplier, args.margin),
         profile_display_name=profile_display_name,
+        profile_store=profile_store,
+        loaded_profile=loaded_profile,
     )
     window.show()
     window.raise_()
