@@ -226,6 +226,49 @@ do not establish physical webcam acceptance. Evidence is in `verification.json`.
 retesting of BOOKMARK/NEUTRAL and the complete rehearsal remain. No additional
 task is Done: Deston 21.3%, Hau Jie 30.7%, Javier 52.1%, team 34.5%.
 
+## P01 BOOKMARK diagnostic follow-up (4 October)
+
+On `d1b68e7`, the assisted P01 pilot diagnostic completed a five-second BOOKMARK
+window with 45 measured frames, no recorded rejections and exactly one simulated
+BOOKMARK action. Begin was accepted from READY. The result is **inconclusive**:
+capture failed the existing 200 ms boundary/gap coverage requirement. The old
+export does not retain individual boundary/gap values, so it cannot identify
+which part of coverage failed. A recovered 219 ms late preparation packet
+occurred before Begin and does not establish the measured-window failure cause.
+The separate stopped attempt had no Begin and no recorded trials. Preserve both
+results; neither is a full rehearsal pass or LIVE-gesture acceptance.
+
+Normal Studio close archived the matching Session summary. Reconciliation found
+one expected and one matching simulated event, with zero missing, duplicate,
+mismatched or unexpected events and zero launch requests. The BOOKMARK event
+occurred 1.000 seconds after Begin. This confirms the simulated command record,
+not capture coverage or a measured stable-pose latency target.
+
+The user reported excessive black preview space and awkward scrolling. The
+camera shared a scrolling container with tall workflow content, allowing the
+preview to grow beyond the visible area. This follow-up addresses layout and
+capture diagnostics; it does not change recognition thresholds or coverage rules.
+No additional complete-task weight is claimed.
+
+Studio now keeps the preview and capture controls outside the right workflow
+scroller. Setup uses narrow-panel rows, while the active tab determines scroll
+height. Resizing preserves every camera-frame corner; long saved results grow
+and shrink with their text and remain reachable at the bottom. The separate
+assignment window retains its existing layout. New Practice trial exports record
+first-frame, largest interframe and end gaps; diagnostic guidance displays those
+measurements without rescoring older results or weakening the 200 ms limit.
+
+The full suite passed **716 tests with one unsupported Windows symlink skip**
+before the final layout refinements. The final revision passed **225 affected
+UI/Practice tests**, Ruff, mypy (81 source files) and both GUI startup modes;
+synthetic evaluation also passed. Review caught and corrected long-result
+clipping, stale text-height sizing and narrow Setup rows. Test fixtures now load
+the existing Windows font for offscreen text measurements and avoid assuming
+the old three-column file grid. Sixty generated camera/workflow checks and a
+final 42-control Setup text-fit check passed at 900x620 and 1150x740. Independent
+code review approves; capture-diagnostic review is clear. These are software and
+layout checks, not another physical webcam trial. Actions remains manual-only.
+
 ## Next deliverables
 
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.

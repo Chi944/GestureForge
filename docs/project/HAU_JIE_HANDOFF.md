@@ -94,6 +94,12 @@ PREVIOUS, then a pre-Begin capture validation stop. A bounded preparation-only
 late-frame recovery and exact timing diagnostics are integrated; do not widen
 freshness limits or change model thresholds from the old combined error. Retest
 the affected preparation/pose path before requesting a full 50-window run.
+The subsequent P01 BOOKMARK diagnostic on `d1b68e7` completed five seconds and
+recorded one matching simulated BOOKMARK event with 45 frames and no recorded
+rejections. Its outcome remains inconclusive because capture coverage failed;
+the old export cannot locate the boundary/gap responsible. This does not justify
+changing recognition thresholds or recollecting gesture training data. Inspect
+the new coverage diagnostics on a targeted retry after the layout update.
 Your supplied P02 NEUTRAL miss remains separate evidence and needs its own
 intended-pose/trace diagnosis. No additional data collection is justified solely
 by the P01 capture interruption.

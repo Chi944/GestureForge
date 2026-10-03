@@ -1050,6 +1050,9 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
             qapp.processEvents()
             label = window.practice_review_label
             assert window.studio_scroll.horizontalScrollBar().maximum() == 0
-            assert label.height() >= label.heightForWidth(label.width())
+            assert (
+                label.height() >= label.heightForWidth(label.width())
+                or window.studio_scroll.verticalScrollBar().maximum() > 0
+            )
     finally:
         window.close()

@@ -5,7 +5,7 @@ import json
 import pytest
 
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode, RoutingSnapshot
-from gestureforge.controller import MAX_PREDICTION_AGE_SECONDS
+from gestureforge.controller import MAX_FRAME_GAP_SECONDS, MAX_PREDICTION_AGE_SECONDS
 from gestureforge.dispatcher import Dispatcher
 from gestureforge.practice import PersonalRehearsal, PracticeResult
 from gestureforge.routing import RoutingSession
@@ -218,6 +218,54 @@ def test_no_camera_frames_cannot_pass_as_safe_negative_or_correct_positive():
         h.feed('G1')
     h.attempt.tick(start + 5 + MAX_PREDICTION_AGE_SECONDS + 0.000001)
     assert h.attempt.result().trials[0].outcome == 'inconclusive'
+
+
+@pytest.mark.parametrize(
+    ('case', 'offsets', 'reason', 'expected_gap'),
+    [
+        ('late_first', (0.25, 0.35, 0.45, 0.55, 4.90), 'first_frame_late', 'first_gap_seconds'),
+        ('interframe', (0.10, 0.35, 0.45, 0.55, 4.90), 'interframe_gap', 'max_interframe_gap_seconds'),
+        ('early_last', (0.10, 0.20, 0.30, 0.40, 4.70), 'last_frame_early', 'last_gap_seconds'),
+    ],
+)
+def test_incomplete_capture_saves_numeric_coverage_diagnostics(case, offsets, reason, expected_gap, tmp_path):
+    h = Harness()
+    h.prepare()
+    start = h.now
+    for offset in offsets:
+        captured = round(start + offset, 6)
+        h.feed_at('G1', captured=captured, received=captured)
+    h.attempt.tick(start + 5 + MAX_PREDICTION_AGE_SECONDS + 0.000001)
+    trial = h.attempt.result().trials[0]
+    assert trial.outcome == 'inconclusive'
+    assert not trial.coverage_ok
+    assert trial.coverage_diagnostics is not None
+    assert trial.coverage_diagnostics['schema_version'] == 1
+    assert trial.coverage_diagnostics['coverage_tolerance_seconds'] == MAX_FRAME_GAP_SECONDS
+    assert reason in trial.coverage_diagnostics['failure_reasons']
+    assert trial.coverage_diagnostics[expected_gap] > MAX_PREDICTION_AGE_SECONDS
+    assert trial.coverage_diagnostics['first_capture_offset_seconds'] == pytest.approx(offsets[0])
+    assert trial.coverage_diagnostics['last_capture_offset_seconds'] == pytest.approx(offsets[-1])
+
+    payload = json.loads(h.attempt.save(tmp_path).read_text(encoding='utf-8'))
+    saved = payload['trials'][0]['coverage_diagnostics']
+    assert saved == json.loads(json.dumps(saved, allow_nan=False))
+    assert saved['failure_reasons']
+    assert case in {'late_first', 'interframe', 'early_last'}
+
+
+def test_interrupted_capture_diagnostics_use_scheduled_window_end():
+    h = Harness()
+    h.prepare()
+    start = h.now
+    h.feed_at('G1', captured=start + 0.1, received=start + 0.1)
+    h.attempt.cancel('user stopped during trial')
+    trial = h.attempt.result().trials[0]
+    assert trial.outcome == 'interrupted'
+    assert trial.coverage_diagnostics is not None
+    assert trial.coverage_diagnostics['ended_offset_seconds'] == pytest.approx(0.1)
+    assert trial.coverage_diagnostics['last_gap_seconds'] == pytest.approx(4.9)
+    assert 'last_frame_early' in trial.coverage_diagnostics['failure_reasons']
 
 
 def test_neutral_trial_cannot_inherit_preparation_ready():

@@ -66,6 +66,10 @@ CARD_STYLES = (
 
 
 class WrappedReviewLabel(QLabel):
+    def __init__(self, text: str):
+        super().__init__(text)
+        self._last_height_width = 0
+
     def hasHeightForWidth(self) -> bool:
         return True
 
@@ -83,6 +87,106 @@ class WrappedReviewLabel(QLabel):
         hint = super().minimumSizeHint()
         width = max(1, self.width() or hint.width())
         return QSize(0, max(hint.height(), super().heightForWidth(width)))
+
+    def setText(self, text: str) -> None:
+        self.setMinimumHeight(0)
+        super().setText(text)
+        self._last_height_width = 0
+        self._sync_minimum_height()
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self._sync_minimum_height()
+
+    def _sync_minimum_height(self) -> None:
+        width = max(1, self.width())
+        desired_height = self.heightForWidth(width)
+        if width == self._last_height_width:
+            return
+        self._last_height_width = width
+        self.setMinimumHeight(desired_height)
+        self.updateGeometry()
+
+
+class CameraPreviewLabel(QLabel):
+    def __init__(self, text: str):
+        super().__init__(text)
+        self._source_pixmap: QPixmap | None = None
+
+    def hasHeightForWidth(self) -> bool:
+        return True
+
+    def heightForWidth(self, width: int) -> int:
+        return max(180, min(360, int(width * 9 / 16)))
+
+    def sizeHint(self) -> QSize:
+        return QSize(640, 360)
+
+    def minimumSizeHint(self) -> QSize:
+        return QSize(320, 180)
+
+    def setText(self, text: str) -> None:
+        self._source_pixmap = None
+        super().setText(text)
+
+    def clear(self) -> None:
+        self._source_pixmap = None
+        super().clear()
+
+    def set_camera_pixmap(self, pixmap: QPixmap) -> None:
+        self._source_pixmap = pixmap
+        self._rescale_source()
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        if self._source_pixmap is not None:
+            self._rescale_source()
+
+    def _rescale_source(self) -> None:
+        if self._source_pixmap is None or self._source_pixmap.isNull():
+            return
+        size = self.size()
+        if size.width() <= 0 or size.height() <= 0:
+            return
+        super().setPixmap(
+            self._source_pixmap.scaled(
+                size,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+        )
+
+
+class WorkflowTabWidget(QTabWidget):
+    def __init__(self):
+        super().__init__()
+        self.currentChanged.connect(lambda _index: self.updateGeometry())
+
+    def sizeHint(self) -> QSize:
+        hint = super().sizeHint()
+        current = self.currentWidget()
+        if current is None:
+            return hint
+        current_hint = current.sizeHint()
+        return QSize(max(hint.width(), current_hint.width()), self._active_tab_height(current, current_hint) + 24)
+
+    def minimumSizeHint(self) -> QSize:
+        hint = super().minimumSizeHint()
+        current = self.currentWidget()
+        if current is None:
+            return hint
+        current_hint = current.minimumSizeHint()
+        return QSize(max(hint.width(), current_hint.width()), self._active_tab_height(current, current_hint) + 12)
+
+    def _active_tab_height(self, current: QWidget, fallback: QSize) -> int:
+        width = max(1, current.width() or self.width() or fallback.width())
+        content_height = (
+            current.heightForWidth(width)
+            if current.hasHeightForWidth()
+            else fallback.height()
+        )
+        return content_height + self.tabBar().sizeHint().height()
+
 
 @dataclass(frozen=True)
 class HistoricalPracticeReview:
@@ -327,23 +431,19 @@ class Window(QMainWindow):
         container = QWidget()
         container.setObjectName("page")
         if studio:
-            container.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
-        if studio:
+            container.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             shell = QWidget()
             shell.setObjectName("page")
             shell_layout = QVBoxLayout(shell)
             shell_layout.setContentsMargins(0, 0, 0, 0)
-            self.studio_scroll = QScrollArea()
-            self.studio_scroll.setWidgetResizable(True)
-            self.studio_scroll.setWidget(container)
-            shell_layout.addWidget(self.studio_scroll, 1)
+            shell_layout.addWidget(container, 1)
             self.setCentralWidget(shell)
         else:
             self.setCentralWidget(container)
         page = QVBoxLayout(container)
         page.setContentsMargins(28, 22, 28, 22)
         header = QLabel("GestureForge")
-        header.setObjectName("title")
+        header.setObjectName("studioTitle" if studio else "title")
         page.addWidget(header)
         subtitle_text = (
             "Training demo workspace preview   /   project integration build"
@@ -351,7 +451,7 @@ class Window(QMainWindow):
             else "Personal gestures. Deliberate actions.   /   Assignment release 0.1"
         )
         subtitle = QLabel(subtitle_text)
-        subtitle.setObjectName("muted")
+        subtitle.setObjectName("studioSubtitle" if studio else "muted")
         page.addWidget(subtitle)
         self.notice = QLabel(data_note)
         self.notice.setWordWrap(True)
@@ -361,40 +461,64 @@ class Window(QMainWindow):
         self.studio_status.setWordWrap(True)
         self.studio_status.setObjectName("notice")
         if studio:
+            setup_header = QHBoxLayout()
+            page.addLayout(setup_header)
+            self.setup_toggle_button = QPushButton("Open Setup")
+            self.setup_toggle_button.setObjectName("compactButton")
+            self.setup_toggle_button.setAccessibleName("Open Studio setup controls")
+            self.setup_toggle_button.clicked.connect(self.open_setup_page)
+            setup_header.addWidget(self.setup_toggle_button)
+            self.open_practice_button = QPushButton("Open Practice")
+            self.open_practice_button.setObjectName("compactButton")
+            self.open_practice_button.setAccessibleName("Open personal practice tab")
+            self.open_practice_button.setToolTip("Shows the Practice tab and local outcome recording consent.")
+            self.open_practice_button.clicked.connect(self.open_practice_page)
+            setup_header.addWidget(self.open_practice_button)
+            setup_header.addStretch(1)
+            self.camera_status = QLabel()
+            self.camera_status.setObjectName("muted")
+            self.camera_status.setWordWrap(True)
+            page.addWidget(self.camera_status)
+            self.studio_setup_panel = QWidget()
+            self.studio_setup_panel.setObjectName("manualViewer")
+            self.studio_setup_panel.setMinimumWidth(0)
+            self.studio_setup_panel.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            setup_layout = QVBoxLayout(self.studio_setup_panel)
+            setup_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+            setup_layout.setContentsMargins(0, 0, 0, 0)
+            self.studio_setup_layout = setup_layout
             self.load_dataset_button = QPushButton("Load personal dataset...")
             self.load_dataset_button.setToolTip(
                 "Choose an existing manifest.json. Pauses control, trains locally and resets mappings."
             )
             self.load_dataset_button.clicked.connect(self.choose_studio_dataset)
-            camera_controls = QHBoxLayout()
-            page.addLayout(camera_controls)
-            camera_controls.addWidget(self.load_dataset_button, 1)
+            self.load_dataset_button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+            setup_layout.addWidget(self.load_dataset_button)
+            camera_controls = QGridLayout()
+            setup_layout.addLayout(camera_controls)
             camera_label = QLabel("Camera index")
-            camera_controls.addWidget(camera_label)
             self.camera_picker = QSpinBox()
             self.camera_picker.setRange(0, 2147483647)
             self.camera_picker.setValue(camera_index)
             self.camera_picker.setAccessibleName("Camera device index")
             self.camera_picker.setToolTip("Usually 0 for the first webcam, 1 for the second. Apply, then Start to test.")
             camera_label.setBuddy(self.camera_picker)
-            camera_controls.addWidget(self.camera_picker)
+            camera_controls.addWidget(camera_label, 0, 0)
+            camera_controls.addWidget(self.camera_picker, 0, 1)
             self.apply_camera_button = QPushButton("Use camera and pause")
             self.apply_camera_button.clicked.connect(lambda: self.set_studio_camera(self.camera_picker.value()))
-            camera_controls.addWidget(self.apply_camera_button)
-            self.camera_status = QLabel()
-            self.camera_status.setObjectName("muted")
-            self.camera_status.setWordWrap(True)
-            page.addWidget(self.camera_status)
+            self.apply_camera_button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+            camera_controls.addWidget(self.apply_camera_button, 1, 0, 1, 2)
             self.record_trace = QCheckBox("Record evaluation trace (labels and timing only)")
             self.record_trace.setToolTip(
                 "Opt in before Start. Saves locally on pause; no images, video or landmarks. "
                 "Intended gestures must be annotated separately before scoring."
             )
-            page.addWidget(self.record_trace)
+            setup_layout.addWidget(self.record_trace)
             self.trace_status = QLabel("Trace recording off; no evaluation samples are being saved.")
             self.trace_status.setWordWrap(True)
             self.trace_status.setObjectName("muted")
-            page.addWidget(self.trace_status)
+            setup_layout.addWidget(self.trace_status)
             readiness_row = QHBoxLayout()
             self.readiness_start_button = QPushButton("Start/retry readiness")
             self.readiness_start_button.setAccessibleName("Start or retry guided readiness check")
@@ -402,37 +526,38 @@ class Window(QMainWindow):
                 "Runs a simulated readiness check: two correct activations for each enrolled action gesture."
             )
             self.readiness_start_button.clicked.connect(self.start_readiness_check)
+            self.readiness_start_button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             readiness_row.addWidget(self.readiness_start_button)
             self.readiness_finish_button = QPushButton("Finish readiness")
             self.readiness_finish_button.setAccessibleName("Finish guided readiness check")
             self.readiness_finish_button.setToolTip("Incomplete checks fail; passed checks remain tied to this profile revision.")
             self.readiness_finish_button.clicked.connect(self.finish_readiness_check)
+            self.readiness_finish_button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             readiness_row.addWidget(self.readiness_finish_button)
-            self.open_practice_button = QPushButton("Open Practice")
-            self.open_practice_button.setAccessibleName("Open personal practice tab")
-            self.open_practice_button.setToolTip("Shows the Practice tab and local outcome recording consent.")
-            self.open_practice_button.clicked.connect(self.open_practice_page)
-            readiness_row.addWidget(self.open_practice_button)
-            page.addLayout(readiness_row)
+            setup_layout.addLayout(readiness_row)
             self.readiness_progress = QProgressBar()
             self.readiness_progress.setRange(0, 6)
             self.readiness_progress.setValue(0)
             self.readiness_progress.setAccessibleName("Readiness check progress")
-            page.addWidget(self.readiness_progress)
+            setup_layout.addWidget(self.readiness_progress)
             self.readiness_status = QLabel("Readiness check unavailable until a personal recogniser is loaded.")
             self.readiness_status.setWordWrap(True)
             self.readiness_status.setObjectName("muted")
             self.readiness_status.setTextFormat(Qt.TextFormat.PlainText)
-            page.addWidget(self.readiness_status)
+            setup_layout.addWidget(self.readiness_status)
             self.load_progress = QProgressBar()
             self.load_progress.setRange(0, 0)
             self.load_progress.setAccessibleName("Loading and training personal dataset")
             self.load_progress.hide()
-            page.addWidget(self.load_progress)
-            page.addWidget(self.studio_status)
+            setup_layout.addWidget(self.load_progress)
+            setup_layout.addWidget(self.studio_status)
             settings = QGridLayout()
-            page.addLayout(settings)
+            setup_layout.addLayout(settings)
+            settings.setColumnStretch(0, 0)
+            settings.setColumnStretch(1, 1)
             self.mode_picker = QComboBox()
+            self.mode_picker.setMinimumWidth(0)
+            self.mode_picker.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             self.mode_picker.setAccessibleName("Studio action mode")
             for mode in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL, RoutingMode.LIVE):
                 label = "Live (manual controls)" if mode == RoutingMode.LIVE else mode.value.title()
@@ -440,15 +565,17 @@ class Window(QMainWindow):
             mode_label = QLabel("Studio action mode")
             mode_label.setBuddy(self.mode_picker)
             settings.addWidget(mode_label, 0, 0)
-            settings.addWidget(self.mode_picker, 1, 0)
+            settings.addWidget(self.mode_picker, 0, 1)
             self.binding_labels = []
             self.binding_pickers = []
             for index in range(3):
                 label = QLabel()
                 picker = QComboBox()
+                picker.setMinimumWidth(0)
+                picker.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
                 label.setBuddy(picker)
-                settings.addWidget(label, 0, index + 1)
-                settings.addWidget(picker, 1, index + 1)
+                settings.addWidget(label, index + 1, 0)
+                settings.addWidget(picker, index + 1, 1)
                 self.binding_labels.append(label)
                 self.binding_pickers.append(picker)
             self.apply_bindings_button = QPushButton("Apply and pause")
@@ -456,22 +583,27 @@ class Window(QMainWindow):
             self.apply_bindings_button.setToolTip(
                 "Apply these action settings, stop the camera and require neutral on resume."
             )
-            settings.addWidget(self.apply_bindings_button, 1, 4)
+            self.apply_bindings_button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+            settings.addWidget(self.apply_bindings_button, 4, 0, 1, 2)
             settings_note = QLabel("Draft settings apply only when you click Apply and pause. Nothing is saved yet.")
             settings_note.setObjectName("muted")
             settings_note.setWordWrap(True)
-            settings.addWidget(settings_note, 2, 0, 1, 5)
+            settings.addWidget(settings_note, 5, 0, 1, 2)
         columns = QHBoxLayout()
         page.addLayout(columns, 1)
         left = QVBoxLayout()
         columns.addLayout(left, 1)
-        self.preview = QLabel("Camera off\n\nFrames stay on this computer")
+        self.preview = (
+            CameraPreviewLabel("Camera off\n\nFrames stay on this computer")
+            if studio else
+            QLabel("Camera off\n\nFrames stay on this computer")
+        )
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.preview.setMinimumSize(320 if studio else 390, 180 if studio else 270)
         if studio:
-            self.preview.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.preview.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.preview.setObjectName("preview")
-        left.addWidget(self.preview, 1)
+        left.addWidget(self.preview, 0 if studio else 1)
         self.prediction = QLabel("Prediction: awaiting camera")
         self.prediction.setObjectName("prediction")
         self.prediction.setWordWrap(studio)
@@ -500,9 +632,10 @@ class Window(QMainWindow):
         right.setContentsMargins(28, 28, 28, 28)
         self.manual_viewer = None
         if studio:
-            self.deck_tabs = QTabWidget()
+            self.deck_tabs = WorkflowTabWidget()
             self.deck_tabs.setObjectName("deckTabs")
             self.deck_tabs.addTab(self.card_frame, "Card")
+            self.deck_tabs.addTab(self.studio_setup_panel, "Setup")
             self.manual_viewer = ViewerWidget(self.viewer)
             self.manual_viewer.setObjectName("manualViewer")
             self.manual_viewer.setMinimumWidth(0)
@@ -626,7 +759,13 @@ class Window(QMainWindow):
             self.deck_tabs.currentChanged.connect(self.on_studio_tab_changed)
             self.deck_tabs.setMinimumWidth(0)
             self.deck_tabs.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
-            columns.addWidget(self.deck_tabs, 1)
+            self.workflow_scroll = QScrollArea()
+            self.workflow_scroll.setObjectName("workflowScroll")
+            self.workflow_scroll.setWidgetResizable(True)
+            self.workflow_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.workflow_scroll.setWidget(self.deck_tabs)
+            self.studio_scroll = self.workflow_scroll
+            columns.addWidget(self.workflow_scroll, 1)
         else:
             columns.addWidget(self.card_frame, 1)
         card_header = QHBoxLayout()
@@ -700,7 +839,7 @@ class Window(QMainWindow):
             self.start_button.setToolTip("Load a personal gesture dataset when launching the app.")
             if studio:
                 self.detail.setText("Choose Load personal dataset and select your collected manifest.json.")
-                self.start_button.setToolTip("Load a personal dataset using the button above.")
+                self.start_button.setToolTip("Open Setup to load a personal dataset.")
         self.start_button.clicked.connect(self.start_camera)
         controls.addWidget(self.start_button)
         self.pause_button = QPushButton("Pause / camera off")
@@ -745,15 +884,14 @@ class Window(QMainWindow):
                 button.setAccessibleName(text.replace("...", ""))
                 button.setMinimumWidth(0)
                 button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
-                self.deck_tools.addWidget(button, index // 3, index % 3)
+                self.deck_tools.addWidget(button, index // 2, index % 2)
                 self.file_tool_buttons.append(button)
             self.deck_file_status = QLabel("Load a deck, or save and restore your place and bookmarks.")
             self.deck_file_status.setWordWrap(True)
             self.deck_file_status.setTextFormat(Qt.TextFormat.PlainText)
             self.deck_file_status.setObjectName("muted")
-            file_tools_index = max(0, page.count() - 1)
-            page.insertLayout(file_tools_index, self.deck_tools)
-            page.insertWidget(file_tools_index + 1, self.deck_file_status)
+            self.studio_setup_layout.addLayout(self.deck_tools)
+            self.studio_setup_layout.addWidget(self.deck_file_status)
             self.studio_key_hint = " | ".join(
                 f"{shortcut.key().toString(QKeySequence.SequenceFormat.NativeText)}: {label}"
                 for shortcut, label in zip(self.shortcuts[-2:], ("load dataset", "start"))
@@ -767,6 +905,8 @@ class Window(QMainWindow):
             QScrollArea { background: #101923; border: none; }
             QWidget { color: #e8eef4; font-family: 'Segoe UI'; font-size: 14px; }
             QLabel#title { font-size: 32px; font-weight: 700; }
+            QLabel#studioTitle { font-size: 22px; font-weight: 700; }
+            QLabel#studioSubtitle { color: #a9bacb; font-size: 11px; }
             QLabel#muted { color: #a9bacb; font-size: 12px; }
             QLabel#notice { background: #223247; padding: 12px; border-radius: 7px; }
             QLabel#preview { background: #080e15; border-radius: 10px; color: #9cafc2; }
@@ -786,6 +926,7 @@ class Window(QMainWindow):
                                           font-weight: 600; }
             QPushButton { background: #264459; border: 1px solid #486478;
                           padding: 12px; border-radius: 7px; }
+            QPushButton#compactButton { padding: 7px 12px; }
             QPushButton:hover { background: #355b72; }
             QPushButton:disabled { color: #738392; background: #1c2a35; }
             QComboBox { background: #223247; border: 1px solid #486478;
@@ -817,6 +958,11 @@ class Window(QMainWindow):
         self.render_studio_status()
         self.render_card()
         self.sync_profile_selector(loaded_profile)
+
+    def open_setup_page(self) -> None:
+        if not self.studio or not hasattr(self, "deck_tabs"):
+            return
+        self.deck_tabs.setCurrentWidget(self.studio_setup_panel)
 
     def _model_version(self) -> str:
         return getattr(self.model, "model_version", "unversioned")
@@ -1672,10 +1818,13 @@ class Window(QMainWindow):
         height, width, channels = rgb.shape
         image = QImage(rgb.data, width, height, width * channels,
                        QImage.Format.Format_RGB888).copy()
-        self.preview.setPixmap(QPixmap.fromImage(image).scaled(
-            self.preview.size(), Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation,
-        ))
+        if isinstance(self.preview, CameraPreviewLabel):
+            self.preview.set_camera_pixmap(QPixmap.fromImage(image))
+        else:
+            self.preview.setPixmap(QPixmap.fromImage(image).scaled(
+                self.preview.size(), Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            ))
 
     def _pause_capture_only(self) -> bool:
         if self.routing is not None:
@@ -1881,7 +2030,7 @@ class Window(QMainWindow):
         if not self.studio:
             return
         if self._enrolment_tab_selected():
-            self.preview.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+            self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
             if self.worker is not None or self.readiness_check is not None or self.practice_attempt is not None:
                 if not self.pause():
                     self.detail.setText("Enrolment not opened: save the current trace or collection first.")

@@ -1779,7 +1779,7 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
             window.deck_tabs.tabText(index) for index in range(window.deck_tabs.count())
         }
         assert isinstance(window.deck_tools, QGridLayout)
-        assert window.deck_tools.itemAtPosition(1, 2) is not None
+        assert window.deck_tools.count() == len(window.file_tool_buttons) == 6
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0
         widgets = (window.start_button, window.pause_button, window.state, window.progress,
                    window.boundary, window.prediction, window.detail)

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from math import isfinite
 
 from .practice import DIAGNOSTIC_PROTOCOL_VERSION, PROTOCOL_VERSION, TRIALS_PER_POSE, PracticeResult, PracticeTrial
 
@@ -71,6 +72,20 @@ def _diagnostic_next_steps(result: PracticeResult) -> tuple[str, ...]:
         steps.append(
             "Capture coverage was incomplete in this diagnostic window. Check the camera preview and timing before interpreting misses."
         )
+        timing = trial.coverage_diagnostics
+        if isinstance(timing, dict) and timing.get("schema_version") == 1:
+            parts = []
+            for key, label in (
+                ("first_gap_seconds", "first-frame gap"),
+                ("max_interframe_gap_seconds", "largest frame gap"),
+                ("last_gap_seconds", "end gap"),
+                ("coverage_tolerance_seconds", "allowed gap"),
+            ):
+                value = timing.get(key)
+                if isinstance(value, (int, float)) and not isinstance(value, bool) and 0 <= value <= 60 and isfinite(value):
+                    parts.append(f"{label} {value * 1000:.0f} ms")
+            if parts:
+                steps.append("Recorded capture timing: " + "; ".join(parts) + ".")
     elif trial.outcome in {"missed", "wrong"}:
         commands = _command_counts([trial], trial.expected)
         if commands:

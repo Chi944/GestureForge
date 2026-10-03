@@ -15,7 +15,7 @@ The assignment controls its supplied ten-card deck and does not connect to Micro
 
 ### Project Studio preview
 
-Launch `.\run.cmd --studio` for the current project build. Click **Load personal dataset...** and select an existing personal `manifest.json`; no restart is required. Loading pauses control and trains locally in the background. After success, check the Preview mappings. A compatible active stage keeps its authored mappings; an empty or incompatible stage stays manual-only. When Start is enabled, click **Start camera control** and hold NEUTRAL until READY. Switching datasets requires another explicit start and neutral hold. If loading fails, the previous model stays selected and paused.
+Launch `.\run.cmd --studio` for the current project build. Open **Setup**, click **Load personal dataset...** and select an existing personal `manifest.json`; no restart is required. Loading pauses control and trains locally in the background. After success, check the Preview mappings. A compatible active stage keeps its authored mappings; an empty or incompatible stage stays manual-only. When Start is enabled, click **Start camera control** and hold NEUTRAL until READY. Switching datasets requires another explicit start and neutral hold. If loading fails, the previous model stays selected and paused.
 
 The dataset loader uses your launch settings, for example `.\run.cmd --studio --algorithm knn --multiplier 2 --margin 1.5 --camera 1`. It accepts one participant's numeric collection data, including custom gesture vocabularies, and rejects synthetic fixtures. Studio gesture actions can run as simulations only. Manual typed action buttons also simulate in Preview/Rehearsal; explicitly selecting LIVE allows manual actions without a model or readiness pass. See the [project progress](project/PROGRESS.md) for remaining functionality.
 
@@ -29,11 +29,11 @@ With a personal recogniser loaded, click **Start/retry readiness** after the pre
 
 In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause**. Editing the number alone does not change capture. Applying a different index stops the old worker and clears its predictions. To resume gesture simulation from LIVE, select Preview or Rehearsal in **Studio action mode** and click **Apply and pause**; camera Start remains disabled in LIVE. With a personal recogniser loaded, wait for the old camera to release, Start explicitly and hold NEUTRAL again. Camera changes preserve your active mappings and mode. The selection is not saved across launches; use `--camera` for a launch default.
 
-**Ctrl+O** loads a dataset, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The indeterminate loading bar means local training is still running, not a completion percentage. Camera selection is disabled during loading. If the preview stalls or the camera disconnects, follow the recovery message: close other camera apps, check the cable and permissions, then retry Start or another camera index. On a small window, scroll through setup and card content. Start/Pause, manual controls, current prediction, rejection/rearm guidance, controller state, hold progress and the active context/gesture legend stay visible in the bottom bar. Draft settings do not replace that active legend until applied.
+**Ctrl+O** loads a dataset, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The indeterminate loading bar means local training is still running, not a completion percentage. Camera selection is disabled during loading. If the preview stalls or the camera disconnects, follow the recovery message: close other camera apps, check the cable and permissions, then retry Start or another camera index. Studio keeps the camera outside the scrolling workflow pane. **Setup** contains the camera, mapping, readiness and file controls; **Open Practice** goes directly to the trial workflow. Start/Pause, manual controls, prediction, rejection/rearm guidance and hold progress stay visible while the right pane scrolls. Resizing fits the entire camera image without cropping; narrow borders can remain to preserve its aspect ratio. Draft settings do not replace the active context/gesture legend until applied.
 
 ### Personal Practice
 
-Use **Open Practice** beside the readiness controls to reveal the Practice tab
+Use **Open Practice** to reveal the Practice tab
 and recording-consent box. A personal recogniser must be loaded. The camera
 intentionally switches off after each measured window; click **Prepare next
 trial** only when ready to continue. Preparation has a 30-second timeout.
@@ -44,6 +44,13 @@ one five-second diagnostic and finishes automatically. Read the actual trial
 outcome: completing a diagnostic is not a full rehearsal pass. Other poses and
 negative activity are not assessed by that diagnostic. The default full rehearsal
 still requires all 50 windows; separate attempts cannot be combined into a pass.
+
+A recorded action can still have an **inconclusive** outcome if camera capture
+does not cover the whole measurement window. This is not, by itself, a recognition
+failure. New diagnostic results show the first-frame gap, largest frame gap and
+end gap in **Session summary**, alongside the allowed gap. These values explain
+capture coverage; they do not change its 200 ms requirement. Older results may
+lack this timing detail and are not backfilled with invented values.
 
 Keep NEUTRAL while clicking **Begin five-second window**. The fixed footer and
 Practice countdown now distinguish preparation from measurement: only change to

@@ -222,3 +222,28 @@ def test_single_pose_diagnostic_interrupted_is_not_a_miss_or_unattempted_full_at
     assert "Diagnostic was interrupted" in text
     assert "49 window" not in text
     assert "missed" not in text
+
+
+def test_single_pose_uncovered_result_explains_recorded_timing_without_rescoring():
+    evidence = diagnostic_result([replace(
+        trial("G2", "inconclusive", actions=("G2",), coverage=False),
+        coverage_diagnostics={"schema_version": 1, "first_gap_seconds": 0.04,
+                              "last_gap_seconds": 0.1, "max_interframe_gap_seconds": 0.31,
+                              "coverage_tolerance_seconds": 0.2},
+    )])
+    before = asdict(evidence)
+    text = " ".join(practice_next_steps(evidence))
+    assert "largest frame gap 310 ms" in text and "allowed gap 200 ms" in text
+    assert "G2: inconclusive; correct 0/1" in text
+    assert asdict(evidence) == before
+
+
+@pytest.mark.parametrize("timing", [None, {"schema_version": 1, "first_gap_seconds": 10**400},
+    {"schema_version": 2, "first_gap_seconds": 0.3},
+    {"schema_version": 1, "first_gap_seconds": float("nan"), "last_gap_seconds": -1,
+     "max_interframe_gap_seconds": "bad", "coverage_tolerance_seconds": True}])
+def test_diagnostic_guidance_does_not_invent_missing_or_invalid_timing(timing):
+    row = replace(trial(outcome="inconclusive", coverage=False), coverage_diagnostics=timing)
+    text = " ".join(practice_next_steps(diagnostic_result([row])))
+    assert "Capture coverage was incomplete" in text
+    assert "Recorded capture timing" not in text

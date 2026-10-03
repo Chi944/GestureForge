@@ -60,6 +60,7 @@ class PracticeTrial:
     rejections: tuple[tuple[str, int], ...]
     coverage_ok: bool
     reason: str
+    coverage_diagnostics: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -136,6 +137,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._coverage = True
         self._window_first: float | None = None
         self._window_last: float | None = None
+        self._window_max_gap: float | None = None
         self.last_begin_attempt: dict[str, Any] | None = None
         self.boundary_prediction: dict[str, Any] | None = None
         self.last_capture_validation: dict[str, Any] | None = None
@@ -193,7 +195,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._actions, self._events = [], []
         self._frames, self._rejections = 0, Counter()
         self._coverage, self._neutral_ready = True, False
-        self._window_first, self._window_last = None, None
+        self._window_first, self._window_last, self._window_max_gap = None, None, None
         self.last_begin_attempt = None
         self.boundary_prediction = None
         self.last_capture_validation = None
@@ -228,7 +230,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         if prompt.expected != 'NEUTRAL' and self.router.state != 'READY':
             raise ValueError('show accepted NEUTRAL until the controller is READY')
         self._started = now
-        self._window_first, self._window_last = None, None
+        self._window_first, self._window_last, self._window_max_gap = None, None, None
         self._neutral_ready, self._coverage = False, True
         self.status = 'measuring'
         self.reason = prompt.instruction
@@ -269,6 +271,9 @@ feeds the supplied router exactly once; the shell must not process packets again
                 self._window_first = prediction.timestamp
             if self._window_last is not None and prediction.timestamp - self._window_last > MAX_FRAME_GAP_SECONDS:
                 self._coverage = False
+            if self._window_last is not None:
+                gap = prediction.timestamp - self._window_last
+                self._window_max_gap = gap if self._window_max_gap is None else max(self._window_max_gap, gap)
             self._window_last = prediction.timestamp
             self._frames += 1
             if not prediction.accepted:
@@ -368,7 +373,7 @@ feeds the supplied router exactly once; the shell must not process packets again
             prompt.expected, prompt.repetition, prompt.instruction, self._snapshot.session_id,
             self._started, ended_at, outcome, tuple(self._actions), tuple(self._events),
             self._neutral_ready, self._frames, tuple(sorted(self._rejections.items())),
-            bool(coverage), reason,
+            bool(coverage), reason, self._coverage_diagnostics(ended_at),
         ))
         self.router.pause()
         self._started = None
@@ -399,6 +404,7 @@ feeds the supplied router exactly once; the shell must not process packets again
                 start, self._clock if self._clock is not None else start,
                 'interrupted', tuple(self._actions), tuple(self._events), self._neutral_ready,
                 self._frames, tuple(sorted(self._rejections.items())), False, reason,
+                self._coverage_diagnostics(self._clock if self._clock is not None else start),
             ))
         self.router.pause()
         self.status = 'expired' if expired else 'cancelled'
@@ -408,6 +414,49 @@ feeds the supplied router exactly once; the shell must not process packets again
     def _counts(self) -> dict[str, int]:
         return {label: sum(t.expected == label and t.outcome == 'correct' for t in self._trials)
                 for label in (*self.gesture_ids, 'NEUTRAL')}
+
+    def _coverage_diagnostics(self, ended_at: float) -> dict[str, Any]:
+        if self._started is None:
+            return {
+                'schema_version': 1,
+                'window_seconds': WINDOW_SECONDS,
+                'coverage_tolerance_seconds': MAX_FRAME_GAP_SECONDS,
+                'first_capture_offset_seconds': None,
+                'last_capture_offset_seconds': None,
+                'first_gap_seconds': None,
+                'last_gap_seconds': None,
+                'max_interframe_gap_seconds': self._window_max_gap,
+                'failure_reasons': ('not_started',),
+            }
+        first_gap = (self._window_first - self._started
+                     if self._window_first is not None else None)
+        scheduled_end = self._started + WINDOW_SECONDS
+        last_gap = scheduled_end - self._window_last if self._window_last is not None else None
+        reasons = []
+        if self._window_first is None or self._window_last is None:
+            reasons.append('no_scoreable_frames')
+        if first_gap is not None and first_gap > MAX_FRAME_GAP_SECONDS:
+            reasons.append('first_frame_late')
+        if self._window_max_gap is not None and self._window_max_gap > MAX_FRAME_GAP_SECONDS:
+            reasons.append('interframe_gap')
+        if last_gap is not None and last_gap > MAX_FRAME_GAP_SECONDS:
+            reasons.append('last_frame_early')
+        if not self._coverage and 'interframe_gap' not in reasons:
+            reasons.append('coverage_flag_failed')
+        return {
+            'schema_version': 1,
+            'window_seconds': WINDOW_SECONDS,
+            'coverage_tolerance_seconds': MAX_FRAME_GAP_SECONDS,
+            'ended_offset_seconds': ended_at - self._started,
+            'first_capture_offset_seconds': first_gap,
+            'last_capture_offset_seconds': (
+                self._window_last - self._started if self._window_last is not None else None
+            ),
+            'first_gap_seconds': first_gap,
+            'last_gap_seconds': last_gap,
+            'max_interframe_gap_seconds': self._window_max_gap,
+            'failure_reasons': tuple(reasons),
+        }
 
     def result(self) -> PracticeResult:
         counts = self._counts()
