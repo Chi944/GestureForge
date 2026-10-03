@@ -105,3 +105,18 @@ The report records the input checksum, controller timing settings, simulated eve
 Store under ignored `experiments/local/`: one session record per participant/condition with `participant_id`, condition/order, source/model/config/workspace revisions, setup/readiness/task durations, completed stages, errors/retries/help/fallbacks, comfort/usefulness, actual environment and limitations. Event rows need monotonic time, source (`manual`/`gesture`), session/context/event IDs, typed action, simulated flag and outcome. Avoid raw video, document contents and full target paths in ordinary logs.
 
 Timing annotations require explicit participant permission if an optional recording is used; otherwise use observer timestamps and report timing uncertainty. Never convert launch acceptance into success automatically. Deston reviews complete event traces against outcomes, Hau Jie provides recognition results, and Javier checks dispatcher/recovery evidence. This document completes scenario/protocol authoring; execution and final evidence remain GF-P16/P18/P19/P20/P23.
+
+
+### Workflow comparison tool (GF-P20 preparation)
+
+Use the [workflow comparison guide](WORKFLOW_COMPARISON.md) to combine explicit
+observer records with the existing exported SessionSummary segments. The CLI
+retains readiness failures, incomplete tasks, withdrawals and manual fallback;
+it never infers task completion from a launch request or substitutes action
+timestamps for the observer's task timer. It reports individual condition results,
+missing conditions and comparable paired times without statistical significance
+or commercial-demand claims.
+
+This is preparation for the protocol above. Software fixtures do not establish
+participant performance, and the tool cannot verify an observer's assertions or
+enable LIVE gestures. Keep actual records, exports and results local.

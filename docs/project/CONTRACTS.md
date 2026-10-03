@@ -166,4 +166,17 @@ The embedded **Practice** tab uses `PersonalRehearsal` and the existing persiste
 
 The component processes each observation exactly once through the shared router. The shell supplies one camera worker stamped with the prepared snapshot, waits for the preceding worker to retire, and does not process those predictions a second time. Practice never launches applications or changes the viewer. Terminal results remain historical evidence after the previous context is restored; their applicability is checked against the current semantic behavior revision.
 
+The host retains one saved terminal Practice result and a frozen snapshot of its
+dispatcher outcomes, bindings and summary scope. **Session summary** displays
+this as a historical read-only review, separate from current summary counts.
+Recorded windows, completed windows, unattempted poses and coverage failures are
+distinct from action counts. Each recorded session/event ID must have exactly
+one matching simulated gesture outcome with the captured context, model and
+typed action. Missing, duplicated, mismatched and unexpected events remain
+visible. Saving failure does not publish a saved review; retry retains the
+original evidence. Resetting the summary or switching profile does not erase or
+reinterpret that historical snapshot. Existing `SessionSummary.Trial` rows and
+the SessionSummary JSON schema remain unchanged; the separate private Practice
+JSON is the full trial export. This view grants no readiness or LIVE permission.
+
 Changing context, losing focus, pausing or a camera fault interrupts an active attempt. Local save failure retains evidence and blocks replacement or close until retry succeeds. The previous context restores paused after preservation. A measured pass neither sets the preliminary check's pass field nor enables LIVE gestures. Native measured acceptance and the reviewed live-readiness gate remain separate work.

@@ -43,6 +43,21 @@ Practice is the longer GF-P12 measurement workflow, separate from **Start/retry 
 
 The proposed pass target is at least nine correct trials per pose and zero negative actions; interrupted or incomplete capture cannot be accepted as a successful window. NEUTRAL and negative windows should not emit an action, so fifty windows do not mean fifty actions. The dedicated Practice JSON holds per-trial measurements; the session summary records dispatcher outcomes. Do not interpret a simulation count as a real launch or task completion.
 
+After saving, open **Session summary** for **Latest saved practice — historical**.
+It shows completed versus recorded windows, per-pose outcomes, unattempted
+windows, coverage failures and negative actions. The event comparison checks each
+recorded action against its original dispatcher event, including the session,
+model, context and typed action. Missing, duplicate, mismatched or unexpected
+events need investigation; they are not hidden by an aggregate total. A generated
+perfect run has fifty windows and thirty simulated command actions.
+
+This historical view survives summary reset and later profile changes within the
+open app. Its revision labels show whether it refers to the current behavior and
+summary segment. **Export session results** continues to export the current
+SessionSummary format; keep the separate Practice JSON and original summary
+exports together for review. Reopening the app does not import an old Practice
+review automatically, and this view cannot enable LIVE gestures.
+
 **Stop rehearsal**, Pause/Esc, focus loss or leaving Practice ends the attempt, releases capture and restores the previous context paused after saving. It does not continue an interrupted attempt automatically. If a write fails, leave the app open, fix folder access and click **Save / retry local results**. Evidence stays in memory and replacement/close is blocked until saved; it is not protected against process termination or power loss. Changing the profile, model, camera, bindings or workspace must finish this preservation flow before the new setup takes effect.
 
 ### Studio stays LATCHED with an open palm

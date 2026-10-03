@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T09:45:14.262457+00:00",
+  "timestamp_utc": "2026-10-03T10:29:34.274412+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.275,
+      "seconds": 0.222,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 1.259,
-      "stdout": "Success: no issues found in 76 source files\n",
+      "seconds": 1.422,
+      "stdout": "Success: no issues found in 78 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 178.927,
-      "stdout": "........................................................................ [ 11%]\n........................................................................ [ 23%]\n........................................................................ [ 35%]\n........................................................................ [ 46%]\n.........................................s.............................. [ 58%]\n........................................................................ [ 70%]\n........................................................................ [ 81%]\n........................................................................ [ 93%]\n........................................                                 [100%]\n615 passed, 1 skipped in 168.27s (0:02:48)\n",
+      "seconds": 205.481,
+      "stdout": "........................................................................ [ 11%]\n........................................................................ [ 22%]\n........................................................................ [ 34%]\n........................................................................ [ 45%]\n............................................................s........... [ 56%]\n........................................................................ [ 68%]\n........................................................................ [ 79%]\n........................................................................ [ 90%]\n...........................................................              [100%]\n634 passed, 1 skipped in 192.93s (0:03:12)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 3.308,
+      "seconds": 3.81,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.703,
+      "seconds": 3.734,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 3.228,
+      "seconds": 2.354,
       "stdout": "",
       "stderr": ""
     }
@@ -153,6 +153,67 @@
       "No real fifty-window participant run, physical LATCHED reproduction or native Mac acceptance.",
       "Measured Practice does not enable LIVE gestures; separate acceptance and reviewed gate remain.",
       "Dedicated Practice files contain per-trial outcomes; SessionSummary retains dispatcher outcomes."
+    ]
+  },
+  "workflow_and_practice_review": {
+    "timestamp_utc": "2026-10-03T10:36:42.234020+00:00",
+    "base_commit": "ab0305dcf0cedf4bcc5d5f6e3a3b44d1696a715d",
+    "scope": "Historical saved Practice event review and offline observer-based Harbor workflow comparison.",
+    "files_sha256": {
+      "gestureforge/app.py": "89362b58561a42b91fed52fda35b348fb5287bb0d7409de68e6a871cfa8408f7",
+      "tests/test_app_practice.py": "ae60aff4472bb630e9328be192d91692011fea540d3c214819fa15a3e4bd508d",
+      "scripts/compare_workflows.py": "f4b78c5dfa700c343db34186da0b8f3624858e7b0d12a926fc7770d4133f6f5d",
+      "tests/test_compare_workflows.py": "8b38bc75442dbd4744308fa76c6cd2dce7925c008a2a7742ab72f1d489293048"
+    },
+    "independent_review": {
+      "code": "APPROVE",
+      "architecture": "CLEAR",
+      "acceptance": "GF-P31 original software criterion complete; GF-P12 and GF-P19 real evidence separate."
+    },
+    "full_verifier_note": "634 passed, 1 unsupported Windows symlink fixture skipped; full lint/types/startups/synthetic pass before the final review-label sizing repair. Post-repair checks below cover the changed UI and adjacent host flows.",
+    "post_layout_checks": {
+      "pytest": "python -m pytest -q tests/test_app.py tests/test_app_practice.py tests/test_app_readiness.py tests/test_app_enrolment.py tests/test_app_dispatch.py tests/test_compare_workflows.py",
+      "result": "PASS: 169 passed in 60.14 seconds",
+      "ruff": "PASS: full gestureforge/tests/scripts",
+      "mypy": "PASS: full gestureforge/tests/scripts, 78 source files",
+      "assignment_startup": "PASS: offscreen smoke",
+      "studio_startup": "PASS: offscreen smoke"
+    },
+    "visual_check": {
+      "method": "Offscreen Qt generated full 50-window flow; no camera opened.",
+      "logical_sizes": [
+        [
+          900,
+          620
+        ],
+        [
+          1100,
+          850
+        ]
+      ],
+      "checks": [
+        "Full review text height is allocated and reachable by outer scrolling.",
+        "No horizontal overflow; prediction/state/Start/Pause footer remains visible.",
+        "Generated full flow shows 50 windows, 30 matched simulations, no launch requests or acknowledged completions."
+      ],
+      "repair": "Initial label clipped its final lines; wrapped size hints and a minimum-window regression corrected it."
+    },
+    "workflow_cli_example": {
+      "result": "PASS",
+      "evidence_kind": "synthetic",
+      "checks": [
+        "Exact input byte hash",
+        "Unavailable starter remains failed",
+        "Missing conditions preserved",
+        "No invented task-time delta"
+      ]
+    },
+    "limitations": [
+      "No real participant workflow/Practice run or physical LATCHED reproduction.",
+      "No new native Windows target, fresh-machine, stability or native Mac acceptance.",
+      "Observer identity, durations and source/model/config/data/workspace hashes remain supplied claims.",
+      "Workflow tool verifies the bytes of supplied input/summary files, not observed real-world completion.",
+      "LIVE gestures remain blocked; neither generated nor measured Practice automatically enables them."
     ]
   }
 }

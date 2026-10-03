@@ -1,4 +1,6 @@
+import json
 import os
+from dataclasses import replace
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -12,6 +14,7 @@ from PySide6.QtWidgets import QApplication
 from gestureforge.app import Window
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
 from gestureforge.practice_widget import PersonalRehearsalWidget
+from gestureforge.session_summary import Outcome
 from gestureforge.vocabulary import GestureVocabulary
 
 
@@ -221,9 +224,13 @@ def test_practice_stop_saves_and_restores_prior_context(monkeypatch, qapp, tmp_p
 
         assert window.practice_attempt is None
         assert window.practice_widget is None
+        assert window._practice_review is not None
+        assert "interrupted 0" in window.practice_review_label.text().lower()
+        assert "latest saved practice" in window.practice_review_label.text().lower()
         assert window.routing is not None
         assert window.routing.snapshot.context_id == previous.context_id
         assert window.routing.snapshot.mode == previous.mode
+        assert window._practice_review is not None
         assert "practice cancelled" in window.practice_status.text().lower()
         assert "local rehearsal results saved" in window.practice_status.text().lower()
         assert list((tmp_path / "studio" / "practice").glob("practice-*.json"))
@@ -270,6 +277,7 @@ def test_practice_save_failure_blocks_restore_close_and_retry_unblocks(monkeypat
         assert window.practice_attempt is not None
         assert window.practice_widget is widget
         assert widget.save_error
+        assert window._practice_review is None
         close_event = FakeCloseEvent()
         window.closeEvent(close_event)
         assert close_event.ignored
@@ -278,6 +286,8 @@ def test_practice_save_failure_blocks_restore_close_and_retry_unblocks(monkeypat
         widget.save()
         assert window._finish_practice_rehearsal()
         assert window.practice_attempt is None
+        assert window._practice_review is not None
+        assert "latest saved practice" in window.practice_review_label.text().lower()
         assert "practice cancelled" in window.practice_status.text().lower()
     finally:
         window._auto_archive_summary_on_close = False
@@ -306,14 +316,19 @@ def test_practice_restore_failure_can_retry_after_terminal_save(monkeypatch, qap
         assert window.practice_attempt is not None
         assert window.practice_widget is widget
         assert window._practice_previous is not None
+        assert window._practice_review is None
+        retained_previous = window._practice_previous
         assert "prior studio context was not restored" in window.practice_status.text().lower()
         assert list((tmp_path / "studio" / "practice").glob("practice-*.json"))
 
+        window.manual_context_id = "partial-restore-noise"
         assert window.pause()
 
+        assert window._practice_previous is None
         assert window.practice_attempt is None
         assert window.practice_widget is None
         assert window.routing is not None
+        assert retained_previous[1] == previous.context_id
         assert window.routing.snapshot.context_id == previous.context_id
         assert window.routing.snapshot.mode == previous.mode
         assert "practice cancelled" in window.practice_status.text().lower()
@@ -346,6 +361,30 @@ def test_practice_wrong_generation_packet_is_ignored(monkeypatch, qapp):
         assert window.practice_attempt is not None
         assert window.practice_attempt.status == "preparing"
         assert window.session_summary.counts()["simulated"] == 0
+    finally:
+        window.close()
+
+
+
+def test_practice_review_preserves_interrupted_preparation(monkeypatch, qapp, tmp_path):
+    import gestureforge.app as app_module
+
+    monkeypatch.setattr(app_module, "DEFAULT_STUDIO_STATE_FOLDER", tmp_path / "studio")
+    workers: list[FakeWorker] = []
+    monkeypatch.setattr(app_module, "CaptureWorker", make_worker_factory(workers))
+    clock = Clock()
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: clock.value + 0.01)
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        widget = start_practice(window)
+        widget.prepare()
+        widget.stop()
+
+        assert window._practice_review is not None
+        assert window._practice_review.result.trials[0].outcome == "interrupted"
+        assert "interrupted 1" in window.practice_review_label.text().lower()
+        assert list((tmp_path / "studio" / "practice").glob("practice-*.json"))
     finally:
         window.close()
 
@@ -588,9 +627,105 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         assert window.routing.state == "PAUSED"
         assert window.readiness_check is None
         assert window.readiness_pass_revision == ""
-        assert window.session_summary.counts()["simulated"] == 30
+        counts = window.session_summary.counts()
+        assert counts["simulated"] == 30
+        assert counts["launch_requested"] == 0
+        assert counts["acknowledged_completion"] == 0
         assert "practice passed" in window.practice_status.text().lower()
         saved = list((tmp_path / "studio" / "practice").glob("practice-*.json"))
         assert len(saved) == 1
+        review = window._practice_review
+        assert review is not None
+        assert review.saved_path == saved[0]
+        assert len(review.result.trials) == 50
+        review_text = window.practice_review_label.text().lower()
+        assert "latest saved practice" in review_text
+        assert "windows recorded: 50/50" in review_text
+        assert "completed five-second windows: 50/50" in review_text
+        assert "unattempted 0" in review_text
+        assert "coverage failures 0" in review_text
+        assert "scope revision: revision-" in review_text
+        assert "demo studio" not in review_text
+        assert "matched simulated 30" in review_text
+        assert "missing 0" in review_text
+        assert "duplicate 0" in review_text
+        assert "mismatch 0" in review_text
+        assert "unexpected 0" in review_text
+        assert "launch requests 0" in review_text
+        assert "saved full trial export" in review_text
+        export_path = tmp_path / "summary-export.json"
+        window.session_summary.export(export_path)
+        exported = json.loads(export_path.read_text(encoding="utf-8"))
+        assert set(exported) == {"schema_version", "scope", "counts", "outcomes", "trials", "completed_stages"}
+        assert "practice" not in exported
+
+        base = window._practice_review_reconciliation(review)
+        assert base["matched"] == 30
+        unrelated = Outcome("unrelated-event", "unrelated-session", "gesture", "simulated", Action(ActionType.NEXT), "", "other-context", review.result.model_version)
+        unrelated_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (unrelated,), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(unrelated_review)["unexpected"] == 0
+        expected_trial = next(trial for trial in review.result.trials if trial.event_ids)
+        expected_event = expected_trial.event_ids[0]
+        expected_session = expected_trial.session_id
+        matching = [outcome for outcome in review.outcomes if outcome.event_id == expected_event and outcome.session_id == expected_session]
+        assert len(matching) == 1
+        without_match = app_module.HistoricalPracticeReview(
+            review.result,
+            tuple(outcome for outcome in review.outcomes if outcome not in matching),
+            review.context_id, review.bindings, review.scope, review.saved_path,
+        )
+        assert window._practice_review_reconciliation(without_match)["missing"] == 1
+        duplicate_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (matching[0],), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(duplicate_review)["duplicate"] == 1
+        wrong_status = replace(matching[0], status="failed")
+        wrong_review = app_module.HistoricalPracticeReview(review.result, tuple(
+            wrong_status if outcome is matching[0] else outcome for outcome in review.outcomes
+        ), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(wrong_review)["mismatch"] == 1
+        wrong_source = replace(matching[0], source="manual")
+        wrong_source_review = app_module.HistoricalPracticeReview(review.result, tuple(
+            wrong_source if outcome is matching[0] else outcome for outcome in review.outcomes
+        ), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(wrong_source_review)["mismatch"] == 1
+        wrong_action = replace(matching[0], action=Action(ActionType.PREVIOUS))
+        wrong_action_review = app_module.HistoricalPracticeReview(review.result, tuple(
+            wrong_action if outcome is matching[0] else outcome for outcome in review.outcomes
+        ), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(wrong_action_review)["mismatch"] == 1
+        wrong_model = replace(matching[0], model_version="other-model")
+        wrong_model_review = app_module.HistoricalPracticeReview(review.result, tuple(
+            wrong_model if outcome is matching[0] else outcome for outcome in review.outcomes
+        ), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(wrong_model_review)["mismatch"] == 1
+        duplicate_expected_trials = list(review.result.trials)
+        duplicate_expected_trials[0] = replace(duplicate_expected_trials[0], event_ids=(expected_event, expected_event), actions=(expected_trial.actions[0], expected_trial.actions[0]))
+        duplicate_expected_result = replace(review.result, trials=tuple(duplicate_expected_trials))
+        duplicate_expected_review = app_module.HistoricalPracticeReview(duplicate_expected_result, review.outcomes, review.context_id, review.bindings, review.scope, review.saved_path)
+        duplicate_expected_counts = window._practice_review_reconciliation(duplicate_expected_review)
+        assert duplicate_expected_counts["duplicate"] >= 1
+        assert duplicate_expected_counts["matched"] == 29
+        unexpected = Outcome("unexpected-event", expected_session, "gesture", "simulated", Action(ActionType.NEXT), "", review.context_id, review.result.model_version)
+        unexpected_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (unexpected,), review.context_id, review.bindings, review.scope, review.saved_path)
+        assert window._practice_review_reconciliation(unexpected_review)["unexpected"] == 1
+        window._reset_session_summary()
+        assert window._practice_review is review
+        assert "historical scope differs" in window.practice_review_label.text().lower()
+        window.profile = "changed-profile"
+        window.model.model_version = "changed-version"
+        window.render_studio_status()
+        changed_text = window.practice_review_label.text().lower()
+        assert "historical behavior differs" in changed_text
+        assert review.result.profile_id in changed_text
+        assert window.practice_review_label.wordWrap()
+        assert window.practice_review_label.parent() is window.summary_widget
+        window.show()
+        window.deck_tabs.setCurrentWidget(window.summary_widget)
+        qapp.processEvents()
+        for width, height in ((900, 620), (1100, 850)):
+            window.resize(width, height)
+            qapp.processEvents()
+            label = window.practice_review_label
+            assert window.studio_scroll.horizontalScrollBar().maximum() == 0
+            assert label.height() >= label.heightForWidth(label.width())
     finally:
         window.close()

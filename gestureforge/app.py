@@ -1,8 +1,9 @@
 """Assignment desktop shell: one real action, with future scope clearly labelled."""
 
+from collections import Counter
 from collections.abc import Callable, Mapping
 import os
-from dataclasses import asdict, replace
+from dataclasses import asdict, dataclass, replace
 import json
 from pathlib import Path
 from threading import Event, Lock, Thread
@@ -11,7 +12,7 @@ from typing import cast
 from uuid import uuid4
 
 import cv2
-from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer, QSize
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
@@ -38,7 +39,7 @@ from .javier_widgets import (
 )
 from .enrolment_widget import EnrolmentWidget
 from .profile_widget import ProfileSelectorWidget
-from .practice import NEGATIVE_CUES, PersonalRehearsal
+from .practice import NEGATIVE_CUES, PersonalRehearsal, PracticeResult
 from .practice_widget import PersonalRehearsalWidget
 from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
@@ -60,6 +61,37 @@ CARD_STYLES = (
     ("#eff2e5", "#64793b"),
     ("#f0edf6", "#7d62aa"),
 )
+
+
+
+class WrappedReviewLabel(QLabel):
+    def hasHeightForWidth(self) -> bool:
+        return True
+
+    def heightForWidth(self, width: int) -> int:
+        if width <= 0:
+            return super().heightForWidth(width)
+        return max(super().heightForWidth(width), self.minimumSizeHint().height())
+
+    def sizeHint(self) -> QSize:
+        hint = super().sizeHint()
+        width = max(1, self.width() or hint.width())
+        return QSize(hint.width(), self.heightForWidth(width))
+
+    def minimumSizeHint(self) -> QSize:
+        hint = super().minimumSizeHint()
+        width = max(1, self.width() or hint.width())
+        return QSize(0, max(hint.height(), super().heightForWidth(width)))
+
+@dataclass(frozen=True)
+class HistoricalPracticeReview:
+    result: PracticeResult
+    outcomes: tuple[Outcome, ...]
+    context_id: str
+    bindings: tuple[tuple[str, Action], ...]
+    scope: tuple[tuple[str, str], ...]
+    saved_path: Path
+
 
 REJECTION_MESSAGES = {
     "distance_rejection": "Pose does not match yet. Hold the enrolled pose steady, or return to neutral if it persists.",
@@ -252,6 +284,7 @@ class Window(QMainWindow):
         self._practice_pending_snapshot: RoutingSnapshot | None = None
         self._practice_releasing_worker: object | None = None
         self._practice_restoring = False
+        self._practice_review: HistoricalPracticeReview | None = None
         self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
@@ -503,6 +536,15 @@ class Window(QMainWindow):
             self.summary_widget.setObjectName("manualViewer")
             self.summary_widget.setMinimumWidth(0)
             self.summary_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.practice_review_label = WrappedReviewLabel("Latest saved practice — historical: no saved local rehearsal yet.")
+            self.practice_review_label.setTextFormat(Qt.TextFormat.PlainText)
+            self.practice_review_label.setWordWrap(True)
+            self.practice_review_label.setMinimumWidth(0)
+            self.practice_review_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+            self.practice_review_label.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+            summary_layout = self.summary_widget.layout()
+            if summary_layout is not None:
+                summary_layout.addWidget(self.practice_review_label)
             self.deck_tabs.addTab(self.summary_widget, "Session summary")
             self.profile_selector = ProfileSelectorWidget(self.profile_store, host=self)
             self.profile_selector.setObjectName("manualViewer")
@@ -931,6 +973,170 @@ class Window(QMainWindow):
             self.render_readiness_status()
         return restored
 
+
+    def _saved_practice_path(self, result: PracticeResult) -> Path:
+        return self.studio_state_folder / "practice" / f"practice-{result.attempt_id}.json"
+
+    def _capture_practice_review(self, result: PracticeResult) -> HistoricalPracticeReview | None:
+        if self.routing is None:
+            return None
+        saved_path = self._saved_practice_path(result)
+        if not saved_path.exists():
+            return None
+        snapshot = self.routing.snapshot
+        expected_keys = {
+            (trial.session_id, event_id)
+            for trial in result.trials
+            for event_id in trial.event_ids
+        }
+        relevant_outcomes = tuple(
+            outcome for outcome in self.session_summary.outcomes
+            if outcome.context_id == snapshot.context_id
+            or (outcome.session_id, outcome.event_id) in expected_keys
+        )
+        return HistoricalPracticeReview(
+            result,
+            relevant_outcomes,
+            snapshot.context_id,
+            tuple(snapshot.bindings),
+            tuple(sorted(self.session_summary.scope.items())),
+            saved_path,
+        )
+
+    def _practice_review_reconciliation(self, review: HistoricalPracticeReview) -> dict[str, int]:
+        result = review.result
+        bindings = dict(review.bindings)
+        expected: list[tuple[str, str, Action | None]] = []
+        malformed_actions = 0
+        for trial in result.trials:
+            if len(trial.actions) != len(trial.event_ids):
+                malformed_actions += abs(len(trial.actions) - len(trial.event_ids))
+            for action_label, event_id in zip(trial.actions, trial.event_ids, strict=False):
+                expected.append((trial.session_id, event_id, bindings.get(action_label)))
+                if action_label not in bindings:
+                    malformed_actions += 1
+        expected_keys = Counter((session_id, event_id) for session_id, event_id, _action in expected)
+        counted_outcomes = [
+            outcome for outcome in review.outcomes
+            if outcome.context_id == review.context_id
+            or (outcome.session_id, outcome.event_id) in expected_keys
+        ]
+        actual_keys = Counter((outcome.session_id, outcome.event_id) for outcome in counted_outcomes)
+        matched = 0
+        missing = 0
+        duplicate = 0
+        mismatch = malformed_actions
+        for key, count in expected_keys.items():
+            expected_action = next(action for session_id, event_id, action in expected if (session_id, event_id) == key)
+            matches = [outcome for outcome in counted_outcomes if (outcome.session_id, outcome.event_id) == key]
+            if count != 1:
+                duplicate += count - 1
+                mismatch += count - 1
+            if not matches:
+                missing += 1
+                continue
+            if len(matches) > 1:
+                duplicate += len(matches) - 1
+            if expected_action is None:
+                mismatch += 1
+                continue
+            good = [
+                outcome for outcome in matches
+                if outcome.source == "gesture"
+                and outcome.context_id == review.context_id
+                and outcome.model_version == result.model_version
+                and outcome.status == "simulated"
+                and outcome.action == expected_action
+            ]
+            if count == 1 and len(matches) == 1 and len(good) == 1:
+                matched += 1
+            else:
+                mismatch += 1
+        unexpected = sum(count for key, count in actual_keys.items() if key not in expected_keys)
+        simulated_requests = sum(
+            outcome.status == "simulated" and outcome.source == "gesture"
+            and outcome.context_id == review.context_id and outcome.model_version == result.model_version
+            for outcome in counted_outcomes
+        )
+        launch_requests = sum(
+            outcome.status == "launch_requested" and outcome.source == "gesture"
+            and outcome.context_id == review.context_id and outcome.model_version == result.model_version
+            for outcome in counted_outcomes
+        )
+        return {
+            "expected": len(expected),
+            "matched": matched,
+            "missing": missing,
+            "duplicate": duplicate,
+            "mismatch": mismatch,
+            "unexpected": unexpected,
+            "simulated_requests": simulated_requests,
+            "launch_requests": launch_requests,
+        }
+
+    def _practice_review_text(self, review: HistoricalPracticeReview) -> str:
+        result = review.result
+        current_revision = self._practice_current_revision()
+        current_scope = tuple(sorted(self.session_summary.scope.items()))
+        revision_state = "matches current behavior" if current_revision == result.behavior_revision else "historical behavior differs from current behavior"
+        scope_state = "matches current summary scope" if current_scope == review.scope else "historical scope differs from current summary scope"
+        scope_revision = dict(review.scope).get("revision_id", "unrecorded")
+        outcome_counts = Counter(trial.outcome for trial in result.trials)
+        recorded_windows = len(result.trials)
+        completed_windows = sum(trial.outcome != "interrupted" for trial in result.trials)
+        unattempted_windows = max(0, 50 - recorded_windows)
+        coverage_failures = sum(not trial.coverage_ok for trial in result.trials)
+        pose_lines = []
+        for label, correct in result.correct_per_pose:
+            trials = [trial for trial in result.trials if trial.expected == label]
+            trial_counts = Counter(trial.outcome for trial in trials)
+            pose_lines.append(
+                f"{label}: recorded {len(trials)}/10, completed {sum(trial.outcome != 'interrupted' for trial in trials)}/10, "
+                f"unattempted {max(0, 10 - len(trials))}, correct {correct}/10, wrong {trial_counts['wrong']}, "
+                f"missed {trial_counts['missed']}, inconclusive {trial_counts['inconclusive']}, "
+                f"interrupted {trial_counts['interrupted']}, coverage failures {sum(not trial.coverage_ok for trial in trials)}"
+            )
+        negative_windows = [trial for trial in result.trials if trial.expected == "NEGATIVE"]
+        reconciliation = self._practice_review_reconciliation(review)
+        return "\n".join([
+            "Latest saved practice — historical",
+            f"Attempt: {result.attempt_id}",
+            f"Profile: {result.profile_id} | Model: {result.model_version}",
+            f"Behavior revision: {result.behavior_revision} ({revision_state})",
+            f"Scope revision: {scope_revision} ({scope_state})",
+            f"Saved full trial export: {review.saved_path}",
+            f"Windows recorded: {recorded_windows}/50 | completed five-second windows: {completed_windows}/50 | unattempted {unattempted_windows} | coverage failures {coverage_failures}",
+            f"Status: {result.status} | reason: {result.reason}",
+            "Window outcomes: " + ", ".join(
+                f"{name} {outcome_counts[name]}" for name in ("correct", "wrong", "missed", "inconclusive", "interrupted")
+            ),
+            "Per-pose: " + " | ".join(pose_lines),
+            f"Negative windows: recorded {len(negative_windows)}/10 | completed {sum(trial.outcome != 'interrupted' for trial in negative_windows)}/10 | "
+            f"unattempted {max(0, 10 - len(negative_windows))} | negative actions: {result.negative_actions}",
+            "Event reconciliation: "
+            f"expected {reconciliation['expected']}, matched simulated {reconciliation['matched']}, "
+            f"missing {reconciliation['missing']}, duplicate {reconciliation['duplicate']}, "
+            f"mismatch {reconciliation['mismatch']}, unexpected {reconciliation['unexpected']}",
+            f"Summary rows in practice context/model: simulated requests {reconciliation['simulated_requests']}, launch requests {reconciliation['launch_requests']}",
+        ])
+
+    def _render_practice_review(self) -> None:
+        if not hasattr(self, "practice_review_label"):
+            return
+        review = self._practice_review
+        if review is None:
+            self.practice_review_label.setText("Latest saved practice — historical: no saved local rehearsal yet.")
+            self.practice_review_label.updateGeometry()
+            return
+        self.practice_review_label.setText(self._practice_review_text(review))
+        self.practice_review_label.updateGeometry()
+
+    def _publish_practice_review(self, review: HistoricalPracticeReview | None) -> None:
+        if review is None:
+            return
+        self._practice_review = review
+        self._render_practice_review()
+
     def _practice_negative_cue_values(self) -> tuple[str, ...]:
         if not hasattr(self, "practice_negative_cues"):
             return NEGATIVE_CUES
@@ -986,6 +1192,7 @@ class Window(QMainWindow):
             self._set_practice_status("Practice evidence saved locally; finish or stop the attempt before Studio restores context.")
             return False
         saved_text = widget.feedback.text() if widget is not None else ""
+        review = self._capture_practice_review(result) if result is not None else None
         restored = self._restore_practice_routing()
         if restored:
             self.practice_attempt = None
@@ -1006,6 +1213,7 @@ class Window(QMainWindow):
                 )
             else:
                 self._set_practice_status("Practice results saved locally. Studio restored paused; gestures remain simulation-only.")
+            self._publish_practice_review(review)
             self.render_studio_status()
             if hasattr(self, "studio_scroll") and hasattr(self, "practice_status"):
                 status_label = self.practice_status
@@ -1599,6 +1807,7 @@ class Window(QMainWindow):
         if hasattr(self, "summary_widget"):
             self.summary_widget.summary = self.session_summary
             self.summary_widget.refresh()
+        self._render_practice_review()
 
     def _record_session_outcome(
         self,
@@ -1759,6 +1968,7 @@ class Window(QMainWindow):
         if hasattr(self, "summary_widget"):
             self.summary_widget.summary = self.session_summary
             self.summary_widget.refresh()
+        self._render_practice_review()
         if hasattr(self, "dispatcher"):
             self._sync_dispatcher_refs()
 
@@ -1975,6 +2185,7 @@ class Window(QMainWindow):
             for choice in choices:
                 picker.addItem(self.action_text(choice).capitalize(), choice)
             picker.setCurrentIndex(choices.index(action))
+        self._render_practice_review()
 
     def apply_studio_settings(self):
         assert self.routing is not None
