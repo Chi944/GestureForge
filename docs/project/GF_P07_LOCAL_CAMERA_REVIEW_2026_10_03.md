@@ -111,3 +111,20 @@ On synchronized main `caeabbb`, with this documentation-only addition:
 - `git diff --check`: passed; private evidence index is Git-ignored.
 
 These are software/publication checks, not a new physical-camera acceptance test.
+
+## Follow-up Stop observation, 3 October
+
+On the synchronized Studio checkout, Hau Jie showed the Enrolment screen after
+pressing **Stop collection**. The screen said "Collection stopped. Previously
+saved trials are retained" and "Collection cancelled. Saved trials remain
+available", with progress at 25% of the configured eight trials. Inspection of
+the newly written private P02 Right TRAIN manifest found two complete G1 trials:
+10 scheduled samples, 10 valid, zero interruption markers. The referenced
+feature file exists and its SHA-256 matches the manifest.
+
+This confirms the Stop/cancel feedback and preservation of two previously
+completed trials in this attempt. It does **not** show that Stop landed inside
+the two-second hold; preservation of an interrupted/partial hold and visible
+invalid-sample feedback still need a separate physical check. The full current
+version collection/profile workflow recording also remains outstanding. The
+private manifest and screenshot are not included in Git.
