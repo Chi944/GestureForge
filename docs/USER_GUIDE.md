@@ -33,6 +33,25 @@ In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause
 
 ### Personal Practice
 
+Keep NEUTRAL while clicking **Begin five-second window**. The fixed footer and
+Practice countdown now distinguish preparation from measurement: only change to
+the prompted pose after **Measurement started**. At zero, wait while the last
+in-window frames finish processing. For a NEUTRAL window, establish READY inside
+the measurement window itself; for a negative window, follow its displayed cue.
+
+After saving, **Session summary** offers measured next steps for that recorded
+attempt. Incomplete capture is separated from recognition misses, and unattempted
+poses are not diagnosed. Wrong or repeated commands and rejection-frame counts
+help identify what evidence to inspect before targeted recollection. Event
+reconciliation differences must be resolved first. These recommendations do not
+change thresholds, collect data, retrain a model or enable LIVE gestures.
+
+New results distinguish Stop rehearsal, camera Pause, loss of Studio focus,
+hiding the Practice tab, closing Studio and configuration changes. Older generic
+interruption messages cannot be retrospectively assigned a cause. Local timing
+diagnostics retain only the latest prepared trial's Begin attempt and any
+pre-Begin boundary prediction; they are not a full timeline of physical poses.
+
 Practice is the longer GF-P12 measurement workflow, separate from **Start/retry readiness**. It uses the loaded recogniser, shared camera, hold/rearm controller and existing dispatcher; every action is simulated. A passed result does not enable LIVE gestures.
 
 1. Load a personal dataset or profile and select the correct camera. Finish/cancel the short readiness check, pause any existing capture and wait for camera release.

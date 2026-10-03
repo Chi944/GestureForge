@@ -72,8 +72,21 @@ Prove valid and corrupt profile round trips; independent profile deletion; legac
 
 Run the checks in `TEAM_GUIDE.md` and include their actual output in your handoff. Include a short screen recording for collection/profile workflows and explain what needs camera/participant retesting. Deston reviews the PR and runs independent integration checks.
 
+## Integration follow-up — 4 October
+
+PR #22's timing/countdown and partial-slot Stop handoff are integrated with the
+shared-shell footer repair. Keep NEUTRAL through Begin; measurement then displays
+the timed cue. New interruption records preserve the host cause. Historical
+results provide deterministic next steps after event reconciliation.
+
+Start with one real G1 window to verify Begin/measurement behavior, preserving
+its local timing diagnostics. Then run the full Practice attempt. Preserve the
+reported partial-slot Stop evidence; the remaining collection/profile workflow
+recording is separate. Do not rebuild the footer, add another camera worker,
+change thresholds to hide failures or repeat blanket data collection.
+
 ## Starter prompt for your coding assistant
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Sync reviewed main into `codex/hau-jie-profiles` and read TEAM_GUIDE.md, this brief and CONTRACTS.md. PR #21 supplies the longer rehearsal component and Deston owns its embedded Practice integration: do not rebuild it or add a camera worker. Complete GF-P07's remaining real Enrolment checks, then run Practice's fifty five-second windows using your personal profile: ten per action pose plus NEUTRAL, then ten negative/transition intervals. Keep the saved local result and code/model/behaviour revision; report actual outcomes and interruptions without claiming LIVE permission. Separately reproduce the open-palm/LATCHED issue with the existing opt-in Preview/Rehearsal EvaluationTrace and timestamped intended-pose/display notes. Run `python -m gestureforge.trace_diagnose <localtrace.json>` and compare the current-controller reconstruction with those notes and the code revision; it is not an accuracy/readiness score. Keep raw samples, private results and notes out of Git; do not record images or feature vectors for this diagnosis. Diagnose before changing thresholds, neutral policy or requesting targeted repair collection. Preserve the supplied PR #19 comparison and PR #20 pilot limits. Fix evidenced defects only in your recognition/profile/enrolment/practice modules and tests; send shared-shell issues to Deston. Run the common checks, push only your own branch and open a focused PR for Deston; leave it unmerged. Do not edit private Word reports/logs.
+> Sync reviewed main into `codex/hau-jie-profiles` and read TEAM_GUIDE.md, this brief and CONTRACTS.md. PR #21 supplies the longer rehearsal component and Deston owns its embedded Practice integration: do not rebuild it or add a camera worker. Preserve PR #22's real Stop/invalid-slot evidence and finish GF-P07's short collection/profile workflow recording. Verify one Begin window against the corrected footer, then run Practice's fifty five-second windows using your personal profile: ten per action pose plus NEUTRAL, then ten negative/transition intervals. Keep the saved local result and code/model/behaviour revision; report actual outcomes and interruptions without claiming LIVE permission. Separately reproduce the open-palm/LATCHED issue with the existing opt-in Preview/Rehearsal EvaluationTrace and timestamped intended-pose/display notes. Run `python -m gestureforge.trace_diagnose <localtrace.json>` and compare the current-controller reconstruction with those notes and the code revision; it is not an accuracy/readiness score. Keep raw samples, private results and notes out of Git; do not record images or feature vectors for this diagnosis. Diagnose before changing thresholds, neutral policy or requesting targeted repair collection. Preserve the supplied PR #19 comparison and PR #20 pilot limits. Fix evidenced defects only in your recognition/profile/enrolment/practice modules and tests; send shared-shell issues to Deston. Run the common checks, push only your own branch and open a focused PR for Deston; leave it unmerged. Do not edit private Word reports/logs.

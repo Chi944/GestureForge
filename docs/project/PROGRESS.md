@@ -1,6 +1,6 @@
 # GestureForge Studio progress
 
-Snapshot: 3 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 4 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
 
 ## Completion measure
 
@@ -21,7 +21,7 @@ Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) and Javie
 
 ## Built, but broader tasks still in progress
 
-- **GF-P07 - Hau Jie:** reviewed [PR #16](https://github.com/Chi944/GestureForge_304/pull/16) supplies timed observation-fed collection and an embeddable consent/pose/countdown widget. Review repaired delayed-frame expiry and camera release during failed-save cancellation, retaining trial evidence for retry. Deston's shared-camera adapter now attaches the widget to Studio with model-free observation capture and cancellation/save protection. [PR #20](https://github.com/Chi944/GestureForge_304/pull/20) adds partial P02 recording evidence. PR #21's follow-up reports Stop feedback and preservation of two completed G1 trials; it does not establish interruption during a hold. Visible invalid feedback, mid-hold partial preservation and the full current-version Enrolment walkthrough remain; the task stays In Progress with no Done credit.
+- **GF-P07 - Hau Jie:** reviewed [PR #16](https://github.com/Chi944/GestureForge_304/pull/16) supplies timed observation-fed collection and an embeddable consent/pose/countdown widget. Review repaired delayed-frame expiry and camera release during failed-save cancellation, retaining trial evidence for retry. Deston's shared-camera adapter now attaches the widget to Studio with model-free observation capture and cancellation/save protection. [PR #20](https://github.com/Chi944/GestureForge_304/pull/20) adds partial P02 recording evidence. PR #22's supplied physical follow-up closes the invalid-feedback/partial-slot Stop gap: retained invalid and cancelled slots reload successfully. The short current-version collection/profile workflow recording remains; the task stays In Progress with no Done credit.
 - **GF-P28 - Hau Jie:** [PR #13](https://github.com/Chi944/GestureForge_304/pull/13) is merged with the participant-separated evaluator and [checkpoint](STARTER_EVALUATION_CHECKPOINT.md). Independent code and architecture review accepted the code after clarifying private input/output evidence. Integration checks passed 346 tests with one platform-specific skip, lint, types, both GUI startup checks and synthetic evaluation. Hau Jie reports P01 checksum validation and completed P02/P03 collection; their measurements were not rerun here without those private inputs. The baseline has poor NEUTRAL recognition and UNKNOWN rejection, so neither model is ready for release. GF-P28 is Review-Test while the private evidence/permission record is reconciled; GF-P06 profile lifecycle can proceed now.
 - **P01 starter contribution - 1 October:** new right-hand data was collected in two separate positive sessions and a separate UNKNOWN session. Session 1 contains 32 trials with 159/160 valid samples; session 2 contains 32 trials with 160/160; negatives contain eight trials with 40/40. The one missed scheduled timestamp is retained. All manifests and numeric sidecars passed loader/hash, trial-count and session-separation checks; the private handoff archive was extracted and reloaded successfully. This is 72 trials and 359 valid feature vectors, not a recognition-accuracy result. Data, collection notes and the handoff archive remain excluded from GitHub. Deston forwarded the private archive on 1 October. Hau Jie reports matching its checksums and evaluating all three contributors in PR #13; integration review distinguishes those supplied results from local software verification.
 - **GF-P10 - Deston:** the opt-in Studio preview opens, simulates held gesture actions, pauses on focus loss, and invalidates old context events. Its Preview/Rehearsal selector and gesture-to-action draft editor apply changes through a validated pause/reset; interrupted and stale identity packets cannot replace the active display. The launcher now passes the selected vocabulary into training and Studio, renders the enrolled IDs, binds predictions to a data/settings-derived model revision and rejects mappings to absent IDs before stopping capture. Studio now loads or switches an existing personal manifest in the background without restarting. A successful switch clears old predictions, reapplies compatible current-stage mappings in Preview (or keeps the workspace manual-only) and requires explicit start after camera release; failed loads preserve the previous selection while paused. Closing during training cannot install the result. Camera selection now pauses and invalidates old capture, waits for release before restart, and preserves the active context/mappings. Recovery clears stale previews; Ctrl+O/Ctrl+Enter/Esc, focus outlines and the training indicator improve keyboard use and feedback. Start/Pause, manual controls, state, hold progress and the active context/gesture legend now remain fixed while setup/deck content scrolls. Camera selection and ad-hoc mapping edits are in memory only. Studio loads portable workspace JSON, offers manual runbook navigation and saves/restores matching runbook sessions. Saved-profile startup and the background shell adapter are implemented; the visible Profiles selector is attached with unavailable-starter messaging; the short six-activation readiness check is implemented for loaded recognisers. Standard Guest recognition and LIVE gesture execution remain unavailable. Explicit LIVE mode supports typed manual controls through the shared dispatcher; Preview/Rehearsal requests simulate.
@@ -164,10 +164,43 @@ affected/adjacent tests**, full lint/types and both startup checks; final verifi
 [verification.json](verification.json). Local checks remain separate from webcam,
 native external launch, independent installation and native Mac acceptance.
 
+## Current integration — Practice timing, guidance and native dispatch (4 October)
+
+PR #22 adds Hau Jie's countdown, latest-trial Begin diagnostics and attributed
+physical partial-slot Stop evidence. It closes that specific Stop evidence gap;
+the short collection/profile workflow recording and full fifty-window Practice
+remain separate. The integration fixes conflicting READY footer instructions,
+preserves explicit interruption reasons, and protects saving after an invalid
+Begin timestamp. Recorded Practice guidance now separates missed/wrong/repeated
+commands, rejection-frame evidence, incomplete capture and unattempted windows.
+Reconciliation anomalies block pose advice until the evidence is resolved.
+
+An automated native Windows Harbor run at `b44df9a` passed 124 assertions with
+zero failures. Four real OS open calls were accepted (Calculator, fictional TXT,
+resource folder and recovered disposable TXT), with matching visible-window
+metadata. Missing-target failure, an explicit retry, idempotent bookmark, paused
+save/restore without launch replay and terminal navigation were exercised.
+The ignored `experiments/local/harbor-automated-20261003T160810Z/` holds the own-app
+screenshots, raw exports and detailed method. All task acknowledgements and
+measured-trial counts remained zero: this is automated native dispatch evidence,
+not presenter task completion, gesture performance, independent installation,
+Camera handoff or Mac verification. No saved real Practice result was found on
+Deston's machine. No additional complete-task weight is claimed.
+
+Final local verification passes **672 tests with one unsupported Windows symlink
+fixture skipped**, Ruff, mypy (80 source files), both GUI startup modes and
+synthetic evaluation. Independent code review approves and architecture review
+is CLEAR. An intermediate Qt teardown failure was reproduced and repaired by
+preserving the existing no-argument pause callback; its failed run remains only
+in local diagnostics. Generated Practice renders at 900x620 and 1100x850 passed
+six checks for instructions, review text height and horizontal scrolling. These
+are software/layout results; the physical Practice trial is deferred at Deston's
+request.
+
 ## Next deliverables
 
-- **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Complete a current-main live Enrolment walkthrough covering mid-hold Stop, invalid feedback and reload, and run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.
+- **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.
 - **Javier:** GF-P05 is accepted. Verify the integrated manual LIVE path for GF-P13/GF-P34, including each target type, missing-target failure, Camera shutdown/recovery and no action replay on focus return; inspect the attached Practice event reconciliation with actual private results; then record GF-P19's checks on both laptops. The historical Practice review is now attached; do not implement a second reconciliation path. Preserve PR18's existing native evidence. P03 is reported collected in PR #13; collect repair data only for a diagnosed defect. Sync main into `codex/javier-shortcuts`; do not reapply the delivered patch or duplicate Deston's shell integration.
-- **Deston:** run the six-stage manual walkthrough with Javier now; no webcam or new data is needed for it. Retain both summary segments around reload and record actual openings, failures, acknowledgements and recovery. Then validate the short check with real personal gestures, review real GF-P12 results from the integrated Practice tab before a separate LIVE-gesture gate change. A simulated pass alone does not authorise that change. Own interface design, integration review, verification and release decisions; complete live acceptance using actual participant and Windows checks.
+- **Deston:** the automated native Harbor dispatch/recovery run is recorded. Confirm actual presenter task outcomes with Javier and retain both summary segments around reload; automated launch/window observations do not supply human acknowledgements. Then validate the short check with real personal gestures, review real GF-P12 results from the integrated Practice tab before a separate LIVE-gesture gate change. A simulated pass alone does not authorise that change. Own interface design, integration review, verification and release decisions; complete live acceptance using actual participant and Windows checks.
 
 Use [TEAM_GUIDE.md](TEAM_GUIDE.md) and the individual briefs for file ownership, test expectations and PR rules. Teammates push their own branches; Deston reviews and merges into main. Move cards to Done only with linked acceptance evidence.

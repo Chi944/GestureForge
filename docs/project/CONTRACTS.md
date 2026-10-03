@@ -180,3 +180,23 @@ the SessionSummary JSON schema remain unchanged; the separate private Practice
 JSON is the full trial export. This view grants no readiness or LIVE permission.
 
 Changing context, losing focus, pausing or a camera fault interrupts an active attempt. Local save failure retains evidence and blocks replacement or close until retry succeeds. The previous context restores paused after preservation. A measured pass neither sets the preliminary check's pass field nor enables LIVE gestures. Native measured acceptance and the reviewed live-readiness gate remain separate work.
+
+
+### Practice guidance and timing follow-up — 4 October
+
+PR #22 adds display-only countdown and latest-trial Begin/boundary diagnostics.
+The full private Practice JSON gains an additive `timing_diagnostics` object;
+`PracticeResult`, protocol scoring and SessionSummary schemas remain unchanged.
+Invalid Begin timestamps are rejected without leaving unsavable JSON diagnostics.
+
+The fixed footer follows preparation, armed, measuring and idle phases, including
+when no new prediction arrives. Before Begin it requests NEUTRAL; inside the
+window it follows the actual pose/negative cue. Host interruption reasons survive
+component cancellation and saving rather than collapsing into generic Stop.
+
+`practice_guidance.practice_next_steps(PracticeResult)` derives read-only next
+steps from complete covered windows, preserving separate capture/interruption
+advice and unintended negative actions. The shell checks the captured event
+reconciliation before displaying pose guidance. Historical behavior/scope labels
+remain visible; unknown rejection text is counted without becoming instructions.
+The helper does not read files, alter models, rescore trials or grant readiness.

@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T10:29:34.274412+00:00",
+  "timestamp_utc": "2026-10-03T16:22:32.778933+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.222,
+      "seconds": 0.263,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 1.422,
-      "stdout": "Success: no issues found in 78 source files\n",
+      "seconds": 2.74,
+      "stdout": "Success: no issues found in 80 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 205.481,
-      "stdout": "........................................................................ [ 11%]\n........................................................................ [ 22%]\n........................................................................ [ 34%]\n........................................................................ [ 45%]\n............................................................s........... [ 56%]\n........................................................................ [ 68%]\n........................................................................ [ 79%]\n........................................................................ [ 90%]\n...........................................................              [100%]\n634 passed, 1 skipped in 192.93s (0:03:12)\n",
+      "seconds": 267.871,
+      "stdout": "........................................................................ [ 10%]\n........................................................................ [ 21%]\n........................................................................ [ 32%]\n........................................................................ [ 42%]\n......................................................................s. [ 53%]\n........................................................................ [ 64%]\n........................................................................ [ 74%]\n........................................................................ [ 85%]\n........................................................................ [ 96%]\n.........................                                                [100%]\n672 passed, 1 skipped in 255.20s (0:04:15)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 3.81,
+      "seconds": 4.31,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.734,
+      "seconds": 4.118,
       "stdout": "",
       "stderr": ""
     },
     {
-      "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
+      "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 2.354,
+      "seconds": 2.558,
       "stdout": "",
       "stderr": ""
     }
@@ -56,164 +56,5 @@
   "limitations": [
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
-  ],
-  "previous_native_model_checkpoint": {
-    "source_commit": "63493521b3ae18477990efa6e5a1fe35ed1363d8",
-    "timestamp_utc": "2026-10-03T06:05:37.052264+00:00",
-    "note": "Preserved prior runtime evidence; not rerun for this Practice integration.",
-    "native_model_checks": {
-      "method": "Windows x64 subprocess checks using the installed pinned MediaPipe and generated blank images.",
-      "camera_opened": false,
-      "model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
-      "cases": [
-        {
-          "case": "ASCII package and ASCII model filename via old path API",
-          "result": "PASS: zero hands"
-        },
-        {
-          "case": "ASCII package and Chinese model filename via old path API",
-          "result": "REPRODUCED: FileNotFoundError for existing model"
-        },
-        {
-          "case": "ASCII package and Chinese model filename via bytes API",
-          "result": "PASS: zero hands"
-        },
-        {
-          "case": "Copied Chinese package directory and Chinese model filename via bytes API",
-          "result": "PASS: zero hands; native library directory confirmed under copied package"
-        },
-        {
-          "case": "Updated check_environment.py --model under Chinese project directory",
-          "result": "PASS: checksum matched; zero hands"
-        },
-        {
-          "case": "PowerShell setup.ps1 parse",
-          "result": "PASS: no syntax errors"
-        }
-      ],
-      "limitations": [
-        "The original Hau Jie get_runfiles_dir_helper.cc fatal error was not reproduced or proved resolved.",
-        "No new webcam, participant, independent-machine or native macOS acceptance."
-      ]
-    }
-  },
-  "previous_rearm_feedback_checkpoint": {
-    "source_commit": "36d82144dca7dff730f72264e29965b3bfd52e2d",
-    "note": "Historical generated-rearm visual check, not a new webcam observation.",
-    "method": "Offscreen Qt render with generated predictions at 900x620 logical pixels.",
-    "camera_opened": false,
-    "checks": [
-      "Prediction, detail, state, progress, Start/Pause and active legend fit while fully scrolled.",
-      "No horizontal overflow with Segoe UI loaded from the Windows font file.",
-      "Rejected LATCHED shows Unrecognised, ambiguity/rearm guidance and 0 percent.",
-      "Accepted NEUTRAL shows WAIT NEUTRAL/50 percent after 150 ms; READY/100 percent after 310 ms.",
-      "Enrolment keeps its observation-only and save-retry guidance during routing pauses."
-    ],
-    "limitations": [
-      "No live webcam, participant, independent computer or native Mac measurements.",
-      "Hau Jie physical open-palm symptom still needs a trace with separate intended-pose notes."
-    ]
-  },
-  "personal_practice_integration": {
-    "base_commit": "36d82144dca7dff730f72264e29965b3bfd52e2d",
-    "reviewed_pr": "https://github.com/Chi944/GestureForge_304/pull/21",
-    "reviewed_pr_head": "41ed87ce0c1d057dfd2feae31f28ab660cc94cca",
-    "reviewed_evidence_followup": "fdd54f87778c81f19b19e2fa647f57e4a3b94b0a",
-    "scope": "Shared-camera Studio Practice integration and trace diagnosis; generated software evidence.",
-    "component_review_repairs": [
-      "Completed results remain historical after context restoration.",
-      "Capture-time windows drain fresh late packets, including timer-first boundary ordering.",
-      "Stop/camera-failure result autosave occurs once; storage failure remains retryable.",
-      "Queued pre-window packets preserve controller timing without receiving measurement credit."
-    ],
-    "review_repairs": [
-      "Expected camera retirement does not pause or fault a prepared/restored generation.",
-      "Manual actions and competing readiness checks cannot contaminate Practice.",
-      "Guest context is read after cancellation and restoration.",
-      "Updated stale tab-count test and asserted the actual Studio routing error state."
-    ],
-    "visual_check": {
-      "method": "Offscreen Qt render with a generated model fixture and no camera.",
-      "logical_sizes": [
-        [
-          900,
-          620
-        ],
-        [
-          1100,
-          850
-        ]
-      ],
-      "checks": [
-        "Fixed footer visible and no horizontal overflow.",
-        "Active trial prompt and controls inspected after scrolling to the prompt."
-      ]
-    },
-    "limitations": [
-      "No real fifty-window participant run, physical LATCHED reproduction or native Mac acceptance.",
-      "Measured Practice does not enable LIVE gestures; separate acceptance and reviewed gate remain.",
-      "Dedicated Practice files contain per-trial outcomes; SessionSummary retains dispatcher outcomes."
-    ]
-  },
-  "workflow_and_practice_review": {
-    "timestamp_utc": "2026-10-03T10:36:42.234020+00:00",
-    "base_commit": "ab0305dcf0cedf4bcc5d5f6e3a3b44d1696a715d",
-    "scope": "Historical saved Practice event review and offline observer-based Harbor workflow comparison.",
-    "files_sha256": {
-      "gestureforge/app.py": "89362b58561a42b91fed52fda35b348fb5287bb0d7409de68e6a871cfa8408f7",
-      "tests/test_app_practice.py": "ae60aff4472bb630e9328be192d91692011fea540d3c214819fa15a3e4bd508d",
-      "scripts/compare_workflows.py": "f4b78c5dfa700c343db34186da0b8f3624858e7b0d12a926fc7770d4133f6f5d",
-      "tests/test_compare_workflows.py": "8b38bc75442dbd4744308fa76c6cd2dce7925c008a2a7742ab72f1d489293048"
-    },
-    "independent_review": {
-      "code": "APPROVE",
-      "architecture": "CLEAR",
-      "acceptance": "GF-P31 original software criterion complete; GF-P12 and GF-P19 real evidence separate."
-    },
-    "full_verifier_note": "634 passed, 1 unsupported Windows symlink fixture skipped; full lint/types/startups/synthetic pass before the final review-label sizing repair. Post-repair checks below cover the changed UI and adjacent host flows.",
-    "post_layout_checks": {
-      "pytest": "python -m pytest -q tests/test_app.py tests/test_app_practice.py tests/test_app_readiness.py tests/test_app_enrolment.py tests/test_app_dispatch.py tests/test_compare_workflows.py",
-      "result": "PASS: 169 passed in 60.14 seconds",
-      "ruff": "PASS: full gestureforge/tests/scripts",
-      "mypy": "PASS: full gestureforge/tests/scripts, 78 source files",
-      "assignment_startup": "PASS: offscreen smoke",
-      "studio_startup": "PASS: offscreen smoke"
-    },
-    "visual_check": {
-      "method": "Offscreen Qt generated full 50-window flow; no camera opened.",
-      "logical_sizes": [
-        [
-          900,
-          620
-        ],
-        [
-          1100,
-          850
-        ]
-      ],
-      "checks": [
-        "Full review text height is allocated and reachable by outer scrolling.",
-        "No horizontal overflow; prediction/state/Start/Pause footer remains visible.",
-        "Generated full flow shows 50 windows, 30 matched simulations, no launch requests or acknowledged completions."
-      ],
-      "repair": "Initial label clipped its final lines; wrapped size hints and a minimum-window regression corrected it."
-    },
-    "workflow_cli_example": {
-      "result": "PASS",
-      "evidence_kind": "synthetic",
-      "checks": [
-        "Exact input byte hash",
-        "Unavailable starter remains failed",
-        "Missing conditions preserved",
-        "No invented task-time delta"
-      ]
-    },
-    "limitations": [
-      "No real participant workflow/Practice run or physical LATCHED reproduction.",
-      "No new native Windows target, fresh-machine, stability or native Mac acceptance.",
-      "Observer identity, durations and source/model/config/data/workspace hashes remain supplied claims.",
-      "Workflow tool verifies the bytes of supplied input/summary files, not observed real-world completion.",
-      "LIVE gestures remain blocked; neither generated nor measured Practice automatically enables them."
-    ]
-  }
+  ]
 }

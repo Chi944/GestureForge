@@ -133,6 +133,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._coverage = True
         self._window_first: float | None = None
         self._window_last: float | None = None
+        self.last_begin_attempt: dict[str, Any] | None = None
+        self.boundary_prediction: dict[str, Any] | None = None
 
     @property
     def expected(self) -> PracticePrompt | None:
@@ -141,6 +143,12 @@ feeds the supplied router exactly once; the shell must not process packets again
     @property
     def completed(self) -> int:
         return len(self._trials)
+
+    def remaining_window_seconds(self, now: float) -> float | None:
+        """Display-only countdown; reading it does not advance or score a trial."""
+        if self.status != 'measuring' or self._started is None:
+            return None
+        return max(0.0, self._window_end - now)
 
     def _check(self, now: float) -> bool:
         if (isinstance(now, bool) or not isinstance(now, (int, float))
@@ -170,6 +178,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._frames, self._rejections = 0, Counter()
         self._coverage, self._neutral_ready = True, False
         self._window_first, self._window_last = None, None
+        self.last_begin_attempt = None
+        self.boundary_prediction = None
         self.status = 'preparing'
         self.reason = 'Wait for capture, then show NEUTRAL until READY.'
         if self.expected.expected == 'NEUTRAL':
@@ -177,6 +187,21 @@ feeds the supplied router exactly once; the shell must not process packets again
         return self._snapshot
 
     def begin_window(self, now: float) -> None:
+        # Diagnostic evidence is local only; it does not contribute trial credit.
+        self.last_begin_attempt = {
+            'requested_at': (now if type(now) in (int, float) and math.isfinite(now) else None),
+            'status_before': self.status,
+            'controller_state': self.router.state,
+            'last_capture_at': self._last_packet, 'accepted': False,
+        }
+        try:
+            self._begin_window(now)
+        except ValueError as exc:
+            self.last_begin_attempt['error'] = str(exc)
+            raise
+        self.last_begin_attempt['accepted'] = True
+
+    def _begin_window(self, now: float) -> None:
         if not self._check(now) or self.status not in {'preparing', 'armed'}:
             raise ValueError('prepare and arm the trial before beginning')
         prompt = self.expected
@@ -243,7 +268,13 @@ feeds the supplied router exactly once; the shell must not process packets again
             return
         event = self.router.process(prediction, now)
         if pre_window and prediction.accepted and prediction.label != 'NEUTRAL' and event is None:
-            self.cancel('Action occurred before Begin window; restart with NEUTRAL.')
+            self.boundary_prediction = {
+                'captured_at': prediction.timestamp, 'received_at': now,
+                'begin_at': self._started, 'label': prediction.label,
+                'command_emitted': False,
+            }
+            self.cancel('A non-NEUTRAL prediction captured before Begin arrived after Begin; '
+                        'no command was emitted. Keep NEUTRAL until measurement starts.')
             return
         if prediction.accepted and prediction.label == 'NEUTRAL' and self.router.state == 'READY':
             if pre_window:
@@ -272,7 +303,13 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._actions.append(event.command)
         self._events.append(event.event_id)
         if not measuring or pre_window:
-            self.cancel('Action occurred before Begin window; restart with NEUTRAL.')
+            self.boundary_prediction = {
+                'captured_at': prediction.timestamp, 'received_at': now,
+                'begin_at': self._started, 'label': prediction.label,
+                'command_emitted': True,
+            }
+            self.cancel('A simulated command was emitted from a pre-Begin prediction; '
+                        'review Begin timing and recognition before retrying.')
         if measuring:
             self.tick(now)
 
@@ -385,5 +422,10 @@ feeds the supplied router exactly once; the shell must not process packets again
         payload: dict[str, Any] = asdict(self.result())
         payload['schema_version'] = 1
         payload['simulation_only'] = True
+        payload['timing_diagnostics'] = {
+            'scope': 'latest prepared trial only; timestamps use the monotonic clock',
+            'last_begin_attempt': self.last_begin_attempt,
+            'boundary_prediction': self.boundary_prediction,
+        }
         atomic_write_json(path, payload)
         return path

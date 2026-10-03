@@ -40,6 +40,7 @@ from .javier_widgets import (
 from .enrolment_widget import EnrolmentWidget
 from .profile_widget import ProfileSelectorWidget
 from .practice import NEGATIVE_CUES, PersonalRehearsal, PracticeResult
+from .practice_guidance import practice_next_steps
 from .practice_widget import PersonalRehearsalWidget
 from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
@@ -1074,6 +1075,15 @@ class Window(QMainWindow):
             "launch_requests": launch_requests,
         }
 
+    def _practice_review_guidance(self, review: HistoricalPracticeReview) -> tuple[str, ...]:
+        reconciliation = self._practice_review_reconciliation(review)
+        if any(reconciliation[key] for key in ("missing", "duplicate", "mismatch", "unexpected", "launch_requests")):
+            return (
+                "Resolve the event reconciliation differences using the saved Practice and original session exports "
+                "before interpreting pose outcomes or recollecting data. This evidence cannot enable LIVE gestures.",
+            )
+        return practice_next_steps(review.result)
+
     def _practice_review_text(self, review: HistoricalPracticeReview) -> str:
         result = review.result
         current_revision = self._practice_current_revision()
@@ -1118,6 +1128,8 @@ class Window(QMainWindow):
             f"missing {reconciliation['missing']}, duplicate {reconciliation['duplicate']}, "
             f"mismatch {reconciliation['mismatch']}, unexpected {reconciliation['unexpected']}",
             f"Summary rows in practice context/model: simulated requests {reconciliation['simulated_requests']}, launch requests {reconciliation['launch_requests']}",
+            "Next steps for this recorded attempt:",
+            *(f"• {step}" for step in self._practice_review_guidance(review)),
         ])
 
     def _render_practice_review(self) -> None:
@@ -1206,7 +1218,7 @@ class Window(QMainWindow):
                 self.practice_start_button.setVisible(True)
             if result is not None:
                 counts = ", ".join(f"{label} {count}/10" for label, count in result.correct_per_pose)
-                guidance = " ".join(result.guidance[:2]) if result.guidance else "Review the saved result before any LIVE decision."
+                guidance = "Open Session summary for the saved attempt's measured next steps. LIVE gestures remain blocked."
                 self._set_practice_status(
                     f"Practice {result.status}: {result.reason} Counts: {counts}. "
                     f"Negative actions: {result.negative_actions}. {saved_text} {guidance}"
@@ -1235,14 +1247,41 @@ class Window(QMainWindow):
         widget = self.practice_widget
         if attempt is None:
             return True
+        attempt.cancel(reason)
         if widget is not None:
             widget.stop()
             if self.practice_attempt is None:
                 return True
             return self._finish_practice_rehearsal()
-        else:
-            attempt.cancel(reason)
         return self._finish_practice_rehearsal()
+
+    def _render_practice_capture_status(self) -> bool:
+        """Keep the fixed footer aligned with the measured Practice phase."""
+        attempt = self.practice_attempt
+        if attempt is None or attempt.expected is None:
+            return False
+        prompt = attempt.expected
+        if attempt.status == "armed":
+            message = "READY — keep NEUTRAL. Click Begin before showing the prompted pose."
+        elif attempt.status == "preparing":
+            message = (
+                "NEUTRAL trial: click Begin after capture is ready, then hold NEUTRAL."
+                if prompt.expected == "NEUTRAL"
+                else "Show NEUTRAL until READY; keep NEUTRAL while clicking Begin."
+            )
+        elif attempt.status == "measuring":
+            remaining = attempt.remaining_window_seconds(time.monotonic())
+            message = (
+                f"{prompt.instruction} {remaining:.1f} seconds remaining."
+                if remaining is not None and remaining > 0
+                else "Five seconds complete — finishing the trial."
+            )
+        elif attempt.status == "idle":
+            message = "Click Prepare next trial to continue. Timing has not started."
+        else:
+            return False
+        self.detail.setText(message)
+        return True
 
     def start_practice_rehearsal(self) -> bool:
         if not self.studio or self._closing or self.model_loader is not None:
@@ -3190,6 +3229,8 @@ class Window(QMainWindow):
         if self._closing:
             return
         self.poll_model_load()
+        if self.studio:
+            self._render_practice_capture_status()
         if self.worker is None:
             self._start_pending_enrolment_if_ready()
             self._start_pending_practice_if_ready()
@@ -3251,7 +3292,9 @@ class Window(QMainWindow):
             self.detail.setText(guidance or control.last_error or
                                 "Return to neutral between commands. Esc pauses immediately.")
             if self.studio:
-                if control.state == "LATCHED":
+                if self._render_practice_capture_status():
+                    pass
+                elif control.state == "LATCHED":
                     self.progress.setValue(0)
                     self.detail.setText(
                         f"{guidance + ' ' if guidance else ''}"
@@ -3402,13 +3445,14 @@ class Window(QMainWindow):
 
     def changeEvent(self, event):
         if self.studio and event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
+            self._cancel_practice_rehearsal("Practice interrupted: Studio focus lost.")
             self.pause()
             self.state.setText("Paused after focus loss. Resume Studio before gestures.")
         super().changeEvent(event)
 
     def closeEvent(self, event):
         self._closing = True
-        if not self.pause():
+        if not self._cancel_practice_rehearsal("Practice interrupted: Studio closed.") or not self.pause():
             self._closing = False
             event.ignore()
             return

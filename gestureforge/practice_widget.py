@@ -35,6 +35,11 @@ class PersonalRehearsalWidget(QWidget):
         self.prompt.setWordWrap(True)
         self.prompt.setTextFormat(Qt.TextFormat.PlainText)
         layout.addWidget(self.prompt)
+        self.countdown = QLabel()
+        self.countdown.setWordWrap(True)
+        self.countdown.setTextFormat(Qt.TextFormat.PlainText)
+        self.countdown.setAccessibleName('Practice countdown and next step')
+        layout.addWidget(self.countdown)
         self.feedback = QLabel('Confirm the ten negative instructions fit your enrolled poses with the host.')
         self.feedback.setWordWrap(True)
         self.feedback.setTextFormat(Qt.TextFormat.PlainText)
@@ -71,8 +76,9 @@ class PersonalRehearsalWidget(QWidget):
         try:
             self.attempt.begin_window(self.clock())
         except ValueError as exc:
-            self.feedback.setText(str(exc))
+            self.feedback.setText(f'Window not started: {exc}. Keep NEUTRAL and retry Begin.')
             return
+        self.feedback.setText('Measurement started. Now show the prompted pose for five seconds.')
         self.refresh()
 
     def receive_prediction(self, prediction: Prediction, received_at: float):
@@ -85,7 +91,7 @@ class PersonalRehearsalWidget(QWidget):
 
     def stop(self):
         if self.attempt.status not in {'passed', 'failed', 'cancelled', 'expired'}:
-            self.attempt.cancel('Rehearsal stopped or capture/focus interrupted.')
+            self.attempt.cancel('Stop rehearsal selected.')
         self.refresh()
 
     def capture_failed(self, reason: str):
@@ -109,6 +115,23 @@ class PersonalRehearsalWidget(QWidget):
         next_text = (f'{prompt.expected} {prompt.repetition}/10: {prompt.instruction}'
                      if prompt else 'All prompted windows recorded.')
         self.prompt.setText(f'{attempt.completed}/50 completed | {attempt.status}\n{next_text}\n{attempt.reason}')
+        remaining = attempt.remaining_window_seconds(self.clock())
+        if remaining is not None:
+            self.countdown.setText(
+                f'{remaining:.1f} seconds remaining — keep the prompted pose.'
+                if remaining > 0 else 'Five seconds complete — finishing the trial.'
+            )
+        elif attempt.status == 'armed':
+            self.countdown.setText('READY — keep NEUTRAL. Click Begin before showing the prompted pose.')
+        elif attempt.status == 'preparing':
+            self.countdown.setText('Timing has not started. Follow the preparation instructions above.')
+        elif attempt.status == 'idle':
+            self.countdown.setText(
+                'Trial finished. Click Prepare next trial to continue.' if attempt.completed
+                else 'Click Prepare next trial to open the camera.'
+            )
+        else:
+            self.countdown.setText('Rehearsal ended. Review the result above.')
         self.prepare_button.setEnabled(attempt.status == 'idle' and not self.save_error)
         self.begin_button.setEnabled(attempt.status == 'armed' or (
             attempt.status == 'preparing' and prompt is not None and prompt.expected == 'NEUTRAL'))
@@ -132,10 +155,12 @@ class PersonalRehearsalWidget(QWidget):
 
     def hideEvent(self, event):
         if self.attempt.status in {'preparing', 'armed', 'measuring'}:
+            self.attempt.cancel('Practice tab hidden.')
             self.stop()
         super().hideEvent(event)
 
     def closeEvent(self, event):
+        self.attempt.cancel('Practice window closed.')
         self.stop()
         if self.save_error:
             event.ignore()

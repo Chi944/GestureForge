@@ -464,6 +464,79 @@ def test_practice_pause_saves_and_restores(monkeypatch, qapp, tmp_path):
         window.close()
 
 
+def test_practice_footer_keeps_neutral_until_begin_then_follows_window(monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    workers: list[FakeWorker] = []
+    monkeypatch.setattr(app_module, "CaptureWorker", make_worker_factory(workers))
+    clock = Clock()
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: clock.value + 0.01)
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        widget = start_practice(window)
+        widget.prepare()
+        worker = workers[0]
+        feed_until_armed(window, worker, clock)
+        assert "keep NEUTRAL" in window.detail.text()
+        assert "Begin" in window.detail.text()
+        assert "hold a mapped gesture" not in window.detail.text()
+
+        widget.begin_button.click()
+        window.poll()  # Phase guidance updates even without a new camera packet.
+        assert "Hold G1" in window.detail.text()
+        assert "remaining" in window.detail.text()
+        assert "keep NEUTRAL" not in window.detail.text()
+        clock.advance(0.05)
+        feed_window(window, worker, clock, "G1")
+        assert "Prepare next trial" in window.detail.text()
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("cause", ["pause", "focus", "stop", "close", "hidden", "settings"])
+def test_practice_saved_interruption_reason_identifies_trigger(monkeypatch, qapp, tmp_path, cause):
+    from PySide6.QtCore import QEvent
+    from PySide6.QtGui import QHideEvent
+    import gestureforge.app as app_module
+
+    monkeypatch.setattr(app_module, "DEFAULT_STUDIO_STATE_FOLDER", tmp_path / "studio")
+    monkeypatch.setattr(app_module, "CaptureWorker", make_worker_factory([]))
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        widget = start_practice(window)
+        if cause == "pause":
+            window.pause()
+            expected = "camera paused"
+        elif cause == "focus":
+            monkeypatch.setattr(window, "isActiveWindow", lambda: False)
+            window.changeEvent(QEvent(QEvent.Type.ActivationChange))
+            expected = "focus lost"
+        elif cause == "stop":
+            widget.stop_button.click()
+            expected = "Stop rehearsal"
+        elif cause == "close":
+            window.closeEvent(FakeCloseEvent())
+            expected = "Studio closed"
+        elif cause == "hidden":
+            widget.prepare()
+            widget.hideEvent(QHideEvent())
+            expected = "Practice tab hidden"
+        else:
+            window.configure_studio(mode=RoutingMode.PREVIEW)
+            expected = "settings changed"
+        saved = list((tmp_path / "studio" / "practice").glob("practice-*.json"))
+        assert len(saved) == 1
+        payload = json.loads(saved[0].read_text())
+        assert expected in payload["reason"]
+        assert payload["status"] == "cancelled"
+        assert window.routing is not None
+        assert window._gesture_live_ready(window.routing.snapshot) is False
+    finally:
+        window.close()
+
+
 def test_practice_waits_for_old_camera_release_without_scoring_failure(monkeypatch, qapp):
     import gestureforge.app as app_module
 
@@ -632,6 +705,7 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         assert counts["launch_requested"] == 0
         assert counts["acknowledged_completion"] == 0
         assert "practice passed" in window.practice_status.text().lower()
+        assert "Open Session summary" in window.practice_status.text()
         saved = list((tmp_path / "studio" / "practice").glob("practice-*.json"))
         assert len(saved) == 1
         review = window._practice_review
@@ -653,6 +727,8 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         assert "unexpected 0" in review_text
         assert "launch requests 0" in review_text
         assert "saved full trial export" in review_text
+        assert "next steps for this recorded attempt" in review_text
+        assert "does not enable live gestures" in review_text
         export_path = tmp_path / "summary-export.json"
         window.session_summary.export(export_path)
         exported = json.loads(export_path.read_text(encoding="utf-8"))
@@ -675,6 +751,7 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
             review.context_id, review.bindings, review.scope, review.saved_path,
         )
         assert window._practice_review_reconciliation(without_match)["missing"] == 1
+        assert "Resolve the event reconciliation differences" in window._practice_review_guidance(without_match)[0]
         duplicate_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (matching[0],), review.context_id, review.bindings, review.scope, review.saved_path)
         assert window._practice_review_reconciliation(duplicate_review)["duplicate"] == 1
         wrong_status = replace(matching[0], status="failed")
@@ -682,6 +759,7 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
             wrong_status if outcome is matching[0] else outcome for outcome in review.outcomes
         ), review.context_id, review.bindings, review.scope, review.saved_path)
         assert window._practice_review_reconciliation(wrong_review)["mismatch"] == 1
+        assert "Resolve the event reconciliation differences" in window._practice_review_guidance(wrong_review)[0]
         wrong_source = replace(matching[0], source="manual")
         wrong_source_review = app_module.HistoricalPracticeReview(review.result, tuple(
             wrong_source if outcome is matching[0] else outcome for outcome in review.outcomes

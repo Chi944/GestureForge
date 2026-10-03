@@ -69,6 +69,17 @@ Automate viewer boundaries and deduplication, bookmark round trips, corrupt/inco
 
 Use fake OS adapters for automated tests; real Windows probes separately verify all target types, focus loss, Camera handoff and recovery on both laptops. Do not claim the fake proves the real application opens. Include exact commands/results, actual OS information and limitations with the PR. Run the common lint/type/full-test checks in `TEAM_GUIDE.md`.
 
+## Integration follow-up — 4 October
+
+Deston's automated native Harbor dispatch run now covers Calculator, fictional
+TXT/folder requests, missing-target recovery, bookmark persistence, paused reload
+and no replay, with 124 passing assertions and matching OS window metadata.
+It records zero human task acknowledgements and no gesture trials. Preserve this
+as automated native evidence; do not relabel it as human acceptance. The remaining
+work is actual task outcomes, HTTPS/app selection, Camera/focus recovery and the
+required integrated checks on both laptops. Practice timing and saved next-step
+guidance are integrated; do not implement a second version.
+
 ## Starter prompt for your coding assistant
 
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
