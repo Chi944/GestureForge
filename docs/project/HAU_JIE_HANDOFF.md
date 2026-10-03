@@ -87,6 +87,17 @@ change thresholds to hide failures or repeat blanket data collection.
 
 ## Starter prompt for your coding assistant
 
+**4 October follow-up:** PR #23's single-pose diagnostic is integrated. Use it to
+investigate a specific pose without repeating earlier windows; it cannot grant
+full rehearsal credit. Deston's P01 partial check recorded correct NEXT and
+PREVIOUS, then a pre-Begin capture validation stop. A bounded preparation-only
+late-frame recovery and exact timing diagnostics are integrated; do not widen
+freshness limits or change model thresholds from the old combined error. Retest
+the affected preparation/pose path before requesting a full 50-window run.
+Your supplied P02 NEUTRAL miss remains separate evidence and needs its own
+intended-pose/trace diagnosis. No additional data collection is justified solely
+by the P01 capture interruption.
+
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
 > Sync reviewed main into `codex/hau-jie-profiles` and read TEAM_GUIDE.md, this brief and CONTRACTS.md. PR #21 supplies the longer rehearsal component and Deston owns its embedded Practice integration: do not rebuild it or add a camera worker. Preserve PR #22's real Stop/invalid-slot evidence and finish GF-P07's short collection/profile workflow recording. Verify one Begin window against the corrected footer, then run Practice's fifty five-second windows using your personal profile: ten per action pose plus NEUTRAL, then ten negative/transition intervals. Keep the saved local result and code/model/behaviour revision; report actual outcomes and interruptions without claiming LIVE permission. Separately reproduce the open-palm/LATCHED issue with the existing opt-in Preview/Rehearsal EvaluationTrace and timestamped intended-pose/display notes. Run `python -m gestureforge.trace_diagnose <localtrace.json>` and compare the current-controller reconstruction with those notes and the code revision; it is not an accuracy/readiness score. Keep raw samples, private results and notes out of Git; do not record images or feature vectors for this diagnosis. Diagnose before changing thresholds, neutral policy or requesting targeted repair collection. Preserve the supplied PR #19 comparison and PR #20 pilot limits. Fix evidenced defects only in your recognition/profile/enrolment/practice modules and tests; send shared-shell issues to Deston. Run the common checks, push only your own branch and open a focused PR for Deston; leave it unmerged. Do not edit private Word reports/logs.

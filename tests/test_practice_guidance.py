@@ -3,7 +3,7 @@ from dataclasses import asdict, replace
 
 import pytest
 
-from gestureforge.practice import PROTOCOL_VERSION, PracticeResult, PracticeTrial
+from gestureforge.practice import DIAGNOSTIC_PROTOCOL_VERSION, PROTOCOL_VERSION, PracticeResult, PracticeTrial
 from gestureforge.practice_guidance import practice_next_steps
 
 
@@ -27,6 +27,10 @@ def result(trials=(), *, status="failed", poses=POSES):
         tuple((pose, sum(row.expected == pose and row.outcome == "correct" for row in trials)) for pose in poses),
         sum(len(row.actions) for row in trials if row.expected == "NEGATIVE"), (),
     )
+
+
+def diagnostic_result(trials=(), *, status="cancelled", poses=POSES):
+    return replace(result(trials, status=status, poses=poses), protocol_version=DIAGNOSTIC_PROTOCOL_VERSION)
 
 
 def test_no_windows_does_not_diagnose_unattempted_poses():
@@ -178,3 +182,43 @@ def test_unsupported_protocol_does_not_apply_current_guidance():
     assert practice_next_steps(evidence) == (
         "This Practice protocol is unsupported for guidance. Review its original trial export.",
     )
+
+
+def test_single_pose_diagnostic_miss_uses_one_window_evidence_without_full_protocol_counts():
+    advice = practice_next_steps(diagnostic_result([
+        replace(trial("NEUTRAL", "missed", rejections=(("margin_rejection", 57), ("distance_rejection", 2))), frames=117),
+    ]))
+    text = " ".join(advice)
+    assert "Single-pose diagnostic recorded NEUTRAL: missed; correct 0/1" in text
+    assert "margin_rejection" not in text
+    assert "ambiguous pose in 57/117 frames" in text
+    assert "Full 50-window Practice was not performed" in text
+    assert "49 window" not in text
+    assert "NEUTRAL: 0/10" not in text
+    assert "does not enable LIVE gestures" in text
+
+
+def test_single_pose_diagnostic_neutral_miss_without_rejections_names_ready():
+    advice = practice_next_steps(diagnostic_result([trial("NEUTRAL", "missed")]))
+    text = " ".join(advice)
+    assert "NEUTRAL did not reach READY" in text
+    assert "No simulated command" not in text
+
+
+def test_single_pose_diagnostic_correct_does_not_create_false_full_pass():
+    advice = practice_next_steps(diagnostic_result([trial("G1")], status="passed"))
+    text = " ".join(advice)
+    assert "G1: correct; correct 1/1" in text
+    assert "Ignore any pass-like status" in text
+    assert "does not enable LIVE gestures" in text
+    assert "G2" not in text
+    assert "NEGATIVE" not in text
+
+
+def test_single_pose_diagnostic_interrupted_is_not_a_miss_or_unattempted_full_attempt():
+    advice = practice_next_steps(diagnostic_result([trial("G2", "interrupted", coverage=False)]))
+    text = " ".join(advice)
+    assert "G2: interrupted; correct 0/1" in text
+    assert "Diagnostic was interrupted" in text
+    assert "49 window" not in text
+    assert "missed" not in text

@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 
 from PySide6.QtCore import QTimer, Signal, Qt
-from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from .contracts import Prediction
 from .practice import PersonalRehearsal
@@ -31,6 +31,14 @@ class PersonalRehearsalWidget(QWidget):
         self.save_error = False
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel('Personal rehearsal — simulated actions only'))
+        layout.addWidget(QLabel('Choose a full rehearsal or test only one pose:'))
+        self.test_selection = QComboBox()
+        self.test_selection.addItem('Full rehearsal — 50 windows', None)
+        for pose in (*attempt.gesture_ids, 'NEUTRAL'):
+            self.test_selection.addItem(f'Test only {pose} — one diagnostic window', pose)
+        self.test_selection.setAccessibleName('Practice test selection')
+        self.test_selection.currentIndexChanged.connect(self.select_test)
+        layout.addWidget(self.test_selection)
         self.prompt = QLabel()
         self.prompt.setWordWrap(True)
         self.prompt.setTextFormat(Qt.TextFormat.PlainText)
@@ -68,8 +76,17 @@ class PersonalRehearsalWidget(QWidget):
             self.feedback.setText(str(exc))
             return
         self._released = False
+        self.test_selection.setEnabled(False)
         self.timer.start()
         self.snapshot_requested.emit(snapshot)
+        self.refresh()
+
+    def select_test(self):
+        try:
+            self.attempt.select_diagnostic_pose(self.test_selection.currentData())
+        except ValueError as exc:
+            self.feedback.setText(str(exc))
+            return
         self.refresh()
 
     def begin(self):
@@ -112,9 +129,15 @@ class PersonalRehearsalWidget(QWidget):
     def refresh(self):
         attempt = self.attempt
         prompt = attempt.expected
-        next_text = (f'{prompt.expected} {prompt.repetition}/10: {prompt.instruction}'
+        diagnostic = attempt.diagnostic_pose is not None
+        repetitions = 1 if diagnostic else 10
+        total = len(attempt.sequence)
+        next_text = (f'{prompt.expected} {prompt.repetition}/{repetitions}: {prompt.instruction}'
                      if prompt else 'All prompted windows recorded.')
-        self.prompt.setText(f'{attempt.completed}/50 completed | {attempt.status}\n{next_text}\n{attempt.reason}')
+        status_text = ('diagnostic complete' if diagnostic and attempt.completed == total
+                       and attempt.result().trials[-1].outcome != 'interrupted' else attempt.status)
+        scope = 'Diagnostic only | ' if diagnostic else ''
+        self.prompt.setText(f'{scope}{attempt.completed}/{total} completed | {status_text}\n{next_text}\n{attempt.reason}')
         remaining = attempt.remaining_window_seconds(self.clock())
         if remaining is not None:
             self.countdown.setText(

@@ -197,6 +197,35 @@ six checks for instructions, review text height and horizontal scrolling. These
 are software/layout results; the physical Practice trial is deferred at Deston's
 request.
 
+## Practice follow-up — P01 live check and one-pose diagnostics (4 October)
+
+Deston completed an assisted P01 check on `a738c0a` using the existing pilot
+recogniser. The latest attempt recorded correct, covered NEXT and PREVIOUS
+windows with exactly one simulated event each. BOOKMARK preparation stopped
+before Begin with the old combined invalid/stale-packet message. Earlier
+attempts also include a successful NEXT and a preparation timeout. Private
+results are retained unchanged. These are partial familiarisation results, not
+a completed fifty-window rehearsal, held-out accuracy or LIVE permission.
+
+PR #23 adds a separately labelled single-pose diagnostic using the existing
+capture, controller and simulated dispatcher. Host review now distinguishes its
+one-window scope from a full rehearsal and leaves other poses/negatives not
+assessed. The setup repair adds Open Practice, fixes initial/loading/Guest status,
+and preserves diagnostic messages. Late but otherwise valid packets during
+preparation reset neutral arming without extending the 30-second deadline or
+receiving score. Armed/measured, malformed and out-of-order packets still fail;
+the 200 ms freshness limit is unchanged. New local timing diagnostics identify
+the validation condition. This repair addresses a reproduced software path;
+the old generic P01 record does not establish which condition caused its stop.
+
+Local verification passed 704 tests with one unsupported Windows symlink fixture
+skipped. After annotation/test-fixture corrections, all 105 affected Practice
+tests, Ruff, mypy (80 source files) and both startup modes passed again. Synthetic
+evaluation and eight generated layout checks also passed. These generated checks
+do not establish physical webcam acceptance. Evidence is in `verification.json`. Physical
+retesting of BOOKMARK/NEUTRAL and the complete rehearsal remain. No additional
+task is Done: Deston 21.3%, Hau Jie 30.7%, Javier 52.1%, team 34.5%.
+
 ## Next deliverables
 
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.

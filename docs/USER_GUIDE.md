@@ -33,6 +33,18 @@ In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause
 
 ### Personal Practice
 
+Use **Open Practice** beside the readiness controls to reveal the Practice tab
+and recording-consent box. A personal recogniser must be loaded. The camera
+intentionally switches off after each measured window; click **Prepare next
+trial** only when ready to continue. Preparation has a 30-second timeout.
+
+For a brief check, choose **Test only NEXT**, **Test only NEUTRAL**, or another
+enrolled pose after **Start personal practice**, before preparing. This records
+one five-second diagnostic and finishes automatically. Read the actual trial
+outcome: completing a diagnostic is not a full rehearsal pass. Other poses and
+negative activity are not assessed by that diagnostic. The default full rehearsal
+still requires all 50 windows; separate attempts cannot be combined into a pass.
+
 Keep NEUTRAL while clicking **Begin five-second window**. The fixed footer and
 Practice countdown now distinguish preparation from measurement: only change to
 the prompted pose after **Measurement started**. At zero, wait while the last
@@ -49,8 +61,12 @@ change thresholds, collect data, retrain a model or enable LIVE gestures.
 New results distinguish Stop rehearsal, camera Pause, loss of Studio focus,
 hiding the Practice tab, closing Studio and configuration changes. Older generic
 interruption messages cannot be retrospectively assigned a cause. Local timing
-diagnostics retain only the latest prepared trial's Begin attempt and any
-pre-Begin boundary prediction; they are not a full timeline of physical poses.
+diagnostics retain the latest prepared trial's Begin attempt, any pre-Begin
+boundary prediction, and its latest invalid/late capture condition. They are
+not a full timeline of physical poses. An otherwise valid late frame during
+preparation is discarded and resets neutral arming; the original 30-second
+deadline still applies. Late input after arming or during measurement still
+interrupts the attempt and preserves the result.
 
 Practice is the longer GF-P12 measurement workflow, separate from **Start/retry readiness**. It uses the loaded recogniser, shared camera, hold/rearm controller and existing dispatcher; every action is simulated. A passed result does not enable LIVE gestures.
 

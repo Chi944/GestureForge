@@ -39,7 +39,7 @@ from .javier_widgets import (
 )
 from .enrolment_widget import EnrolmentWidget
 from .profile_widget import ProfileSelectorWidget
-from .practice import NEGATIVE_CUES, PersonalRehearsal, PracticeResult
+from .practice import DIAGNOSTIC_PROTOCOL_VERSION, NEGATIVE_CUES, PersonalRehearsal, PracticeResult
 from .practice_guidance import practice_next_steps
 from .practice_widget import PersonalRehearsalWidget
 from .profiles import LoadedProfile, ProfileStore
@@ -408,6 +408,11 @@ class Window(QMainWindow):
             self.readiness_finish_button.setToolTip("Incomplete checks fail; passed checks remain tied to this profile revision.")
             self.readiness_finish_button.clicked.connect(self.finish_readiness_check)
             readiness_row.addWidget(self.readiness_finish_button)
+            self.open_practice_button = QPushButton("Open Practice")
+            self.open_practice_button.setAccessibleName("Open personal practice tab")
+            self.open_practice_button.setToolTip("Shows the Practice tab and local outcome recording consent.")
+            self.open_practice_button.clicked.connect(self.open_practice_page)
+            readiness_row.addWidget(self.open_practice_button)
             page.addLayout(readiness_row)
             self.readiness_progress = QProgressBar()
             self.readiness_progress.setRange(0, 6)
@@ -893,6 +898,7 @@ class Window(QMainWindow):
                 and not self._profile_selector_busy() and not self._enrolment_blocks_recognition()
                 and self.readiness_check is None
             )
+        self._render_practice_availability_status()
 
     def _invalidate_readiness(self, reason: str) -> bool:
         if not self.studio or self._readiness_switching:
@@ -1084,6 +1090,63 @@ class Window(QMainWindow):
             )
         return practice_next_steps(review.result)
 
+    def _is_single_pose_diagnostic(self, result: PracticeResult) -> bool:
+        return result.protocol_version == DIAGNOSTIC_PROTOCOL_VERSION
+
+    def _single_pose_diagnostic_details(self, result: PracticeResult) -> tuple[str, str, int, int, int]:
+        if not result.trials:
+            return "unknown pose", "interrupted", 0, 0, 1
+        trial = result.trials[0]
+        completed = 0 if trial.outcome == "interrupted" else 1
+        correct = 1 if trial.outcome == "correct" and trial.coverage_ok else 0
+        coverage_failures = 0 if trial.coverage_ok else 1
+        return trial.expected, trial.outcome, correct, completed, coverage_failures
+
+    def _single_pose_diagnostic_status(self, result: PracticeResult) -> str:
+        if not result.trials or result.trials[0].outcome == "interrupted":
+            return "interrupted"
+        return "completed"
+
+    def _practice_diagnostic_review_text(
+            self, review: HistoricalPracticeReview, revision_state: str, scope_state: str, scope_revision: str,
+    ) -> str:
+        result = review.result
+        pose, outcome, correct, completed, coverage_failures = self._single_pose_diagnostic_details(result)
+        recorded_windows = min(len(result.trials), 1)
+        reconciliation = self._practice_review_reconciliation(review)
+        assessed = {pose} if result.trials else set()
+        pose_lines = [
+            (
+                f"{label}: recorded {recorded_windows}/1, completed {completed}/1, "
+                f"correct {correct}/1, actual outcome {outcome}, coverage failures {coverage_failures}"
+            )
+            if label in assessed else f"{label}: not assessed"
+            for label, _correct in result.correct_per_pose
+        ]
+        return "\n".join([
+            "Latest saved practice — historical single-pose diagnostic",
+            f"Attempt: {result.attempt_id}",
+            f"Profile: {result.profile_id} | Model: {result.model_version}",
+            f"Behavior revision: {result.behavior_revision} ({revision_state})",
+            f"Scope revision: {scope_revision} ({scope_state})",
+            f"Saved diagnostic export: {review.saved_path}",
+            "Diagnostic scope: one selected pose only; full 50-window rehearsal not performed; "
+            "other poses and negative/transition windows not assessed.",
+            f"Windows recorded: {recorded_windows}/1 | completed five-second windows: {completed}/1 | "
+            f"unattempted {max(0, 1 - recorded_windows)} | coverage failures {coverage_failures}",
+            f"Status: diagnostic {self._single_pose_diagnostic_status(result)} | serialized status: {result.status} | reason: {result.reason}",
+            f"Window outcome: {pose} {outcome} | correct {correct}/1",
+            "Per-pose: " + " | ".join(pose_lines),
+            f"Negative windows: not assessed | negative actions: {result.negative_actions}",
+            "Event reconciliation: "
+            f"expected {reconciliation['expected']}, matched simulated {reconciliation['matched']}, "
+            f"missing {reconciliation['missing']}, duplicate {reconciliation['duplicate']}, "
+            f"mismatch {reconciliation['mismatch']}, unexpected {reconciliation['unexpected']}",
+            f"Summary rows in practice context/model: simulated requests {reconciliation['simulated_requests']}, launch requests {reconciliation['launch_requests']}",
+            "Next steps for this recorded diagnostic:",
+            *(f"• {step}" for step in self._practice_review_guidance(review)),
+        ])
+
     def _practice_review_text(self, review: HistoricalPracticeReview) -> str:
         result = review.result
         current_revision = self._practice_current_revision()
@@ -1091,6 +1154,8 @@ class Window(QMainWindow):
         revision_state = "matches current behavior" if current_revision == result.behavior_revision else "historical behavior differs from current behavior"
         scope_state = "matches current summary scope" if current_scope == review.scope else "historical scope differs from current summary scope"
         scope_revision = dict(review.scope).get("revision_id", "unrecorded")
+        if self._is_single_pose_diagnostic(result):
+            return self._practice_diagnostic_review_text(review, revision_state, scope_state, scope_revision)
         outcome_counts = Counter(trial.outcome for trial in result.trials)
         recorded_windows = len(result.trials)
         completed_windows = sum(trial.outcome != "interrupted" for trial in result.trials)
@@ -1167,6 +1232,50 @@ class Window(QMainWindow):
         if hasattr(self, "practice_status"):
             self.practice_status.setText(message)
 
+    def open_practice_page(self) -> None:
+        if not self.studio or not hasattr(self, "practice_page"):
+            return
+        self.deck_tabs.setCurrentWidget(self.practice_page)
+        target: QWidget
+        if self.practice_widget is not None:
+            target = self.practice_widget
+        elif hasattr(self, "practice_consent") and self.practice_consent.isVisible():
+            target = self.practice_consent
+        else:
+            target = self.practice_status
+
+        def scroll_to_target() -> None:
+            if self._closing or self.deck_tabs.currentWidget() is not self.practice_page:
+                return
+            self.studio_scroll.ensureWidgetVisible(target, 0, 12)
+
+        QTimer.singleShot(0, scroll_to_target)
+
+    def _practice_status_is_availability(self) -> bool:
+        if not hasattr(self, "practice_status"):
+            return False
+        text = self.practice_status.text()
+        return text.startswith((
+            "Practice unavailable",
+            "Practice ready",
+            "Practice paused while",
+        ))
+
+    def _render_practice_availability_status(self) -> None:
+        if not self.studio or not hasattr(self, "practice_status"):
+            return
+        if self.practice_attempt is not None:
+            return
+        if not self._practice_status_is_availability():
+            return
+        if self.model_loader is not None:
+            message = "Practice paused while a profile or dataset is loading."
+        elif self.model is None or self.routing is None:
+            message = "Practice unavailable until a personal recogniser is loaded."
+        else:
+            message = "Practice ready: tick local outcome recording consent, then start personal practice."
+        self._set_practice_status(message)
+
     def _clear_practice_widget(self) -> None:
         widget = self.practice_widget
         if widget is None:
@@ -1217,10 +1326,21 @@ class Window(QMainWindow):
                 self.practice_negative_cues.setVisible(True)
                 self.practice_start_button.setVisible(True)
             if result is not None:
-                counts = ", ".join(f"{label} {count}/10" for label, count in result.correct_per_pose)
-                guidance = "Open Session summary for the saved attempt's measured next steps. LIVE gestures remain blocked."
+                if self._is_single_pose_diagnostic(result):
+                    pose, outcome, correct, _completed, _coverage_failures = self._single_pose_diagnostic_details(result)
+                    status = self._single_pose_diagnostic_status(result)
+                    counts = f"{pose} {outcome} ({correct}/1 correct)"
+                    guidance = (
+                        "Full 50-window rehearsal not performed; other poses and negative windows were not assessed. "
+                        "No readiness credit was granted. Open Session summary for the saved diagnostic's measured next steps."
+                    )
+                    status_prefix = f"Practice diagnostic {status}"
+                else:
+                    counts = ", ".join(f"{label} {count}/10" for label, count in result.correct_per_pose)
+                    guidance = "Open Session summary for the saved attempt's measured next steps. LIVE gestures remain blocked."
+                    status_prefix = f"Practice {result.status}"
                 self._set_practice_status(
-                    f"Practice {result.status}: {result.reason} Counts: {counts}. "
+                    f"{status_prefix}: {result.reason} Counts: {counts}. "
                     f"Negative actions: {result.negative_actions}. {saved_text} {guidance}"
                 )
             else:
@@ -2616,6 +2736,7 @@ class Window(QMainWindow):
             kind="dataset",
         )
         self.model_loader.start()
+        self.render_readiness_status()
         return True
 
     def load_studio_profile(self, store: ProfileStore, profile_id: str):
@@ -2643,6 +2764,7 @@ class Window(QMainWindow):
             profile_id=profile_id,
         )
         self.model_loader.start()
+        self.render_readiness_status()
         return True
 
     def set_studio_camera(self, index):

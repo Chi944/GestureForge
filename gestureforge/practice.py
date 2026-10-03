@@ -20,6 +20,7 @@ from .routing import RoutingSession
 from .storage import atomic_write_json
 
 PROTOCOL_VERSION = 'gf-p12-v1'
+DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v1'
 TRIALS_PER_POSE = 10
 WINDOW_SECONDS = 5.0
 NEGATIVE_CUES = (
@@ -117,6 +118,8 @@ feeds the supplied router exactly once; the shell must not process packets again
             for repetition in range(1, 11)
             for label in (*gesture_ids, 'NEUTRAL')
         ) + tuple(PracticePrompt('NEGATIVE', i + 1, cue) for i, cue in enumerate(negative_cues))
+        self._full_sequence = self.sequence
+        self.diagnostic_pose: str | None = None
         self.status = 'idle'
         self.reason = 'Prepare the next trial. Actions remain simulated.'
         self._trials: list[PracticeTrial] = []
@@ -135,6 +138,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._window_last: float | None = None
         self.last_begin_attempt: dict[str, Any] | None = None
         self.boundary_prediction: dict[str, Any] | None = None
+        self.last_capture_validation: dict[str, Any] | None = None
 
     @property
     def expected(self) -> PracticePrompt | None:
@@ -143,6 +147,18 @@ feeds the supplied router exactly once; the shell must not process packets again
     @property
     def completed(self) -> int:
         return len(self._trials)
+
+    def select_diagnostic_pose(self, pose: str | None) -> None:
+        """Select a separate one-window probe before any capture is prepared."""
+        if self.status != 'idle' or self._prepared_at is not None or self._trials:
+            raise ValueError('choose the test before preparing the first trial')
+        if pose is not None and pose not in (*self.gesture_ids, 'NEUTRAL'):
+            raise ValueError('choose an enrolled pose or NEUTRAL')
+        self.diagnostic_pose = pose
+        self.sequence = (self._full_sequence if pose is None else
+                         (PracticePrompt(pose, 1, 'Hold ' + pose + ' for the full window.'),))
+        self.reason = ('Prepare the next trial. Actions remain simulated.' if pose is None else
+                       'Single-pose diagnostic only. This cannot pass the full rehearsal.')
 
     def remaining_window_seconds(self, now: float) -> float | None:
         """Display-only countdown; reading it does not advance or score a trial."""
@@ -180,6 +196,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._window_first, self._window_last = None, None
         self.last_begin_attempt = None
         self.boundary_prediction = None
+        self.last_capture_validation = None
         self.status = 'preparing'
         self.reason = 'Wait for capture, then show NEUTRAL until READY.'
         if self.expected.expected == 'NEUTRAL':
@@ -226,16 +243,11 @@ feeds the supplied router exactly once; the shell must not process packets again
                 or prediction.profile_id != snapshot.profile_id
                 or prediction.model_version != snapshot.model_version):
             return
-        if (not isinstance(prediction.timestamp, (float, int))
-                or isinstance(prediction.timestamp, bool) or not math.isfinite(prediction.timestamp)
-                or type(prediction.frame_id) is not int or prediction.frame_id <= self._last_frame
-                or (self._last_packet is not None and prediction.timestamp <= self._last_packet)
-                or not 0 <= now - prediction.timestamp <= MAX_PREDICTION_AGE_SECONDS
-                or type(prediction.accepted) is not bool
-                or not isinstance(prediction.label, str)
-                or not isinstance(prediction.rejection_reason, str)
-                or (prediction.accepted and prediction.rejection_reason)
-                or (not prediction.accepted and not prediction.rejection_reason)):
+        invalid_reason = self._prediction_invalid_reason(prediction, now)
+        if invalid_reason is not None:
+            if self._recover_stale_preparation_packet(prediction, now, invalid_reason):
+                return
+            self._record_capture_validation(prediction, now, invalid_reason, recovered=False)
             self.cancel('Invalid or stale capture packet; preserve evidence and retry.')
             return
         scoreable_drain_packet = (
@@ -361,6 +373,11 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.router.pause()
         self._started = None
         self.status, self.reason = 'idle', reason
+        if self.diagnostic_pose is not None:
+            # Close the host's temporary practice context using its existing
+            # terminal lifecycle; a diagnostic can never certify readiness.
+            self.cancel('Single-pose diagnostic complete. Full 50-window rehearsal not performed.')
+            return
         if self.completed == len(self.sequence):
             counts = self._counts()
             good = (all(value >= 9 for value in counts.values())
@@ -403,7 +420,8 @@ feeds the supplied router exactly once; the shell must not process packets again
             guidance.append('Negative actions occurred. Inspect transition evidence before changing thresholds.')
         if any(not t.coverage_ok for t in self._trials):
             guidance.append('Incomplete capture: resolve timing/interruption before repeating the attempt.')
-        return PracticeResult(self.attempt_id, self.revision, PROTOCOL_VERSION,
+        protocol = DIAGNOSTIC_PROTOCOL_VERSION if self.diagnostic_pose is not None else PROTOCOL_VERSION
+        return PracticeResult(self.attempt_id, self.revision, protocol,
                               self._base.profile_id, self._base.model_version,
                               self.status, self.reason, tuple(self._trials),
                               tuple(counts.items()), negatives, tuple(guidance))
@@ -412,6 +430,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         result = self.result()
         return (
             result.status == 'passed'
+            and result.protocol_version == PROTOCOL_VERSION
+            and len(result.trials) == 50
             and revision == result.behavior_revision
             and self.current_revision() == result.behavior_revision
         )
@@ -426,6 +446,64 @@ feeds the supplied router exactly once; the shell must not process packets again
             'scope': 'latest prepared trial only; timestamps use the monotonic clock',
             'last_begin_attempt': self.last_begin_attempt,
             'boundary_prediction': self.boundary_prediction,
+            'last_capture_validation': self.last_capture_validation,
         }
         atomic_write_json(path, payload)
         return path
+
+    def _prediction_invalid_reason(self, prediction: Prediction, now: float) -> str | None:
+        if (not isinstance(prediction.timestamp, (float, int))
+                or isinstance(prediction.timestamp, bool) or not math.isfinite(prediction.timestamp)):
+            return 'invalid_timestamp'
+        if prediction.timestamp > now:
+            return 'future_timestamp'
+        if type(prediction.frame_id) is not int:
+            return 'invalid_frame_id'
+        if prediction.frame_id <= self._last_frame:
+            return 'out_of_order_frame'
+        if self._last_packet is not None and prediction.timestamp <= self._last_packet:
+            return 'out_of_order_timestamp'
+        if type(prediction.accepted) is not bool:
+            return 'invalid_accepted_flag'
+        if not isinstance(prediction.label, str):
+            return 'invalid_label'
+        if not isinstance(prediction.rejection_reason, str):
+            return 'invalid_rejection_reason'
+        if prediction.accepted and prediction.rejection_reason:
+            return 'accepted_with_rejection_reason'
+        if not prediction.accepted and not prediction.rejection_reason:
+            return 'rejected_without_reason'
+        if now - prediction.timestamp > MAX_PREDICTION_AGE_SECONDS:
+            return 'stale_prediction'
+        return None
+
+    def _recover_stale_preparation_packet(self, prediction: Prediction, now: float, reason: str) -> bool:
+        if reason != 'stale_prediction' or self.status != 'preparing':
+            return False
+        self.tick(now)
+        if self.status != 'preparing':
+            self._record_capture_validation(prediction, now, reason, recovered=False)
+            return False
+        event = self.router.process(prediction, now)
+        recovered = event is None
+        self._record_capture_validation(prediction, now, reason, recovered=recovered)
+        self._last_frame, self._last_packet = prediction.frame_id, prediction.timestamp
+        self.reason = 'Stale startup capture dropped; show fresh NEUTRAL until READY.'
+        return recovered
+
+    def _record_capture_validation(self, prediction: Prediction, now: float, reason: str, *,
+                                   recovered: bool) -> None:
+        captured = prediction.timestamp
+        captured_at = captured if type(captured) in (int, float) and math.isfinite(captured) else None
+        self.last_capture_validation = {
+            'reason': reason,
+            'phase': self.status,
+            'received_at': now,
+            'captured_at': captured_at,
+            'age_seconds': (now - captured_at if captured_at is not None else None),
+            'frame_id': prediction.frame_id if type(prediction.frame_id) is int else None,
+            'last_capture_at': self._last_packet,
+            'last_frame_id': self._last_frame,
+            'recovered': recovered,
+            'decision': 'dropped_and_rearmed' if recovered else 'terminal_cancel',
+        }

@@ -1,5 +1,29 @@
 # Practice Begin timing diagnosis — 3 October 2026
 
+## Deston's P01 follow-up — 4 October
+
+An assisted webcam check on `a738c0a` used the existing P01 pilot recogniser
+(right hand, kNN, multiplier 2, margin 1.5, camera 1). In the latest saved attempt,
+NEXT and PREVIOUS each completed a covered five-second window with exactly one
+intended simulated action. BOOKMARK preparation was interrupted before Begin
+with the generic invalid/stale-packet reason. An earlier attempt completed NEXT
+and then timed out during preparation. These partial attempts remain saved
+locally; they are not a completed rehearsal or a final recognition estimate.
+
+Zero measured frames on the interrupted preparation does not establish a camera
+failure: frames are counted only after Begin. The old generic error combines
+malformed, late, future and out-of-order input, so the saved record cannot identify
+which condition occurred. Do not infer a failed physical pose or change rejection
+thresholds from that message. Camera shutdown after a completed five-second
+window is intentional; the next preparation opens a new capture session.
+
+The setup display also incorrectly reported no recogniser while the P01 model
+was loaded. The entry/status repair adds **Open Practice** and updates availability
+from the actual model/loading state while preserving saved diagnostic messages.
+
+The original P02 observations below remain attributed to Hau Jie and separate
+from this local P01 check. Full participant acceptance is still incomplete.
+
 Review base: `b44df9a`; physical pilot ran on `ab0305d` with these local changes.
 Owner: Hau Jie. Full physical acceptance remains pending.
 

@@ -2,6 +2,7 @@ import json
 import os
 from dataclasses import replace
 from types import SimpleNamespace
+from typing import cast
 from unittest.mock import Mock
 
 import numpy as np
@@ -11,9 +12,11 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtWidgets import QApplication
 
-from gestureforge.app import Window
+from gestureforge.app import HistoricalPracticeReview, Window
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode
+from gestureforge.practice import DIAGNOSTIC_PROTOCOL_VERSION, PracticeResult, PracticeTrial
 from gestureforge.practice_widget import PersonalRehearsalWidget
+from gestureforge.profiles import ProfileStore
 from gestureforge.session_summary import Outcome
 from gestureforge.vocabulary import GestureVocabulary
 
@@ -69,6 +72,40 @@ class FakeCloseEvent:
 
     def ignore(self):
         self.ignored = True
+
+
+class FinishedModelLoader:
+    def __init__(self, *, kind="profile", profile_id=None, error="", result=None):
+        self.kind = kind
+        self.profile_id = profile_id
+        self.error = error
+        self.result = result
+        self.joined = False
+
+    def is_alive(self):
+        return False
+
+    def join(self):
+        self.joined = True
+
+
+class AliveModelLoader(FinishedModelLoader):
+    def __init__(self, load, *, kind="profile", profile_id=None):
+        super().__init__(kind=kind, profile_id=profile_id)
+        self.load = load
+        self.started = False
+        self.alive = True
+
+    def start(self):
+        self.started = True
+
+    def is_alive(self):
+        return self.alive
+
+    def finish(self, *, error="", result=None):
+        self.error = error
+        self.result = result
+        self.alive = False
 
 
 class Clock:
@@ -155,6 +192,214 @@ def start_practice(window) -> PersonalRehearsalWidget:
     assert window.start_practice_rehearsal()
     assert window.practice_widget is not None
     return window.practice_widget
+
+
+def diagnostic_trial(expected="G1", outcome="correct", *, actions=None, coverage=True):
+    if actions is None:
+        actions = (expected,) if expected not in {"NEUTRAL", "NEGATIVE"} and outcome == "correct" else ()
+    return PracticeTrial(
+        expected, 1, "Recorded diagnostic cue", "diagnostic-session", 0.0, 5.0, outcome,
+        actions, tuple(f"diagnostic-event-{index}" for index in range(len(actions))),
+        expected == "NEUTRAL" and outcome == "correct", 50, (), coverage, "Recorded diagnostic reason",
+    )
+
+
+def diagnostic_result(trials, *, status="cancelled"):
+    poses = ("G1", "G2", "G3", "NEUTRAL")
+    return PracticeResult(
+        "diagnostic-attempt", "behavior-v1", DIAGNOSTIC_PROTOCOL_VERSION, "profile", "model",
+        status, "Single-pose diagnostic complete. Full 50-window rehearsal not performed.",
+        tuple(trials),
+        tuple((pose, sum(row.expected == pose and row.outcome == "correct" for row in trials)) for pose in poses),
+        sum(len(row.actions) for row in trials if row.expected == "NEGATIVE"), (),
+    )
+
+
+def diagnostic_review(window, result, tmp_path):
+    saved_path = tmp_path / "practice-diagnostic.json"
+    saved_path.write_text("{}", encoding="utf-8")
+    assert window.routing is not None
+    return HistoricalPracticeReview(
+        result,
+        tuple(window.session_summary.outcomes),
+        window.routing.snapshot.context_id,
+        tuple(window.routing.snapshot.bindings),
+        tuple(sorted(window.session_summary.scope.items())),
+        saved_path,
+    )
+
+
+@pytest.mark.parametrize(("outcome", "expected_status", "expected_correct"), [
+    ("correct", "diagnostic completed", "correct 1/1"),
+    ("missed", "diagnostic completed", "correct 0/1"),
+    ("interrupted", "diagnostic interrupted", "correct 0/1"),
+])
+def test_single_pose_diagnostic_review_uses_one_window_scope(qapp, tmp_path, outcome, expected_status, expected_correct):
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        result = diagnostic_result([diagnostic_trial("G1", outcome, coverage=outcome != "interrupted")])
+        review = diagnostic_review(window, result, tmp_path)
+
+        text = window._practice_review_text(review).lower()
+
+        assert expected_status in text
+        assert "serialized status: cancelled" in text
+        assert f"window outcome: g1 {outcome}" in text
+        assert expected_correct in text
+        assert "windows recorded: 1/1" in text
+        assert "completed five-second windows: 1/1" in text if outcome != "interrupted" else "completed five-second windows: 0/1" in text
+        assert "g2: not assessed" in text
+        assert "g3: not assessed" in text
+        assert "neutral: not assessed" in text
+        assert "negative windows: not assessed" in text
+        assert "full 50-window rehearsal not performed" in text
+        assert "recorded 0/10" not in text
+        assert "unattempted 49" not in text
+        assert "correct 0/10" not in text
+    finally:
+        window.close()
+
+
+def test_single_pose_diagnostic_finish_banner_does_not_look_like_full_pass(qapp):
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        result = diagnostic_result([diagnostic_trial("NEUTRAL", "missed")])
+
+        assert window._finish_practice_rehearsal(result)
+
+        text = window.practice_status.text().lower()
+        assert "practice diagnostic completed" in text
+        assert "neutral missed (0/1 correct)" in text
+        assert "full 50-window rehearsal not performed" in text
+        assert "other poses and negative windows were not assessed" in text
+        assert "no readiness credit" in text
+        assert "neutral 0/10" not in text
+        assert "practice passed" not in text
+    finally:
+        window.close()
+
+
+def test_practice_status_matches_initial_model_availability(qapp):
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    ready_window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    guest_window = Window(studio=True)
+    try:
+        assert "practice ready" in ready_window.practice_status.text().lower()
+        assert "consent" in ready_window.practice_status.text().lower()
+        assert "unavailable" in guest_window.practice_status.text().lower()
+    finally:
+        ready_window.close()
+        guest_window.close()
+
+
+def test_open_practice_entrypoint_selects_practice_without_starting(qapp):
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        window.deck_tabs.setCurrentWidget(window.profile_selector)
+        window.practice_consent.setChecked(False)
+
+        window.open_practice_button.click()
+        qapp.processEvents()
+
+        assert window.deck_tabs.currentWidget() is window.practice_page
+        assert window.practice_attempt is None
+        assert not window.practice_consent.isChecked()
+        assert "practice ready" in window.practice_status.text().lower()
+    finally:
+        window.close()
+
+
+def test_practice_status_pauses_during_actual_dataset_and_profile_loads(monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    loaders: list[AliveModelLoader] = []
+
+    def loader_factory(*args, **kwargs):
+        loader = AliveModelLoader(*args, **kwargs)
+        loaders.append(loader)
+        return loader
+
+    class Store:
+        def load(self, profile_id):
+            raise AssertionError("alive fake loader should not run the profile load")
+
+    monkeypatch.setattr(app_module, "ModelLoadWorker", loader_factory)
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        assert "practice ready" in window.practice_status.text().lower()
+
+        assert window.load_studio_dataset("personal.json")
+        assert loaders[-1].kind == "dataset"
+        assert loaders[-1].started
+        assert "paused while" in window.practice_status.text().lower()
+        window.model_loader = None
+
+        profile_id = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        assert window.load_studio_profile(cast(ProfileStore, Store()), profile_id)
+        assert loaders[-1].kind == "profile"
+        assert loaders[-1].profile_id == profile_id
+        assert loaders[-1].started
+        assert "paused while" in window.practice_status.text().lower()
+    finally:
+        window.model_loader = None
+        window.close()
+
+
+def test_practice_status_follows_guest_and_failed_profile_load_without_losing_active_model(monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    loaders: list[AliveModelLoader] = []
+
+    def loader_factory(*args, **kwargs):
+        loader = AliveModelLoader(*args, **kwargs)
+        loaders.append(loader)
+        return loader
+
+    class Store:
+        def load(self, profile_id):
+            raise AssertionError("alive fake loader should not run the profile load")
+
+    monkeypatch.setattr(app_module, "ModelLoadWorker", loader_factory)
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        assert "practice ready" in window.practice_status.text().lower()
+
+        profile_id = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        assert window.load_studio_profile(cast(ProfileStore, Store()), profile_id)
+        failed = loaders[-1]
+        assert "paused while" in window.practice_status.text().lower()
+        failed.finish(error="ValueError: profile checksum mismatch")
+        window.poll_model_load()
+
+        assert failed.joined
+        assert window.model is not None
+        assert "practice ready" in window.practice_status.text().lower()
+        assert "profile not loaded" in window.notice.text().lower()
+
+        assert window.use_studio_guest()
+        assert window.model is None
+        assert "unavailable" in window.practice_status.text().lower()
+    finally:
+        window.close()
+
+
+def test_practice_availability_refresh_does_not_overwrite_diagnostic_status(qapp):
+    vocabulary = GestureVocabulary(("G1", "G2", "G3"))
+    window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
+    try:
+        diagnostic = "Practice results remain in memory. Fix storage and retry Save before changing Studio context."
+        window._set_practice_status(diagnostic)
+
+        window.render_studio_status()
+
+        assert window.practice_status.text() == diagnostic
+    finally:
+        window.close()
 
 
 def test_practice_tab_starts_rehearsal_context_with_local_consent(qapp):
@@ -244,6 +489,7 @@ def test_practice_can_run_from_manual_only_context_and_restore_it(qapp):
     try:
         assert window.configure_studio(context_id="manual-stage", bindings={})
         assert window.routing_manual_only
+        assert "practice ready" in window.practice_status.text().lower()
 
         widget = start_practice(window)
         assert window.practice_attempt is not None

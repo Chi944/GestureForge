@@ -73,6 +73,72 @@ def prepare_fixed_latency_window(h):
     return h.now, latency
 
 
+@pytest.mark.parametrize('pose', ['G2', 'NEUTRAL'])
+def test_single_pose_diagnostic_saves_only_selected_window_and_never_passes(pose, tmp_path):
+    h = Harness()
+    h.attempt.select_diagnostic_pose(pose)
+    h.window(pose)
+    result = h.attempt.result()
+    assert len(result.trials) == 1
+    assert result.trials[0].expected == pose
+    assert result.trials[0].outcome == 'correct'
+    assert result.status == 'cancelled'
+    assert result.protocol_version == 'gf-p12-single-pose-diagnostic-v1'
+    assert 'diagnostic complete' in result.reason
+    assert not h.attempt.passed_for(h.revision)
+    assert h.router.state == 'PAUSED'
+    saved = json.loads(h.attempt.save(tmp_path).read_text())
+    assert saved['simulation_only'] is True
+    assert len(saved['trials']) == 1
+    assert saved['protocol_version'] != 'gf-p12-v1'
+
+
+def test_diagnostic_cannot_skip_or_replace_an_already_prepared_attempt():
+    h = Harness()
+    with pytest.raises(ValueError, match='enrolled pose'):
+        h.attempt.select_diagnostic_pose('UNKNOWN')
+    h.attempt.select_diagnostic_pose('NEUTRAL')
+    h.attempt.select_diagnostic_pose(None)
+    assert len(h.attempt.sequence) == 50
+    h.attempt.prepare(h.now)
+    with pytest.raises(ValueError, match='before preparing'):
+        h.attempt.select_diagnostic_pose('NEUTRAL')
+
+
+def test_single_pose_widget_uses_existing_capture_and_saves_once(tmp_path):
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.practice_widget import PersonalRehearsalWidget
+    app = QApplication.instance() or QApplication([])
+    h = Harness()
+    widget = PersonalRehearsalWidget(h.attempt, tmp_path, clock=lambda: h.now)
+    results: list[PracticeResult] = []
+    releases = []
+    widget.result_ready.connect(results.append)
+    widget.capture_release_requested.connect(lambda: releases.append(True))
+    widget.test_selection.setCurrentIndex(4)
+    assert h.attempt.expected is not None
+    assert h.attempt.expected.expected == 'NEUTRAL'
+    assert 'Diagnostic only | 0/1' in widget.prompt.text()
+    widget.prepare()
+    assert not widget.test_selection.isEnabled()
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    widget.refresh()
+    widget.begin_button.click()
+    start = h.now
+    while h.now < start + 4.89:
+        h.feed('NEUTRAL')
+    h.now = start + 5.21
+    widget.tick()
+    assert '1/1 completed | diagnostic complete' in widget.prompt.text()
+    assert len(results) == len(releases) == 1
+    assert len(list(tmp_path.glob('practice-*.json'))) == 1
+    assert results[0].trials[0].outcome == 'correct'
+    widget.close()
+    app.processEvents()
+    assert len(results) == len(releases) == 1
+
+
 def test_full_protocol_uses_real_router_and_persistent_simulated_dispatcher(tmp_path):
     h = Harness()
     for prompt in h.attempt.sequence:
@@ -398,6 +464,148 @@ def test_stale_packet_cancels_and_old_generation_cannot_count():
     assert h.attempt.status == 'measuring'
     h.attempt.receive(replace(p, session_id=snap.session_id, timestamp=h.now - 1), h.now)
     assert h.attempt.result().status == 'cancelled'
+
+
+def test_preparation_startup_stale_packet_recovers_and_requires_fresh_neutral(tmp_path):
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    h.frame += 1
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame, h.now - 0.25,
+                       'G1', True, snap.model_version)
+    h.attempt.receive(stale, h.now)
+    assert h.attempt.status == 'preparing'
+    assert h.router.snapshot == snap
+    assert h.router.state == 'WAIT_NEUTRAL'
+    assert h.dispatcher.summary.outcomes == []
+    assert h.attempt.result().trials == ()
+    with pytest.raises(ValueError, match='fresh capture'):
+        h.attempt.begin_window(h.now)
+    payload = json.loads(h.attempt.save(tmp_path).read_text())
+    diagnostic = payload['timing_diagnostics']['last_capture_validation']
+    assert diagnostic['reason'] == 'stale_prediction'
+    assert diagnostic['decision'] == 'dropped_and_rearmed'
+    assert diagnostic['recovered'] is True
+    for _ in range(4):
+        h.feed('NEUTRAL')
+    assert h.attempt.status == 'armed'
+    h.attempt.begin_window(h.now)
+    assert h.attempt.status == 'measuring'
+
+
+def test_stale_preparation_packet_after_partial_hold_requires_full_new_hold():
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    h.feed('NEUTRAL')
+    assert h.attempt.status == 'preparing'
+    h.frame += 1
+    h.now = 10.5
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame, 10.2,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, h.now)
+    assert h.attempt.status == 'preparing'
+    assert h.router.state == 'WAIT_NEUTRAL'
+    h.feed('NEUTRAL')
+    with pytest.raises(ValueError, match='READY'):
+        h.attempt.begin_window(h.now)
+    for _ in range(3):
+        h.feed('NEUTRAL')
+    assert h.attempt.status == 'armed'
+
+
+def test_stale_preparation_packet_at_timeout_preserves_timeout_cancel():
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    h.frame += 1
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame, h.now + 29.7,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, h.now + 30.0)
+    result = h.attempt.result()
+    assert result.status == 'cancelled'
+    assert result.reason == 'Preparation timed out; review capture and NEUTRAL evidence.'
+    assert result.trials[0].outcome == 'interrupted'
+
+
+def test_stale_packet_only_recovers_while_preparing():
+    h = Harness()
+    h.attempt.prepare(h.now)
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    assert h.attempt.status == 'armed'
+    snap = h.router.snapshot
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now + 0.1,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, h.now + 0.35)
+    assert h.attempt.result().status == 'cancelled'
+    h = Harness()
+    h.prepare()
+    snap = h.router.snapshot
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now + 0.1,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, h.now + 0.35)
+    assert h.attempt.result().status == 'cancelled'
+
+
+@pytest.mark.parametrize(
+    ('packet_change', 'reason'),
+    [
+        ({'timestamp': float('nan')}, 'invalid_timestamp'),
+        ({'timestamp': 10.5}, 'future_timestamp'),
+        ({'frame_id': 'bad'}, 'invalid_frame_id'),
+        ({'accepted': 'yes'}, 'invalid_accepted_flag'),
+        ({'label': None}, 'invalid_label'),
+        ({'rejection_reason': None}, 'invalid_rejection_reason'),
+        ({'rejection_reason': 'margin_rejection'}, 'accepted_with_rejection_reason'),
+        ({'accepted': False}, 'rejected_without_reason'),
+    ],
+)
+def test_malformed_preparation_packets_do_not_recover_and_serialize(tmp_path, packet_change, reason):
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    prediction = Prediction(snap.session_id, snap.profile_id, 1, h.now,
+                            'NEUTRAL', True, snap.model_version, '')
+    h.attempt.receive(replace(prediction, **packet_change), h.now)
+    assert h.attempt.result().status == 'cancelled'
+    payload = json.loads(h.attempt.save(tmp_path).read_text())
+    diagnostic = payload['timing_diagnostics']['last_capture_validation']
+    assert diagnostic['reason'] == reason
+    assert diagnostic['decision'] == 'terminal_cancel'
+    assert diagnostic['recovered'] is False
+    assert 'NaN' not in json.dumps(payload, allow_nan=False)
+
+
+def test_out_of_order_preparation_packet_does_not_recover():
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    h.feed('NEUTRAL')
+    stale_but_out_of_order = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now - 0.3,
+                                        'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale_but_out_of_order, h.now)
+    assert h.attempt.result().status == 'cancelled'
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['reason'] == 'out_of_order_timestamp'
+
+
+@pytest.mark.parametrize(
+    ('frame_offset', 'captured', 'reason'),
+    [
+        (0, 10.3, 'out_of_order_frame'),
+        (1, 10.0, 'out_of_order_timestamp'),
+    ],
+)
+def test_packet_after_stale_recovery_must_still_advance_monotonic_watermark(frame_offset, captured, reason):
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    h.frame += 1
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame, 10.2,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, 10.5)
+    assert h.attempt.status == 'preparing'
+    followup = Prediction(snap.session_id, snap.profile_id, h.frame + frame_offset, captured,
+                          'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(followup, 10.5)
+    assert h.attempt.result().status == 'cancelled'
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['reason'] == reason
 
 
 def test_recording_failure_and_user_stop_preserve_evidence(tmp_path, monkeypatch):

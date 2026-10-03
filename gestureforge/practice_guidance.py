@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from .practice import PROTOCOL_VERSION, TRIALS_PER_POSE, PracticeResult, PracticeTrial
+from .practice import DIAGNOSTIC_PROTOCOL_VERSION, PROTOCOL_VERSION, TRIALS_PER_POSE, PracticeResult, PracticeTrial
 
 
 _REJECTION_GROUPS = {
@@ -31,6 +31,63 @@ def _command_counts(trials: list[PracticeTrial], expected: str) -> str:
     return ", ".join(f"{command} ({count})" for command, count in sorted(commands.items()))
 
 
+def _rejection_summary(trials: list[PracticeTrial], label: str) -> str | None:
+    rejections: Counter[str] = Counter()
+    for trial in trials:
+        for reason, count in trial.rejections:
+            rejections[_REJECTION_GROUPS.get(reason, "other reasons")] += count
+    if not rejections:
+        return None
+    group, count = min(rejections.items(), key=lambda item: (-item[1], item[0]))
+    frames = sum(trial.frames for trial in trials)
+    other = sum(rejections.values()) - count
+    remainder = f" Another {other} frame(s) had other rejection reasons; see the saved export." if other else ""
+    return (
+        f"{label}, scored failed windows: {group} in {count}/{frames} frames. "
+        f"{_REJECTION_STEPS[group]}{remainder}"
+    )
+
+
+def _diagnostic_next_steps(result: PracticeResult) -> tuple[str, ...]:
+    manual = "Use manual controls while reviewing this diagnostic evidence; it does not enable LIVE gestures."
+    full_scope = "Full 50-window Practice was not performed; other poses and negative/transition windows were not assessed."
+    if not result.trials:
+        return (
+            "No diagnostic window was recorded. Start Practice and complete the selected single-pose diagnostic before assessing it.",
+            full_scope,
+            manual,
+        )
+    trial = result.trials[0]
+    correct = 1 if trial.outcome == "correct" and trial.coverage_ok else 0
+    steps = [
+        f"Single-pose diagnostic recorded {trial.expected}: {trial.outcome}; correct {correct}/1.",
+        full_scope,
+    ]
+    if trial.outcome == "interrupted":
+        steps.append(
+            "Diagnostic was interrupted. Resolve the recorded stop reason and rerun this one-window diagnostic if more evidence is needed."
+        )
+    elif not trial.coverage_ok:
+        steps.append(
+            "Capture coverage was incomplete in this diagnostic window. Check the camera preview and timing before interpreting misses."
+        )
+    elif trial.outcome in {"missed", "wrong"}:
+        commands = _command_counts([trial], trial.expected)
+        if commands:
+            steps.append(f"Unintended simulated commands: {commands}.")
+        rejection = _rejection_summary([trial], trial.expected)
+        if rejection is not None:
+            steps.append(rejection)
+        elif trial.expected == "NEUTRAL" and trial.outcome == "missed":
+            steps.append("NEUTRAL did not reach READY in this diagnostic window; review the saved trial export before changing data.")
+        elif trial.outcome == "missed":
+            steps.append("No simulated command was recorded in this diagnostic window; review the saved trial export before changing data.")
+    if result.status == "passed":
+        steps.append("Ignore any pass-like status for this diagnostic protocol; it cannot supply readiness credit.")
+    steps.append(manual)
+    return tuple(steps)
+
+
 def practice_next_steps(result: PracticeResult) -> tuple[str, ...]:
     """Summarize producer-validated trials after the host reconciles their events.
 
@@ -40,6 +97,8 @@ def practice_next_steps(result: PracticeResult) -> tuple[str, ...]:
     The current protocol bounds output to four pose summaries and four rejection
     summaries, plus capture, completion, negative-action and manual-control notes.
     """
+    if result.protocol_version == DIAGNOSTIC_PROTOCOL_VERSION:
+        return _diagnostic_next_steps(result)
     if result.protocol_version != PROTOCOL_VERSION:
         return ("This Practice protocol is unsupported for guidance. Review its original trial export.",)
 
@@ -89,20 +148,9 @@ def practice_next_steps(result: PracticeResult) -> tuple[str, ...]:
             details.append("Return to NEUTRAL until READY, then retry the prompted pose for the full five-second window.")
         steps.append(" ".join(details))
 
-        failed = [trial for trial in scored if trial.outcome in {"missed", "wrong"}]
-        rejections: Counter[str] = Counter()
-        for trial in failed:
-            for reason, count in trial.rejections:
-                rejections[_REJECTION_GROUPS.get(reason, "other reasons")] += count
-        if rejections:
-            group, count = min(rejections.items(), key=lambda item: (-item[1], item[0]))
-            frames = sum(trial.frames for trial in failed)
-            other = sum(rejections.values()) - count
-            remainder = f" Another {other} frame(s) had other rejection reasons; see the saved export." if other else ""
-            steps.append(
-                f"{pose}, scored failed windows: {group} in {count}/{frames} frames. "
-                f"{_REJECTION_STEPS[group]}{remainder}"
-            )
+        rejection = _rejection_summary([trial for trial in scored if trial.outcome in {"missed", "wrong"}], pose)
+        if rejection is not None:
+            steps.append(rejection)
 
     negatives = [trial for trial in result.trials if trial.expected == "NEGATIVE" and trial.actions]
     if negatives:

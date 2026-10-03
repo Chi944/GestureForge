@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T16:22:32.778933+00:00",
+  "timestamp_utc": "2026-10-04T02:44:30.01341+08:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,48 +13,83 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.263,
+      "seconds": 1.218,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 2.74,
+      "seconds": 0.991,
       "stdout": "Success: no issues found in 80 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 267.871,
-      "stdout": "........................................................................ [ 10%]\n........................................................................ [ 21%]\n........................................................................ [ 32%]\n........................................................................ [ 42%]\n......................................................................s. [ 53%]\n........................................................................ [ 64%]\n........................................................................ [ 74%]\n........................................................................ [ 85%]\n........................................................................ [ 96%]\n.........................                                                [100%]\n672 passed, 1 skipped in 255.20s (0:04:15)\n",
+      "seconds": 332.655,
+      "stdout": "........................................................................ [ 10%]\n........................................................................ [ 20%]\n........................................................................ [ 30%]\n........................................................................ [ 40%]\n........................................................................ [ 51%]\n.......s................................................................ [ 61%]\n........................................................................ [ 71%]\n........................................................................ [ 81%]\n........................................................................ [ 91%]\n.........................................................                [100%]\n704 passed, 1 skipped in 316.41s (0:05:16)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.31,
+      "seconds": 4.011,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 4.118,
+      "seconds": 4.39,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 2.558,
+      "seconds": 5.864,
       "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python -m pytest tests/test_practice.py tests/test_app_practice.py tests/test_practice_guidance.py -q",
+      "returncode": 0,
+      "seconds": 17.5,
+      "stdout": "........................................................................ [ 68%]\n.................................                                        [100%]\n105 passed in 16.02s\n",
       "stderr": ""
     }
   ],
   "limitations": [
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
-  ]
+  ],
+  "post_repair_timestamp_utc": "2026-10-04T02:46:46.085886+08:00",
+  "post_repair_scope": "The full suite and synthetic evaluation passed before type annotations/test-double typing and one diagnostic fixture frame-count correction. After those edits, affected Practice tests, full lint/types and both startup checks were rerun. Initial type-check failures remain in ignored local diagnostics.",
+  "practice_followup": {
+    "base_commit": "a738c0a59a622515d3488f7ea554b33ab08acd7d",
+    "reviewed_pr": "https://github.com/Chi944/GestureForge_304/pull/23",
+    "reviewed_pr_head": "1b4d87af1fbb07d961eaaadf2585fdcddcd6cff9",
+    "generated_visual_checks": {
+      "method": "Generated Qt UI with fake camera and clock; no participant or hardware evidence",
+      "passed": 8,
+      "window_sizes": [
+        "900x620",
+        "1150x740"
+      ],
+      "verified": [
+        "Open Practice reveals unchecked recording consent without capture",
+        "Single-pose selector and result use denominator 1",
+        "Other poses and negatives remain not assessed",
+        "One simulated event reconciles without external launch or LIVE permission",
+        "Footer contained and no horizontal overflow"
+      ],
+      "limitations": [
+        "Long historical hash/path clips at narrow width",
+        "Lower controls remain reachable by vertical scrolling"
+      ],
+      "detailed_artifacts": "Ignored local practice-navigation-diagnostic-visual directory"
+    },
+    "physical_evidence": "P01 old-version partial NEXT/PREVIOUS success; BOOKMARK preparation interrupted before Begin. No full Practice pass or updated-version webcam acceptance."
+  }
 }
