@@ -270,6 +270,7 @@ The current software verification summary is recorded in `docs\evidence\verifica
 | --- | --- |
 | Python version is wrong | Run `py -3.11 --version` and recreate `.venv` with Python 3.11 |
 | Camera does not open | Close other camera apps and restart GestureForge |
+| MediaPipe reports `get_runfiles_dir_helper.cc` or an inaccessible non-ASCII runtime path | Keep the original folder and private files intact. Extract a fresh source copy to an ASCII-only writable path such as `C:\GestureForge` and rerun `setup.cmd`; never reuse a copied `.venv` |
 | No hand detected or pose repeatedly rejected | Keep the full enrolled hand in frame, face the camera as during training, use similar distance and lighting, settle the pose, then hold NEUTRAL until READY. Removing the hand is not required by the controller. |
 | Many rejections | Recheck distance, lighting, hand choice, and enrolment consistency |
 | Action repeats | Stop using the prototype and record a controller defect; the state machine must prevent repeats |

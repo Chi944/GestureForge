@@ -36,7 +36,7 @@ Current project foundation on `main`:
 | Custom gesture vocabulary | PR #10 merged: schema-2 collection, kNN/SVM training and evaluation support three custom action IDs plus NEUTRAL; legacy datasets remain supported |
 | Starter feasibility | Hau Jie's [three-person baseline](docs/project/STARTER_EVALUATION_CHECKPOINT.md) and supplied [bounded comparison](docs/project/GF_P11_BOUNDED_COMPARISON.md) identify no qualifying starter; PR #19 was reviewed and repaired without changing those supplied private results |
 | Saved profiles | PR #17's selector is attached in Studio's **Profiles** tab: create/load/rename/delete, background reconstruction and non-destructive Guest/manual switching use the reviewed PR #14 persistence; [selector handoff](docs/project/PROFILE_SELECTOR_HANDOFF.md). Loading stays paused and does not pass readiness; standard gestures remain unavailable |
-| Guided enrolment | Studio's Enrolment tab collects numeric samples through the shared camera, with consent, timed trials, invalid-sample feedback and save retry; live recording acceptance remains ([handoff](docs/project/ENROLMENT_INTERFACE_PROPOSAL.md)) |
+| Guided enrolment | Studio's Enrolment tab collects numeric samples through the shared camera, with consent, timed trials, invalid-sample feedback and save retry; [PR #20](https://github.com/Chi944/GestureForge_304/pull/20) is merged with partial P02 evidence, but current-head hardware recording and full GF-P07/GF-P12 acceptance remain ([handoff](docs/project/ENROLMENT_INTERFACE_PROPOSAL.md)) |
 | Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
 | Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
 | Studio modes | Preview/Rehearsal simulate typed actions; explicitly selected LIVE enables manual actions without a model. Live gestures remain blocked |
@@ -106,7 +106,7 @@ For the controller evaluation, use `scripts/replay_controller.py --trace PATH --
 
 ## Run the prototype
 
-Initial installation needs internet. Clone the repository or extract a fresh source ZIP; create the Python environment on the computer that will run the app.
+Initial installation needs internet. Clone the repository or extract a fresh source ZIP; create the Python environment on the computer that will run the app. On Windows, use the [runtime-path recovery instructions](docs/WINDOWS_LAPTOP.md#2-install-python-and-dependencies) if MediaPipe reports an inaccessible non-ASCII path; do not copy `.venv` between computers.
 
 ### Windows
 

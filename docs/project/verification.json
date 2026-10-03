@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-02T17:04:28.765464+00:00",
+  "timestamp_utc": "2026-10-03T06:05:37.052264+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.236,
+      "seconds": 1.216,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 2.132,
-      "stdout": "Success: no issues found in 69 source files\n",
+      "seconds": 9.829,
+      "stdout": "Success: no issues found in 70 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 242.599,
-      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 37%]\n........................................................................ [ 50%]\n....................s................................................... [ 63%]\n........................................................................ [ 75%]\n........................................................................ [ 88%]\n...................................................................      [100%]\n570 passed, 1 skipped in 231.07s (0:03:51)\n",
+      "seconds": 263.356,
+      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 37%]\n........................................................................ [ 50%]\n......................s................................................. [ 62%]\n........................................................................ [ 75%]\n........................................................................ [ 87%]\n......................................................................   [100%]\n573 passed, 1 skipped in 247.65s (0:04:07)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 3.804,
+      "seconds": 4.387,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 4.545,
+      "seconds": 3.47,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 2.983,
+      "seconds": 2.273,
       "stdout": "",
       "stderr": ""
     }
@@ -57,31 +57,39 @@
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
   ],
-  "followup_verification": {
-    "timestamp_utc": "2026-10-02T17:06:16.893643+00:00",
-    "reason": "After the full 570-test run, independent review repaired only unavailable Git-status provenance in packaging. These checks validate that final delta including its new regression.",
-    "checks": [
+  "native_model_checks": {
+    "method": "Windows x64 subprocess checks using the installed pinned MediaPipe and generated blank images.",
+    "camera_opened": false,
+    "model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+    "cases": [
       {
-        "command": "python -m pytest -q tests/test_package_release.py",
-        "returncode": 0,
-        "seconds": 5.739,
-        "stdout": ".............                                                            [100%]\n13 passed in 4.78s\n",
-        "stderr": ""
+        "case": "ASCII package and ASCII model filename via old path API",
+        "result": "PASS: zero hands"
       },
       {
-        "command": "python -m ruff check gestureforge tests scripts",
-        "returncode": 0,
-        "seconds": 0.213,
-        "stdout": "All checks passed!\n",
-        "stderr": ""
+        "case": "ASCII package and Chinese model filename via old path API",
+        "result": "REPRODUCED: FileNotFoundError for existing model"
       },
       {
-        "command": "python -m mypy gestureforge scripts tests",
-        "returncode": 0,
-        "seconds": 0.728,
-        "stdout": "Success: no issues found in 69 source files\n",
-        "stderr": ""
+        "case": "ASCII package and Chinese model filename via bytes API",
+        "result": "PASS: zero hands"
+      },
+      {
+        "case": "Copied Chinese package directory and Chinese model filename via bytes API",
+        "result": "PASS: zero hands; native library directory confirmed under copied package"
+      },
+      {
+        "case": "Updated check_environment.py --model under Chinese project directory",
+        "result": "PASS: checksum matched; zero hands"
+      },
+      {
+        "case": "PowerShell setup.ps1 parse",
+        "result": "PASS: no syntax errors"
       }
+    ],
+    "limitations": [
+      "The original Hau Jie get_runfiles_dir_helper.cc fatal error was not reproduced or proved resolved.",
+      "No new webcam, participant, independent-machine or native macOS acceptance."
     ]
   }
 }

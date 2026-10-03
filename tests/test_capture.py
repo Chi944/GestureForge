@@ -14,7 +14,7 @@ def _landmarks():
 def test_hand_camera_reads_unmirrored_frame_and_releases_resources(monkeypatch, tmp_path) -> None:
     from gestureforge import capture
 
-    asset = tmp_path / "hand_landmarker.task"
+    asset = tmp_path / "\u4e2d\u6587 hand_landmarker.task"
     asset.write_bytes(b"model")
     bgr_frame: np.ndarray = np.zeros((3, 4, 3), dtype=np.uint8)
 
@@ -63,12 +63,12 @@ def test_hand_camera_reads_unmirrored_frame_and_releases_resources(monkeypatch, 
     class FakeHandLandmarker:
         @staticmethod
         def create_from_options(options):
-            assert str(asset.resolve()) in str(options.base_options.model_asset_path)
+            assert options.base_options.model_asset_buffer == b"model"
             return fake_detector
 
     fake_mp = SimpleNamespace(
         tasks=SimpleNamespace(
-            BaseOptions=lambda model_asset_path: SimpleNamespace(model_asset_path=model_asset_path),
+            BaseOptions=lambda model_asset_buffer: SimpleNamespace(model_asset_buffer=model_asset_buffer),
             vision=SimpleNamespace(
                 HandLandmarkerOptions=lambda **kwargs: SimpleNamespace(**kwargs),
                 RunningMode=SimpleNamespace(VIDEO="VIDEO"),

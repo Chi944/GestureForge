@@ -25,7 +25,7 @@ py -3.11 -c "import sys, struct; print(sys.version); print(struct.calcsize('P') 
 
 The output must show Python **3.11** and **64** bits. Newer Python minor versions are not the tested dependency combination.
 
-Double-click **setup.cmd** in the extracted folder while online. It creates a local environment, installs pinned dependencies and downloads/checks the hand model. Wait for `Setup complete`. It does not change the machine's persistent PowerShell execution policy.
+Double-click **setup.cmd** in the extracted folder while online. It creates a local environment, installs pinned dependencies and downloads/checks the hand model with a blank-image native check before reporting success. Wait for `Setup complete`. It does not change the machine's persistent PowerShell execution policy.
 
 If the Windows launcher cannot find Python, open PowerShell in the extracted folder and supply the real executable path:
 
@@ -36,6 +36,8 @@ If the Windows launcher cannot find Python, open PowerShell in the extracted fol
 If installation fails, keep the displayed error and resolve it before continuing. Do not move or rename the folder after setup; virtual environments contain absolute paths. To install elsewhere, extract a fresh copy there and run setup again.
 
 If setup reports an incompatible existing `.venv`, close GestureForge, rename that project-local folder to an unused name such as `.venv-old`, then rerun setup with the correct `-PythonExe`. Supplying a new executable does not replace an existing environment. Your `data` folder is separate and should be preserved.
+
+If MediaPipe reports `get_runfiles_dir_helper.cc` or an inaccessible non-ASCII runtime path, keep the original folder and private files intact. Extract a fresh source copy to an ASCII-only writable destination such as `C:\GestureForge` and rerun setup there. Do not copy a `.venv` from the failing folder. Local review reproduced a native MediaPipe filename failure with Chinese characters in the old filename API; current model-byte loading and `check_environment.py --model` under a copied Chinese project folder both succeeded. The earlier fatal runtime error was not reproduced here and still needs a retest on Hau Jie's laptop.
 
 ## 3. Open and verify
 

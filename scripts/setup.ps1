@@ -57,5 +57,5 @@ Invoke-Checked 'Could not initialise pip.' $VenvPython @('-m', 'ensurepip', '--u
 Invoke-Checked 'Dependency installation failed.' $VenvPython @('-m', 'pip', 'install', '-r', 'requirements.lock')
 Invoke-Checked 'Application installation failed.' $VenvPython @('-m', 'pip', 'install', '--no-deps', '-e', '.')
 Invoke-Checked 'Model asset verification failed.' $VenvPython @('scripts\download_model.py')
-Invoke-Checked 'Environment verification failed.' $VenvPython @('scripts\check_environment.py')
+Invoke-Checked 'Native model verification failed. Keep the error output. If it names get_runfiles_dir_helper.cc or an inaccessible non-ASCII runtime path, extract a fresh copy under an ASCII-only path such as C:\GestureForge and rerun setup; preserve your data and do not copy .venv.' $VenvPython @('scripts\check_environment.py', '--model')
 Write-Output 'Setup complete. Launch with run.cmd, or use: .\.venv\Scripts\python.exe -m gestureforge'

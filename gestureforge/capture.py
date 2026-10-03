@@ -34,7 +34,8 @@ class HandCamera:
         self.cap = None
         try:
             options = mp.tasks.vision.HandLandmarkerOptions(
-                base_options=mp.tasks.BaseOptions(model_asset_path=str(asset.resolve())),
+                # Python handles Unicode paths; the native Windows file reader may not.
+                base_options=mp.tasks.BaseOptions(model_asset_buffer=asset.read_bytes()),
                 running_mode=mp.tasks.vision.RunningMode.VIDEO,
                 num_hands=2,
             )

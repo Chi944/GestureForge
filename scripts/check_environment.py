@@ -27,11 +27,12 @@ def main():
         expected = json.loads((assets / "model_manifest.json").read_text(encoding="utf-8"))
         if not asset.is_file():
             raise SystemExit("Missing model. Run: python scripts/download_model.py while online.")
-        digest = hashlib.sha256(asset.read_bytes()).hexdigest()
+        model_bytes = asset.read_bytes()
+        digest = hashlib.sha256(model_bytes).hexdigest()
         if digest != expected["sha256"]:
             raise SystemExit("Model checksum mismatch. Replace the model through verified setup.")
         options = mp.tasks.vision.HandLandmarkerOptions(
-            base_options=mp.tasks.BaseOptions(model_asset_path=str(asset)),
+            base_options=mp.tasks.BaseOptions(model_asset_buffer=model_bytes),
             running_mode=mp.tasks.vision.RunningMode.VIDEO,
             num_hands=2,
         )
