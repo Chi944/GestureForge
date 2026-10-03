@@ -73,6 +73,72 @@ def prepare_fixed_latency_window(h):
     return h.now, latency
 
 
+@pytest.mark.parametrize('pose', ['G2', 'NEUTRAL'])
+def test_single_pose_diagnostic_saves_only_selected_window_and_never_passes(pose, tmp_path):
+    h = Harness()
+    h.attempt.select_diagnostic_pose(pose)
+    h.window(pose)
+    result = h.attempt.result()
+    assert len(result.trials) == 1
+    assert result.trials[0].expected == pose
+    assert result.trials[0].outcome == 'correct'
+    assert result.status == 'cancelled'
+    assert result.protocol_version == 'gf-p12-single-pose-diagnostic-v1'
+    assert 'diagnostic complete' in result.reason
+    assert not h.attempt.passed_for(h.revision)
+    assert h.router.state == 'PAUSED'
+    saved = json.loads(h.attempt.save(tmp_path).read_text())
+    assert saved['simulation_only'] is True
+    assert len(saved['trials']) == 1
+    assert saved['protocol_version'] != 'gf-p12-v1'
+
+
+def test_diagnostic_cannot_skip_or_replace_an_already_prepared_attempt():
+    h = Harness()
+    with pytest.raises(ValueError, match='enrolled pose'):
+        h.attempt.select_diagnostic_pose('UNKNOWN')
+    h.attempt.select_diagnostic_pose('NEUTRAL')
+    h.attempt.select_diagnostic_pose(None)
+    assert len(h.attempt.sequence) == 50
+    h.attempt.prepare(h.now)
+    with pytest.raises(ValueError, match='before preparing'):
+        h.attempt.select_diagnostic_pose('NEUTRAL')
+
+
+def test_single_pose_widget_uses_existing_capture_and_saves_once(tmp_path):
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.practice_widget import PersonalRehearsalWidget
+    app = QApplication.instance() or QApplication([])
+    h = Harness()
+    widget = PersonalRehearsalWidget(h.attempt, tmp_path, clock=lambda: h.now)
+    results: list[PracticeResult] = []
+    releases = []
+    widget.result_ready.connect(results.append)
+    widget.capture_release_requested.connect(lambda: releases.append(True))
+    widget.test_selection.setCurrentIndex(4)
+    assert h.attempt.expected is not None
+    assert h.attempt.expected.expected == 'NEUTRAL'
+    assert 'Diagnostic only | 0/1' in widget.prompt.text()
+    widget.prepare()
+    assert not widget.test_selection.isEnabled()
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    widget.refresh()
+    widget.begin_button.click()
+    start = h.now
+    while h.now < start + 4.89:
+        h.feed('NEUTRAL')
+    h.now = start + 5.21
+    widget.tick()
+    assert '1/1 completed | diagnostic complete' in widget.prompt.text()
+    assert len(results) == len(releases) == 1
+    assert len(list(tmp_path.glob('practice-*.json'))) == 1
+    assert results[0].trials[0].outcome == 'correct'
+    widget.close()
+    app.processEvents()
+    assert len(results) == len(releases) == 1
+
+
 def test_full_protocol_uses_real_router_and_persistent_simulated_dispatcher(tmp_path):
     h = Harness()
     for prompt in h.attempt.sequence:

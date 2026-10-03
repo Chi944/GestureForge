@@ -20,6 +20,7 @@ from .routing import RoutingSession
 from .storage import atomic_write_json
 
 PROTOCOL_VERSION = 'gf-p12-v1'
+DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v1'
 TRIALS_PER_POSE = 10
 WINDOW_SECONDS = 5.0
 NEGATIVE_CUES = (
@@ -117,6 +118,8 @@ feeds the supplied router exactly once; the shell must not process packets again
             for repetition in range(1, 11)
             for label in (*gesture_ids, 'NEUTRAL')
         ) + tuple(PracticePrompt('NEGATIVE', i + 1, cue) for i, cue in enumerate(negative_cues))
+        self._full_sequence = self.sequence
+        self.diagnostic_pose: str | None = None
         self.status = 'idle'
         self.reason = 'Prepare the next trial. Actions remain simulated.'
         self._trials: list[PracticeTrial] = []
@@ -143,6 +146,18 @@ feeds the supplied router exactly once; the shell must not process packets again
     @property
     def completed(self) -> int:
         return len(self._trials)
+
+    def select_diagnostic_pose(self, pose: str | None) -> None:
+        """Select a separate one-window probe before any capture is prepared."""
+        if self.status != 'idle' or self._prepared_at is not None or self._trials:
+            raise ValueError('choose the test before preparing the first trial')
+        if pose is not None and pose not in (*self.gesture_ids, 'NEUTRAL'):
+            raise ValueError('choose an enrolled pose or NEUTRAL')
+        self.diagnostic_pose = pose
+        self.sequence = (self._full_sequence if pose is None else
+                         (PracticePrompt(pose, 1, 'Hold ' + pose + ' for the full window.'),))
+        self.reason = ('Prepare the next trial. Actions remain simulated.' if pose is None else
+                       'Single-pose diagnostic only. This cannot pass the full rehearsal.')
 
     def remaining_window_seconds(self, now: float) -> float | None:
         """Display-only countdown; reading it does not advance or score a trial."""
@@ -361,6 +376,11 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.router.pause()
         self._started = None
         self.status, self.reason = 'idle', reason
+        if self.diagnostic_pose is not None:
+            # Close the host's temporary practice context using its existing
+            # terminal lifecycle; a diagnostic can never certify readiness.
+            self.cancel('Single-pose diagnostic complete. Full 50-window rehearsal not performed.')
+            return
         if self.completed == len(self.sequence):
             counts = self._counts()
             good = (all(value >= 9 for value in counts.values())
@@ -403,7 +423,8 @@ feeds the supplied router exactly once; the shell must not process packets again
             guidance.append('Negative actions occurred. Inspect transition evidence before changing thresholds.')
         if any(not t.coverage_ok for t in self._trials):
             guidance.append('Incomplete capture: resolve timing/interruption before repeating the attempt.')
-        return PracticeResult(self.attempt_id, self.revision, PROTOCOL_VERSION,
+        protocol = DIAGNOSTIC_PROTOCOL_VERSION if self.diagnostic_pose is not None else PROTOCOL_VERSION
+        return PracticeResult(self.attempt_id, self.revision, protocol,
                               self._base.profile_id, self._base.model_version,
                               self.status, self.reason, tuple(self._trials),
                               tuple(counts.items()), negatives, tuple(guidance))
@@ -412,6 +433,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         result = self.result()
         return (
             result.status == 'passed'
+            and result.protocol_version == PROTOCOL_VERSION
+            and len(result.trials) == 50
             and revision == result.behavior_revision
             and self.current_revision() == result.behavior_revision
         )
