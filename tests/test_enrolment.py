@@ -148,6 +148,114 @@ def test_fault_retains_partial_trial_and_previous_trials(plan, tmp_path):
     assert all(r.validity_reason == 'Camera interrupted' for r in bundle.records[-4:])
 
 
+def test_stop_before_hold_ends_can_preserve_five_valid_slots(plan, tmp_path):
+    """All-valid data cannot prove that Stop happened after the hold ended."""
+    session = EnrolmentSession(plan, tmp_path, 'capture1', 'TEST', consent=True)
+    session.begin(0.)
+    for index, offset in enumerate(OFFSETS):
+        at = 2. + offset + .01
+        session.advance(at, observation(at, index))
+    assert session.state == 'hold'
+    assert not session.manifest.exists()
+    session.stop(3.9)  # still 100 ms before the displayed hold ends
+    bundle = load_dataset(session.manifest)
+    assert session.state == 'cancelled'
+    assert len(bundle.records) == len(bundle.valid_records()) == 5
+    assert all(not record.validity_reason for record in bundle.records)
+
+
+def test_widget_button_during_hold_retains_partial_slots_and_invalid_feedback(tmp_path):
+    """Exercise actual Qt clicks; generated observations do not prove hardware timing."""
+    os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.enrolment_widget import EnrolmentWidget
+    app = QApplication.instance() or QApplication([])
+    assert app is not None
+    now = 0.
+    widget = EnrolmentWidget(tmp_path, clock=lambda: now)
+    releases: list[str] = []
+    widget.capture_release_requested.connect(releases.append)
+    try:
+        widget.participant.setText('TEST')
+        widget.setup.setText('Synthetic Stop/feedback/reload regression')
+        widget.trials.setValue(2)
+        widget.consent.setChecked(True)
+        QTest.mouseClick(widget.request_button, Qt.MouseButton.LeftButton)
+        token = widget.request_id
+        assert widget.attach_capture(token, 'capture1', 'TEST')
+        QTest.mouseClick(widget.begin_button, Qt.MouseButton.LeftButton)
+        for index, offset in enumerate(OFFSETS):
+            now = 2. + offset + .01
+            widget.receive_observation(replace(observation(now, index), hand_count=0,
+                                               validity_reason='no_hand'))
+            assert 'Invalid: no_hand' in widget.feedback.text()
+        now = 4.1
+        widget.tick()
+        session = widget.session
+        assert session is not None
+        first = load_dataset(session.manifest)
+        assert len(first.records) == 5 and not first.valid_records()
+        assert 'Saved 0/5' in widget.feedback.text()
+
+        now = 5.2
+        widget.tick()
+        QTest.mouseClick(widget.begin_button, Qt.MouseButton.LeftButton)
+        now = 7.41
+        widget.receive_observation(observation(now, 10))
+        now = 7.5
+        widget.tick()
+        assert 'Hold still: 1.7s' in widget.cue.text()
+        QTest.mouseClick(widget.cancel_button, Qt.MouseButton.LeftButton)
+        assert session.state == 'cancelled'
+        assert 'Collection stopped' in widget.cue.text()
+        assert releases == [token]
+        manifest = session.manifest
+        widget.close()
+        # Re-read after widget shutdown, not from its in-memory lists.
+        bundle = load_dataset(manifest)
+        assert len(bundle.records) == 10 and len(bundle.valid_records()) == 1
+        assert bundle.records[:5] == first.records
+        assert bundle.records[5].valid
+        assert all(r.validity_reason == 'Collection cancelled' for r in bundle.records[6:])
+    finally:
+        widget.close()
+
+
+def test_mouse_press_only_does_not_stop_until_button_release(tmp_path):
+    """Qt clicked means press and release; a held mouse button still permits samples."""
+    os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.enrolment_widget import EnrolmentWidget
+    app = QApplication.instance() or QApplication([])
+    assert app is not None
+    now = 0.
+    widget = EnrolmentWidget(tmp_path, clock=lambda: now)
+    try:
+        widget.participant.setText('TEST')
+        widget.setup.setText('Synthetic Qt click timing')
+        widget.consent.setChecked(True)
+        widget.request_collection()
+        assert widget.attach_capture(widget.request_id, 'capture1', 'TEST')
+        widget.begin_trial()
+        now = 2.21
+        widget.receive_observation(observation(now, 0))
+        QTest.mousePress(widget.cancel_button, Qt.MouseButton.LeftButton)
+        assert widget.session is not None and widget.session.state == 'hold'
+        for index, offset in enumerate(OFFSETS[1:], start=1):
+            now = 2. + offset + .01
+            widget.receive_observation(observation(now, index))
+        now = 3.9
+        QTest.mouseRelease(widget.cancel_button, Qt.MouseButton.LeftButton)
+        assert widget.session.state == 'cancelled'
+        assert len(load_dataset(widget.session.manifest).valid_records()) == 5
+    finally:
+        widget.close()
+
+
 def test_failed_save_retries_same_trial_without_duplicates(plan, tmp_path, monkeypatch):
     session = EnrolmentSession(plan, tmp_path, 'capture1', 'TEST', consent=True)
     finish_trial(session, 0.)

@@ -128,3 +128,46 @@ the two-second hold; preservation of an interrupted/partial hold and visible
 invalid-sample feedback still need a separate physical check. The full current
 version collection/profile workflow recording also remains outstanding. The
 private manifest and screenshot are not included in Git.
+
+## Stop timing investigation and clarification
+
+The later physical attempt contains three fully populated trials (15/15 valid
+samples). Both private manifests reload through `load_dataset` successfully.
+Neither dataset records the time at which the Stop handler ran, so neither
+establishes whether that handler ran inside or outside Hold.
+
+The five scheduled slots finish around 1.8 seconds into a two-second hold. A new
+regression demonstrates Stop at 1.9 seconds into Hold with all five slots already
+valid: the resulting stopped trial has 5/5 valid samples and no interruption
+reason. Thus earlier wording calling these records "complete trials" refers to
+their five populated slots, not proof that the hold duration had ended. Do not
+infer that the user clicked at the wrong time from these records.
+
+Qt emits the connected `clicked` signal on button release. Another regression
+shows sampling continues while the mouse button is held down. This is normal
+button behavior and a possible timing distinction, not evidence that the user
+held the button down in either attempt.
+
+The button-level regression supplies a no-hand observation, checks the visible
+`Invalid: no_hand` text, saves that trial, then clicks Stop early in a second
+hold. It verifies one retained valid slot plus four `Collection cancelled`
+slots, prior-trial preservation, capture release once, and successful reload
+after widget close. Enrolment/component-host checks: **47 passed**; Ruff and mypy
+for the changed test file passed. These are generated-observation tests, not a
+new hardware acceptance result. No production defect was reproduced and no
+runtime behavior was changed. At that checkpoint, the physical
+invalid-feedback/partial-slot check remained pending; the follow-up below
+supplies that evidence.
+
+## Follow-up physical Stop evidence — 3 October
+
+After syncing reviewed main `ab0305d`, Hau Jie confirmed that the interface
+showed no-hand feedback and then “Collection stopped”. The latest saved session
+contains two trials: the first retains five `no_hand` slots; the second retains
+three `no_hand` slots and two `Collection cancelled` slots. The interrupted
+trial therefore preserves both observed invalid slots and unfilled cancelled
+slots, while retaining the previously saved trial. The existing `load_dataset`
+loader successfully reloaded all ten slots and validated the feature sidecar.
+This supplies the previously missing partial-slot Stop evidence. The short
+collection/profile workflow recording and measured Practice acceptance remain
+separate outstanding evidence.

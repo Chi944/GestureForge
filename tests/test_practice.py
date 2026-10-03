@@ -224,7 +224,7 @@ def test_pre_begin_neutral_preserves_controller_continuity_for_fixed_latency_str
     assert trial.coverage_ok
 
 
-def test_pre_begin_command_after_begin_cancels_without_trial_credit():
+def test_pre_begin_command_after_begin_cancels_without_trial_credit(tmp_path):
     h = Harness()
     _started, latency = prepare_fixed_latency_window(h)
     h.feed_at('G1', captured=10.875, received=10.875 + latency)
@@ -232,6 +232,58 @@ def test_pre_begin_command_after_begin_cancels_without_trial_credit():
     assert result.status == 'cancelled'
     assert result.trials[0].outcome == 'interrupted'
     assert result.trials[0].actions == ()
+    assert 'no command was emitted' in result.reason
+    saved = json.loads(h.attempt.save(tmp_path).read_text())
+    timing = saved['timing_diagnostics']
+    assert timing['last_begin_attempt']['accepted'] is True
+    assert timing['boundary_prediction']['captured_at'] < timing['last_begin_attempt']['requested_at']
+    assert timing['boundary_prediction']['received_at'] > timing['last_begin_attempt']['requested_at']
+    assert timing['boundary_prediction']['command_emitted'] is False
+
+
+def test_rejected_begin_records_reason_and_successful_retry(tmp_path):
+    h = Harness()
+    h.attempt.prepare(h.now)
+    with pytest.raises(ValueError, match='fresh capture'):
+        h.attempt.begin_window(h.now)
+    failed = json.loads(h.attempt.save(tmp_path).read_text())['timing_diagnostics']
+    assert failed['last_begin_attempt']['accepted'] is False
+    assert 'fresh capture' in failed['last_begin_attempt']['error']
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    h.attempt.begin_window(h.now)
+    assert h.attempt.status == 'measuring'
+    assert h.attempt.last_begin_attempt is not None
+    assert h.attempt.last_begin_attempt['accepted'] is True
+    assert 'error' not in h.attempt.last_begin_attempt
+
+
+def test_widget_confirms_begin_success_and_distinguishes_rejected_click(tmp_path):
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.practice_widget import PersonalRehearsalWidget
+    app = QApplication.instance() or QApplication([])
+    h = Harness()
+    widget = PersonalRehearsalWidget(h.attempt, tmp_path, clock=lambda: h.now)
+    widget.prepare()
+    widget.begin()
+    assert 'Window not started' in widget.feedback.text()
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    widget.refresh()
+    widget.begin_button.click()
+    assert h.attempt.status == 'measuring'
+    assert 'Measurement started' in widget.feedback.text()
+    assert '5.0 seconds remaining' in widget.countdown.text()
+    h.now += 2.5
+    widget.refresh()
+    assert '2.5 seconds remaining' in widget.countdown.text()
+    assert h.attempt.completed == 0
+    h.now += 2.5
+    widget.refresh()
+    assert 'finishing the trial' in widget.countdown.text()
+    assert h.attempt.status == 'measuring'
+    widget.close()
+    app.processEvents()
 
 
 def test_in_window_packet_delivered_at_drain_boundary_is_scored():
