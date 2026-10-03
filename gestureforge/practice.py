@@ -247,7 +247,9 @@ feeds the supplied router exactly once; the shell must not process packets again
             return
         invalid_reason = self._prediction_invalid_reason(prediction, now)
         if invalid_reason is not None:
-            if self._recover_stale_preparation_packet(prediction, now, invalid_reason):
+            if self._recover_stale_premeasurement_packet(prediction, now, invalid_reason):
+                return
+            if self.status in {'passed', 'failed', 'cancelled', 'expired'}:
                 return
             self._record_capture_validation(prediction, now, invalid_reason, recovered=False)
             self.cancel('Invalid or stale capture packet; preserve evidence and retry.')
@@ -526,27 +528,30 @@ feeds the supplied router exactly once; the shell must not process packets again
             return 'stale_prediction'
         return None
 
-    def _recover_stale_preparation_packet(self, prediction: Prediction, now: float, reason: str) -> bool:
-        if reason != 'stale_prediction' or self.status != 'preparing':
+    def _recover_stale_premeasurement_packet(self, prediction: Prediction, now: float, reason: str) -> bool:
+        original_status = self.status
+        if reason != 'stale_prediction' or original_status not in {'preparing', 'armed'}:
             return False
         self.tick(now)
-        if self.status != 'preparing':
-            self._record_capture_validation(prediction, now, reason, recovered=False)
+        if self.status not in {'preparing', 'armed'}:
+            self._record_capture_validation(prediction, now, reason, recovered=False, phase=original_status)
             return False
         event = self.router.process(prediction, now)
         recovered = event is None
-        self._record_capture_validation(prediction, now, reason, recovered=recovered)
+        self._record_capture_validation(prediction, now, reason, recovered=recovered, phase=original_status)
         self._last_frame, self._last_packet = prediction.frame_id, prediction.timestamp
-        self.reason = 'Stale startup capture dropped; show fresh NEUTRAL until READY.'
+        if recovered:
+            self.status = 'preparing'
+            self.reason = 'Stale setup capture dropped; show fresh NEUTRAL until READY.'
         return recovered
 
     def _record_capture_validation(self, prediction: Prediction, now: float, reason: str, *,
-                                   recovered: bool) -> None:
+                                   recovered: bool, phase: str | None = None) -> None:
         captured = prediction.timestamp
         captured_at = captured if type(captured) in (int, float) and math.isfinite(captured) else None
         self.last_capture_validation = {
             'reason': reason,
-            'phase': self.status,
+            'phase': phase or self.status,
             'received_at': now,
             'captured_at': captured_at,
             'age_seconds': (now - captured_at if captured_at is not None else None),

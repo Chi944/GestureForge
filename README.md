@@ -30,6 +30,11 @@ The final project is now scoped as **GestureForge Studio** for corporate trainin
 
 Current project foundation on `main`:
 
+Practice recovers from a late camera frame while waiting for **Begin**: it keeps
+the completed windows, leaves capture running and asks for a fresh NEUTRAL hold.
+The five-second measurement and 200 ms timing checks remain unchanged. See the
+[Practice guide](docs/USER_GUIDE.md) for recovery and saved-result instructions.
+
 | Area | Status |
 | :--- | :--- |
 | Shared routing contract | Version-1 design frozen and independently reviewed: Try Now, optional Personalise, one action per slot and explicit context activation; implemented routing preserves stale-event and hold/rearm protection |

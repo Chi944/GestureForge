@@ -107,7 +107,12 @@ readiness, and this PR does not enable LIVE gestures.
 
 Every measured window requires fresh packets across the full interval, using the
 existing 0.2-second gap/age limits. Missing frames cannot count as safe negatives.
-Wrong-generation packets do not count; malformed/stale packets cancel. Camera
+Wrong-generation packets do not count; malformed/out-of-order packets cancel.
+Otherwise valid stale packets before Begin (preparing or armed) are dropped:
+reset to preparing, require fresh neutral arming, retain prior completed windows
+and the original 30-second preparation deadline. Record the original phase in
+capture diagnostics and advance the packet watermark without measurement credit.
+Stale packets after Begin still cancel. Camera
 faults and revision changes retain partial evidence and prevent a pass.
 
 ## LATCHED diagnostic and remaining human checks

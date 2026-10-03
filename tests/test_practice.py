@@ -573,17 +573,77 @@ def test_stale_preparation_packet_at_timeout_preserves_timeout_cancel():
     assert result.trials[0].outcome == 'interrupted'
 
 
-def test_stale_packet_only_recovers_while_preparing():
+def test_armed_stale_packet_recovers_before_begin_and_preserves_completed_trials():
     h = Harness()
+    h.window('G1')
+    h.window('G2')
+    assert len(h.attempt.result().trials) == 2
     h.attempt.prepare(h.now)
     for _ in range(6):
         h.feed('NEUTRAL')
     assert h.attempt.status == 'armed'
     snap = h.router.snapshot
+    received = h.now + 0.35
     stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now + 0.1,
                        'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, received)
+    h.now = received
+    h.frame += 1
+    assert h.attempt.status == 'preparing'
+    assert h.router.snapshot == snap
+    assert h.router.state == 'WAIT_NEUTRAL'
+    assert len(h.attempt.result().trials) == 2
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['reason'] == 'stale_prediction'
+    assert h.attempt.last_capture_validation['phase'] == 'armed'
+    assert h.attempt.last_capture_validation['decision'] == 'dropped_and_rearmed'
+    assert h.attempt.last_capture_validation['recovered'] is True
+    with pytest.raises(ValueError, match='fresh capture'):
+        h.attempt.begin_window(h.now)
+    h.feed('NEUTRAL')
+    with pytest.raises(ValueError, match='READY'):
+        h.attempt.begin_window(h.now)
+    for _ in range(3):
+        h.feed('NEUTRAL')
+    assert h.attempt.status == 'armed'
+
+
+def test_armed_stale_packet_at_timeout_preserves_timeout_cancel():
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    assert h.attempt.status == 'armed'
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now + 29.1,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, h.now + 29.4)
+    result = h.attempt.result()
+    assert result.status == 'cancelled'
+    assert result.reason == 'Preparation timed out; review capture and NEUTRAL evidence.'
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['phase'] == 'armed'
+
+
+def test_packet_after_armed_stale_recovery_must_still_advance_monotonic_watermark():
+    h = Harness()
+    snap = h.attempt.prepare(h.now)
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    assert h.attempt.status == 'armed'
+    stale_frame = h.frame + 1
+    stale = Prediction(snap.session_id, snap.profile_id, stale_frame, h.now + 0.1,
+                       'NEUTRAL', True, snap.model_version)
     h.attempt.receive(stale, h.now + 0.35)
+    assert h.attempt.status == 'preparing'
+    followup = Prediction(snap.session_id, snap.profile_id, stale_frame, h.now + 0.45,
+                          'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(followup, h.now + 0.45)
     assert h.attempt.result().status == 'cancelled'
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['reason'] == 'out_of_order_frame'
+
+
+def test_stale_packet_during_measured_window_still_cancels():
     h = Harness()
     h.prepare()
     snap = h.router.snapshot

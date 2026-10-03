@@ -269,6 +269,37 @@ final 42-control Setup text-fit check passed at 900x620 and 1150x740. Independen
 code review approves; capture-diagnostic review is clear. These are software and
 layout checks, not another physical webcam trial. Actions remains manual-only.
 
+## 4 October - recovery while waiting for Begin
+
+On `965edb8`, bounded P01 BOOKMARK and NEUTRAL diagnostics completed correctly
+with valid capture coverage. A later full attempt completed five correct,
+covered windows (NEXT, PREVIOUS, BOOKMARK, NEUTRAL, NEXT), then cancelled in
+the sixth window's armed phase before Begin. Its saved capture diagnostic
+records an otherwise valid 203 ms-old frame against the 200 ms freshness limit;
+there were no measured frames or commands in that interrupted window. This
+identifies a premeasurement lifecycle problem, not a recognised-gesture miss.
+The original result remains local and unchanged. An earlier separate NEUTRAL
+diagnostic stopped during measurement on a 218 ms-old frame; that remains a
+capture-timing limitation and is not resolved by pre-Begin recovery.
+
+Recovery now treats preparing and armed-before-Begin consistently. It discards
+the stale input, returns to preparing with a fresh NEUTRAL requirement, keeps
+the same camera and completed results, and preserves the original 30-second
+deadline. It records the original armed phase and advances ordering checks
+without counting the dropped packet as measured evidence. Malformed/out-of-order
+packets and measured-phase stale input still cancel. No thresholds, scoring,
+readiness permissions or historical participant results were relaxed. A cancelled
+old attempt cannot be resumed under this revision or combined into a new pass.
+
+The host regression reproduced this exact failure after five completed windows
+before the correction; the normal control case passed. Final verification passed
+**723 tests with 1 unsupported Windows symlink skip**, Ruff, mypy,
+both GUI startup modes and synthetic evaluation. Both normal and recovered
+50-window host regressions pass; independent code review approves. Raw check
+outputs, source hashes and review scope are recorded in `verification.json`.
+Physical acceptance of the updated full protocol remains open; no completed-task
+weight is added.
+
 ## Next deliverables
 
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.

@@ -71,9 +71,13 @@ interruption messages cannot be retrospectively assigned a cause. Local timing
 diagnostics retain the latest prepared trial's Begin attempt, any pre-Begin
 boundary prediction, and its latest invalid/late capture condition. They are
 not a full timeline of physical poses. An otherwise valid late frame during
-preparation is discarded and resets neutral arming; the original 30-second
-deadline still applies. Late input after arming or during measurement still
-interrupts the attempt and preserves the result.
+preparation, including READY while waiting for Begin, is discarded and resets
+neutral arming. The camera stays open and completed windows remain in the same
+attempt. Hold NEUTRAL again until READY before clicking Begin; the original
+30-second preparation deadline still applies. Late input during measurement,
+malformed packets and out-of-order packets still interrupt the attempt and
+preserve the result. A previously cancelled attempt cannot be resumed or combined
+with a new attempt for a full-protocol pass.
 
 Practice is the longer GF-P12 measurement workflow, separate from **Start/retry readiness**. It uses the loaded recogniser, shared camera, hold/rearm controller and existing dispatcher; every action is simulated. A passed result does not enable LIVE gestures.
 

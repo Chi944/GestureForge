@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T19:33:54.795578+00:00",
+  "timestamp_utc": "2026-10-03T21:17:09.030931+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.22,
+      "seconds": 1.708,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 1.397,
+      "seconds": 3.085,
       "stdout": "Success: no issues found in 81 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 297.7,
-      "stdout": "........................................................................ [ 10%]\n........................................................................ [ 20%]\n........................................................................ [ 30%]\n........................................................................ [ 40%]\n........................................................................ [ 50%]\n..........s............................................................. [ 60%]\n........................................................................ [ 70%]\n........................................................................ [ 80%]\n........................................................................ [ 90%]\n.....................................................................    [100%]\n716 passed, 1 skipped in 282.87s (0:04:42)\n",
+      "seconds": 386.505,
+      "stdout": "........................................................................ [  9%]\n........................................................................ [ 19%]\n........................................................................ [ 29%]\n........................................................................ [ 39%]\n........................................................................ [ 49%]\n..............s......................................................... [ 59%]\n........................................................................ [ 69%]\n........................................................................ [ 79%]\n........................................................................ [ 89%]\n........................................................................ [ 99%]\n....                                                                     [100%]\n723 passed, 1 skipped in 365.99s (0:06:05)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.128,
+      "seconds": 7.962,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.684,
+      "seconds": 7.298,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 2.755,
+      "seconds": 4.531,
       "stdout": "",
       "stderr": ""
     }
@@ -57,77 +57,22 @@
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
   ],
-  "followup_timestamp_utc": "2026-10-03T19:45:04.843304+00:00",
-  "followup_checks": [
-    {
-      "command": "python -m ruff check gestureforge tests scripts",
-      "returncode": 0,
-      "seconds": 0.22,
-      "stdout": "All checks passed!\n",
-      "stderr": ""
-    },
-    {
-      "command": "python -m mypy gestureforge scripts tests",
-      "returncode": 0,
-      "seconds": 1.397,
-      "stdout": "Success: no issues found in 81 source files\n",
-      "stderr": ""
-    },
-    {
-      "command": "python -m pytest -q tests/test_app.py tests/test_app_layout.py tests/test_app_practice.py tests/test_app_enrolment.py tests/test_practice.py tests/test_practice_guidance.py",
-      "returncode": 0,
-      "seconds": 80.256,
-      "stdout": "........................................................................ [ 32%]\n........................................................................ [ 64%]\n........................................................................ [ 96%]\n.........                                                                [100%]\n225 passed in 76.14s (0:01:16)\n",
-      "stderr": ""
-    },
-    {
-      "command": "python -m gestureforge --smoke-test",
-      "returncode": 0,
-      "seconds": 4.128,
-      "stdout": "",
-      "stderr": ""
-    },
-    {
-      "command": "python -m gestureforge --studio --smoke-test",
-      "returncode": 0,
-      "seconds": 3.684,
-      "stdout": "",
-      "stderr": ""
-    }
-  ],
-  "verification_scope": "Full suite: 716 passed, 1 unsupported Windows symlink skip before the final wrapped-label sizing correction. Initial mypy failure was in a test method stub; corrected to a monkeypatch fixture. The follow-up checks cover the final UI/Practice code, all lint/types, and both startup modes. Initial diagnostic output is retained locally. Generated layouts do not prove live performance. Follow-up includes final Setup reflow and two-column file controls, same-width review updates, corrected grid assertions, and native-font offscreen fixture setup.",
-  "generated_layout_checks": {
-    "method": "Offscreen synthetic frames and workflow states; no real camera or participant recording.",
-    "camera_workflow_checks": 60,
-    "setup_control_measurements": 42,
-    "window_sizes": [
-      [
-        900,
-        620
-      ],
-      [
-        1150,
-        740
-      ]
-    ],
-    "frame_ratios": [
-      "4:3",
-      "16:9"
-    ],
-    "results": [
-      "All four frame corners preserved through resize and scrolling.",
-      "Camera and capture controls remain visible without overlap.",
-      "Long review text and active-tab scroll bottom are reachable.",
-      "All 21 Setup controls fit at each size after the final two-column file grid."
-    ],
-    "limitations": [
-      "Assignment mode was smoke checked, not compared against a prior pixel baseline.",
-      "Generated checks do not validate physical capture performance or another computer."
-    ]
+  "source_base_commit": "965edb89eedcbfd937f33642110868e5f47fc8c3",
+  "validated_changes_sha256": {
+    "gestureforge/practice.py": "dab9f17f1a4d9d8bdf437f6b42f535890fe9d4cbc10f0c3f32ae3405e4911001",
+    "tests/test_practice.py": "f8a0c4c71c79c477aae22b7e89d4eb6191e456974576fe63b1d6c335d7859c29",
+    "tests/test_app_practice.py": "56e3d6409df406b5b30536c5fad91fe230bd840264b8d0e3100bf7fa48305a77"
   },
-  "review": {
-    "code": "APPROVE",
-    "capture_diagnostics": "CLEAR",
-    "note": "Final source and test corrections reviewed independently; no unresolved findings."
+  "regression_reproduction": {
+    "check": "tests/test_app_practice.py::test_practice_completes_full_50_window_host_regression",
+    "before": "Normal 50-window control passed; the injected 203 ms packet before sixth Begin cancelled the attempt and failed the retained-attempt assertion.",
+    "after": "Both cases passed. The recovered run retained five completed windows, camera and generation, required fresh NEUTRAL and completed all 50 windows.",
+    "scope": "Generated predictions through the real Studio host; not a physical webcam result."
+  },
+  "code_review": {
+    "verdict": "APPROVE",
+    "scope": "Pre-Begin stale capture recovery, unit/host regressions and associated documentation.",
+    "conditions": "Full verification green and this report refreshed before publication.",
+    "blocking_findings": 0
   }
 }

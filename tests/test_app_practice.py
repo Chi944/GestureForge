@@ -902,7 +902,8 @@ def test_terminal_practice_release_does_not_fault_restored_context(monkeypatch, 
         window.close()
 
 
-def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tmp_path):
+@pytest.mark.parametrize("late_before_sixth", [False, True])
+def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tmp_path, late_before_sixth):
     import gestureforge.app as app_module
 
     monkeypatch.setattr(app_module, "DEFAULT_STUDIO_STATE_FOLDER", tmp_path / "studio")
@@ -917,7 +918,9 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         previous = window.routing.snapshot
         start_practice(window)
 
-        for expected in [*(label for _ in range(10) for label in ("G1", "G2", "G3", "NEUTRAL")), *("NEGATIVE" for _ in range(10))]:
+        sequence = [*(label for _ in range(10) for label in ("G1", "G2", "G3", "NEUTRAL")),
+                    *("NEGATIVE" for _ in range(10))]
+        for index, expected in enumerate(sequence):
             widget = window.practice_widget
             assert widget is not None
             widget.prepare()
@@ -934,6 +937,27 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
                 feed_window(window, worker, clock, "UNKNOWN", accepted=False, rejection_reason="distance_rejection")
             else:
                 feed_until_armed(window, worker, clock)
+                if late_before_sixth and index == 5:
+                    attempt = window.practice_attempt
+                    assert attempt is not None
+                    completed = attempt.result().trials
+                    assert len(completed) == 5
+                    assert all(trial.outcome == "correct" for trial in completed)
+                    snapshot = window.routing.snapshot
+                    late = prediction(window, clock, "NEUTRAL")
+                    clock.advance(0.193)  # Poll adds 10 ms: the recorded failure was 203 ms old.
+                    worker.packets.append((frame(), late))
+                    window.poll()
+                    assert window.practice_attempt is attempt
+                    assert attempt.status == "preparing"
+                    assert attempt.result().trials == completed
+                    assert window.routing.snapshot == snapshot
+                    assert window.routing.state == "WAIT_NEUTRAL"
+                    assert window.worker is worker and not worker.interrupted
+                    assert not widget.begin_button.isEnabled()
+                    assert "Timing has not started" in widget.countdown.text()
+                    feed_until_armed(window, worker, clock)
+                    assert widget.begin_button.isEnabled()
                 widget.begin()
                 clock.advance(0.05)
                 feed_window(window, worker, clock, expected)
