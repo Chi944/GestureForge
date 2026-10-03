@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T06:05:37.052264+00:00",
+  "timestamp_utc": "2026-10-03T06:49:21.003634+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 1.216,
+      "seconds": 0.581,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 9.829,
+      "seconds": 2.558,
       "stdout": "Success: no issues found in 70 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 263.356,
-      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 37%]\n........................................................................ [ 50%]\n......................s................................................. [ 62%]\n........................................................................ [ 75%]\n........................................................................ [ 87%]\n......................................................................   [100%]\n573 passed, 1 skipped in 247.65s (0:04:07)\n",
+      "seconds": 188.568,
+      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n.........................s.............................................. [ 62%]\n........................................................................ [ 74%]\n........................................................................ [ 87%]\n........................................................................ [ 99%]\n.                                                                        [100%]\n576 passed, 1 skipped in 176.56s (0:02:56)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.387,
+      "seconds": 4.216,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.47,
+      "seconds": 3.608,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 2.273,
+      "seconds": 2.144,
       "stdout": "",
       "stderr": ""
     }
@@ -57,39 +57,59 @@
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
   ],
-  "native_model_checks": {
-    "method": "Windows x64 subprocess checks using the installed pinned MediaPipe and generated blank images.",
+  "previous_native_model_checkpoint": {
+    "source_commit": "63493521b3ae18477990efa6e5a1fe35ed1363d8",
+    "timestamp_utc": "2026-10-03T06:05:37.052264+00:00",
+    "note": "Preserved prior runtime evidence; not rerun for this UI feedback change.",
+    "native_model_checks": {
+      "method": "Windows x64 subprocess checks using the installed pinned MediaPipe and generated blank images.",
+      "camera_opened": false,
+      "model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "cases": [
+        {
+          "case": "ASCII package and ASCII model filename via old path API",
+          "result": "PASS: zero hands"
+        },
+        {
+          "case": "ASCII package and Chinese model filename via old path API",
+          "result": "REPRODUCED: FileNotFoundError for existing model"
+        },
+        {
+          "case": "ASCII package and Chinese model filename via bytes API",
+          "result": "PASS: zero hands"
+        },
+        {
+          "case": "Copied Chinese package directory and Chinese model filename via bytes API",
+          "result": "PASS: zero hands; native library directory confirmed under copied package"
+        },
+        {
+          "case": "Updated check_environment.py --model under Chinese project directory",
+          "result": "PASS: checksum matched; zero hands"
+        },
+        {
+          "case": "PowerShell setup.ps1 parse",
+          "result": "PASS: no syntax errors"
+        }
+      ],
+      "limitations": [
+        "The original Hau Jie get_runfiles_dir_helper.cc fatal error was not reproduced or proved resolved.",
+        "No new webcam, participant, independent-machine or native macOS acceptance."
+      ]
+    }
+  },
+  "rearm_feedback_check": {
+    "method": "Offscreen Qt render with generated predictions at 900x620 logical pixels.",
     "camera_opened": false,
-    "model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
-    "cases": [
-      {
-        "case": "ASCII package and ASCII model filename via old path API",
-        "result": "PASS: zero hands"
-      },
-      {
-        "case": "ASCII package and Chinese model filename via old path API",
-        "result": "REPRODUCED: FileNotFoundError for existing model"
-      },
-      {
-        "case": "ASCII package and Chinese model filename via bytes API",
-        "result": "PASS: zero hands"
-      },
-      {
-        "case": "Copied Chinese package directory and Chinese model filename via bytes API",
-        "result": "PASS: zero hands; native library directory confirmed under copied package"
-      },
-      {
-        "case": "Updated check_environment.py --model under Chinese project directory",
-        "result": "PASS: checksum matched; zero hands"
-      },
-      {
-        "case": "PowerShell setup.ps1 parse",
-        "result": "PASS: no syntax errors"
-      }
+    "checks": [
+      "Prediction, detail, state, progress, Start/Pause and active legend fit while fully scrolled.",
+      "No horizontal overflow with Segoe UI loaded from the Windows font file.",
+      "Rejected LATCHED shows Unrecognised, ambiguity/rearm guidance and 0 percent.",
+      "Accepted NEUTRAL shows WAIT NEUTRAL/50 percent after 150 ms; READY/100 percent after 310 ms.",
+      "Enrolment keeps its observation-only and save-retry guidance during routing pauses."
     ],
     "limitations": [
-      "The original Hau Jie get_runfiles_dir_helper.cc fatal error was not reproduced or proved resolved.",
-      "No new webcam, participant, independent-machine or native macOS acceptance."
+      "No live webcam, participant, independent computer or native Mac measurements.",
+      "Hau Jie physical open-palm symptom still needs a trace with separate intended-pose notes."
     ]
   }
 }

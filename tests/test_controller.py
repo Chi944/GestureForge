@@ -180,6 +180,30 @@ def test_latched_classifier_rejection_jitter_cannot_retrigger() -> None:
     assert controller.state == "LATCHED"
 
 
+@pytest.mark.parametrize("reason", ["distance_rejection", "margin_rejection"])
+def test_latched_rejection_requires_accepted_neutral_and_clears_old_error(reason) -> None:
+    controller = Controller("s1")
+    controller.resume()
+    frame = arm(controller)
+    assert hold_next(controller, frame, 0.45) is not None
+    session = controller.session_id
+    for offset, timestamp in enumerate((1.00, 1.15, 1.30, 1.45, 1.60)):
+        assert controller.process(
+            pred("UNKNOWN", frame + 4 + offset, timestamp,
+                 accepted=False, reason=reason, session=session), timestamp,
+        ) is None
+        assert controller.state == "LATCHED"
+    assert controller.last_error == reason
+
+    for offset, timestamp in enumerate((1.75, 1.90, 2.06)):
+        assert controller.process(
+            pred("NEUTRAL", frame + 9 + offset, timestamp, session=session), timestamp,
+        ) is None
+        assert controller.last_error == ""
+        assert controller.state == ("READY" if offset == 2 else "WAIT_NEUTRAL")
+    assert hold_next(controller, frame + 12, 2.20) is not None
+
+
 def test_tracking_loss_and_gap_require_neutral_again() -> None:
     controller = Controller("s1")
     controller.resume()

@@ -108,6 +108,7 @@ class Controller:
             self._handle_rejected_prediction(prediction)
             return None
 
+        self.last_error = ""
         label = prediction.label.upper() if self._legacy_labels else prediction.label
         if label == "NEUTRAL":
             self._classifier_reject_started_at = None

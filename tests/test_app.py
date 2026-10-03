@@ -1779,19 +1779,77 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
         assert isinstance(window.deck_tools, QGridLayout)
         assert window.deck_tools.itemAtPosition(1, 2) is not None
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0
-        widgets = (window.start_button, window.pause_button, window.state, window.progress, window.boundary)
+        widgets = (window.start_button, window.pause_button, window.state, window.progress,
+                   window.boundary, window.prediction, window.detail)
         before = [widget.mapTo(window, QPoint(0, 0)).y() for widget in widgets]
         scrollbar = window.studio_scroll.verticalScrollBar()
         assert scrollbar.maximum() > 0
         scrollbar.setValue(scrollbar.maximum())
         qapp.processEvents()
         assert before == [widget.mapTo(window, QPoint(0, 0)).y() for widget in widgets]
-        assert all(widget.isVisible() and 0 <= y < window.height() for widget, y in zip(widgets, before))
+        assert all(widget.isVisible() and window.rect().contains(
+            widget.rect().translated(widget.mapTo(window, QPoint(0, 0)))
+        ) for widget in widgets)
         assert window.routing is not None
         window.routing.resume()
         window.pause_button.click()
         assert window.routing.state == "PAUSED"
         assert window.viewer.position == 0
+    finally:
+        window.close()
+
+
+def test_studio_rearm_feedback_distinguishes_rejection_and_neutral_hold(monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    window = Window(model=object(), studio=True)
+    _disable_logging(window)
+    worker = FakeWorker()
+    current = [100.0]
+    monkeypatch.setattr(app_module, "CaptureWorker", lambda *a: worker)
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: current[0])
+    window.start_camera()
+    assert window.routing is not None
+    frame_id = 0
+
+    def feed(timestamp, label, reason=""):
+        nonlocal frame_id
+        frame_id += 1
+        current[0] = timestamp
+        prediction = replace(_studio_prediction(window, frame_id, timestamp, label),
+                             accepted=not reason, rejection_reason=reason)
+        worker.packets = [(_frame(), prediction)]
+        window.poll()
+
+    try:
+        for timestamp in (100.0, 100.15, 100.31):
+            feed(timestamp, "NEUTRAL")
+        for timestamp in (100.45, 100.60, 100.75, 100.86):
+            feed(timestamp, "NEXT")
+        assert window.routing.state == "LATCHED"
+        feed(101.00, "UNKNOWN", "margin_rejection")
+        assert window.prediction.text() == "Prediction: Unrecognised"
+        assert "Pose is ambiguous" in window.detail.text()
+        assert "NEUTRAL" in window.detail.text()
+        assert window.progress.value() == 0  # Waiting to rearm, not a completed neutral hold.
+        feed(101.15, "NEUTRAL")
+        assert window.routing.state == "WAIT_NEUTRAL"
+        assert "Keep holding NEUTRAL" in window.detail.text()
+        assert "margin_rejection" not in window.detail.text()
+        feed(101.30, "NEUTRAL")
+        assert 0 < window.progress.value() < 100
+        feed(101.46, "NEUTRAL")
+        assert window.routing.state == "READY"
+        assert "READY" in window.detail.text()
+        assert window.viewer.position == 0  # Preview never changes the actual deck.
+        window.pause()
+        assert window.prediction.text() == "Prediction: camera paused"
+        worker.finished = True
+        window.poll()
+        worker = FakeWorker()
+        window.start_camera()
+        assert window.prediction.text() == "Prediction: awaiting camera"
+        assert window.progress.value() == 0
     finally:
         window.close()
 
@@ -1901,6 +1959,8 @@ def test_studio_discards_interrupted_or_wrong_identity_packet_before_display(cha
         before = window.prediction.text()
         if change == "pause":
             window.pause()
+            assert window.prediction.text() == "Prediction: camera paused"
+            before = window.prediction.text()
         window.poll()
         assert window.prediction.text() == before
         assert "Studio simulation" not in window.feedback.text()

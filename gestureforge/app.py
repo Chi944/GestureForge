@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
 
 from .capture import HandCamera
 from .contracts import Action, ActionType, Observation, Prediction, RoutingMode, validate_identifier
-from .controller import Controller
+from .controller import Controller, NEUTRAL_HOLD_SECONDS
 from .dispatcher import DispatchFailure, Dispatcher
 from .enrolment import EnrolmentPlan
 from .routing import RoutingSession
@@ -577,7 +577,7 @@ class Window(QMainWindow):
         for label in (
             self.notice, self.studio_status,
             self.deck_label, self.position, self.card_topic, self.card_title,
-            self.card_body, self.feedback, self.state, self.detail,
+            self.card_body, self.feedback, self.state, self.detail, self.prediction,
         ):
             label.setTextFormat(Qt.TextFormat.PlainText)
         if studio:
@@ -589,10 +589,14 @@ class Window(QMainWindow):
             footer_layout = QVBoxLayout(footer)
             footer_layout.setContentsMargins(28, 10, 28, 14)
             shell_layout.addWidget(footer)
+            left.removeWidget(self.prediction)
+            footer_layout.addWidget(self.prediction)
             left.removeWidget(self.state)
             footer_layout.addWidget(self.state)
             left.removeWidget(self.progress)
             footer_layout.addWidget(self.progress)
+            left.removeWidget(self.detail)
+            footer_layout.addWidget(self.detail)
             footer_layout.addLayout(controls)
         else:
             page.addLayout(controls)
@@ -1012,6 +1016,9 @@ class Window(QMainWindow):
             self.record_trace.setEnabled(self.worker is None and self.evaluation_trace is None)
             self.preview.clear()
             self.preview.setText("Camera stopping..." if self.worker else "Camera off")
+            if not self._enrolment_tab_selected():
+                self.prediction.setText("Prediction: camera paused")
+                self.detail.setText("Start again and show NEUTRAL before a command.")
         self.progress.setValue(0)
         self.state.setText("Paused • camera stopping" if self.worker else "Paused")
         self.log({"type": "pause", "timestamp": time.monotonic()})
@@ -2499,6 +2506,8 @@ class Window(QMainWindow):
         self.state.setText("Opening camera • show your enrolled neutral pose")
         if self.studio:
             self.preview.setText(f"Opening camera {self.camera_index}...")
+            self.prediction.setText("Prediction: awaiting camera")
+            self.detail.setText("Waiting for a fresh prediction. Show your enrolled NEUTRAL pose.")
         self.log({"type": "start", "session": session, "timestamp": time.monotonic(),
                   "camera_index": self.camera_index, "chosen_hand": self.chosen_hand,
                   "mode": self.routing.snapshot.mode.value if self.routing else "ASSIGNMENT",
@@ -2692,6 +2701,20 @@ class Window(QMainWindow):
                 )
             self.detail.setText(guidance or control.last_error or
                                 "Return to neutral between commands. Esc pauses immediately.")
+            if self.studio:
+                if control.state == "LATCHED":
+                    self.progress.setValue(0)
+                    self.detail.setText(
+                        f"{guidance + ' ' if guidance else ''}"
+                        f"Hold your enrolled NEUTRAL pose for {NEUTRAL_HOLD_SECONDS:g} s to rearm."
+                    )
+                elif (control.state == "WAIT_NEUTRAL" and prediction.accepted
+                      and prediction.label == "NEUTRAL" and not control.last_error):
+                    self.detail.setText(
+                        f"Keep holding NEUTRAL steadily for {NEUTRAL_HOLD_SECONDS:g} s until READY."
+                    )
+                elif control.state == "READY" and prediction.accepted and not control.last_error:
+                    self.detail.setText("READY - hold a mapped gesture for the next command.")
             if event:
                 if self.routing is not None:
                     if not self._reserve_session_record():

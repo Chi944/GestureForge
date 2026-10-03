@@ -29,7 +29,22 @@ With a personal recogniser loaded, click **Start/retry readiness** after the pre
 
 In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause**. Editing the number alone does not change capture. Applying a different index stops the old worker and clears its predictions. To resume gesture simulation from LIVE, select Preview or Rehearsal in **Studio action mode** and click **Apply and pause**; camera Start remains disabled in LIVE. With a personal recogniser loaded, wait for the old camera to release, Start explicitly and hold NEUTRAL again. Camera changes preserve your active mappings and mode. The selection is not saved across launches; use `--camera` for a launch default.
 
-**Ctrl+O** loads a dataset, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The indeterminate loading bar means local training is still running, not a completion percentage. Camera selection is disabled during loading. If the preview stalls or the camera disconnects, follow the recovery message: close other camera apps, check the cable and permissions, then retry Start or another camera index. On a small window, scroll through setup and card content. Start/Pause, manual controls, controller state, hold progress and the active context/gesture legend stay visible in the bottom bar. Draft settings do not replace that active legend until applied.
+**Ctrl+O** loads a dataset, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The indeterminate loading bar means local training is still running, not a completion percentage. Camera selection is disabled during loading. If the preview stalls or the camera disconnects, follow the recovery message: close other camera apps, check the cable and permissions, then retry Start or another camera index. On a small window, scroll through setup and card content. Start/Pause, manual controls, current prediction, rejection/rearm guidance, controller state, hold progress and the active context/gesture legend stay visible in the bottom bar. Draft settings do not replace that active legend until applied.
+
+### Studio stays LATCHED with an open palm
+
+LATCHED prevents repeat actions after a command hold. The controller needs **accepted NEUTRAL predictions continuously for 0.3 seconds**, with fresh observations and gaps no longer than 0.2 seconds, to reach READY again. A visible open palm alone does not prove the classifier accepted NEUTRAL. Removing your hand is not required.
+
+| Visible feedback | Meaning and next step |
+| :--- | :--- |
+| Unrecognised + LATCHED | The pose is rejected; read the distance/ambiguity guidance and match your enrolled neutral pose. No new command is allowed. |
+| Another gesture label + LATCHED | The classifier accepts another label, so it has not begun neutral rearming. Record the mismatch for diagnosis. |
+| NEUTRAL + WAIT_NEUTRAL | Neutral is being accepted; hold steadily until READY. Rejection or tracking/timing loss restarts the hold. |
+| READY | Rearming is complete; hold the next mapped gesture. |
+
+While LATCHED the Studio bar shows zero, then fills during the accepted neutral hold. This display change does not weaken command hold, neutral rearm or rejection rules. Fresh accepted predictions clear old error text; Pause and Start also clear the previous displayed prediction.
+
+For Hau Jie's intermittent report, record a short **Preview/Rehearsal** reproduction with **Record evaluation trace** selected before Start, then Pause to save under `experiments/local/controller-traces/`. Keep local notes of the code revision, profile/settings, intended open-palm intervals and visible prediction/state. The trace contains consumed labels, acceptance/rejection, timing and routing identity; it does not infer physical pose or store controller state, camera images or feature vectors. Preserve the original unannotated trace; independently annotate a copy before scored replay. Do not lower rejection thresholds or recollect the whole dataset before the trace identifies the failure. The screenshot alone does not establish a controller or recognition defect.
 
 ### Collect in Studio
 
