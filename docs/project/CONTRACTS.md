@@ -2,7 +2,7 @@
 
 Project contract version 1 | Design frozen 2 October 2026 | Owner Deston
 
-This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates workspace/runbook editing and persistence, session summaries, Quick Actions, shared-camera enrolment and Profiles. One persistent dispatcher handles typed manual requests and gesture simulations. Explicit LIVE mode enables manual actions; LIVE gesture control remains blocked pending the longer personal rehearsal. Standard starter availability remains separate work.
+This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates workspace/runbook editing and persistence, session summaries, Quick Actions, shared-camera enrolment and Profiles. One persistent dispatcher handles typed manual requests and gesture simulations. Explicit LIVE mode enables manual actions; LIVE gesture control remains blocked pending measured personal acceptance and the reviewed readiness gate. Standard starter availability remains separate work.
 
 ## GF-P02 design freeze - 2 October 2026
 
@@ -90,7 +90,7 @@ Use monotonic capture timestamps and increasing frame IDs in real operation. The
 
 `process(prediction, now)` emits at most one event per continuous hold. `route(event, now)` accepts only an exact event issued by this coordinator, once, with current identity/model and age no greater than 200 ms. Altered/stale events are consumed; repeating them cannot recover an action. Pause, tracking loss, rearming and generation changes invalidate pending events.
 
-PREVIEW and REHEARSAL populate only `simulated_action`. LIVE populates `action`. Studio attaches Javier's dispatcher for simulations and explicit manual LIVE requests; its gesture readiness callback currently returns false. Before enabling LIVE gestures, Deston must integrate Hau Jie's longer version-bound personal rehearsal. Construction or passing the short check alone is not permission to execute OS actions.
+PREVIEW and REHEARSAL populate only `simulated_action`. LIVE populates `action`. Studio attaches Javier's dispatcher for simulations and explicit manual LIVE requests; its gesture readiness callback currently returns false. The longer personal rehearsal is attached in Practice; its measured acceptance and a separate reviewed revision-bound gate are required before enabling LIVE gestures. Construction or passing the short check alone is not permission to execute OS actions.
 
 All coordinator calls and immediate routing/dispatch belong on one owner thread. A RoutingResult is not a durable token: do not queue it for execution after a mode/profile/stage change. The final dispatcher must independently consume event IDs once and record outcomes. Camera release and any asynchronous action preparation require a fresh snapshot check before the side effect.
 
@@ -102,7 +102,7 @@ Studio owns one persistent `Dispatcher`; context/profile/workspace changes must 
 
 Run `.\.venv\Scripts\python.exe -m pytest -q tests/test_controller.py tests/test_project_routing.py tests/test_viewer.py`.
 
-Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. Studio adds shared dispatch, explicit manual LIVE requests and focus-loss pause. Starter release, the longer personal rehearsal and integrated human/hardware evaluation remain assigned work; generated software checks do not establish new-user recognition quality or native Windows launch success.
+Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-per-hold, identity/model/context/map/mode changes, malformed configuration, forged/altered/stale/duplicate events, pause/tracking loss and simulation isolation. Studio adds shared dispatch, explicit manual LIVE requests and focus-loss pause. Starter release, measured personal acceptance and integrated human/hardware evaluation remain assigned work; generated software checks do not establish new-user recognition quality or native Windows launch success.
 
 ## Current shell adapter (Deston)
 
@@ -158,4 +158,12 @@ Studio's **Session summary** tab wraps `SessionSummaryWidget`. Refresh shows cur
 
 With a loaded recogniser, Studio prompts each of its three action IDs twice. The existing neutral/hold controller supplies the only scored events; manual controls and raw predictions cannot earn credit. A wrong activation fails the attempt. Finishing an incomplete or UNKNOWN-only attempt fails it. Capture interruption cancels the attempt and requires a new check. The previous context is restored paused; failed trace preservation retains recovery state.
 
-The result is a session-local six-activation check, not accuracy evaluation, identity authentication, an approved starter or permission to execute desktop actions. The longer personal rehearsal and negative-interval protocol remains GF-P12. Guest stays manual-only while no approved starter is available.
+The result is a session-local six-activation check, not accuracy evaluation, identity authentication, an approved starter or permission to execute desktop actions. GF-P12's longer personal rehearsal is a separate workflow and result. Guest stays manual-only while no approved starter is available.
+
+### Measured personal rehearsal (GF-P12)
+
+The embedded **Practice** tab uses `PersonalRehearsal` and the existing persistent `Dispatcher` in REHEARSAL mode. It records ten five-second windows per enrolled pose (three commands plus NEUTRAL), then ten negative/transition windows. Users review the negative instructions against their custom vocabulary and consent to local outcome recording before starting. The protocol, capture-generation handshake, bounded late-frame handling and result format are defined in [PERSONAL_REHEARSAL_INTERFACE.md](PERSONAL_REHEARSAL_INTERFACE.md).
+
+The component processes each observation exactly once through the shared router. The shell supplies one camera worker stamped with the prepared snapshot, waits for the preceding worker to retire, and does not process those predictions a second time. Practice never launches applications or changes the viewer. Terminal results remain historical evidence after the previous context is restored; their applicability is checked against the current semantic behavior revision.
+
+Changing context, losing focus, pausing or a camera fault interrupts an active attempt. Local save failure retains evidence and blocks replacement or close until retry succeeds. The previous context restores paused after preservation. A measured pass neither sets the preliminary check's pass field nor enables LIVE gestures. Native measured acceptance and the reviewed live-readiness gate remain separate work.

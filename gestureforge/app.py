@@ -16,11 +16,11 @@ from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
     QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox, QCheckBox,
-    QSizePolicy, QTabWidget,
+    QSizePolicy, QTabWidget, QTextEdit,
 )
 
 from .capture import HandCamera
-from .contracts import Action, ActionType, Observation, Prediction, RoutingMode, validate_identifier
+from .contracts import Action, ActionType, Observation, Prediction, RoutingMode, RoutingSnapshot, validate_identifier
 from .controller import Controller, NEUTRAL_HOLD_SECONDS
 from .dispatcher import DispatchFailure, Dispatcher
 from .enrolment import EnrolmentPlan
@@ -38,6 +38,8 @@ from .javier_widgets import (
 )
 from .enrolment_widget import EnrolmentWidget
 from .profile_widget import ProfileSelectorWidget
+from .practice import NEGATIVE_CUES, PersonalRehearsal
+from .practice_widget import PersonalRehearsalWidget
 from .profiles import LoadedProfile, ProfileStore
 from .runbook import Runbook
 from .session_summary import Outcome, SessionSummary
@@ -243,6 +245,13 @@ class Window(QMainWindow):
         self.readiness_pass_revision = ""
         self._readiness_previous: tuple[bool, str, RoutingMode, dict[str, Action], bool] | None = None
         self._readiness_switching = False
+        self.practice_attempt: PersonalRehearsal | None = None
+        self.practice_widget: PersonalRehearsalWidget | None = None
+        self.practice_revision = ""
+        self._practice_previous: tuple[bool, str, RoutingMode, dict[str, Action], bool] | None = None
+        self._practice_pending_snapshot: RoutingSnapshot | None = None
+        self._practice_releasing_worker: object | None = None
+        self._practice_restoring = False
         self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
@@ -514,6 +523,38 @@ class Window(QMainWindow):
             self.enrolment_widget.capture_release_requested.connect(self.release_enrolment_capture)
             self.enrolment_widget.dataset_saved.connect(self.enrolment_dataset_saved)
             self.deck_tabs.addTab(self.enrolment_widget, "Enrolment")
+            self.practice_page = QWidget()
+            self.practice_page.setObjectName("manualViewer")
+            self.practice_page.setMinimumWidth(0)
+            self.practice_page.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            practice_layout = QVBoxLayout(self.practice_page)
+            practice_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+            self.practice_status = QLabel("Practice unavailable until a personal recogniser is loaded.")
+            self.practice_status.setWordWrap(True)
+            self.practice_status.setTextFormat(Qt.TextFormat.PlainText)
+            practice_layout.addWidget(self.practice_status)
+            self.practice_consent = QCheckBox("Save local numeric rehearsal outcomes for this profile")
+            self.practice_consent.setToolTip(
+                "Required before starting; no images, video or landmarks are saved. "
+                "Cue text and numeric outcomes are recorded locally."
+            )
+            practice_layout.addWidget(self.practice_consent)
+            self.practice_negative_cues = QTextEdit()
+            self.practice_negative_cues.setPlainText("\n".join(NEGATIVE_CUES))
+            self.practice_negative_cues.setAccessibleName("Practice negative and transition cues")
+            self.practice_negative_cues.setToolTip("Keep exactly ten lines. Edit any cue that overlaps your custom gestures.")
+            self.practice_negative_cues.setMinimumHeight(130)
+            practice_layout.addWidget(self.practice_negative_cues)
+            self.practice_start_button = QPushButton("Start personal practice")
+            self.practice_start_button.clicked.connect(self.start_practice_rehearsal)
+            practice_layout.addWidget(self.practice_start_button)
+            self.practice_host = QWidget()
+            self.practice_host.setObjectName("manualViewer")
+            self.practice_host_layout = QVBoxLayout(self.practice_host)
+            self.practice_host_layout.setContentsMargins(0, 0, 0, 0)
+            self.practice_host_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+            practice_layout.addWidget(self.practice_host, 1)
+            self.deck_tabs.addTab(self.practice_page, "Practice")
             self.quick_actions_page = QWidget()
             self.quick_actions_page.setObjectName("manualViewer")
             self.quick_actions_page.setMinimumWidth(0)
@@ -739,7 +780,7 @@ class Window(QMainWindow):
         return (
             self.model is not None and self.worker is None and self.model_loader is None
             and not self._closing and not self.routing_manual_only and not self._enrolment_blocks_recognition()
-            and not self._profile_selector_busy() and mode != RoutingMode.LIVE
+            and not self._profile_selector_busy() and not self._practice_active() and mode != RoutingMode.LIVE
         )
 
     def _profile_selector_busy(self) -> bool:
@@ -798,8 +839,17 @@ class Window(QMainWindow):
             self.model is not None and self.routing is not None
             and not self._closing and self.model_loader is None
             and not self._profile_selector_busy() and not self._enrolment_blocks_recognition()
+            and not self._practice_active()
         )
         self.readiness_finish_button.setEnabled(self.readiness_check is not None)
+        if hasattr(self, "practice_start_button"):
+            self.practice_start_button.setEnabled(
+                self.model is not None and self.routing is not None
+                and not self._practice_active()
+                and not self._closing and self.model_loader is None
+                and not self._profile_selector_busy() and not self._enrolment_blocks_recognition()
+                and self.readiness_check is None
+            )
 
     def _invalidate_readiness(self, reason: str) -> bool:
         if not self.studio or self._readiness_switching:
@@ -881,11 +931,267 @@ class Window(QMainWindow):
             self.render_readiness_status()
         return restored
 
+    def _practice_negative_cue_values(self) -> tuple[str, ...]:
+        if not hasattr(self, "practice_negative_cues"):
+            return NEGATIVE_CUES
+        cues = tuple(line.strip() for line in self.practice_negative_cues.toPlainText().splitlines() if line.strip())
+        if len(cues) != 10:
+            raise ValueError("Practice needs exactly ten negative or transition cue lines.")
+        return cues
+
+    def _practice_active(self) -> bool:
+        return self.practice_attempt is not None
+
+    def _practice_current_revision(self) -> str:
+        return self._readiness_behavior_revision() if self.model is not None else ""
+
+    def _set_practice_status(self, message: str) -> None:
+        if hasattr(self, "practice_status"):
+            self.practice_status.setText(message)
+
+    def _clear_practice_widget(self) -> None:
+        widget = self.practice_widget
+        if widget is None:
+            return
+        widget.setParent(None)
+        widget.deleteLater()
+        self.practice_widget = None
+
+    def _restore_practice_routing(self) -> bool:
+        previous = self._practice_previous
+        if previous is None or self.routing is None:
+            return True
+        manual_only, context_id, mode, bindings, quick_actions_active = previous
+        self._practice_restoring = True
+        try:
+            restored = self.configure_studio(context_id=context_id, mode=mode, bindings={} if manual_only else bindings)
+        finally:
+            self._practice_restoring = False
+        if restored:
+            self.quick_actions_active = bool(
+                quick_actions_active and not manual_only and context_id == self.quick_actions_context_id and bindings
+            )
+            self._practice_previous = None
+            return True
+        self._set_practice_status("Practice evidence saved, but prior Studio context was not restored. Save traces, then stop practice again.")
+        return False
+
+    def _finish_practice_rehearsal(self, _result=None) -> bool:
+        widget = self.practice_widget
+        if widget is not None and widget.save_error:
+            self._set_practice_status("Practice results remain in memory. Fix storage and retry Save before changing Studio context.")
+            return False
+        result = _result or (self.practice_attempt.result() if self.practice_attempt is not None else None)
+        if self.practice_attempt is not None and self.practice_attempt.status not in {"passed", "failed", "cancelled", "expired"}:
+            self._set_practice_status("Practice evidence saved locally; finish or stop the attempt before Studio restores context.")
+            return False
+        saved_text = widget.feedback.text() if widget is not None else ""
+        restored = self._restore_practice_routing()
+        if restored:
+            self.practice_attempt = None
+            self.practice_revision = ""
+            self._practice_pending_snapshot = None
+            self._clear_practice_widget()
+            self.start_button.setEnabled(self._can_start_studio_camera())
+            if hasattr(self, "practice_consent"):
+                self.practice_consent.setVisible(True)
+                self.practice_negative_cues.setVisible(True)
+                self.practice_start_button.setVisible(True)
+            if result is not None:
+                counts = ", ".join(f"{label} {count}/10" for label, count in result.correct_per_pose)
+                guidance = " ".join(result.guidance[:2]) if result.guidance else "Review the saved result before any LIVE decision."
+                self._set_practice_status(
+                    f"Practice {result.status}: {result.reason} Counts: {counts}. "
+                    f"Negative actions: {result.negative_actions}. {saved_text} {guidance}"
+                )
+            else:
+                self._set_practice_status("Practice results saved locally. Studio restored paused; gestures remain simulation-only.")
+            self.render_studio_status()
+            if hasattr(self, "studio_scroll") and hasattr(self, "practice_status"):
+                status_label = self.practice_status
+
+                def scroll_to_result() -> None:
+                    if (
+                        self._closing
+                        or self.practice_attempt is not None
+                        or self.deck_tabs.currentWidget() is not self.practice_page
+                    ):
+                        return
+                    self.studio_scroll.ensureWidgetVisible(status_label, 0, 12)
+
+                QTimer.singleShot(0, scroll_to_result)
+        return restored
+
+    def _cancel_practice_rehearsal(self, reason: str) -> bool:
+        attempt = self.practice_attempt
+        widget = self.practice_widget
+        if attempt is None:
+            return True
+        if widget is not None:
+            widget.stop()
+            if self.practice_attempt is None:
+                return True
+            return self._finish_practice_rehearsal()
+        else:
+            attempt.cancel(reason)
+        return self._finish_practice_rehearsal()
+
+    def start_practice_rehearsal(self) -> bool:
+        if not self.studio or self._closing or self.model_loader is not None:
+            return False
+        if self.model is None or self.routing is None:
+            self._set_practice_status("Practice unavailable: load a personal recogniser first.")
+            return False
+        if self.practice_attempt is not None:
+            self._set_practice_status("Practice already running. Stop and save it before starting another attempt.")
+            return False
+        if self.readiness_check is not None:
+            self._set_practice_status("Practice not started: finish or cancel the short readiness check first.")
+            return False
+        if self._profile_selector_change_blocked() or self._enrolment_blocks_recognition():
+            self._set_practice_status("Practice not started: finish profile or enrolment work first.")
+            return False
+        if not self.practice_consent.isChecked():
+            self._set_practice_status("Practice not started: tick local outcome recording consent first.")
+            return False
+        try:
+            negative_cues = self._practice_negative_cue_values()
+        except ValueError as exc:
+            self._set_practice_status(str(exc))
+            return False
+        if self.worker is not None:
+            if not self.pause():
+                self._set_practice_status("Practice not started: save the current trace or collection first.")
+                return False
+            self._set_practice_status("Practice waiting for the previous camera to release. Start again when the camera is off.")
+            return False
+        revision = self._practice_current_revision()
+        if not revision:
+            self._set_practice_status("Practice revision unavailable; retry after the recogniser is ready.")
+            return False
+        snapshot = self.routing.snapshot
+        previous_bindings = dict(snapshot.bindings)
+        self._practice_previous = (
+            self.routing_manual_only,
+            self.manual_context_id if self.routing_manual_only else snapshot.context_id,
+            self.manual_mode if self.routing_manual_only else snapshot.mode,
+            previous_bindings,
+            self.quick_actions_active,
+        )
+        bindings = self._readiness_bindings()
+        self._practice_restoring = True
+        try:
+            if not self.configure_studio(
+                context_id="practice:" + uuid4().hex[:24],
+                mode=RoutingMode.REHEARSAL,
+                bindings=bindings,
+            ):
+                self._practice_previous = None
+                return False
+        finally:
+            self._practice_restoring = False
+        assert self.routing is not None
+        try:
+            attempt = PersonalRehearsal(
+                self.routing, self.dispatcher, revision, self._practice_current_revision,
+                tuple(self.vocabulary.action_ids), negative_cues=negative_cues,
+            )
+        except ValueError as exc:
+            self._set_practice_status(f"Practice not started: {exc}")
+            self._restore_practice_routing()
+            return False
+        self.practice_attempt = attempt
+        self.practice_revision = revision
+        self._clear_practice_widget()
+        widget = PersonalRehearsalWidget(attempt, self.studio_state_folder / "practice", self, clock=time.monotonic)
+        widget.setObjectName("manualViewer")
+        widget.feedback.setText("Follow the prompt; all actions are simulated. Results save locally.")
+        widget_layout = widget.layout()
+        if widget_layout is not None:
+            widget_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Maximum)
+        widget.snapshot_requested.connect(self.start_practice_capture)
+        widget.capture_release_requested.connect(self.release_practice_capture)
+        widget.result_ready.connect(self._finish_practice_rehearsal)
+        widget.save_button.clicked.connect(lambda: self._finish_practice_rehearsal() if self.practice_attempt else None)
+        self.practice_widget = widget
+        self.practice_host_layout.addWidget(widget)
+        self.practice_start_button.setEnabled(False)
+        self.practice_consent.setVisible(False)
+        self.practice_negative_cues.setVisible(False)
+        self.practice_start_button.setVisible(False)
+        self.deck_tabs.setCurrentWidget(self.practice_page)
+        self.feedback.setText("Practice started. Actions are simulated and recorded locally only.")
+        self._set_practice_status("Practice started. Review the prompt, prepare a trial, then begin the five-second window.")
+        self.render_studio_status()
+        self._scroll_studio_widget_into_view(widget)
+        return True
+
+    def start_practice_capture(self, snapshot: RoutingSnapshot) -> None:
+        if self.practice_attempt is None or self.practice_widget is None or self.routing is None:
+            return
+        if snapshot != self.routing.snapshot:
+            self.practice_widget.capture_failed("Practice generation changed before capture could start.")
+            return
+        if self.worker is not None:
+            self._practice_pending_snapshot = snapshot
+            self._practice_releasing_worker = self.worker
+            self.worker.requestInterruption()
+            self.practice_widget.prepare_button.setEnabled(False)
+            self.state.setText("Waiting for previous camera release before practice.")
+            self.preview.setText("Camera stopping...\n\nPractice will start after release.")
+            self._scroll_studio_widget_into_view(self.practice_widget)
+            return
+        self._start_practice_capture_now(snapshot)
+
+    def _start_practice_capture_now(self, snapshot: RoutingSnapshot) -> bool:
+        if self.model is None or self.practice_widget is None or self.routing is None or snapshot != self.routing.snapshot:
+            return False
+        self._practice_pending_snapshot = None
+        self.last_result_at = time.monotonic()
+        self.received_first_frame = False
+        self.worker = CaptureWorker(
+            self.model, self.feature_function, self.chosen_hand,
+            self.camera_index, self.asset, snapshot.session_id, snapshot.profile_id,
+        )
+        self.worker.start()
+        self.start_button.setEnabled(False)
+        self.practice_widget.prepare_button.setEnabled(False)
+        self.record_trace.setEnabled(False)
+        self.state.setText("Opening camera for practice - show NEUTRAL")
+        self.preview.setText(f"Opening camera {self.camera_index} for practice...")
+        self.prediction.setText("Practice: awaiting camera")
+        self.detail.setText("Practice uses simulated actions only. Show NEUTRAL until READY.")
+        self._scroll_studio_widget_into_view(self.practice_widget)
+        return True
+
+    def release_practice_capture(self) -> None:
+        worker = self.worker
+        if worker is not None:
+            self._practice_releasing_worker = worker
+            worker.requestInterruption()
+        self._practice_pending_snapshot = None
+        self.state.setText("Practice trial complete - camera releasing")
+        self._scroll_studio_widget_into_view(self.practice_widget)
+
+    def _practice_packet_active(self) -> bool:
+        attempt = self.practice_attempt
+        return bool(attempt is not None and attempt.status in {"preparing", "armed", "measuring"})
+
+    def _start_pending_practice_if_ready(self) -> bool:
+        snapshot = self._practice_pending_snapshot
+        if snapshot is None or self.worker is not None:
+            return False
+        return self._start_practice_capture_now(snapshot)
+
     def start_readiness_check(self) -> bool:
         if not self.studio or self._closing or self.model_loader is not None:
             return False
         if self.model is None or self.routing is None:
             self.readiness_status.setText("Readiness unavailable: load a personal recogniser first.")
+            return False
+        if self.practice_attempt is not None:
+            self.readiness_status.setText("Readiness not started: stop and save personal practice first.")
             return False
         if self.readiness_check is not None and not self._cancel_readiness_check("Readiness cancelled before retry."):
             self.readiness_status.setText("Readiness retry not started: save the current trace first.")
@@ -1164,6 +1470,22 @@ class Window(QMainWindow):
 
         QTimer.singleShot(0, scroll_to_bottom)
 
+    def _scroll_studio_widget_into_view(self, widget: QWidget | None) -> None:
+        if not self.studio or widget is None or not hasattr(self, "studio_scroll"):
+            return
+        target = widget
+
+        def scroll_to_widget() -> None:
+            if (
+                self._closing
+                or target is not self.practice_widget
+                or self.deck_tabs.currentWidget() is not self.practice_page
+            ):
+                return
+            self.studio_scroll.ensureWidgetVisible(target, 0, 12)
+
+        QTimer.singleShot(0, scroll_to_widget)
+
     def _stop_enrolment_for_pause(self) -> bool:
         if not self.studio or not hasattr(self, "enrolment_widget"):
             return True
@@ -1193,7 +1515,7 @@ class Window(QMainWindow):
             return
         if self._enrolment_tab_selected():
             self.preview.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            if self.worker is not None or self.readiness_check is not None:
+            if self.worker is not None or self.readiness_check is not None or self.practice_attempt is not None:
                 if not self.pause():
                     self.detail.setText("Enrolment not opened: save the current trace or collection first.")
                     return
@@ -1372,7 +1694,7 @@ class Window(QMainWindow):
         if (
             not self.studio or self.routing is None or self._closing
             or self.model_loader is not None or self._profile_selector_change_blocked()
-            or self._enrolment_blocks_recognition()
+            or self.practice_attempt is not None or self._enrolment_blocks_recognition()
             or (self.isVisible() and not self.isActiveWindow())
         ):
             self.feedback.setText("Action not requested: finish Studio work before dispatch.")
@@ -1675,6 +1997,9 @@ class Window(QMainWindow):
             raise ValueError("Studio supports Preview, Rehearsal or explicit Live manual mode only")
         if self.readiness_check is not None and not self._readiness_switching:
             if not self._cancel_readiness_check("Readiness cancelled before Studio settings changed."):
+                return False
+        if self.practice_attempt is not None and not self._practice_restoring:
+            if not self._cancel_practice_rehearsal("Practice stopped before Studio settings changed."):
                 return False
         old = self.routing.snapshot
         new_context_id = (self.manual_context_id if self.routing_manual_only else old.context_id) if context_id is None else context_id
@@ -2281,13 +2606,15 @@ class Window(QMainWindow):
             return False
         if self.routing is None:
             return False
-        context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
-        mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
-        bindings = {} if self.routing_manual_only else dict(self.routing.snapshot.bindings)
         previous_profile = self.selected_profile_id or self.profile
         if not self.pause():
             self.notice.setText("Guest mode not changed: save the current trace or enrolment trial first.")
             return False
+        if self.routing is None:
+            return False
+        context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
+        mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+        bindings = {} if self.routing_manual_only else dict(self.routing.snapshot.bindings)
         self._invalidate_readiness("Guest mode selected")
         self._clear_studio_model_to_manual(
             context_id=context_id,
@@ -2468,6 +2795,9 @@ class Window(QMainWindow):
             self.notice.setText("Event logging failed. Check disk space and folder permissions.")
 
     def start_camera(self):
+        if self.studio and self.practice_attempt is not None:
+            self.detail.setText("Finish or stop personal practice before starting normal camera control.")
+            return
         if self.studio and self.routing is not None:
             mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
             if mode == RoutingMode.LIVE:
@@ -2514,11 +2844,14 @@ class Window(QMainWindow):
                   "model": self.model.to_config() if hasattr(self.model, "to_config") else None})
 
     def pause(self):
+        practice_restored = True
+        if self.studio and self.practice_attempt is not None and not self._practice_restoring:
+            practice_restored = self._cancel_practice_rehearsal("Practice stopped; camera paused.")
         readiness_restored = True
         if self.studio and self.readiness_check is not None and not self._readiness_switching:
             readiness_restored = self._cancel_readiness_check("Readiness cancelled; camera paused.")
         enrolment_saved = self._stop_enrolment_for_pause()
-        return readiness_restored and self._pause_capture_only() and enrolment_saved
+        return practice_restored and readiness_restored and self._pause_capture_only() and enrolment_saved
 
     def finish_evaluation_trace(self):
         trace = self.evaluation_trace
@@ -2648,6 +2981,7 @@ class Window(QMainWindow):
         self.poll_model_load()
         if self.worker is None:
             self._start_pending_enrolment_if_ready()
+            self._start_pending_practice_if_ready()
             return
         if getattr(self.worker, "observation_only", False):
             self.poll_enrolment_capture()
@@ -2682,11 +3016,15 @@ class Window(QMainWindow):
                     self.pause()
                     self.state.setText(f"Evaluation capture stopped: {exc}. Saved trace covers earlier inputs only.")
                     return
-            event = (
-                self.routing.process(prediction, processed_at)
-                if self.routing is not None
-                else self.controller.process(prediction, processed_at)
-            )
+            if self.practice_attempt is not None and self.practice_widget is not None:
+                self.practice_widget.receive_prediction(prediction, processed_at)
+                event = None
+            else:
+                event = (
+                    self.routing.process(prediction, processed_at)
+                    if self.routing is not None
+                    else self.controller.process(prediction, processed_at)
+                )
             self.state.setText(control.state.replace("_", " "))
             self.progress.setValue(round(control.progress * 100))
             if control.state == "WAIT_NEUTRAL" and prediction.rejection_reason in {
@@ -2756,7 +3094,10 @@ class Window(QMainWindow):
                         f"NEXT accepted: now showing {self.card_topic_text()} (from {old_topic})."
                         if moved else f"NEXT accepted, still showing {old_topic}; this is the final card."
                     )
-        elif (control.state != "PAUSED" and time.monotonic() - self.last_result_at
+        elif (
+            not (self.studio and self._practice_pending_snapshot is not None
+                 and self.worker is not None and self.worker.isInterruptionRequested())
+            and control.state != "PAUSED" and time.monotonic() - self.last_result_at
               > (2 if self.received_first_frame else 20)):
             self.pause()
             self.state.setText("Camera stalled. Wait for shutdown, then restart.")
@@ -2766,12 +3107,24 @@ class Window(QMainWindow):
         worker = self.worker
         if worker is not None and worker.isFinished():
             error = worker.error
+            interrupted = worker.isInterruptionRequested()
+            expected_practice_release = bool(
+                self.studio and worker is self._practice_releasing_worker and interrupted and not error
+            )
             worker.wait()
             self.worker = None
+            if worker is self._practice_releasing_worker:
+                self._practice_releasing_worker = None
             self.finish_evaluation_trace()
+            if self.studio and self.practice_attempt is not None and self.practice_widget is not None:
+                if error:
+                    self.practice_widget.capture_failed(error)
+                elif not interrupted and self._practice_packet_active():
+                    self.practice_widget.capture_failed("Practice camera stopped")
             if self.studio and self.readiness_check is not None:
                 self._cancel_readiness_check(error or "Readiness cancelled; camera stopped.")
-            control.fault(error or "Camera stopped")
+            if not expected_practice_release:
+                control.fault(error or "Camera stopped")
             self.state.setText(error or "Paused • camera released")
             if self.studio:
                 self.record_trace.setEnabled(self.evaluation_trace is None)
@@ -2783,6 +3136,7 @@ class Window(QMainWindow):
                                         "camera apps. Retry Start or choose another camera index.")
             self.start_button.setEnabled(self._can_start_studio_camera())
             self._start_pending_enrolment_if_ready()
+            self._start_pending_practice_if_ready()
 
     def poll_enrolment_capture(self):
         worker = self.worker

@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T06:49:21.003634+00:00",
+  "timestamp_utc": "2026-10-03T09:45:14.262457+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.581,
+      "seconds": 0.275,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 2.558,
-      "stdout": "Success: no issues found in 70 source files\n",
+      "seconds": 1.259,
+      "stdout": "Success: no issues found in 76 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 188.568,
-      "stdout": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n.........................s.............................................. [ 62%]\n........................................................................ [ 74%]\n........................................................................ [ 87%]\n........................................................................ [ 99%]\n.                                                                        [100%]\n576 passed, 1 skipped in 176.56s (0:02:56)\n",
+      "seconds": 178.927,
+      "stdout": "........................................................................ [ 11%]\n........................................................................ [ 23%]\n........................................................................ [ 35%]\n........................................................................ [ 46%]\n.........................................s.............................. [ 58%]\n........................................................................ [ 70%]\n........................................................................ [ 81%]\n........................................................................ [ 93%]\n........................................                                 [100%]\n615 passed, 1 skipped in 168.27s (0:02:48)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.216,
+      "seconds": 3.308,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.608,
+      "seconds": 3.703,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-software-check.json",
       "returncode": 0,
-      "seconds": 2.144,
+      "seconds": 3.228,
       "stdout": "",
       "stderr": ""
     }
@@ -60,7 +60,7 @@
   "previous_native_model_checkpoint": {
     "source_commit": "63493521b3ae18477990efa6e5a1fe35ed1363d8",
     "timestamp_utc": "2026-10-03T06:05:37.052264+00:00",
-    "note": "Preserved prior runtime evidence; not rerun for this UI feedback change.",
+    "note": "Preserved prior runtime evidence; not rerun for this Practice integration.",
     "native_model_checks": {
       "method": "Windows x64 subprocess checks using the installed pinned MediaPipe and generated blank images.",
       "camera_opened": false,
@@ -97,7 +97,9 @@
       ]
     }
   },
-  "rearm_feedback_check": {
+  "previous_rearm_feedback_checkpoint": {
+    "source_commit": "36d82144dca7dff730f72264e29965b3bfd52e2d",
+    "note": "Historical generated-rearm visual check, not a new webcam observation.",
     "method": "Offscreen Qt render with generated predictions at 900x620 logical pixels.",
     "camera_opened": false,
     "checks": [
@@ -110,6 +112,47 @@
     "limitations": [
       "No live webcam, participant, independent computer or native Mac measurements.",
       "Hau Jie physical open-palm symptom still needs a trace with separate intended-pose notes."
+    ]
+  },
+  "personal_practice_integration": {
+    "base_commit": "36d82144dca7dff730f72264e29965b3bfd52e2d",
+    "reviewed_pr": "https://github.com/Chi944/GestureForge_304/pull/21",
+    "reviewed_pr_head": "41ed87ce0c1d057dfd2feae31f28ab660cc94cca",
+    "reviewed_evidence_followup": "fdd54f87778c81f19b19e2fa647f57e4a3b94b0a",
+    "scope": "Shared-camera Studio Practice integration and trace diagnosis; generated software evidence.",
+    "component_review_repairs": [
+      "Completed results remain historical after context restoration.",
+      "Capture-time windows drain fresh late packets, including timer-first boundary ordering.",
+      "Stop/camera-failure result autosave occurs once; storage failure remains retryable.",
+      "Queued pre-window packets preserve controller timing without receiving measurement credit."
+    ],
+    "review_repairs": [
+      "Expected camera retirement does not pause or fault a prepared/restored generation.",
+      "Manual actions and competing readiness checks cannot contaminate Practice.",
+      "Guest context is read after cancellation and restoration.",
+      "Updated stale tab-count test and asserted the actual Studio routing error state."
+    ],
+    "visual_check": {
+      "method": "Offscreen Qt render with a generated model fixture and no camera.",
+      "logical_sizes": [
+        [
+          900,
+          620
+        ],
+        [
+          1100,
+          850
+        ]
+      ],
+      "checks": [
+        "Fixed footer visible and no horizontal overflow.",
+        "Active trial prompt and controls inspected after scrolling to the prompt."
+      ]
+    },
+    "limitations": [
+      "No real fifty-window participant run, physical LATCHED reproduction or native Mac acceptance.",
+      "Measured Practice does not enable LIVE gestures; separate acceptance and reviewed gate remain.",
+      "Dedicated Practice files contain per-trial outcomes; SessionSummary retains dispatcher outcomes."
     ]
   }
 }
