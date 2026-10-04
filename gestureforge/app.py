@@ -241,6 +241,11 @@ def load_personal_model(path, algorithm="knn", multiplier=1.5, margin=1.5, *, st
     if hand not in ("Left", "Right"):
         raise ValueError("Dataset chosen_hand must be Left or Right")
     features, labels, records = bundle.training_data()
+    if not records:
+        raise ValueError(
+            "Dataset has no valid TRAIN samples. Load a personal TRAIN manifest; "
+            "validation and negative-control samples are evaluation-only."
+        )
     model = train_model(features, labels, algorithm, multiplier, margin,
                         groups=[record.trial_id for record in records],
                         vocabulary=bundle.vocabulary if studio else None)
@@ -509,6 +514,13 @@ class Window(QMainWindow):
             self.apply_camera_button.clicked.connect(lambda: self.set_studio_camera(self.camera_picker.value()))
             self.apply_camera_button.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             camera_controls.addWidget(self.apply_camera_button, 1, 0, 1, 2)
+            self.camera_help = QLabel(
+                "Usually 0 selects the first camera and 1 the second; numbering varies by device and system. "
+                "Use camera and pause selects it without starting capture. Then press Start to test."
+            )
+            self.camera_help.setWordWrap(True)
+            self.camera_help.setObjectName("muted")
+            camera_controls.addWidget(self.camera_help, 2, 0, 1, 2)
             self.record_trace = QCheckBox("Record evaluation trace (labels and timing only)")
             self.record_trace.setToolTip(
                 "Opt in before Start. Saves locally on pause; no images, video or landmarks. "
@@ -552,7 +564,7 @@ class Window(QMainWindow):
             setup_layout.addWidget(self.load_progress)
             setup_layout.addWidget(self.studio_status)
             settings = QGridLayout()
-            setup_layout.addLayout(settings)
+            setup_layout.insertLayout(0, settings)
             settings.setColumnStretch(0, 0)
             settings.setColumnStretch(1, 1)
             self.mode_picker = QComboBox()
@@ -3287,9 +3299,13 @@ class Window(QMainWindow):
         except (ValueError, AttributeError, TypeError) as exc:
             if loader.kind == "profile":
                 self.pending_profile_id = None
+            guidance = (
+                " Manual controls remain available; load a personal TRAIN manifest or choose Guest/manual."
+                if loader.kind == "dataset" else ""
+            )
             self.notice.setText(
                 f"{'Profile' if loader.kind == 'profile' else 'Dataset'} not loaded: "
-                f"{exc}. Previous selection retained; control is paused."
+                f"{exc}. Previous selection retained; control is paused.{guidance}"
             )
         finally:
             self.load_dataset_button.setEnabled(True)

@@ -73,7 +73,7 @@ PR #17 also adds descriptive saved-baseline diagnostics for GF-P11: invalid dete
 
 Final local checks for the selector integration pass **522 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (64 source files), assignment/Studio startup and synthetic evaluation. Independent code review approves the combined changes and architecture review returns CLEAR. Immediate and queued enrolment starts are blocked during profile work, with both pending widget and host state cleared for retry. Documentation links and whitespace checks pass. These checks do not establish new participant recognition, native Mac or desktop-launch acceptance.
 
-## Current integration — short readiness and PRs #18/#19
+## Current integration â€” short readiness and PRs #18/#19
 
 Studio now scores two protected simulated activations for each enrolled action pose, with neutral rearming and zero wrong actions. UNKNOWN-only/incomplete attempts fail. Its session-local behaviour revision expires after model/profile/mapping/target changes; stage selection and cosmetic names preserve a completed result. It uses the existing capture/controller path, restores the previous context paused and records measured trial outcomes separately from manual actions. This is the short check, not GF-P12's longer personal rehearsal or final recognition evaluation. GF-P10 remains In Progress because the original standard Guest/Try Now entry still lacks an approved starter.
 
@@ -85,7 +85,7 @@ Studio now scores two protected simulated activations for each enrolled action p
 
 The short-readiness integration passes **551 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (68 source files), both GUI startup modes and synthetic evaluation. Independent code and architecture reviews cleared recovery, cosmetic revision preservation and Enrolment interruption. A native Windows layout check at 900x620 confirmed the expected-pose prompt stays visible while the content scrolls. Command event IDs now use bounded UUIDs so saved-profile identities cannot exceed dispatcher/summary identifier limits. These are software and layout checks; live readiness and native Mac acceptance remain separate.
 
-## Current integration — shared dispatcher and manual LIVE
+## Current integration â€” shared dispatcher and manual LIVE
 
 Studio reuses Javier's existing dispatcher for typed manual viewer, runbook and Quick Actions requests, and for gesture simulations. Preview/Rehearsal simulate every typed request. Explicit **Live (manual controls)** enables manual deck changes, stage advancement and validated Windows targets without a recogniser. One persistent event ledger survives profile, workspace and summary changes. Camera launch requires acknowledged capture release; preservation or release failures open nothing and require a fresh manual request. Stage transitions remain paused with no deferred replay.
 
@@ -93,7 +93,7 @@ This advances **GF-P16 to In Progress**. It deliberately keeps LIVE camera Start
 
 Final local verification passes **564 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (69 source files), assignment/Studio startup and synthetic evaluation. Independent code review approves the final slice and architecture review returns CLEAR. Review repaired shortcut-label lookup, the footer's bypass of simulation, stage pause state and misleading mode/log messages. Regression checks cover acknowledgement failure/retry, retained duplicate IDs, capacity/preservation guards and the longer-readiness boundary. A native Windows UI check at 900x620 confirmed Preview leaves the deck unchanged, manual LIVE advances and bookmarks with capture off, and the layout has no horizontal overflow. External-launch tests use fake adapters; no new native target or webcam acceptance is claimed.
 
-## Current integration — runbook recovery and Studio handoff
+## Current integration â€” runbook recovery and Studio handoff
 
 The latest integration fixes preserve the active deck/runbook context when a local resource is repaired; explicit standalone Quick Actions still requires reactivation after edits. Failed **Test selected target** validation now enters the session summary with a bounded reason and no private path/form text. LIVE instructions describe manual launches correctly. The six-stage Harbor regression covers Guest/manual actions, missing-target recovery, context attribution, bookmarks, paused save/reload and no replay through a fake launcher. Follow the [manual Windows walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now) for actual opening and task observations.
 
@@ -101,7 +101,7 @@ The latest integration fixes preserve the active deck/runbook context when a loc
 
 Local verification passed **570 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (69 source files), both startup modes and synthetic evaluation. Review then corrected an unavailable Git-status result being reported as clean: the final packaging check passes **13 tests**, including that new regression, and full-repository lint/types pass again. Both independent review lanes approved the final change. These checks use fake launch adapters and generated fixtures, not new native launches, webcam observations or participant measurements.
 
-## Current integration — PR #20 camera handoff
+## Current integration â€” PR #20 camera handoff
 
 [PR #20](https://github.com/Chi944/GestureForge_304/pull/20) is merged at `494e904`. It records partial Hau P02 physical evidence from older `878b1ff`, including completed recordings/reload, while Stop during mid-hold, invalid feedback and current-head hardware recording remain unverified. The shared-camera fix now loads MediaPipe model bytes through `model_asset_buffer`; native Windows MediaPipe 1.0.1 failed on a model filename containing Chinese characters through the old filename API, while the same bytes succeeded through the buffer path. `check_environment.py --model` also succeeded from a copied Chinese project folder, so the earlier `get_runfiles_dir_helper.cc` fatal is still not reproduced or resolved as a current-main defect.
 
@@ -109,7 +109,7 @@ Windows setup now requires a blank-image native model check before success. For 
 
 Local verification of this fix passes **573 tests with one unsupported Windows symlink fixture skipped**, Ruff, mypy (70 source files), both startup modes and synthetic evaluation. Real blank-image inference also passes with the model and check script beneath a Chinese project folder. Independent code and architecture reviews approve the runtime change; [verification.json](verification.json) records the bounded checks. The original fatal runtime error still needs a retest on Hau Jie's laptop.
 
-## Current integration — NEUTRAL rearming feedback
+## Current integration â€” NEUTRAL rearming feedback
 
 Hau Jie reported intermittent open-palm/LATCHED behaviour. Inspection and controlled prediction replay show accepted fresh NEUTRAL immediately leaves LATCHED and reaches READY after the existing continuous 300 ms hold. Classifier rejection deliberately keeps LATCHED to prevent repeat actions. A screenshot without the current prediction cannot identify the physical report's cause; it remains open for a short current-version trace plus independent intended-pose notes.
 
@@ -119,13 +119,13 @@ Local verification passes **576 tests with one unsupported Windows symlink fixtu
 
 No additional task is fully accepted by this bounded fix, so completion percentages remain unchanged. Live reproduction and native Mac validation remain separate from software verification.
 
-## Current integration — PR #21 personal Practice
+## Current integration â€” PR #21 personal Practice
 
 PR #21 supplies the longer measured rehearsal, reviewed and attached as an embedded Practice tab. It reuses the existing camera worker, routing controller and persistent dispatcher; fifty prompted five-second windows record actual protected simulated actions and capture coverage. The sequence includes ten trials for each enrolled action pose and NEUTRAL, followed by ten negative/transition intervals. It preserves local results, restores the previous context paused and keeps storage failures recoverable. The short six-activation check remains separate; no Practice result enables LIVE gestures.
 
 Local verification passes **615 tests with 1 unsupported Windows symlink fixture skipped**, Ruff, mypy (76 source files), both GUI startup modes and synthetic evaluation. Independent code and architecture reviews approve the repaired component and host integration. Generated Qt renders at 900x620 and 1100x850 were inspected for prompt/control visibility and horizontal overflow. No new physical participant run or native-platform acceptance is claimed. GF-P12 moves to In Progress; all completion weights and percentages remain unchanged.
 
-## Current integration — historical Practice review and workflow comparison
+## Current integration â€” historical Practice review and workflow comparison
 
 Deston's shared-shell work closes GF-P31's remaining software gap: Session summary
 now retains the latest saved Practice result, its original behavior/scope and a
@@ -164,7 +164,7 @@ affected/adjacent tests**, full lint/types and both startup checks; final verifi
 [verification.json](verification.json). Local checks remain separate from webcam,
 native external launch, independent installation and native Mac acceptance.
 
-## Current integration — Practice timing, guidance and native dispatch (4 October)
+## Current integration â€” Practice timing, guidance and native dispatch (4 October)
 
 PR #22 adds Hau Jie's countdown, latest-trial Begin diagnostics and attributed
 physical partial-slot Stop evidence. It closes that specific Stop evidence gap;
@@ -197,7 +197,7 @@ six checks for instructions, review text height and horizontal scrolling. These
 are software/layout results; the physical Practice trial is deferred at Deston's
 request.
 
-## Practice follow-up — P01 live check and one-pose diagnostics (4 October)
+## Practice follow-up â€” P01 live check and one-pose diagnostics (4 October)
 
 Deston completed an assisted P01 check on `a738c0a` using the existing pilot
 recogniser. The latest attempt recorded correct, covered NEXT and PREVIOUS
@@ -300,7 +300,7 @@ outputs, source hashes and review scope are recorded in `verification.json`.
 Physical acceptance of the updated full protocol remains open; no completed-task
 weight is added.
 
-## Measured-window interruption correction — 4 October 2026
+## Measured-window interruption correction â€” 4 October 2026
 
 The next P01 attempt on `39b260c` recorded eight covered windows: seven correct
 and one NEUTRAL miss. It then cancelled in window nine when an otherwise valid
@@ -323,7 +323,7 @@ found no blockers. Check outputs, source hashes and regression scope
 are recorded in `verification.json`. Physical acceptance of this revision
 still requires a fresh run. Accepted-task weights are unchanged.
 
-## Practice setup continuity and compact controls — 4 October 2026
+## Practice setup continuity and compact controls â€” 4 October 2026
 
 The latest P01 attempt on `aaef21a` completed NEXT and PREVIOUS correctly,
 recorded a covered BOOKMARK miss, then hit the 30-second setup timeout before
@@ -365,23 +365,38 @@ qualification, gesture accuracy, completed Practice or thirty-minute Studio
 acceptance. The raw result remains local and unchanged. No new training samples
 or images were stored, and no additional participant rehearsal was requested.
 
-Final local verification passed **752 tests with one unsupported Windows symlink
+The previous local verification checkpoint passed **752 tests with one unsupported Windows symlink
 skip**, Ruff, mypy (83 files), both GUI startup modes and synthetic evaluation.
 The new diagnostic has 18 focused regressions; independent review approved after
 fixing receive-time sampling and duration-boundary fault detection. Exact
 software outputs and the separately labelled native summary are retained in
 `verification.json`. No completed-task weight is added by these preparatory checks.
 
-**Deston's next acceptance step without a webcam:** complete the
-[manual Harbor walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now),
-observe the requested task outcomes, and keep the summary segments before and
-after restore. The prior automated Windows run cannot supply those personal
-observations. After capture timing is checked, a short pose diagnostic can
-precede the full personal rehearsal; repeating all 50 windows is not the first
-troubleshooting step. Neither activity requires waiting for another feature PR.
+**Current software repair checkpoint:** Studio action mode and Apply now appear
+at the top of Setup, before dataset/camera/readiness controls. The dataset loader
+rejects non-dataset JSON with workspace/deck loading guidance and separately
+reports a dataset with no valid TRAIN samples. Existing P01 pilot and session-1
+data both loaded in compatibility checks; the primary open Studio application
+also loaded P01 pilot successfully. This confirms loading only, not recognition
+quality or readiness. The wrong-file defect does not require new gesture data.
+Full verification passed **772 tests with one unsupported Windows symlink skip**,
+Ruff, mypy (83 files), both GUI startup modes and synthetic evaluation. Independent
+review found no code blockers; its stale walkthrough direction was corrected.
+Exact outputs and source hashes are in `verification.json`. No completion
+percentage changes.
 
-- **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.
-- **Javier:** GF-P05 is accepted. Verify the integrated manual LIVE path for GF-P13/GF-P34, including each target type, missing-target failure, Camera shutdown/recovery and no action replay on focus return; inspect the attached Practice event reconciliation with actual private results; then record GF-P19's checks on both laptops. The historical Practice review is now attached; do not implement a second reconciliation path. Preserve PR18's existing native evidence. P03 is reported collected in PR #13; collect repair data only for a diagnosed defect. Sync main into `codex/javier-shortcuts`; do not reapply the delivered patch or duplicate Deston's shell integration.
-- **Deston:** the automated native Harbor dispatch/recovery run is recorded. Confirm actual presenter task outcomes with Javier and retain both summary segments around reload; automated launch/window observations do not supply human acknowledgements. Then validate the short check with real personal gestures, review real GF-P12 results from the integrated Practice tab before a separate LIVE-gesture gate change. A simulated pass alone does not authorise that change. Own interface design, integration review, verification and release decisions; complete live acceptance using actual participant and Windows checks.
+**Delegated acceptance after software verification:** Javier executes the
+[camera-free Harbor walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
+and Windows device/launch/recovery/offline evidence. Hau Jie checks existing
+personal data/profile compatibility and short focused recognition before a full
+Practice attempt. Deston keeps interface design, integration and final review.
+This delegates execution within existing tasks; it does not transfer backlog
+accountability, change original weights, mark work Done or request new recordings
+from Deston. Automated launch/window observations cannot supply human task
+acknowledgements.
+
+- **Hau Jie:** sync the reviewed fixes into `codex/hau-jie-profiles` and follow the [individual handoff](HAU_JIE_HANDOFF.md). Preserve GF-P11's no-selection result, PR #22's partial-slot evidence and all private inputs/results. Check existing personal manifest/profile compatibility, reliable load/start and fresh capture; then use short pose/NEUTRAL diagnostics with intended-pose notes. Attempt full GF-P12 Practice only after setup is reliable, keeping misses and inconclusive windows. Diagnose before changing thresholds or requesting narrowly targeted repair data; no blanket rerecording.
+- **Javier:** sync the reviewed fixes into `codex/javier-shortcuts` and follow the [individual handoff](JAVIER_HANDOFF.md). Execute camera-free Harbor, retain both summary segments around reload, then gather remaining GF-P19 Windows launch/focus/Camera recovery evidence on both laptops and GF-P23's fresh-install/offline evidence for Deston's review. Preserve accepted GF-P05 results. Report actual outcomes and unrun cases separately; do not duplicate the shared shell or Practice reconciliation.
+- **Deston:** complete software integration and verification, then review the evidence supplied by Javier and Hau Jie against the existing acceptance criteria. Retain design, routing safety, final acceptance and release decisions. A successful load, simulated result or delegated task is not LIVE-gesture permission or a completed acceptance gate.
 
 Use [TEAM_GUIDE.md](TEAM_GUIDE.md) and the individual briefs for file ownership, test expectations and PR rules. Teammates push their own branches; Deston reviews and merges into main. Move cards to Done only with linked acceptance evidence.

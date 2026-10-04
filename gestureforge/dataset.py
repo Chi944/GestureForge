@@ -176,6 +176,15 @@ def load_dataset(path: str | Path) -> DatasetBundle:
 
     manifest_path = _manifest_path(path)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    required = {"schema_version", "feature_version", "labels", "feature_file", "feature_sha256", "records"}
+    if not isinstance(manifest, dict) or not required.issubset(manifest):
+        guidance = "Choose your collected manifest.json with its matching .npz feature file."
+        if isinstance(manifest, dict):
+            if {"deck", "stages"}.issubset(manifest):
+                guidance = "Use Load workspace for this file. " + guidance
+            elif {"deck_id", "cards"}.issubset(manifest):
+                guidance = "Use Load deck for this file. " + guidance
+        raise ValueError("Selected JSON is not a gesture dataset manifest. " + guidance)
     schema = manifest.get("schema_version")
     if type(schema) is not int or schema not in {SCHEMA_VERSION, 2}:
         raise ValueError(f"unsupported dataset schema version {manifest.get('schema_version')}")

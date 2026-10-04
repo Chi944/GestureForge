@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-04T10:40:38.750699+00:00",
+  "timestamp_utc": "2026-10-04T16:18:05.748494+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.203,
+      "seconds": 0.202,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 11.432,
+      "seconds": 21.164,
       "stdout": "Success: no issues found in 83 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 232.443,
-      "stdout": "........................................................................ [  9%]\n........................................................................ [ 19%]\n........................................................................ [ 28%]\n........................................................................ [ 38%]\n........................................................................ [ 47%]\n..................s..................................................... [ 57%]\n........................................................................ [ 66%]\n........................................................................ [ 76%]\n........................................................................ [ 86%]\n........................................................................ [ 95%]\n.................................                                        [100%]\n752 passed, 1 skipped in 213.80s (0:03:33)\n",
+      "seconds": 373.969,
+      "stdout": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 27%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n......................................s................................. [ 55%]\n........................................................................ [ 65%]\n........................................................................ [ 74%]\n........................................................................ [ 83%]\n........................................................................ [ 93%]\n.....................................................                    [100%]\n772 passed, 1 skipped in 357.55s (0:05:57)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.665,
+      "seconds": 4.62,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 5.176,
+      "seconds": 4.279,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 3.773,
+      "seconds": 2.565,
       "stdout": "",
       "stderr": ""
     }
@@ -56,12 +56,15 @@
   "limitations": [
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md.",
-    "Native capture diagnostic is separate from the generated software checks and retains its timing warnings."
+    "Native capture diagnostic below belongs to its separately identified earlier revision; it is not a fresh physical acceptance run of this repair."
   ],
-  "source_base_commit": "7e9aab9c6d6302e1eb2e811b042a532612c75f78",
+  "source_base_commit": "a8eb37d405765aff18dee32bdc0f99199fe6016c",
   "validated_changes_sha256": {
-    "scripts/check_stability.py": "8cb47b02b31be73578558c62b1a2979ed720fe11ee4f83865671114976dae768",
-    "tests/test_stability.py": "1e4775051c8e36a05396ee5d6b2e2a6d03d160d156f800208b8ff41cee492819"
+    "gestureforge/app.py": "a21015741bafa1d12b5055c95bea878204e8c5709a6fc3ec2b91bb63756745b9",
+    "gestureforge/dataset.py": "0f65e86e7c32e9911c615ea1bf2cbec3840c5917b9f9d8e14973ce9a4cb7fce2",
+    "tests/test_app.py": "987a7161421a40e02527f5789c7e28009375fde2654b1491ad60c3288c0c52ef",
+    "tests/test_app_layout.py": "c112ebeb9b5129c6d0681727dbffc9fa058eccaee6d8005cfe0d4a45fbdfaca5",
+    "tests/test_dataset.py": "dc2153b1ab75f13539e96204541ca915ccde9782e23ca941549a25e9005a35a3"
   },
   "previous_practice_verification": {
     "timestamp_utc": "2026-10-04T09:53:55.414793+00:00",
@@ -103,16 +106,12 @@
   },
   "code_review": {
     "scope": [
-      "scripts/check_stability.py",
-      "tests/test_stability.py",
-      "related documentation"
+      "gestureforge/app.py",
+      "gestureforge/dataset.py",
+      "associated regressions and handoff documentation"
     ],
-    "result": "APPROVE; no remaining blocking findings",
-    "method": "Independent read-only review plus three deterministic camera-free probes",
-    "repairs": [
-      "Timestamp consumption after taking the packet",
-      "Check worker and no-frame gap at the duration boundary"
-    ]
+    "result": "No code blockers; stale walkthrough directions corrected before publication.",
+    "method": "Independent read-only review, followed by the complete local verification recorded above."
   },
   "native_capture_diagnostic": {
     "scope": "60-second Windows camera/landmark/personal-classifier pipeline; no GUI/controller/actions or pose scoring",
@@ -185,5 +184,34 @@
       "startup_timeout_no_frame": false
     },
     "interpretation": "Completed with clean shutdown but two stale frames. Not a clean timing qualification, recognition pass, full Practice pass, 30-minute Studio soak, Mac check or second-machine acceptance."
+  },
+  "previous_capture_verification": {
+    "timestamp_utc": "2026-10-04T10:40:38.750699+00:00",
+    "source_base_commit": "7e9aab9c6d6302e1eb2e811b042a532612c75f78",
+    "validated_changes_sha256": {
+      "scripts/check_stability.py": "8cb47b02b31be73578558c62b1a2979ed720fe11ee4f83865671114976dae768",
+      "tests/test_stability.py": "1e4775051c8e36a05396ee5d6b2e2a6d03d160d156f800208b8ff41cee492819"
+    },
+    "code_review": {
+      "scope": [
+        "scripts/check_stability.py",
+        "tests/test_stability.py",
+        "related documentation"
+      ],
+      "result": "APPROVE; no remaining blocking findings",
+      "method": "Independent read-only review plus three deterministic camera-free probes",
+      "repairs": [
+        "Timestamp consumption after taking the packet",
+        "Check worker and no-frame gap at the duration boundary"
+      ]
+    }
+  },
+  "setup_recovery_verification": {
+    "regressions_before_fix": "16 dataset shape/error cases and seven UI/loader assertions reproduced failures before repair.",
+    "preserved_contracts": "Valid schema/vocabulary, UNKNOWN/split integrity, feature checksums, failed-load previous model, explicit camera start and LIVE gesture gates remain enforced.",
+    "local_data_checks": "Existing P01 pilot and session-1 personal models loaded; session-2 and negatives are evaluation-only and cannot train a model.",
+    "native_ui_observation": "Existing primary Studio instance loaded P01 pilot successfully. Its Harbor session was saved locally before restart. This confirms loading and preserves navigation; it does not establish recognition quality or completed Practice.",
+    "root_cause_limit": "Selecting ordinary workspace/deck JSON reproduced the reported vocabulary error; the originally selected user file was not confirmed.",
+    "acceptance_delegation": "Hau Jie executes personal-data/profile and focused recognition checks; Javier executes manual Harbor and Windows evidence. Deston retains integration, design and final acceptance. No completion credit added."
   }
 }

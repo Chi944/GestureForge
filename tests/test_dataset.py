@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -116,3 +117,40 @@ def test_dataset_rejects_multiple_chosen_hands(tmp_path) -> None:
 
     with pytest.raises(ValueError, match="one chosen hand"):
         save_dataset(tmp_path / "manifest.json", [left, right], np.ones((2, 60)))
+
+
+@pytest.mark.parametrize("filename, action", [
+    ("harbor_workspace.json", "Load workspace"),
+    ("demo_deck.json", "Load deck"),
+    ("corporate_demo_deck.json", "Load deck"),
+])
+def test_dataset_rejects_studio_files_with_the_correct_load_action(filename, action) -> None:
+    path = Path(__file__).resolve().parents[1] / "assets" / filename
+
+    with pytest.raises(ValueError, match="not a gesture dataset manifest") as error:
+        load_dataset(path)
+
+    assert action in str(error.value)
+
+
+@pytest.mark.parametrize("payload", [None, [], "manifest.json", 1, True, {}, {"schema_version": 1}])
+def test_dataset_rejects_other_json_with_a_manifest_message(tmp_path, payload) -> None:
+    path = tmp_path / "other.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="not a gesture dataset manifest"):
+        load_dataset(path)
+
+
+@pytest.mark.parametrize("field", [
+    "schema_version", "feature_version", "labels", "feature_file", "feature_sha256", "records",
+])
+def test_dataset_rejects_incomplete_manifest_without_raw_key_errors(tmp_path, field) -> None:
+    saved = save_dataset(tmp_path, [_record("T1", "train")], np.ones((1, 60)))
+    assert saved.manifest_path is not None
+    manifest = json.loads(saved.manifest_path.read_text(encoding="utf-8"))
+    del manifest[field]
+    saved.manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="not a gesture dataset manifest"):
+        load_dataset(saved.manifest_path)

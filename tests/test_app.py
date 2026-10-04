@@ -2252,8 +2252,24 @@ def test_failed_studio_load_retains_selection_and_allows_retry(failure, monkeypa
         assert window.routing.snapshot == old
         assert window.routing.state == "PAUSED"
         assert "Dataset not loaded" in window.notice.text()
+        assert "Manual controls remain available" in window.notice.text()
+        assert "personal TRAIN manifest" in window.notice.text()
+        assert "Guest/manual" in window.notice.text()
         assert window.start_button.isEnabled() and window.load_dataset_button.isEnabled()
         assert window.model_loader is None
+        error_notice = window.notice.text()
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert window.notice.text() == error_notice
+        monkeypatch.setattr(
+            app_module, "load_personal_model",
+            lambda *args, **kwargs: (old_model, "Right", "P02", LEGACY_VOCABULARY),
+        )
+        assert window.load_studio_dataset("fixed.json")
+        assert window.model_loader is not None
+        window.model_loader.join(5)
+        window.poll()
+        assert window.profile == "P02"
+        assert "Dataset not loaded" not in window.notice.text()
     finally:
         window.close()
 
@@ -2308,6 +2324,28 @@ def test_in_app_loader_rejects_real_synthetic_manifest(tmp_path, qapp) -> None:
         assert not window.start_button.isEnabled()
     finally:
         window.close()
+
+
+@pytest.mark.parametrize("split", ["validation", "validation_negative"])
+def test_personal_loader_explains_evaluation_only_manifest(split, tmp_path, monkeypatch) -> None:
+    import gestureforge.models as models_module
+    from gestureforge.app import load_personal_model
+    from gestureforge.dataset import SampleRecord, save_dataset
+
+    # Generated software regression data; this does not represent participant evidence.
+    record = SampleRecord(
+        participant_id="TEST_PERSON", session_id="test-evaluation", trial_id="trial-1",
+        intended_label="UNKNOWN" if split == "validation_negative" else "NEXT",
+        split=split, sample_index=0, timestamp=0.0, valid=True, feature_index=0,
+        hand="Right", provenance="human",
+    )
+    bundle = save_dataset(tmp_path, [record], np.zeros((1, 60)), {"chosen_hand": "Right"})
+    train = Mock(side_effect=AssertionError("Evaluation-only rows must not be used for training"))
+    monkeypatch.setattr(models_module, "train_model", train)
+
+    with pytest.raises(ValueError, match="no valid TRAIN samples.*personal TRAIN manifest"):
+        load_personal_model(bundle.manifest_path, studio=True)
+    train.assert_not_called()
 
 
 def test_camera_change_waits_for_release_and_restarts_with_fresh_identity(monkeypatch, qapp) -> None:

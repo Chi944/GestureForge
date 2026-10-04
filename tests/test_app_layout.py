@@ -9,6 +9,7 @@ from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import QApplication, QToolButton
 
 from gestureforge.app import Window
+from gestureforge.contracts import RoutingMode
 
 
 @pytest.fixture(scope="module")
@@ -296,5 +297,51 @@ def test_studio_setup_controls_fit_half_width_workflow(qapp) -> None:
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0
         for button in window.file_tool_buttons:
             assert button.width() >= button.sizeHint().width(), button.text()
+    finally:
+        window.close()
+
+
+def test_guest_setup_manual_mode_and_apply_are_visible_without_scrolling(qapp) -> None:
+    window = Window(studio=True)
+    window.resize(900, 620)
+    window.show()
+    try:
+        assert window.use_studio_guest()
+        window.open_setup_page()
+        qapp.processEvents()
+
+        assert (window.width(), window.height()) == (900, 620)
+        assert window.studio_scroll.verticalScrollBar().value() == 0
+        assert window.mode_picker.currentData() == RoutingMode.PREVIEW.value
+        assert window.mode_picker.findText("Live (manual controls)") >= 0
+        for widget in (window.mode_picker, window.apply_bindings_button):
+            assert widget.isVisible() and widget.isEnabled()
+            assert _rect_in_workflow_viewport(window, widget)
+            assert widget.mapTo(window, QPoint(0, 0)).y() < window.camera_picker.mapTo(window, QPoint(0, 0)).y()
+        assert window.worker is None
+        assert window.studio_scroll.horizontalScrollBar().maximum() == 0
+    finally:
+        window.close()
+
+
+def test_setup_camera_guidance_is_readable_in_the_narrow_workflow(qapp) -> None:
+    window = Window(studio=True)
+    window.resize(900, 620)
+    window.show()
+    try:
+        window.open_setup_page()
+        qapp.processEvents()
+        guidance = window.camera_help
+        window.studio_scroll.ensureWidgetVisible(guidance)
+        qapp.processEvents()
+
+        assert guidance.isVisible() and guidance.wordWrap()
+        assert _rect_in_workflow_viewport(window, guidance)
+        assert guidance.height() >= guidance.heightForWidth(guidance.width())
+        assert "0" in guidance.text() and "first" in guidance.text()
+        assert "1" in guidance.text() and "second" in guidance.text()
+        assert "without starting" in guidance.text()
+        assert "numbering varies" in guidance.text().lower()
+        assert window.studio_scroll.horizontalScrollBar().maximum() == 0
     finally:
         window.close()

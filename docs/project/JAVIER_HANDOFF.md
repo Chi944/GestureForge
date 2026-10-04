@@ -18,6 +18,26 @@ Before every commit/push, confirm the current branch is `codex/javier-shortcuts`
 
 ## Start with these tasks
 
+**Current assignment:** finish reproducible software fixes and checks
+before requesting new manual evidence. After Deston hands over the reviewed
+software checkpoint, you execute the following acceptance work. Deston retains
+interface design, integration, acceptance decisions and final review; the existing
+backlog owners and weights remain unchanged, and delegation earns no Done credit.
+
+1. Run the [camera-free six-stage Harbor walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
+   using manual LIVE controls. No profile, webcam or gesture recording is needed.
+   Record actual task outcomes and failures, missing-target recovery, paused
+   save/reload with no replay, and both Session summary segments. A launch request
+   is not a human task acknowledgement.
+2. Record GF-P19's remaining Windows device/launch/recovery cases on both laptops,
+   including target validation, trusted app/HTTPS selection, focus return and the
+   separate Camera release/recovery check. Preserve accepted GF-P05 evidence.
+3. Execute the Windows installation/offline evidence slice for Deston's GF-P23
+   review: identify the device and source revision, use the documented setup,
+   and observe the local workflow after setup without internet. Keep HTTPS and
+   external apps' online features separate. Mark unavailable/unrun cases honestly;
+   software tests do not establish native or human acceptance.
+
 Update, 2 October: your delivered components were reviewed, corrected and merged through PR #11; see [the integration review](JAVIER_DELIVERY_REVIEW.md). Do not reapply the ZIP patch or rebuild those components. Sync the reviewed main into your own branch, preserving local work. The viewer, workspace, runbook editor/navigation, session summary and Quick Actions simulation are attached to Studio. The [4 October checkpoint](JAVIER_OCT4_CHECKPOINT.md) preserves your historical 373-test Linux/offscreen run. GF-P05 is now accepted from PR #18's supplied [laptop-A observations and focused repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md), including refused failed-dispatch confirmation, recorded missing-target failure and successful recovery. Integration review did not independently repeat those native observations; no further GF-P05 rerun is pending.
 
 Bounded update, 3 October: you do not need to wait for a full starter recogniser to continue your lane. On `codex/javier-shortcuts`, verify the integrated manual LIVE path on Windows through the attached six-stage Harbor scenario and preserve the existing PR #18/GF-P05 evidence separately. Record actual targets used, target validation results, missing-target failure, Camera release/recovery, reload behaviour and session-summary entries around reload. Do not promise native Mac external launch support; treat it as unsupported unless separately verified on native macOS. Keep all private reports/logs unchanged and keep fixes inside your owned viewer/workspace/shortcut/runbook components unless Deston requests a shared-shell change.
@@ -91,4 +111,4 @@ pipeline diagnostic does not prove either. Do not build a second capture logger.
 
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Sync reviewed main into `codex/javier-shortcuts` and read TEAM_GUIDE.md, this brief, COMPONENT_INTERFACES.md and CONTRACTS.md. Preserve accepted PR #18/GF-P05 evidence. Verify the attached manual LIVE six-stage Harbor path on Windows: actual app/file/folder/HTTPS targets, failed-target recovery, acknowledged Camera release, focus return, paused reload and no replay. Keep both summary segments around reload. The host now reconciles Practice events in Session summary; do not rebuild it. Inspect the saved historical view with actual local trial evidence and summary exports; distinguish correct/wrong/missed trials, simulated requests, manual actions, real launches and acknowledged completion. Do not count fifty windows as fifty actions. PR #21's Practice integration does not unlock LIVE gestures, and you can finish manual-path work without waiting for a starter recogniser. Continue GF-P19 on both laptops and mark unrun cases honestly. Fix only evidenced defects in your viewer/workspace/runbook/shortcut/summary components; report shared-shell issues to Deston. Use fake adapters for software tests and label native observations separately. Push only your branch and open a focused PR for Deston, leaving it unmerged. Do not edit private reports/logs or publish participant data.
+> Work only on `codex/javier-shortcuts`; sync the reviewed fix commit and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Complete reproducible software fixes/checks first. Then execute the camera-free manual Harbor walkthrough, recording actual task outcomes, recovery and both summary segments around paused reload. Separately gather the remaining Windows device/launch/focus/Camera recovery evidence on both laptops and the fresh-install/offline local-workflow evidence for Deston's review. Preserve accepted GF-P05 results; distinguish simulated actions, launch requests and human acknowledgements, and mark unrun cases honestly. Fix only your viewer/workspace/runbook/shortcut/summary modules and tests; report shell issues to Deston. Verify the branch before every commit/push; push only this branch and open a focused PR for Deston's integration and final review, leaving it unmerged. Do not push or merge into `main`, change task weights/status to claim delegated work is done, or publish private data/logs.

@@ -18,6 +18,27 @@ Before every commit/push, confirm the current branch is `codex/hau-jie-profiles`
 
 ## Start with these tasks
 
+**Current assignment:** finish reproducible software fixes and checks
+before requesting more manual evidence. On the reviewed software checkpoint,
+you execute the recognition/profile validation below; Deston retains interface
+design, integration and final evidence review. This assigns execution within the
+existing tasks, without changing backlog ownership, weights or completion credit.
+This sequence supersedes earlier repeat-run instructions below.
+
+1. Check the existing personal manifest/saved profile for compatible vocabulary,
+   selected hand, feature version and model/settings revision. Preserve the
+   original inputs and results; fix reproducible compatibility defects in your
+   owned modules and report shared-shell defects to Deston.
+2. Once the software checkpoint is handed over, verify reliable load/start and
+   fresh capture with the existing data, then run short, focused pose/NEUTRAL
+   diagnostics. Save the actual coverage, prediction/rejection and intended-pose
+   evidence; stop to diagnose a setup fault instead of repeating a long run.
+3. Attempt full GF-P12 Practice only after setup is reliable and the focused
+   checks support it. Preserve every miss, inconclusive window and prior attempt.
+   Request targeted repair samples only for a diagnosed collection defect;
+   do not ask Deston to rerecord a blanket dataset or repeat full Practice as
+   routine troubleshooting. No readiness pass or LIVE permission is implied.
+
 Latest integration, 4 October: sync main before recording. Practice v3 queues
 Begin for up to two seconds while waiting for fresh capture/READY, and a
 30-second setup timeout offers Retry setup without ending the 50-window attempt.
@@ -43,7 +64,7 @@ PR #17's selector is attached in Profiles. Creation/loading stays paused in Prev
 1. **GF-P06 - selector delivered and attached.** Keep the reviewed `ProfileStore` API and shell-owned loading. Preserve unavailable-starter messaging, independent profiles, atomic mutations and old state on failure. Deston owns integrated acceptance; see [PROGRESS.md](PROGRESS.md) for current evidence and status. Profile loading and Guest/manual access do not complete starter readiness.
 2. **GF-P11 - comparison supplied in PR #19.** The bounded nested comparison reports no qualifying candidate and disagreement between the inner participants' preferred settings in every fold. Review repairs cover reproducibility and evidence consistency; see [PROGRESS.md](PROGRESS.md) for acceptance. Preserve the private run and fixed baseline. A no-qualifying result does not require shipping a starter or blanket recollection.
 3. **GF-P07 by 11 October - complete guided enrolment acceptance.** PR #16's reviewed `EnrolmentSession`/`EnrolmentWidget` is now attached to Studio; read [ENROLMENT_INTERFACE_PROPOSAL.md](ENROLMENT_INTERFACE_PROPOSAL.md). Sync main and use the Enrolment tab for a real capture walkthrough, including invalid feedback, Stop and save/reload evidence. Deston owns the shared observation adapter; do not rebuild it or create another camera thread. The Profiles tab can explicitly create a saved profile from a completed TRAIN manifest. Preserve legacy imports and the implemented three-action-ID-plus-NEUTRAL vocabulary. UNKNOWN remains a rejection result, never a trained positive class.
-4. **GF-P12 by 18 October - collect measured Practice evidence and resolve demonstrated defects.** Sync the reviewed main before testing; PR #21's component is integrated in the embedded **Practice** tab. After saving, inspect Session summary's historical review for completed/recorded windows, coverage and exact event matches; keep the separate full Practice JSON. Do not rebuild it or attach a second camera. Complete fifty five-second windows: ten trials for each of the three enrolled action poses and NEUTRAL, followed by ten negative/transition windows. The prompted actions pass through the shared controller and persistent dispatcher in simulation. Preserve the saved local result, code revision, profile/model/behaviour revision, pose notes and any interruptions. The proposed target is at least nine correct trials per pose and zero negative actions, with coverage checks; an incomplete attempt is not a pass. Inspect the negative instructions against your enrolled poses before starting. A measured pass needs Deston's review and does not enable LIVE gestures. Keep private evidence out of Git; send a permission-appropriate aggregate report and a focused defect PR if needed.
+4. **GF-P12 by 18 October - collect measured Practice evidence and resolve demonstrated defects.** Follow the current assignment's compatibility, setup and focused-check sequence before a full attempt; PR #21's component is integrated in the embedded **Practice** tab. After saving, inspect Session summary's historical review for completed/recorded windows, coverage and exact event matches; keep the separate full Practice JSON. Do not rebuild it or attach a second camera. Once setup is reliable, complete fifty five-second windows: ten trials for each of the three enrolled action poses and NEUTRAL, followed by ten negative/transition windows. The prompted actions pass through the shared controller and persistent dispatcher in simulation. Preserve the saved local result, code revision, profile/model/behaviour revision, pose notes and any interruptions. The proposed target is at least nine correct trials per pose and zero negative actions, with coverage checks; an incomplete attempt is not a pass. Inspect the negative instructions against your enrolled poses before starting. A measured pass needs Deston's review and does not enable LIVE gestures. Keep private evidence out of Git; send a permission-appropriate aggregate report and a focused defect PR if needed.
 
 ## Complete your lane
 
@@ -89,8 +110,9 @@ shared-shell footer repair. Keep NEUTRAL through Begin; measurement then display
 the timed cue. New interruption records preserve the host cause. Historical
 results provide deterministic next steps after event reconciliation.
 
-Start with one real G1 window to verify Begin/measurement behavior, preserving
-its local timing diagnostics. Then run the full Practice attempt. Preserve the
+After the current compatibility/setup checks, use one real G1 window to verify
+Begin/measurement behavior and preserve its local timing diagnostics. Proceed
+to full Practice only after reliable setup and focused recognition checks. Preserve the
 reported partial-slot Stop evidence; the remaining collection/profile workflow
 recording is separate. Do not rebuild the footer, add another camera worker,
 change thresholds to hide failures or repeat blanket data collection.
@@ -144,4 +166,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Sync reviewed main into `codex/hau-jie-profiles` and read TEAM_GUIDE.md, this brief and CONTRACTS.md. PR #21 supplies the longer rehearsal component and Deston owns its embedded Practice integration: do not rebuild it or add a camera worker. Preserve PR #22's real Stop/invalid-slot evidence and finish GF-P07's short collection/profile workflow recording. Verify one Begin window against the corrected footer, then run Practice's fifty five-second windows using your personal profile: ten per action pose plus NEUTRAL, then ten negative/transition intervals. Keep the saved local result and code/model/behaviour revision; report actual outcomes and interruptions without claiming LIVE permission. Separately reproduce the open-palm/LATCHED issue with the existing opt-in Preview/Rehearsal EvaluationTrace and timestamped intended-pose/display notes. Run `python -m gestureforge.trace_diagnose <localtrace.json>` and compare the current-controller reconstruction with those notes and the code revision; it is not an accuracy/readiness score. Keep raw samples, private results and notes out of Git; do not record images or feature vectors for this diagnosis. Diagnose before changing thresholds, neutral policy or requesting targeted repair collection. Preserve the supplied PR #19 comparison and PR #20 pilot limits. Fix evidenced defects only in your recognition/profile/enrolment/practice modules and tests; send shared-shell issues to Deston. Run the common checks, push only your own branch and open a focused PR for Deston; leave it unmerged. Do not edit private Word reports/logs.
+> Work only on `codex/hau-jie-profiles`; sync the reviewed fix commit and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Complete reproducible software fixes/checks first. Validate the existing personal data/profile compatibility, then use short setup and pose/NEUTRAL diagnostics with that data. Run full Practice only after setup is reliable; preserve all old results, misses and inconclusive windows. Diagnose before changing thresholds or requesting narrowly targeted repair samples; do not ask Deston for blanket rerecording. Fix only your recognition/profile/enrolment/practice modules and tests; report shell issues to Deston. Keep participant data/private results local and report actual outcomes without claiming readiness or LIVE permission. Verify the branch before every commit/push; push only this branch and open a focused PR for Deston's integration and final review, leaving it unmerged. Do not push or merge into `main`, change task weights/status to claim delegated work is done, or edit private reports/logs.
