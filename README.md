@@ -30,10 +30,11 @@ The final project is now scoped as **GestureForge Studio** for corporate trainin
 
 Current project foundation on `main`:
 
-Practice recovers from a late camera frame while waiting for **Begin**: it keeps
-the completed windows, leaves capture running and asks for a fresh NEUTRAL hold.
-The five-second measurement and 200 ms timing checks remain unchanged. See the
-[Practice guide](docs/USER_GUIDE.md) for recovery and saved-result instructions.
+Practice recovers from late camera frames around **Begin** without weakening the
+200 ms safety check. Late setup frames rearm NEUTRAL, while a late frame inside a
+five-second window records that window as interrupted and lets the same 50-window
+attempt continue from **Prepare next trial**. See the [Practice guide](docs/USER_GUIDE.md)
+for recovery and saved-result instructions.
 
 | Area | Status |
 | :--- | :--- |
@@ -83,7 +84,7 @@ Open **Profiles** to create a personal profile from an existing numeric manifest
 
 An existing saved profile can also launch with `.\run.cmd --studio --profile-id YOUR_PROFILE_ID --camera 1`. The private store defaults to `.local/profiles`; `--profile-store PATH` selects the store for both startup and the Profiles tab. Use the JSON filename without `.json` as the ID. Its saved classifier settings are authoritative, so do not also pass dataset/algorithm/multiplier/margin arguments. A successful load shows the profile name and stays paused with readiness unverified.
 
-Open **Practice** with your personal recogniser loaded to run the longer measured rehearsal. Review the ten editable negative/transition cues, select **Save local numeric rehearsal outcomes for this profile**, then **Start personal practice**. Use **Prepare next trial**, wait for capture and the requested NEUTRAL arming, then **Begin five-second window**. There are ten windows per enrolled action pose and NEUTRAL, followed by ten negative windows. Actions simulate through the existing dispatcher; no external resource opens. Results save beneath ignored `.local/studio/practice/`. Stop, focus loss or leaving the tab ends the attempt and restores the previous context paused after saving. See [Practice steps and save recovery](docs/USER_GUIDE.md#personal-practice).
+Open **Practice** with your personal recogniser loaded to run the longer measured rehearsal. Review the ten editable negative/transition cues, select **Save local numeric rehearsal outcomes for this profile**, then **Start personal practice**. Use **Prepare next trial**, wait for capture and the requested NEUTRAL arming, then **Begin five-second window**. There are ten windows per enrolled action pose and NEUTRAL, followed by ten negative windows. Actions simulate through the existing dispatcher; no external resource opens. Results save beneath ignored `.local/studio/practice/`. A late measured camera packet interrupts only that window, so continue with **Prepare next trial**; Stop, focus loss or leaving the tab ends the attempt and restores the previous context paused after saving. See [Practice steps and save recovery](docs/USER_GUIDE.md#personal-practice).
 
 The camera stays fixed while the right workflow pane scrolls. Use **Setup** for camera, mapping, readiness and file controls; **Open Practice** reveals the trial and consent controls directly. After starting Practice, choose the full 50-window rehearsal or **Test only [pose]** for one five-second diagnostic. Stay NEUTRAL through **Begin**, then follow the timed cue. The camera deliberately switches off after each window; **Prepare next trial** reopens it. A diagnostic records its actual outcome without assessing other poses or granting readiness. New results include frame-gap timing for incomplete capture; completing a command alone does not establish full capture coverage. No recommendation changes a model or enables LIVE gestures.
 

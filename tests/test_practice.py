@@ -643,14 +643,26 @@ def test_packet_after_armed_stale_recovery_must_still_advance_monotonic_watermar
     assert h.attempt.last_capture_validation['reason'] == 'out_of_order_frame'
 
 
-def test_stale_packet_during_measured_window_still_cancels():
+def test_stale_packet_during_measured_window_interrupts_only_current_trial():
     h = Harness()
     h.prepare()
     snap = h.router.snapshot
     stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now + 0.1,
                        'NEUTRAL', True, snap.model_version)
     h.attempt.receive(stale, h.now + 0.35)
-    assert h.attempt.result().status == 'cancelled'
+    result = h.attempt.result()
+    assert h.attempt.status == 'idle'
+    assert result.status == 'idle'
+    assert len(result.trials) == 1
+    assert result.trials[0].outcome == 'interrupted'
+    assert result.trials[0].reason == 'Invalid or stale capture packet; current window interrupted.'
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['decision'] == 'window_interrupted'
+    assert h.attempt.last_capture_validation['phase'] == 'measuring'
+    assert h.router.state == 'PAUSED'
+    h.now += 0.35
+    h.attempt.prepare(h.now)
+    assert h.attempt.status == 'preparing'
 
 
 @pytest.mark.parametrize(

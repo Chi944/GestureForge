@@ -249,6 +249,14 @@ feeds the supplied router exactly once; the shell must not process packets again
         if invalid_reason is not None:
             if self._recover_stale_premeasurement_packet(prediction, now, invalid_reason):
                 return
+            if self.status == 'measuring' and invalid_reason == 'stale_prediction':
+                self._record_capture_validation(
+                    prediction, now, invalid_reason, recovered=True,
+                    phase='measuring', decision='window_interrupted',
+                )
+                self._last_frame, self._last_packet = prediction.frame_id, prediction.timestamp
+                self._interrupt_window('Invalid or stale capture packet; current window interrupted.')
+                return
             if self.status in {'passed', 'failed', 'cancelled', 'expired'}:
                 return
             self._record_capture_validation(prediction, now, invalid_reason, recovered=False)
@@ -393,6 +401,21 @@ feeds the supplied router exactly once; the shell must not process packets again
             self.status = 'passed' if good else 'failed'
             self.reason = ('Measured rehearsal met the proposed target; await host acceptance.' if good
                            else 'Rehearsal target not met; review per-pose and rejection evidence.')
+
+    def _interrupt_window(self, reason: str) -> None:
+        assert self._started is not None and self.expected is not None
+        prompt = self.expected
+        ended_at = self._clock if self._clock is not None else self._started
+        self._trials.append(PracticeTrial(
+            prompt.expected, prompt.repetition, prompt.instruction, self._snapshot.session_id,
+            self._started, ended_at, 'interrupted', tuple(self._actions), tuple(self._events),
+            self._neutral_ready, self._frames, tuple(sorted(self._rejections.items())),
+            False, reason, self._coverage_diagnostics(ended_at),
+        ))
+        self.router.pause()
+        self._started = None
+        self.status = 'idle'
+        self.reason = reason + ' Click Prepare next trial to continue.'
 
     def cancel(self, reason: str, *, expired: bool = False) -> None:
         if self.status in {'passed', 'failed', 'cancelled', 'expired'}:
@@ -546,7 +569,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         return recovered
 
     def _record_capture_validation(self, prediction: Prediction, now: float, reason: str, *,
-                                   recovered: bool, phase: str | None = None) -> None:
+                                   recovered: bool, phase: str | None = None,
+                                   decision: str | None = None) -> None:
         captured = prediction.timestamp
         captured_at = captured if type(captured) in (int, float) and math.isfinite(captured) else None
         self.last_capture_validation = {
@@ -559,5 +583,5 @@ feeds the supplied router exactly once; the shell must not process packets again
             'last_capture_at': self._last_packet,
             'last_frame_id': self._last_frame,
             'recovered': recovered,
-            'decision': 'dropped_and_rearmed' if recovered else 'terminal_cancel',
+            'decision': decision or ('dropped_and_rearmed' if recovered else 'terminal_cancel'),
         }

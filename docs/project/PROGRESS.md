@@ -300,6 +300,23 @@ outputs, source hashes and review scope are recorded in `verification.json`.
 Physical acceptance of the updated full protocol remains open; no completed-task
 weight is added.
 
+## 4 October - measured-window timing recovery
+
+A later P01 full Practice attempt on `39b260c` completed eight measured windows
+before the ninth window stopped 0.484 seconds after Begin. The saved diagnostic
+shows one scoreable NEXT frame, then an otherwise valid frame received 218 ms
+after capture during the measured phase. The 200 ms freshness check was correct;
+the failure was that Practice treated this one late measured packet as a terminal
+attempt cancellation, discarding the chance to finish the remaining windows.
+
+Measured-phase stale packets now interrupt only the current five-second window.
+The trial is saved as `interrupted` with coverage diagnostics and
+`window_interrupted` timing evidence, the router returns to paused rehearsal
+state, and the same attempt can continue from **Prepare next trial**. Malformed,
+future, out-of-order and wrong-generation packets still keep the stricter safety
+behaviour. No freshness threshold, scoring target or LIVE-gesture permission is
+relaxed. Physical acceptance of the updated protocol still needs a fresh live run.
+
 ## Next deliverables
 
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.
