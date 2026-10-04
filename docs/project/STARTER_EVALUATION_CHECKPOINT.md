@@ -1,13 +1,22 @@
 # GF-P28: 4 October checkpoint
 
 Prepared 1 October 2026. Owner: Hau Jie. Reviewer: Deston.
-Status: reproducible feasibility comparison for review, **not a ready starter**.
+Status: GF-P28 feasibility investigation accepted on 5 October 2026, **not a ready starter**.
 This PR continues the merged vocabulary and collection guide; it does not change
 the shell, controller, routing, viewer or other builders' modules.
 
 The data counts and measured results below are supplied by Hau Jie. Integration
 review independently checked the evaluator and its software tests; it did not
 rerun these measurements because P02/P03 inputs are not present in that checkout.
+
+The acceptance review used GF-P28's original criteria in `223c8c3`: a
+three-person split that excludes the validation person from training, recorded
+distribution permission and recorded first-use risks. The investigation meets
+those criteria with an unsuccessful feasibility outcome. Permission is limited
+to internal team training/evaluation; final-package/public redistribution has
+not been granted. Neither acceptance nor the later bounded comparison authorises
+shipping a starter. GF-P10's starter integration and GF-P17's final data and
+configuration work remain separate.
 
 ## Private data audit
 

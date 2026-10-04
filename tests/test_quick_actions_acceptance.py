@@ -6,7 +6,7 @@ import pytest
 from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QApplication
 
-from gestureforge.app import PersonalLiveGrant, Window
+from gestureforge.app import Window
 from gestureforge.contracts import Action, ActionType, RoutingMode
 from gestureforge.shortcuts import Target, TargetKind, TargetRegistry
 from gestureforge.vocabulary import GestureVocabulary
@@ -62,15 +62,18 @@ class LauncherSpy:
 
 
 def test_quick_actions_standalone_reload_rebind_recover_and_pause(qapp, tmp_path, monkeypatch):
+    import gestureforge.app as app_module
+
     vocabulary = GestureVocabulary(("G1", "G2", "G3"))
     state_path = tmp_path / "studio" / "quick-actions-targets.json"
     registry = _fill_registry()
     registry.save(state_path)
 
-    first = Window(model=_model(vocabulary), studio=True, vocabulary=vocabulary)
     launcher = LauncherSpy()
+    monkeypatch.setattr(app_module, "WindowsLauncher", lambda: launcher)
+    monkeypatch.setattr(app_module, "UnsupportedLauncher", lambda: launcher)
+    first = Window(model=_model(vocabulary), studio=True, vocabulary=vocabulary)
     try:
-        first.dispatcher.launcher = launcher
         assert first.use_studio_workspace(Workspace("quick-only", "Quick only"))
         assert first.viewer is not None and not first.deck_available
         assert first.runbook is not None and first.runbook.current_stage is None
@@ -97,10 +100,12 @@ def test_quick_actions_standalone_reload_rebind_recover_and_pause(qapp, tmp_path
 
     second = Window(model=_model(vocabulary), studio=True, vocabulary=vocabulary)
     try:
-        second.dispatcher.launcher = launcher
         assert second.use_studio_workspace(Workspace("quick-only", "Quick only"))
         assert second.quick_registry.quick_slots == ("target-03", "target-01", "target-02")
         assert len(second.quick_registry.targets) == 12
+        assert second.routing is not None and second.routing.state == "PAUSED"
+        assert not second.quick_actions_active
+        assert launcher.calls == []
         assert second.use_quick_actions_context()
 
         missing = tmp_path / "missing.txt"
@@ -118,12 +123,8 @@ def test_quick_actions_standalone_reload_rebind_recover_and_pause(qapp, tmp_path
         candidate.configure(Target("target-03", "Local target 03", TargetKind.BUILTIN, "camera", True))
         second.quick_registry.replace_with(candidate)
         assert second.use_quick_actions_context()
-        second._personal_live_grant = PersonalLiveGrant(
-            "accepted-practice",
-            second.camera_index,
-            second._practice_current_revision(),
-            second._approved_personal_live_contexts(),
-        )
+        # Manual LIVE requests do not require or manufacture a Practice grant.
+        assert second._personal_live_grant is None
         assert second.configure_studio(mode=RoutingMode.LIVE)
         assert second.use_quick_actions_context()
         monkeypatch.setattr(second, "isActiveWindow", lambda: True)
