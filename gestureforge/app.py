@@ -39,7 +39,7 @@ from .javier_widgets import (
 )
 from .enrolment_widget import EnrolmentWidget
 from .profile_widget import ProfileSelectorWidget
-from .practice import DIAGNOSTIC_PROTOCOL_VERSION, NEGATIVE_CUES, PersonalRehearsal, PracticeResult
+from .practice import READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS, NEGATIVE_CUES, PersonalRehearsal, PracticeResult
 from .practice_guidance import practice_next_steps
 from .practice_widget import PersonalRehearsalWidget
 from .profiles import LoadedProfile, ProfileStore
@@ -1237,7 +1237,7 @@ class Window(QMainWindow):
         return practice_next_steps(review.result)
 
     def _is_single_pose_diagnostic(self, result: PracticeResult) -> bool:
-        return result.protocol_version == DIAGNOSTIC_PROTOCOL_VERSION
+        return result.protocol_version in READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS
 
     def _single_pose_diagnostic_details(self, result: PracticeResult) -> tuple[str, str, int, int, int]:
         if not result.trials:
@@ -1542,6 +1542,8 @@ class Window(QMainWindow):
                 if remaining is not None and remaining > 0
                 else "Five seconds complete — finishing the trial."
             )
+            if (attempt.last_capture_validation or {}).get("decision") == "dropped_window_inconclusive":
+                message = "Timing delay recorded: this window is inconclusive; the session continues. " + message
         elif attempt.status == "idle":
             message = "Click Prepare next trial to continue. Timing has not started."
         else:

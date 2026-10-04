@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-03T21:17:09.030931+00:00",
+  "timestamp_utc": "2026-10-04T08:38:32.184313+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 1.708,
+      "seconds": 4.238,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 3.085,
+      "seconds": 3.807,
       "stdout": "Success: no issues found in 81 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 386.505,
-      "stdout": "........................................................................ [  9%]\n........................................................................ [ 19%]\n........................................................................ [ 29%]\n........................................................................ [ 39%]\n........................................................................ [ 49%]\n..............s......................................................... [ 59%]\n........................................................................ [ 69%]\n........................................................................ [ 79%]\n........................................................................ [ 89%]\n........................................................................ [ 99%]\n....                                                                     [100%]\n723 passed, 1 skipped in 365.99s (0:06:05)\n",
+      "seconds": 267.158,
+      "stdout": "........................................................................ [  9%]\n........................................................................ [ 19%]\n........................................................................ [ 29%]\n........................................................................ [ 39%]\n........................................................................ [ 49%]\n...............s........................................................ [ 59%]\n........................................................................ [ 69%]\n........................................................................ [ 79%]\n........................................................................ [ 88%]\n........................................................................ [ 98%]\n.........                                                                [100%]\n728 passed, 1 skipped in 253.62s (0:04:13)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 7.962,
+      "seconds": 3.213,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 7.298,
+      "seconds": 3.113,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 4.531,
+      "seconds": 2.055,
       "stdout": "",
       "stderr": ""
     }
@@ -57,22 +57,25 @@
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
   ],
-  "source_base_commit": "965edb89eedcbfd937f33642110868e5f47fc8c3",
+  "source_base_commit": "964928ba90c8920b512bcd4f2bc7b97762619bae",
+  "regression_reproduced_base_commit": "39b260ce8bcc834e3783510926dd475b64920a0b",
   "validated_changes_sha256": {
-    "gestureforge/practice.py": "dab9f17f1a4d9d8bdf437f6b42f535890fe9d4cbc10f0c3f32ae3405e4911001",
-    "tests/test_practice.py": "f8a0c4c71c79c477aae22b7e89d4eb6191e456974576fe63b1d6c335d7859c29",
-    "tests/test_app_practice.py": "56e3d6409df406b5b30536c5fad91fe230bd840264b8d0e3100bf7fa48305a77"
+    "gestureforge/practice.py": "f19e0293c8293236fdd42d5ae80b8d41013ff380eae495b2bc7834ce6647a6aa",
+    "gestureforge/app.py": "16353cc4cbe00df59ed881f5600c74d897713bdbe86eba6fa8a6ae7421544bee",
+    "gestureforge/practice_guidance.py": "943ceac704cb56bf8391b3c1af13067cc80bd0d6f75d97877f6290517f6f49c1",
+    "tests/test_practice.py": "4b673ab2af938f6db227c3e3920230836d3ac2f1aad363312a43fbe113c9e038",
+    "tests/test_app_practice.py": "7eb6e78bcce67c29870e32b96265167128c607ae4e5b0dfebbc46fe93c1b60b8",
+    "tests/test_practice_guidance.py": "d9f3ffd463c2074feda6c278873c88ca705989bfda44b0310b4d5359cce52159"
   },
   "regression_reproduction": {
     "check": "tests/test_app_practice.py::test_practice_completes_full_50_window_host_regression",
-    "before": "Normal 50-window control passed; the injected 203 ms packet before sixth Begin cancelled the attempt and failed the retained-attempt assertion.",
-    "after": "Both cases passed. The recovered run retained five completed windows, camera and generation, required fresh NEUTRAL and completed all 50 windows.",
+    "before": "Normal and pre-Begin recovery controls passed. A 218 ms-old packet during the ninth measured window cancelled the attempt and failed the retained-attempt assertion.",
+    "after": "All three cases complete 50 windows. The measured-delay case preserves eight previous windows, marks only window nine inconclusive and saves a failed result with no live action.",
     "scope": "Generated predictions through the real Studio host; not a physical webcam result."
   },
   "code_review": {
-    "verdict": "APPROVE",
-    "scope": "Pre-Begin stale capture recovery, unit/host regressions and associated documentation.",
-    "conditions": "Full verification green and this report refreshed before publication.",
+    "verdict": "COMMENT: no blockers found in independent read-only review",
+    "scope": "Measured-window stale capture handling, v2 protocol compatibility, unit/host regressions and documentation.",
     "blocking_findings": 0
   }
 }

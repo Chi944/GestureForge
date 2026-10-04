@@ -902,8 +902,10 @@ def test_terminal_practice_release_does_not_fault_restored_context(monkeypatch, 
         window.close()
 
 
-@pytest.mark.parametrize("late_before_sixth", [False, True])
-def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tmp_path, late_before_sixth):
+@pytest.mark.parametrize(("late_before_sixth", "late_during_ninth"), [(False, False), (True, False), (False, True)])
+def test_practice_completes_full_50_window_host_regression(
+    monkeypatch, qapp, tmp_path, late_before_sixth, late_during_ninth,
+):
     import gestureforge.app as app_module
 
     monkeypatch.setattr(app_module, "DEFAULT_STUDIO_STATE_FOLDER", tmp_path / "studio")
@@ -960,6 +962,24 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
                     assert widget.begin_button.isEnabled()
                 widget.begin()
                 clock.advance(0.05)
+                if late_during_ninth and index == 8:
+                    attempt = window.practice_attempt
+                    assert attempt is not None
+                    completed = attempt.result().trials
+                    assert len(completed) == 8
+                    enqueue(window, worker, clock, expected)
+                    late = prediction(window, clock, expected)
+                    clock.advance(0.208)  # Poll adds 10 ms: the live failure was 218 ms old.
+                    worker.packets.append((frame(), late))
+                    window.poll()
+                    assert window.practice_attempt is attempt
+                    assert attempt.status == "measuring"
+                    assert attempt.result().trials == completed
+                    assert window.worker is worker and not worker.interrupted
+                    assert attempt.last_capture_validation is not None
+                    assert attempt.last_capture_validation["decision"] == "dropped_window_inconclusive"
+                    assert window.routing.state == "WAIT_NEUTRAL"
+                    assert "this window is inconclusive; the session continues" in window.detail.text()
                 feed_window(window, worker, clock, expected)
             finish_worker(window, worker)
 
@@ -971,10 +991,12 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         assert window.readiness_check is None
         assert window.readiness_pass_revision == ""
         counts = window.session_summary.counts()
-        assert counts["simulated"] == 30
+        expected_actions = 29 if late_during_ninth else 30
+        assert counts["simulated"] == expected_actions
         assert counts["launch_requested"] == 0
         assert counts["acknowledged_completion"] == 0
-        assert "practice passed" in window.practice_status.text().lower()
+        expected_status = "failed" if late_during_ninth else "passed"
+        assert f"practice {expected_status}" in window.practice_status.text().lower()
         assert "Open Session summary" in window.practice_status.text()
         saved = list((tmp_path / "studio" / "practice").glob("practice-*.json"))
         assert len(saved) == 1
@@ -982,15 +1004,24 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         assert review is not None
         assert review.saved_path == saved[0]
         assert len(review.result.trials) == 50
+        assert review.result.status == expected_status
+        if late_during_ninth:
+            affected = review.result.trials[8]
+            assert affected.outcome == "inconclusive"
+            assert not affected.coverage_ok
+            assert affected.coverage_diagnostics is not None
+            assert "stale_prediction" in affected.coverage_diagnostics["failure_reasons"]
+            assert review.result.trials[:8] == completed
+            assert all(row.outcome == "correct" for row in review.result.trials[9:])
         review_text = window.practice_review_label.text().lower()
         assert "latest saved practice" in review_text
         assert "windows recorded: 50/50" in review_text
         assert "completed five-second windows: 50/50" in review_text
         assert "unattempted 0" in review_text
-        assert "coverage failures 0" in review_text
+        assert f"coverage failures {int(late_during_ninth)}" in review_text
         assert "scope revision: revision-" in review_text
         assert "demo studio" not in review_text
-        assert "matched simulated 30" in review_text
+        assert f"matched simulated {expected_actions}" in review_text
         assert "missing 0" in review_text
         assert "duplicate 0" in review_text
         assert "mismatch 0" in review_text
@@ -1006,7 +1037,7 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         assert "practice" not in exported
 
         base = window._practice_review_reconciliation(review)
-        assert base["matched"] == 30
+        assert base["matched"] == expected_actions
         unrelated = Outcome("unrelated-event", "unrelated-session", "gesture", "simulated", Action(ActionType.NEXT), "", "other-context", review.result.model_version)
         unrelated_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (unrelated,), review.context_id, review.bindings, review.scope, review.saved_path)
         assert window._practice_review_reconciliation(unrelated_review)["unexpected"] == 0
@@ -1051,7 +1082,7 @@ def test_practice_completes_full_50_window_host_regression(monkeypatch, qapp, tm
         duplicate_expected_review = app_module.HistoricalPracticeReview(duplicate_expected_result, review.outcomes, review.context_id, review.bindings, review.scope, review.saved_path)
         duplicate_expected_counts = window._practice_review_reconciliation(duplicate_expected_review)
         assert duplicate_expected_counts["duplicate"] >= 1
-        assert duplicate_expected_counts["matched"] == 29
+        assert duplicate_expected_counts["matched"] == expected_actions - 1
         unexpected = Outcome("unexpected-event", expected_session, "gesture", "simulated", Action(ActionType.NEXT), "", review.context_id, review.result.model_version)
         unexpected_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (unexpected,), review.context_id, review.bindings, review.scope, review.saved_path)
         assert window._practice_review_reconciliation(unexpected_review)["unexpected"] == 1

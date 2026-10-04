@@ -300,22 +300,28 @@ outputs, source hashes and review scope are recorded in `verification.json`.
 Physical acceptance of the updated full protocol remains open; no completed-task
 weight is added.
 
-## 4 October - measured-window timing recovery
+## Measured-window interruption correction — 4 October 2026
 
-A later P01 full Practice attempt on `39b260c` completed eight measured windows
-before the ninth window stopped 0.484 seconds after Begin. The saved diagnostic
-shows one scoreable NEXT frame, then an otherwise valid frame received 218 ms
-after capture during the measured phase. The 200 ms freshness check was correct;
-the failure was that Practice treated this one late measured packet as a terminal
-attempt cancellation, discarding the chance to finish the remaining windows.
+The next P01 attempt on `39b260c` recorded eight covered windows: seven correct
+and one NEUTRAL miss. It then cancelled in window nine when an otherwise valid
+frame arrived 218 ms after capture. The old result is retained locally unchanged;
+the source of that processing delay is not established by the saved packet age.
 
-Measured-phase stale packets now interrupt only the current five-second window.
-The trial is saved as `interrupted` with coverage diagnostics and
-`window_interrupted` timing evidence, the router returns to paused rehearsal
-state, and the same attempt can continue from **Prepare next trial**. Malformed,
-future, out-of-order and wrong-generation packets still keep the stricter safety
-behaviour. No freshness threshold, scoring target or LIVE-gesture permission is
-relaxed. Physical acceptance of the updated protocol still needs a fresh live run.
+The v2 Practice protocol drops stale measured packets without dispatching an
+action, preserves all earlier results and finishes the current five-second
+window as inconclusive. The same attempt can then continue through all 50
+windows. Any inconclusive window prevents a full pass. Timing/order guards,
+the original timer and safety interruptions remain; no recognition thresholds
+or historical scores are changed. Saved per-window diagnostics retain the stale
+count and maximum age after later windows. Historical v1 exports remain readable.
+
+The full-host regression reproduced the ninth-window cancellation before the
+correction; the normal and pre-Begin recovery controls passed. Final verification
+passed **728 tests with 1 unsupported Windows symlink skip**, Ruff,
+mypy, both GUI startup modes and synthetic evaluation. Independent review
+found no blockers. Check outputs, source hashes and regression scope
+are recorded in `verification.json`. Physical acceptance of this revision
+still requires a fresh run. Accepted-task weights are unchanged.
 
 ## Next deliverables
 

@@ -7,7 +7,10 @@ import pytest
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode, RoutingSnapshot
 from gestureforge.controller import MAX_FRAME_GAP_SECONDS, MAX_PREDICTION_AGE_SECONDS
 from gestureforge.dispatcher import Dispatcher
-from gestureforge.practice import PersonalRehearsal, PracticeResult
+from gestureforge.practice import (DIAGNOSTIC_PROTOCOL_VERSION, PROTOCOL_VERSION,
+                                   READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS,
+                                   READABLE_PROTOCOL_VERSIONS, PersonalRehearsal,
+                                   PracticeResult)
 from gestureforge.routing import RoutingSession
 from gestureforge.shortcuts import TargetRegistry
 
@@ -83,14 +86,15 @@ def test_single_pose_diagnostic_saves_only_selected_window_and_never_passes(pose
     assert result.trials[0].expected == pose
     assert result.trials[0].outcome == 'correct'
     assert result.status == 'cancelled'
-    assert result.protocol_version == 'gf-p12-single-pose-diagnostic-v1'
+    assert result.protocol_version == DIAGNOSTIC_PROTOCOL_VERSION
+    assert 'gf-p12-single-pose-diagnostic-v1' in READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS
     assert 'diagnostic complete' in result.reason
     assert not h.attempt.passed_for(h.revision)
     assert h.router.state == 'PAUSED'
     saved = json.loads(h.attempt.save(tmp_path).read_text())
     assert saved['simulation_only'] is True
     assert len(saved['trials']) == 1
-    assert saved['protocol_version'] != 'gf-p12-v1'
+    assert saved['protocol_version'] != PROTOCOL_VERSION
 
 
 def test_diagnostic_cannot_skip_or_replace_an_already_prepared_attempt():
@@ -155,6 +159,8 @@ def test_full_protocol_uses_real_router_and_persistent_simulated_dispatcher(tmp_
     path = h.attempt.save(tmp_path)
     saved = json.loads(path.read_text())
     assert saved['simulation_only'] and saved['behavior_revision'] == 'behavior-test'
+    assert saved['protocol_version'] == PROTOCOL_VERSION
+    assert 'gf-p12-v1' in READABLE_PROTOCOL_VERSIONS
     assert 'features' not in saved and 'frames' not in saved  # only per-trial counts
     assert h.attempt.passed_for('behavior-test')
     assert not h.attempt.passed_for('different')
@@ -643,26 +649,101 @@ def test_packet_after_armed_stale_recovery_must_still_advance_monotonic_watermar
     assert h.attempt.last_capture_validation['reason'] == 'out_of_order_frame'
 
 
-def test_stale_packet_during_measured_window_interrupts_only_current_trial():
+def test_stale_packet_during_measured_window_continues_as_inconclusive(tmp_path):
     h = Harness()
     h.prepare()
     snap = h.router.snapshot
+    start = h.now
+    h.feed_at('G1', captured=start + 0.1, received=start + 0.1)
     stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, h.now + 0.1,
                        'NEUTRAL', True, snap.model_version)
     h.attempt.receive(stale, h.now + 0.35)
+    h.now += 0.35
+    h.frame += 1
+    assert h.attempt.status == 'measuring'
+    assert h.attempt.last_capture_validation is not None
+    assert h.attempt.last_capture_validation['reason'] == 'stale_prediction'
+    assert h.attempt.last_capture_validation['phase'] == 'measuring'
+    assert h.attempt.last_capture_validation['decision'] == 'dropped_window_inconclusive'
+    assert h.attempt.last_capture_validation['recovered'] is True
+    assert h.router.state == 'WAIT_NEUTRAL'
+    assert 'inconclusive' in h.attempt.reason
+    assert h.attempt.result().trials == ()
+
+    captured = round(h.now + 0.1, 6)
+    for _ in range(5):
+        h.feed_at('NEUTRAL', captured=captured, received=captured)
+        captured = round(captured + 0.1, 6)
+    while captured < start + 4.91:
+        h.feed_at('G1', captured=captured, received=captured)
+        captured = round(captured + 0.1, 6)
+    h.now = start + 5 + MAX_PREDICTION_AGE_SECONDS + 0.000001
+    h.attempt.tick(h.now)
     result = h.attempt.result()
-    assert h.attempt.status == 'idle'
     assert result.status == 'idle'
     assert len(result.trials) == 1
-    assert result.trials[0].outcome == 'interrupted'
-    assert result.trials[0].reason == 'Invalid or stale capture packet; current window interrupted.'
-    assert h.attempt.last_capture_validation is not None
-    assert h.attempt.last_capture_validation['decision'] == 'window_interrupted'
-    assert h.attempt.last_capture_validation['phase'] == 'measuring'
-    assert h.router.state == 'PAUSED'
-    h.now += 0.35
-    h.attempt.prepare(h.now)
-    assert h.attempt.status == 'preparing'
+    trial = result.trials[0]
+    assert trial.outcome == 'inconclusive'
+    assert trial.actions == ('G1',)
+    assert not trial.coverage_ok
+    assert trial.coverage_diagnostics is not None
+    assert 'stale_prediction' in trial.coverage_diagnostics['failure_reasons']
+    assert trial.coverage_diagnostics['stale_prediction_count'] == 1
+    assert trial.coverage_diagnostics['max_stale_prediction_age_seconds'] == pytest.approx(0.25)
+
+    payload = json.loads(h.attempt.save(tmp_path).read_text(encoding='utf-8'))
+    saved = payload['trials'][0]['coverage_diagnostics']
+    assert saved['stale_prediction_count'] == 1
+    assert saved['failure_reasons'].count('stale_prediction') == 1
+
+
+def test_full_rehearsal_continues_after_one_stale_window_but_cannot_pass():
+    h = Harness()
+    h.prepare()
+    snap = h.router.snapshot
+    start = h.now
+    stale = Prediction(snap.session_id, snap.profile_id, h.frame + 1, start + 0.1,
+                       'NEUTRAL', True, snap.model_version)
+    h.attempt.receive(stale, start + 0.35)
+    h.now, h.frame = start + 0.35, h.frame + 1
+    while h.now < start + 4.89:
+        h.feed('G1')
+    h.now = start + 5 + MAX_PREDICTION_AGE_SECONDS + 0.000001
+    h.attempt.tick(h.now)
+    assert h.attempt.status == 'idle'
+    assert h.attempt.result().trials[0].outcome == 'inconclusive'
+
+    for prompt in h.attempt.sequence[1:]:
+        label = prompt.expected if prompt.expected != 'NEGATIVE' else 'UNKNOWN'
+        h.window(label, accepted=label != 'UNKNOWN',
+                 reason='margin_rejection' if label == 'UNKNOWN' else '')
+    result = h.attempt.result()
+    assert result.status == 'failed'
+    assert len(result.trials) == 50
+    assert dict(result.correct_per_pose)['G1'] == 9
+    assert not h.attempt.passed_for(h.revision)
+
+
+def test_stale_packet_captured_after_window_end_cannot_spoil_covered_window():
+    h = Harness()
+    h.prepare()
+    start = h.now
+    captured = round(start + 0.1, 6)
+    while captured < start + 4.91:
+        h.feed_at('G1', captured=captured, received=captured)
+        captured = round(captured + 0.1, 6)
+    snap = h.router.snapshot
+    stale_after_window = Prediction(snap.session_id, snap.profile_id, h.frame + 1,
+                                    start + 5.05, 'G1', True, snap.model_version)
+    h.attempt.receive(stale_after_window, start + 5.3)
+    result = h.attempt.result()
+    assert result.status == 'idle'
+    assert len(result.trials) == 1
+    trial = result.trials[0]
+    assert trial.outcome == 'correct'
+    assert trial.coverage_ok
+    assert trial.coverage_diagnostics is not None
+    assert 'stale_prediction' not in trial.coverage_diagnostics['failure_reasons']
 
 
 @pytest.mark.parametrize(

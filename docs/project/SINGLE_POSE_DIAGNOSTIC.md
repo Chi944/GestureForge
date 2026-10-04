@@ -17,7 +17,8 @@ action pose, first earn READY with NEUTRAL, click Begin and show the selected po
 
 The recorded trial retains its actual correct/missed/wrong/inconclusive outcome,
 coverage and timing diagnostics. Results use the distinct protocol
-`gf-p12-single-pose-diagnostic-v1`. Completion closes the existing host attempt
+`gf-p12-single-pose-diagnostic-v2`; v1 diagnostic files remain readable as
+historical evidence. Completion closes the existing host attempt
 with `status=cancelled` and a diagnostic-complete reason, rather than declaring
 a rehearsal pass. The widget displays “diagnostic complete”. The shared host
 distinguishes diagnostic completion/interruption, uses a one-window denominator,

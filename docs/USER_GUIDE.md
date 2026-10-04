@@ -74,17 +74,23 @@ not a full timeline of physical poses. An otherwise valid late frame during
 preparation, including READY while waiting for Begin, is discarded and resets
 neutral arming. The camera stays open and completed windows remain in the same
 attempt. Hold NEUTRAL again until READY before clicking Begin; the original
-30-second preparation deadline still applies. Late input during measurement,
-malformed packets and out-of-order packets still interrupt the attempt and
-preserve the result. A previously cancelled attempt cannot be resumed or combined
-with a new attempt for a full-protocol pass.
+30-second preparation deadline still applies. Under protocol `gf-p12-v2`, an
+otherwise valid late frame during measurement is dropped without an action.
+The current window finishes on its original five-second timer as **inconclusive**;
+click **Prepare next trial** to continue the same session. Previous windows are
+retained, but any inconclusive window prevents a full pass. Its saved coverage
+diagnostics retain the late-frame count and largest observed age. This policy
+also applies to the v2 single-pose diagnostic. Malformed/out-of-order packets,
+camera faults, focus loss and configuration changes still interrupt and preserve
+the result. A previously cancelled attempt cannot be resumed or combined with
+a new attempt for a full-protocol pass. Older v1 results remain unchanged.
 
 Practice is the longer GF-P12 measurement workflow, separate from **Start/retry readiness**. It uses the loaded recogniser, shared camera, hold/rearm controller and existing dispatcher; every action is simulated. A passed result does not enable LIVE gestures.
 
 1. Load a personal dataset or profile and select the correct camera. Finish/cancel the short readiness check, pause any existing capture and wait for camera release.
 2. Open **Practice**. Review the ten negative/transition instructions and edit any that overlap your enrolled action poses; keep exactly ten nonempty lines. Select **Save local numeric rehearsal outcomes for this profile** only if you consent to local outcome recording. Cue text is also saved, so keep it free of personal details.
 3. Click **Start personal practice**, then **Prepare next trial**. Wait for the matching camera preview. For action and negative trials, show accepted NEUTRAL until READY; for a NEUTRAL trial, the rearm transition must occur inside its measured window.
-4. Click **Begin five-second window** when ready and follow the displayed pose/instruction for the full window. Use **Prepare next trial** after the preceding capture releases. If a late measured camera packet interrupts the current window, it is saved as incomplete evidence and the same rehearsal attempt returns to **Prepare next trial**. Ten rounds of the three action poses and NEUTRAL provide forty windows, followed by ten negative/transition windows: fifty five-second measurements, with preparation time in addition.
+4. Click **Begin five-second window** when ready and follow the displayed pose/instruction for the full window. Use **Prepare next trial** after the preceding capture releases. Ten rounds of the three action poses and NEUTRAL provide forty windows, followed by ten negative/transition windows: fifty five-second measurements, with preparation time in addition.
 5. Review the per-pose result and saved path. Local JSON files under `.local/studio/practice/practice-<attempt-id>.json` record trial outcomes, simulated event IDs, rejection counts, capture coverage and the profile/model/behaviour revision. They contain no images, video, landmarks or feature vectors. Keep these files private and preserve the code revision plus separate intended-pose notes with any reported issue.
 
 The proposed pass target is at least nine correct trials per pose and zero negative actions; interrupted or incomplete capture cannot be accepted as a successful window. NEUTRAL and negative windows should not emit an action, so fifty windows do not mean fifty actions. The dedicated Practice JSON holds per-trial measurements; the session summary records dispatcher outcomes. Do not interpret a simulation count as a real launch or task completion.
@@ -104,7 +110,7 @@ SessionSummary format; keep the separate Practice JSON and original summary
 exports together for review. Reopening the app does not import an old Practice
 review automatically, and this view cannot enable LIVE gestures.
 
-**Stop rehearsal**, Pause/Esc, focus loss or leaving Practice ends the attempt, releases capture and restores the previous context paused after saving. A capture-timing interruption inside one measured window does not end the attempt; it records the incomplete window and waits for **Prepare next trial**. If a write fails, leave the app open, fix folder access and click **Save / retry local results**. Evidence stays in memory and replacement/close is blocked until saved; it is not protected against process termination or power loss. Changing the profile, model, camera, bindings or workspace must finish this preservation flow before the new setup takes effect.
+**Stop rehearsal**, Pause/Esc, focus loss or leaving Practice ends the attempt, releases capture and restores the previous context paused after saving. It does not continue an interrupted attempt automatically. If a write fails, leave the app open, fix folder access and click **Save / retry local results**. Evidence stays in memory and replacement/close is blocked until saved; it is not protected against process termination or power loss. Changing the profile, model, camera, bindings or workspace must finish this preservation flow before the new setup takes effect.
 
 ### Studio stays LATCHED with an open palm
 

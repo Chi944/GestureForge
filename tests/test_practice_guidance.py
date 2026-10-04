@@ -33,6 +33,17 @@ def diagnostic_result(trials=(), *, status="cancelled", poses=POSES):
     return replace(result(trials, status=status, poses=poses), protocol_version=DIAGNOSTIC_PROTOCOL_VERSION)
 
 
+@pytest.mark.parametrize(("legacy", "current"), [
+    ("gf-p12-v1", PROTOCOL_VERSION),
+    ("gf-p12-single-pose-diagnostic-v1", DIAGNOSTIC_PROTOCOL_VERSION),
+])
+def test_historical_protocol_guidance_remains_read_only(legacy, current):
+    evidence = replace(result([trial("NEUTRAL", "missed")]), protocol_version=legacy)
+    before = asdict(evidence)
+    assert practice_next_steps(evidence) == practice_next_steps(replace(evidence, protocol_version=current))
+    assert asdict(evidence) == before
+
+
 def test_no_windows_does_not_diagnose_unattempted_poses():
     advice = practice_next_steps(result())
     assert "No Practice windows were recorded" in advice[0]

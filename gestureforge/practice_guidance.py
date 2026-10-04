@@ -4,7 +4,10 @@ from __future__ import annotations
 from collections import Counter
 from math import isfinite
 
-from .practice import DIAGNOSTIC_PROTOCOL_VERSION, PROTOCOL_VERSION, TRIALS_PER_POSE, PracticeResult, PracticeTrial
+from .practice import (
+    READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS, READABLE_PROTOCOL_VERSIONS,
+    TRIALS_PER_POSE, PracticeResult, PracticeTrial,
+)
 
 
 _REJECTION_GROUPS = {
@@ -112,9 +115,9 @@ def practice_next_steps(result: PracticeResult) -> tuple[str, ...]:
     The current protocol bounds output to four pose summaries and four rejection
     summaries, plus capture, completion, negative-action and manual-control notes.
     """
-    if result.protocol_version == DIAGNOSTIC_PROTOCOL_VERSION:
+    if result.protocol_version in READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS:
         return _diagnostic_next_steps(result)
-    if result.protocol_version != PROTOCOL_VERSION:
+    if result.protocol_version not in READABLE_PROTOCOL_VERSIONS:
         return ("This Practice protocol is unsupported for guidance. Review its original trial export.",)
 
     manual = "Use manual controls while reviewing this simulation evidence; it does not enable LIVE gestures."

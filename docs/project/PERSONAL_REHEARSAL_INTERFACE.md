@@ -112,8 +112,17 @@ Otherwise valid stale packets before Begin (preparing or armed) are dropped:
 reset to preparing, require fresh neutral arming, retain prior completed windows
 and the original 30-second preparation deadline. Record the original phase in
 capture diagnostics and advance the packet watermark without measurement credit.
-Stale packets after Begin still cancel. Camera
-faults and revision changes retain partial evidence and prevent a pass.
+Under `gf-p12-v2`, otherwise valid stale packets captured inside a measured window
+are dropped, reset controller arming and advance the packet watermark. They cannot
+dispatch an action. The existing five-second timer and receipt deadline continue;
+the window is inconclusive and the next prompt can be prepared normally. Per-trial
+coverage diagnostics retain `stale_prediction`, late-frame count and maximum age
+even after preparing another trial. One inconclusive window prevents a full pass.
+A stale packet captured after the scheduled end does not invalidate the preceding
+window. Camera faults and revision changes still retain partial evidence and
+prevent a pass. The same semantics use `gf-p12-single-pose-diagnostic-v2` for
+bounded diagnostics. Historical v1 exports remain readable without rescoring;
+`passed_for` accepts only the current full protocol and behaviour revision.
 
 ## LATCHED diagnostic and remaining human checks
 

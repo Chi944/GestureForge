@@ -19,8 +19,13 @@ from .dispatcher import Dispatcher
 from .routing import RoutingSession
 from .storage import atomic_write_json
 
-PROTOCOL_VERSION = 'gf-p12-v1'
-DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v1'
+PROTOCOL_VERSION = 'gf-p12-v2'
+DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v2'
+READABLE_PROTOCOL_VERSIONS = frozenset({PROTOCOL_VERSION, 'gf-p12-v1'})
+READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS = frozenset({
+    DIAGNOSTIC_PROTOCOL_VERSION,
+    'gf-p12-single-pose-diagnostic-v1',
+})
 TRIALS_PER_POSE = 10
 WINDOW_SECONDS = 5.0
 NEGATIVE_CUES = (
@@ -138,6 +143,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._window_first: float | None = None
         self._window_last: float | None = None
         self._window_max_gap: float | None = None
+        self._window_stale_count = 0
+        self._window_stale_max_age: float | None = None
         self.last_begin_attempt: dict[str, Any] | None = None
         self.boundary_prediction: dict[str, Any] | None = None
         self.last_capture_validation: dict[str, Any] | None = None
@@ -196,6 +203,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._frames, self._rejections = 0, Counter()
         self._coverage, self._neutral_ready = True, False
         self._window_first, self._window_last, self._window_max_gap = None, None, None
+        self._window_stale_count, self._window_stale_max_age = 0, None
         self.last_begin_attempt = None
         self.boundary_prediction = None
         self.last_capture_validation = None
@@ -249,13 +257,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         if invalid_reason is not None:
             if self._recover_stale_premeasurement_packet(prediction, now, invalid_reason):
                 return
-            if self.status == 'measuring' and invalid_reason == 'stale_prediction':
-                self._record_capture_validation(
-                    prediction, now, invalid_reason, recovered=True,
-                    phase='measuring', decision='window_interrupted',
-                )
-                self._last_frame, self._last_packet = prediction.frame_id, prediction.timestamp
-                self._interrupt_window('Invalid or stale capture packet; current window interrupted.')
+            if self._drop_stale_measuring_packet(prediction, now, invalid_reason):
                 return
             if self.status in {'passed', 'failed', 'cancelled', 'expired'}:
                 return
@@ -402,21 +404,6 @@ feeds the supplied router exactly once; the shell must not process packets again
             self.reason = ('Measured rehearsal met the proposed target; await host acceptance.' if good
                            else 'Rehearsal target not met; review per-pose and rejection evidence.')
 
-    def _interrupt_window(self, reason: str) -> None:
-        assert self._started is not None and self.expected is not None
-        prompt = self.expected
-        ended_at = self._clock if self._clock is not None else self._started
-        self._trials.append(PracticeTrial(
-            prompt.expected, prompt.repetition, prompt.instruction, self._snapshot.session_id,
-            self._started, ended_at, 'interrupted', tuple(self._actions), tuple(self._events),
-            self._neutral_ready, self._frames, tuple(sorted(self._rejections.items())),
-            False, reason, self._coverage_diagnostics(ended_at),
-        ))
-        self.router.pause()
-        self._started = None
-        self.status = 'idle'
-        self.reason = reason + ' Click Prepare next trial to continue.'
-
     def cancel(self, reason: str, *, expired: bool = False) -> None:
         if self.status in {'passed', 'failed', 'cancelled', 'expired'}:
             return
@@ -468,6 +455,8 @@ feeds the supplied router exactly once; the shell must not process packets again
             reasons.append('last_frame_early')
         if not self._coverage and 'interframe_gap' not in reasons:
             reasons.append('coverage_flag_failed')
+        if self._window_stale_count and 'stale_prediction' not in reasons:
+            reasons.append('stale_prediction')
         return {
             'schema_version': 1,
             'window_seconds': WINDOW_SECONDS,
@@ -480,6 +469,8 @@ feeds the supplied router exactly once; the shell must not process packets again
             'first_gap_seconds': first_gap,
             'last_gap_seconds': last_gap,
             'max_interframe_gap_seconds': self._window_max_gap,
+            'stale_prediction_count': self._window_stale_count,
+            'max_stale_prediction_age_seconds': self._window_stale_max_age,
             'failure_reasons': tuple(reasons),
         }
 
@@ -567,6 +558,36 @@ feeds the supplied router exactly once; the shell must not process packets again
             self.status = 'preparing'
             self.reason = 'Stale setup capture dropped; show fresh NEUTRAL until READY.'
         return recovered
+
+    def _drop_stale_measuring_packet(self, prediction: Prediction, now: float, reason: str) -> bool:
+        if reason != 'stale_prediction' or self.status != 'measuring' or self._started is None:
+            return False
+        if prediction.timestamp > self._window_end:
+            self.tick(now)
+            self._record_capture_validation(
+                prediction, now, reason, recovered=True, phase='measuring',
+                decision='dropped_after_window',
+            )
+            return True
+        self._coverage = False
+        age = now - prediction.timestamp
+        self._window_stale_count += 1
+        self._window_stale_max_age = (
+            age if self._window_stale_max_age is None else max(self._window_stale_max_age, age)
+        )
+        event = self.router.process(prediction, now)
+        self._record_capture_validation(
+            prediction, now, reason, recovered=event is None, phase='measuring',
+            decision='dropped_window_inconclusive',
+        )
+        self._last_frame, self._last_packet = prediction.frame_id, prediction.timestamp
+        if event is not None:
+            self.cancel('Stale measured capture produced a command; preserve evidence and retry.')
+            return True
+        self.tick(now)
+        if self.status == 'measuring':
+            self.reason = 'Late frame dropped; this window will finish as inconclusive. Then prepare the next trial.'
+        return True
 
     def _record_capture_validation(self, prediction: Prediction, now: float, reason: str, *,
                                    recovered: bool, phase: str | None = None,
