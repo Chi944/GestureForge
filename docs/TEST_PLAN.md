@@ -98,7 +98,7 @@ The latest software verification summary is stored in `docs/evidence/verificatio
 | Offline operation after setup | Second-machine notes |
 | Missing camera | User-facing recovery message |
 | Missing model asset | User-facing recovery message |
-| Stability run | 30-minute log, rate, memory, shutdown note |
+| Stability run | 30-minute Studio workflow, rate, memory and shutdown note; the [capture diagnostic](USER_GUIDE.md#capture-stability-diagnostic) supplies bounded pipeline measurements but does not substitute for UI/controller or second-laptop acceptance |
 
 ## Evidence Naming
 

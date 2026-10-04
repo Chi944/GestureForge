@@ -45,6 +45,12 @@ ending the session. Setup retries are saved separately from scored windows.
 The compact Practice controls keep the next action visible; **Review negative
 cues** opens the editable instructions in a separate dialog.
 
+A [capture stability diagnostic](docs/USER_GUIDE.md#capture-stability-diagnostic)
+now checks the existing camera pipeline, optional classifier, frame timing,
+memory and shutdown without asking for a pose sequence. It stores one compact
+local JSON report, with no images or per-frame recording. This prepares the
+release tests; it does not establish a full Studio or recognition pass.
+
 | Area | Status |
 | :--- | :--- |
 | Shared routing contract | Version-1 design frozen and independently reviewed: Try Now, optional Personalise, one action per slot and explicit context activation; implemented routing preserves stale-event and hold/rearm protection |

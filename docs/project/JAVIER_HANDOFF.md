@@ -82,6 +82,13 @@ guidance are integrated; do not implement a second version.
 
 ## Starter prompt for your coding assistant
 
+For GF-P19/GF-P23 camera timing or shutdown problems, use the shared
+[capture stability diagnostic](../USER_GUIDE.md#capture-stability-diagnostic)
+before another long recording. It requires no pose sequence and saves a compact
+private JSON. Include the existing personal dataset to time classification too.
+Keep native launch observations and Studio UI acceptance separate: a successful
+pipeline diagnostic does not prove either. Do not build a second capture logger.
+
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
 > Sync reviewed main into `codex/javier-shortcuts` and read TEAM_GUIDE.md, this brief, COMPONENT_INTERFACES.md and CONTRACTS.md. Preserve accepted PR #18/GF-P05 evidence. Verify the attached manual LIVE six-stage Harbor path on Windows: actual app/file/folder/HTTPS targets, failed-target recovery, acknowledged Camera release, focus return, paused reload and no replay. Keep both summary segments around reload. The host now reconciles Practice events in Session summary; do not rebuild it. Inspect the saved historical view with actual local trial evidence and summary exports; distinguish correct/wrong/missed trials, simulated requests, manual actions, real launches and acknowledged completion. Do not count fifty windows as fifty actions. PR #21's Practice integration does not unlock LIVE gestures, and you can finish manual-path work without waiting for a starter recogniser. Continue GF-P19 on both laptops and mark unrun cases honestly. Fix only evidenced defects in your viewer/workspace/runbook/shortcut/summary components; report shared-shell issues to Deston. Use fake adapters for software tests and label native observations separately. Push only your branch and open a focused PR for Deston, leaving it unmerged. Do not edit private reports/logs or publish participant data.

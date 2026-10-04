@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-04T09:53:55.414793+00:00",
+  "timestamp_utc": "2026-10-04T10:40:38.750699+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,83 +13,177 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.329,
+      "seconds": 0.203,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 2.093,
-      "stdout": "Success: no issues found in 81 source files\n",
+      "seconds": 11.432,
+      "stdout": "Success: no issues found in 83 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 222.823,
-      "stdout": "........................................................................ [  9%]\n........................................................................ [ 19%]\n........................................................................ [ 29%]\n........................................................................ [ 39%]\n........................................................................ [ 48%]\n..................s..................................................... [ 58%]\n........................................................................ [ 68%]\n........................................................................ [ 78%]\n........................................................................ [ 88%]\n........................................................................ [ 97%]\n...............                                                          [100%]\n734 passed, 1 skipped in 207.65s (0:03:27)\n",
+      "seconds": 232.443,
+      "stdout": "........................................................................ [  9%]\n........................................................................ [ 19%]\n........................................................................ [ 28%]\n........................................................................ [ 38%]\n........................................................................ [ 47%]\n..................s..................................................... [ 57%]\n........................................................................ [ 66%]\n........................................................................ [ 76%]\n........................................................................ [ 86%]\n........................................................................ [ 95%]\n.................................                                        [100%]\n752 passed, 1 skipped in 213.80s (0:03:33)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 3.994,
+      "seconds": 4.665,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.205,
+      "seconds": 5.176,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 2.193,
+      "seconds": 3.773,
       "stdout": "",
       "stderr": ""
     }
   ],
   "limitations": [
     "Synthetic evaluation is software evidence only.",
-    "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
+    "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md.",
+    "Native capture diagnostic is separate from the generated software checks and retains its timing warnings."
   ],
-  "source_base_commit": "aaef21abb73cf6fe08aef058b2f99efbbe3ffc57",
+  "source_base_commit": "7e9aab9c6d6302e1eb2e811b042a532612c75f78",
   "validated_changes_sha256": {
-    "gestureforge/practice.py": "b4ec07afbdbc1747e4a2876dc52b95e78d8bd0bf79a917ac2777229f13903e5a",
-    "gestureforge/practice_widget.py": "e1d034c8f0d44f06071ab5cb49ab1d641f34c3edbf294de0561667ef22cf1774",
-    "gestureforge/app.py": "d7206b9a9790ad3646f54c94adf5e96d1cefe1b898c8b3431f3d48573577f42c",
-    "tests/test_practice.py": "7aafe55a6b5a019d3ad2a34ff5db376fc647979268147b3f98abd8576852511c",
-    "tests/test_app_practice.py": "1201d6d4647c4200077fa9dac6bcf556ae58b78443b976fe5e63f5ca4a6e5ee5",
-    "tests/test_app_layout.py": "14b1400288ae3b6d0e6c729004bd6bb484476a5d8c99e2987d8c922c481f9133"
+    "scripts/check_stability.py": "8cb47b02b31be73578558c62b1a2979ed720fe11ee4f83865671114976dae768",
+    "tests/test_stability.py": "1e4775051c8e36a05396ee5d6b2e2a6d03d160d156f800208b8ff41cee492819"
   },
-  "regression_reproduction": {
-    "before": "Five new or changed regression assertions failed: both setup timeouts cancelled; queued Begin and setup retry APIs did not exist.",
-    "after": "Four full 50-window generated Studio host cases complete, including timeout on window four, 218 ms-old frame at Begin, stale setup on window six and stale measurement on window nine. Setup retry preserves prior scores; measured stale window remains inconclusive and cannot pass.",
-    "scope": "Software evidence using generated predictions; no new physical participant recording."
-  },
-  "layout_verification": {
-    "logical_size": [
-      900,
-      620
-    ],
-    "scale_factor": 1.25,
-    "tests_passed": 8,
-    "visual_inspection": "Rendered entry and active controls; dark text-chevron buttons and scrollbar; navigation button click retains native tab scrolling."
+  "previous_practice_verification": {
+    "timestamp_utc": "2026-10-04T09:53:55.414793+00:00",
+    "source_base_commit": "aaef21abb73cf6fe08aef058b2f99efbbe3ffc57",
+    "validated_changes_sha256": {
+      "gestureforge/practice.py": "b4ec07afbdbc1747e4a2876dc52b95e78d8bd0bf79a917ac2777229f13903e5a",
+      "gestureforge/practice_widget.py": "e1d034c8f0d44f06071ab5cb49ab1d641f34c3edbf294de0561667ef22cf1774",
+      "gestureforge/app.py": "d7206b9a9790ad3646f54c94adf5e96d1cefe1b898c8b3431f3d48573577f42c",
+      "tests/test_practice.py": "7aafe55a6b5a019d3ad2a34ff5db376fc647979268147b3f98abd8576852511c",
+      "tests/test_app_practice.py": "1201d6d4647c4200077fa9dac6bcf556ae58b78443b976fe5e63f5ca4a6e5ee5",
+      "tests/test_app_layout.py": "14b1400288ae3b6d0e6c729004bd6bb484476a5d8c99e2987d8c922c481f9133"
+    },
+    "regression_reproduction": {
+      "before": "Five new or changed regression assertions failed: both setup timeouts cancelled; queued Begin and setup retry APIs did not exist.",
+      "after": "Four full 50-window generated Studio host cases complete, including timeout on window four, 218 ms-old frame at Begin, stale setup on window six and stale measurement on window nine. Setup retry preserves prior scores; measured stale window remains inconclusive and cannot pass.",
+      "scope": "Software evidence using generated predictions; no new physical participant recording."
+    },
+    "layout_verification": {
+      "logical_size": [
+        900,
+        620
+      ],
+      "scale_factor": 1.25,
+      "tests_passed": 8,
+      "visual_inspection": "Rendered entry and active controls; dark text-chevron buttons and scrollbar; navigation button click retains native tab scrolling."
+    },
+    "code_review": {
+      "verdict": "APPROVE",
+      "blocking_findings": 0,
+      "scope": "Independent read-only review of six source/test files; timing, lifecycle, scoring, save/retry and layout. Minor post-review arrow rendering/type-name fixes covered by full verification."
+    },
+    "simplification": {
+      "reuse": 0,
+      "quality": 1,
+      "efficiency": 0,
+      "skipped": 1,
+      "note": "Consolidated retry-label predicate and expanded nested UI conditional. Moving display-only prose predicates into new component properties deferred as unnecessary abstraction; no lifecycle guard depends on those predicates."
+    }
   },
   "code_review": {
-    "verdict": "APPROVE",
-    "blocking_findings": 0,
-    "scope": "Independent read-only review of six source/test files; timing, lifecycle, scoring, save/retry and layout. Minor post-review arrow rendering/type-name fixes covered by full verification."
+    "scope": [
+      "scripts/check_stability.py",
+      "tests/test_stability.py",
+      "related documentation"
+    ],
+    "result": "APPROVE; no remaining blocking findings",
+    "method": "Independent read-only review plus three deterministic camera-free probes",
+    "repairs": [
+      "Timestamp consumption after taking the packet",
+      "Check worker and no-frame gap at the duration boundary"
+    ]
   },
-  "simplification": {
-    "reuse": 0,
-    "quality": 1,
-    "efficiency": 0,
-    "skipped": 1,
-    "note": "Consolidated retry-label predicate and expanded nested UI conditional. Moving display-only prose predicates into new component properties deferred as unnecessary abstraction; no lifecycle guard depends on those predicates."
+  "native_capture_diagnostic": {
+    "scope": "60-second Windows camera/landmark/personal-classifier pipeline; no GUI/controller/actions or pose scoring",
+    "raw_result_storage": "Private ignored experiments/local; raw result preserved unchanged",
+    "raw_sha256": "7e4e85859724fec5a753b77fbdd5948b88deb880955a1b4baab9d73598e71b64",
+    "raw_bytes": 3145,
+    "environment": {
+      "dependencies": {
+        "PySide6": "6.11.2",
+        "gestureforge": "0.1.0",
+        "mediapipe": "1.0.1",
+        "numpy": "2.4.6",
+        "opencv-contrib-python": "5.0.0.93",
+        "scikit-learn": "1.9.1"
+      },
+      "platform": "Windows-10-10.0.26200-SP0",
+      "python": "3.11.16",
+      "utc_started": "2026-10-04T10:34:24.908514+00:00"
+    },
+    "source_provenance": {
+      "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "dataset_sha256": "ad3745dcb3f388694e489ee594f3d920b06930396c5724b80ae6031cd1748e6a",
+      "model_version_sha256": "944b98bb96346e6f1f5cb3630882f575203fb259ed1feba6f319c79444ea0c26",
+      "recognizer_settings_sha256": "ed0ed00943c84ee024647f4bc0cc6862930061bebfba6854e3566e0827b28a3f",
+      "source_commit": "7e9aab9c6d6302e1eb2e811b042a532612c75f78",
+      "source_dirty": true,
+      "source_sha256": {
+        "app.py": "d7206b9a9790ad3646f54c94adf5e96d1cefe1b898c8b3431f3d48573577f42c",
+        "capture.py": "d247e45724e2a7bbb963b49284096c8ed168cdda0ada1add9a8f6e194030e480",
+        "check_stability.py": "8cb47b02b31be73578558c62b1a2979ed720fe11ee4f83865671114976dae768",
+        "features.py": "4c0b5a7ca60efe2c5cced7696241a00142f3f53001af64d305155a17b6ced82a",
+        "models.py": "d7ec199900e31fc92dcfc5ec6c2efbe571ad8b9e3b7fca6615ea4e2622a0aea4"
+      }
+    },
+    "status": {
+      "clean_shutdown": true,
+      "completed_diagnostic": true,
+      "failure_reason": null,
+      "interrupted": false,
+      "state": "completed",
+      "worker_error": null
+    },
+    "metrics": {
+      "delivered_frames": 1040,
+      "elapsed_seconds": 60.016,
+      "first_frame_latency_seconds": 3.86,
+      "frame_id_gap_events": 1,
+      "frame_id_missing_count": 1,
+      "future_timestamp_frames": 0,
+      "invalid_timestamp_frames": 0,
+      "last_frame_age_seconds": 0.031,
+      "max_frame_age_seconds": 0.219,
+      "max_receive_gap_seconds": 0.219,
+      "negative_frame_id_frames": 0,
+      "observation_rate_hz": 17.328712,
+      "out_of_order_frames": 0,
+      "stale_frames_over_200ms": 2
+    },
+    "memory": {
+      "method": "GetProcessMemoryInfo",
+      "peak_bytes": 360407040,
+      "scope": "process_lifetime_peak"
+    },
+    "timing_flags": {
+      "frame_gaps_observed": true,
+      "invalid_frame_metadata_observed": false,
+      "no_frame_gap_timeout": false,
+      "out_of_order_observed": false,
+      "stale_frames_observed": true,
+      "startup_timeout_no_frame": false
+    },
+    "interpretation": "Completed with clean shutdown but two stale frames. Not a clean timing qualification, recognition pass, full Practice pass, 30-minute Studio soak, Mac check or second-machine acceptance."
   }
 }

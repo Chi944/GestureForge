@@ -97,6 +97,13 @@ change thresholds to hide failures or repeat blanket data collection.
 
 ## Starter prompt for your coding assistant
 
+Before repeating a long Practice run after a capture-timing problem, use the
+shared [capture stability diagnostic](../USER_GUIDE.md#capture-stability-diagnostic)
+with the existing personal dataset. It needs no new poses or collection and
+keeps only local aggregate measurements. Keep a covered recognition miss separate
+from stale-frame or shutdown problems; this diagnostic cannot score poses or
+unlock LIVE gestures. Do not change thresholds to hide a capture failure.
+
 **4 October follow-up:** PR #23's single-pose diagnostic is integrated. Use it to
 investigate a specific pose without repeating earlier windows; it cannot grant
 full rehearsal credit. Deston's P01 partial check recorded correct NEXT and

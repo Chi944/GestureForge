@@ -347,6 +347,39 @@ unchanged; no additional participant recording is requested during software repa
 
 ## Next deliverables
 
+GF-P23 has moved from Backlog to In Progress for release-test tooling. The
+new bounded capture diagnostic reuses the existing worker and optional personal
+classifier, reports aggregate timing/memory/shutdown, and saves one private JSON
+without frames or prediction history. It requires no new environment, model or
+participant collection. The [guide](../USER_GUIDE.md#capture-stability-diagnostic)
+separates this pipeline check from full Studio, thirty-minute and second-machine
+acceptance. The original task weight and Done criteria are unchanged.
+
+On 4 October, an unattended native Windows run used the existing P01 classifier
+and camera index 1 for 60.016 seconds. It delivered 1,040 packets (17.329 Hz),
+observed two packets older than 200 ms (maximum 219 ms), skipped one frame ID in
+the latest-only mailbox, and shut down cleanly without a capture-worker error.
+Peak process working set was 360,407,040 bytes; the private JSON was 3,145 bytes.
+This confirms a short pipeline run with timing warnings, not a clean timing
+qualification, gesture accuracy, completed Practice or thirty-minute Studio
+acceptance. The raw result remains local and unchanged. No new training samples
+or images were stored, and no additional participant rehearsal was requested.
+
+Final local verification passed **752 tests with one unsupported Windows symlink
+skip**, Ruff, mypy (83 files), both GUI startup modes and synthetic evaluation.
+The new diagnostic has 18 focused regressions; independent review approved after
+fixing receive-time sampling and duration-boundary fault detection. Exact
+software outputs and the separately labelled native summary are retained in
+`verification.json`. No completed-task weight is added by these preparatory checks.
+
+**Deston's next acceptance step without a webcam:** complete the
+[manual Harbor walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now),
+observe the requested task outcomes, and keep the summary segments before and
+after restore. The prior automated Windows run cannot supply those personal
+observations. After capture timing is checked, a short pose diagnostic can
+precede the full personal rehearsal; repeating all 50 windows is not the first
+troubleshooting step. Neither activity requires waiting for another feature PR.
+
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.
 - **Javier:** GF-P05 is accepted. Verify the integrated manual LIVE path for GF-P13/GF-P34, including each target type, missing-target failure, Camera shutdown/recovery and no action replay on focus return; inspect the attached Practice event reconciliation with actual private results; then record GF-P19's checks on both laptops. The historical Practice review is now attached; do not implement a second reconciliation path. Preserve PR18's existing native evidence. P03 is reported collected in PR #13; collect repair data only for a diagnosed defect. Sync main into `codex/javier-shortcuts`; do not reapply the delivered patch or duplicate Deston's shell integration.
 - **Deston:** the automated native Harbor dispatch/recovery run is recorded. Confirm actual presenter task outcomes with Javier and retain both summary segments around reload; automated launch/window observations do not supply human acknowledgements. Then validate the short check with real personal gestures, review real GF-P12 results from the integrated Practice tab before a separate LIVE-gesture gate change. A simulated pass alone does not authorise that change. Own interface design, integration review, verification and release decisions; complete live acceptance using actual participant and Windows checks.

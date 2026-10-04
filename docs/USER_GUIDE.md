@@ -409,6 +409,48 @@ The library holds up to twelve targets and saves its private target values and s
 
 For a complete camera-free Windows acceptance run, follow the [six-stage manual walkthrough](project/DEMO_SCENARIO.md#manual-walkthrough-available-now). A separate [Studio source ZIP](../releases/README.md#studio-development-handoff) supports teammate setup without replacing the submitted assignment archives.
 
+## Capture stability diagnostic
+
+Before another long Practice attempt, a short capture check can separate camera
+timing problems from gesture recognition and Practice controls. It uses the same
+camera worker and optional classifier as Studio, but does not display the camera,
+run the controller, or open applications. No pose sequence is required.
+
+Pause Studio and close other programs using the webcam first. From the repository
+root, use the working camera index and a **new** output filename:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.check_stability --camera 1 --seconds 60 --output experiments/local/capture-check-01.json
+```
+
+To include the existing personal classifier in the timing check:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.check_stability --camera 1 --seconds 60 --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --output experiments/local/capture-model-check-01.json
+```
+
+The camera index and P01 path above are development-machine examples. On another
+computer, use that computer's working index and locally permitted dataset. On
+macOS, use `.venv/bin/python`; native Mac operation still needs device testing.
+
+The report contains aggregate duration, delivered observation rate, frame delay,
+gaps, skipped frame IDs, memory and camera shutdown results. It saves no photos,
+video, landmarks, feature vectors or predicted labels. Reports remain local under
+`experiments/local/`; existing output files cannot be overwritten. It uses the
+installed environment and model asset, with no additional download or dependency.
+
+Read timing warnings as well as completion: a completed diagnostic does not mean
+gesture recognition passed. Missing frames, a camera fault, an interrupted run
+or a worker that fails to shut down must remain visible. Ctrl+C requests a stop
+and retains the interrupted report. After the check finishes and releases the
+camera, return to Studio and start capture explicitly.
+
+For the later release test, use `--seconds 1800` and another new filename. This
+measures the capture/landmark pipeline and optional classifier; it does **not**
+replace the full Studio UI/controller stability run, thirty-minute human workflow
+observation, or independent second-laptop checks. A 60-second run cannot be
+reported as thirty-minute acceptance.
+
 ## Rejection settings and historical results
 
 The live app defaults to ambiguity margin 1.5. For the revised P01 setting, pass both `--multiplier 2 --margin 1.5`. Accepted unfamiliar poses are recognition errors, not default PREVIOUS/BOOKMARK behaviour. Rejected poses display Unrecognised and cannot dispatch actions.
