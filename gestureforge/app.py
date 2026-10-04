@@ -198,6 +198,14 @@ class HistoricalPracticeReview:
     saved_path: Path
 
 
+@dataclass(frozen=True)
+class PersonalLiveGrant:
+    attempt_id: str
+    camera_index: int
+    behavior_revision: str
+    context_bindings: frozenset[tuple[str, tuple[tuple[str, Action], ...]]]
+
+
 REJECTION_MESSAGES = {
     "distance_rejection": "Pose does not match yet. Hold the enrolled pose steady, or return to neutral if it persists.",
     "margin_rejection": "Pose is ambiguous. Hold the enrolled pose steady, or return to neutral if it persists.",
@@ -395,6 +403,9 @@ class Window(QMainWindow):
         self._practice_releasing_worker: object | None = None
         self._practice_restoring = False
         self._practice_review: HistoricalPracticeReview | None = None
+        self._personal_live_grant: PersonalLiveGrant | None = None
+        self._focus_epoch = 0
+        self._live_ready_epoch: tuple[str, int] | None = None
         self._closing = False
         self.last_result_at = 0.0
         self.received_first_frame = False
@@ -572,7 +583,7 @@ class Window(QMainWindow):
             self.mode_picker.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             self.mode_picker.setAccessibleName("Studio action mode")
             for mode in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL, RoutingMode.LIVE):
-                label = "Live (manual controls)" if mode == RoutingMode.LIVE else mode.value.title()
+                label = "Live" if mode == RoutingMode.LIVE else mode.value.title()
                 self.mode_picker.addItem(label, mode.value)
             mode_label = QLabel("Studio action mode")
             mode_label.setBuddy(self.mode_picker)
@@ -1020,12 +1031,15 @@ class Window(QMainWindow):
 
     def _can_start_studio_camera(self) -> bool:
         mode = None
+        live_blocked = False
         if self.routing is not None:
-            mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+            snapshot = self.routing.snapshot
+            mode = self.manual_mode if self.routing_manual_only else snapshot.mode
+            live_blocked = mode == RoutingMode.LIVE and self._personal_live_gate_reason(snapshot) != ""
         return (
             self.model is not None and self.worker is None and self.model_loader is None
             and not self._closing and not self.routing_manual_only and not self._enrolment_blocks_recognition()
-            and not self._profile_selector_busy() and not self._practice_active() and mode != RoutingMode.LIVE
+            and not self._profile_selector_busy() and not self._practice_active() and not live_blocked
         )
 
     def _profile_selector_busy(self) -> bool:
@@ -1116,10 +1130,18 @@ class Window(QMainWindow):
             self.render_readiness_status()
         return True
 
+    def _invalidate_personal_live_grant(self, _reason: str = "") -> None:
+        self._personal_live_grant = None
+        self._live_ready_epoch = None
+
     def _invalidate_readiness_if_revision_changed(self, reason: str) -> bool:
         if not self.studio or self.model is None:
+            self._invalidate_personal_live_grant(reason)
             return self._invalidate_readiness(reason)
         revision = self._readiness_behavior_revision()
+        grant = self._personal_live_grant
+        if grant is not None and grant.behavior_revision != revision:
+            self._invalidate_personal_live_grant(reason)
         check = self.readiness_check
         if check is not None:
             check.invalidate(revision)
@@ -1425,6 +1447,118 @@ class Window(QMainWindow):
     def _practice_current_revision(self) -> str:
         return self._readiness_behavior_revision() if self.model is not None else ""
 
+    def _canonical_bindings(
+        self,
+        bindings: Mapping[str, Action] | tuple[tuple[str, Action], ...],
+    ) -> tuple[tuple[str, Action], ...]:
+        items = bindings.items() if isinstance(bindings, Mapping) else bindings
+        return tuple(sorted(tuple(items), key=lambda item: item[0]))
+
+    def _approved_personal_live_contexts(self) -> frozenset[tuple[str, tuple[tuple[str, Action], ...]]]:
+        if self.model is None:
+            return frozenset()
+        contexts: set[tuple[str, tuple[tuple[str, Action], ...]]] = {
+            (self.workspace.id, self._canonical_bindings(self._readiness_bindings()))
+        }
+        for stage in self.workspace.stages:
+            contexts.add((
+                stage.id,
+                self._canonical_bindings(tuple((binding.gesture_id, binding.action) for binding in stage.bindings)),
+            ))
+        quick_bindings = self._quick_action_slot_bindings()
+        if quick_bindings:
+            contexts.add((self.quick_actions_context_id, self._canonical_bindings(quick_bindings)))
+        return frozenset(contexts)
+
+    def _quick_action_slot_bindings(self) -> dict[str, Action]:
+        if not self.studio:
+            return {}
+        return {
+            gesture: Action(ActionType.OPEN_SHORTCUT, slot)
+            for gesture, slot in zip(self.vocabulary.action_ids, self.quick_registry.quick_slots, strict=True)
+            if slot is not None
+        }
+
+    def _current_context_memberships(
+        self,
+        snapshot: RoutingSnapshot,
+    ) -> tuple[tuple[str, tuple[tuple[str, Action], ...]], ...]:
+        bindings = self._canonical_bindings(snapshot.bindings)
+        matches: list[tuple[str, tuple[tuple[str, Action], ...]]] = []
+        if snapshot.context_id == self.workspace.id and bindings == self._canonical_bindings(self._readiness_bindings()):
+            matches.append((snapshot.context_id, bindings))
+        for stage in self.workspace.stages:
+            stage_bindings = self._canonical_bindings(
+                tuple((binding.gesture_id, binding.action) for binding in stage.bindings)
+            )
+            if snapshot.context_id != stage.id or bindings != stage_bindings:
+                continue
+            if (self.runbook is None or self.runbook.finished or self.runbook.current_stage is None
+                    or self.runbook.current_stage.id != stage.id):
+                continue
+            matches.append((snapshot.context_id, bindings))
+        if snapshot.context_id == self.quick_actions_context_id and self.quick_actions_active:
+            quick_bindings = self._canonical_bindings(self._quick_action_slot_bindings())
+            if quick_bindings and bindings == quick_bindings:
+                matches.append((snapshot.context_id, bindings))
+        return tuple(matches)
+
+    def _practice_review_clean(self, review: HistoricalPracticeReview | None) -> bool:
+        if review is None:
+            return False
+        reconciliation = self._practice_review_reconciliation(review)
+        return not any(reconciliation[key] for key in ("missing", "duplicate", "mismatch", "unexpected", "launch_requests"))
+
+    def _maybe_grant_personal_live(
+        self,
+        *,
+        attempt: PersonalRehearsal | None,
+        widget: PersonalRehearsalWidget | None,
+        result: PracticeResult | None,
+        review: HistoricalPracticeReview | None,
+    ) -> bool:
+        self._invalidate_personal_live_grant()
+        revision = self._practice_current_revision()
+        if (
+            attempt is None
+            or widget is None
+            or result is None
+            or widget.save_error
+            or widget.last_saved_result != result
+            or attempt.result() != result
+            or not attempt.passed_for(revision)
+            or not self._practice_review_clean(review)
+            or self.routing is None
+            or self.routing.state != "PAUSED"
+        ):
+            return False
+        self._personal_live_grant = PersonalLiveGrant(
+            attempt_id=attempt.attempt_id,
+            camera_index=self.camera_index,
+            behavior_revision=revision,
+            context_bindings=self._approved_personal_live_contexts(),
+        )
+        return True
+
+    def _personal_live_gate_reason(self, snapshot: RoutingSnapshot) -> str:
+        grant = self._personal_live_grant
+        if grant is None:
+            return "complete and save a full personal Practice pass"
+        if self.model is None:
+            return "load the approved personal recogniser"
+        if self.camera_index != grant.camera_index:
+            return "rerun Practice after changing camera"
+        if self._practice_current_revision() != grant.behavior_revision:
+            return "rerun Practice after behavior changes"
+        if snapshot.profile_id != self.profile or snapshot.model_version != self._model_version():
+            return "resume the approved profile and model"
+        if snapshot.mode != RoutingMode.LIVE:
+            return "select LIVE"
+        matches = self._current_context_memberships(snapshot)
+        if len(matches) != 1 or matches[0] not in grant.context_bindings:
+            return "restore an approved stage, workspace, or Quick Actions binding"
+        return ""
+
     def _set_practice_status(self, message: str) -> None:
         if hasattr(self, "practice_status"):
             self.practice_status.setToolTip(message)
@@ -1512,14 +1646,27 @@ class Window(QMainWindow):
         if widget is not None and widget.save_error:
             self._set_practice_status("Practice results remain in memory. Fix storage and retry Save before changing Studio context.")
             return False
-        result = _result or (self.practice_attempt.result() if self.practice_attempt is not None else None)
-        if self.practice_attempt is not None and self.practice_attempt.status not in {"passed", "failed", "cancelled", "expired"}:
+        attempt = self.practice_attempt
+        if attempt is None:
+            self._set_practice_status("No current Practice attempt to finish; historical results cannot grant LIVE eligibility.")
+            return False
+        result = attempt.result()
+        if _result is not None and result is not None and _result != result:
+            self._set_practice_status("Practice result mismatch; keep the attempt open and retry Save.")
+            return False
+        if attempt is not None and attempt.status not in {"passed", "failed", "cancelled", "expired"}:
             self._set_practice_status("Practice evidence saved locally; finish or stop the attempt before Studio restores context.")
             return False
         saved_text = widget.feedback.text() if widget is not None else ""
         review = self._capture_practice_review(result) if result is not None else None
         restored = self._restore_practice_routing()
         if restored:
+            granted_live = self._maybe_grant_personal_live(
+                attempt=attempt,
+                widget=widget,
+                result=result,
+                review=review,
+            )
             self.practice_attempt = None
             self.practice_revision = ""
             self._practice_pending_snapshot = None
@@ -1545,7 +1692,11 @@ class Window(QMainWindow):
                     status_prefix = f"Practice diagnostic {status}"
                 else:
                     counts = ", ".join(f"{label} {count}/10" for label, count in result.correct_per_pose)
-                    guidance = "Open Session summary for the saved attempt's measured next steps. LIVE gestures remain blocked."
+                    guidance = (
+                        "Personal LIVE eligible for the approved current contexts; select LIVE, press Start, and show NEUTRAL."
+                        if granted_live
+                        else "Open Session summary for the saved attempt's measured next steps. LIVE gestures remain blocked."
+                    )
                     status_prefix = f"Practice {result.status}"
                 self._set_practice_status(
                     f"{status_prefix}: {result.reason} Counts: {counts}. "
@@ -2248,12 +2399,26 @@ class Window(QMainWindow):
             and not self.routing_manual_only
             and self.routing.state != "PAUSED"
             and not self._closing
+            and self.model_loader is None
+            and not self._profile_selector_busy()
+            and not self._enrolment_blocks_recognition()
+            and not self._practice_active()
+            and self.isActiveWindow()
         )
 
-    def _gesture_live_ready(self, _snapshot) -> bool:
-        # GF-P10's six-gesture check is a short simulation check only. GF-P12
-        # owns longer LIVE personal readiness, so routed gestures cannot launch.
-        return False
+    def _gesture_live_ready(self, snapshot) -> bool:
+        if self._closing or self.model_loader is not None or self._profile_selector_busy():
+            return False
+        if self._enrolment_blocks_recognition() or self._practice_active():
+            return False
+        if not self.isActiveWindow():
+            return False
+        if self._personal_live_gate_reason(snapshot) != "":
+            return False
+        if self._live_ready_epoch is None or self._live_ready_epoch[0] != snapshot.session_id:
+            self._live_ready_epoch = (snapshot.session_id, self._focus_epoch)
+            return True
+        return self._live_ready_epoch[1] == self._focus_epoch
 
     def _dispatcher_pause(self) -> None:
         if not self.pause():
@@ -2382,22 +2547,35 @@ class Window(QMainWindow):
         if not self.studio or self.routing is None:
             return
         context_id = self.manual_context_id if self.routing_manual_only else self.routing.snapshot.context_id
+        grant = self._personal_live_grant
+        cosmetic_only = grant is not None and grant.behavior_revision == self._practice_current_revision()
         # Rebinding a runbook resource must not replace the current stage context.
-        if self.configure_studio(bindings={} if context_id == self.quick_actions_context_id else None):
+        if self.configure_studio(bindings={} if context_id == self.quick_actions_context_id and not cosmetic_only else None):
             self.quick_actions_active = False
             self._invalidate_readiness_if_revision_changed("Quick Actions bindings changed")
+            self.start_button.setEnabled(self._can_start_studio_camera())
+            self.render_studio_status()
             self.quick_actions_widget.status.setText(
                 "Quick Actions changed and Studio paused. Click Use Quick Actions to activate valid slots."
             )
 
     def use_quick_actions_context(self) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
+        if (not self.studio or self.routing is None or self.model_loader is not None
+                or self._closing or self._profile_selector_change_blocked()):
             return False
         try:
             bindings = self._quick_action_bindings()
         except (ValueError, OSError) as exc:
-            self.configure_studio(context_id=self.quick_actions_context_id, bindings={})
+            # A missing resource is not an authored mapping edit. Retain the
+            # semantic slots for a later repair, but keep gesture routing off.
+            if not self.configure_studio(
+                context_id=self.quick_actions_context_id, bindings=self._quick_action_slot_bindings(),
+            ):
+                return False
+            self.routing_manual_only = True
             self.quick_actions_active = False
+            self.start_button.setEnabled(False)
+            self.render_studio_status()
             self.quick_actions_widget.status.setText(f"Quick Actions paused: repair target before activation: {exc}")
             return False
         if not self.configure_studio(context_id=self.quick_actions_context_id, bindings=bindings):
@@ -2405,14 +2583,18 @@ class Window(QMainWindow):
         if bindings:
             self.quick_actions_active = True
             live = self.manual_mode == RoutingMode.LIVE
+            live_reason = self._personal_live_gate_reason(self.routing.snapshot) if live else ""
             self.feedback.setText(
-                "Quick Actions active. LIVE manual target requests can open local resources; gestures remain blocked."
+                (f"Quick Actions active. LIVE manual controls available. Gestures blocked: {live_reason}."
+                 if live_reason else "Quick Actions active. LIVE manual controls available; personal gestures are eligible after explicit Start.")
                 if live else "Quick Actions active for gesture simulation. Manual target tests also simulate."
             )
             self.quick_actions_widget.status.setText(
                 "Use a target button to request one launch. Acknowledge completion separately."
                 if live else "Quick Actions active. Start camera explicitly and show NEUTRAL to simulate."
             )
+            self.start_button.setEnabled(self._can_start_studio_camera())
+            self.render_studio_status()
             return True
         self.quick_actions_active = False
         self.feedback.setText("Quick Actions has no valid slots. Bind a local target, then activate the slots.")
@@ -2511,10 +2693,14 @@ class Window(QMainWindow):
             f"{gesture}: would {self.action_text(action)}"
             for gesture, action in active_bindings
         )
-        mode_text = "Live (manual controls)" if mode == RoutingMode.LIVE else mode.value.title()
+        mode_text = "Live" if mode == RoutingMode.LIVE else mode.value.title()
+        live_reason = self._personal_live_gate_reason(snapshot) if mode == RoutingMode.LIVE else ""
         if bindings:
             behavior_text = (
-                "Gestures blocked pending longer readiness; Live manual controls active."
+                (
+                    "Personal LIVE gestures eligible after explicit Start and NEUTRAL."
+                    if not live_reason else f"Gesture launch blocked: {live_reason}; Live manual controls active."
+                )
                 if mode == RoutingMode.LIVE
                 else "All typed manual and gesture requests simulate."
             )
@@ -2542,9 +2728,14 @@ class Window(QMainWindow):
         else:
             missing.append("profile readiness verification" if self.selected_profile_id else "profile enrolment")
         if mode == RoutingMode.LIVE:
-            self.studio_status.setText(
-                "Manual LIVE controls available. Gesture control unavailable: " + ", ".join(missing) + "."
-            )
+            if live_reason:
+                self.studio_status.setText(
+                    "Manual LIVE controls available. Gesture control unavailable: " + live_reason + "."
+                )
+            else:
+                self.studio_status.setText(
+                    "Personal LIVE eligible. Press Start explicitly, show NEUTRAL, then use approved gestures."
+                )
         else:
             self.studio_status.setText(
                 "Studio preview is running without: " + ", ".join(missing) + "."
@@ -2608,6 +2799,15 @@ class Window(QMainWindow):
             raise ValueError("Bindings must use gestures from the selected dataset vocabulary")
         if new_bindings:
             replace(old, context_id=new_context_id, mode=new_mode, bindings=new_bindings)
+        previous_personal_revision = self._personal_live_grant.behavior_revision if self._personal_live_grant is not None else ""
+        if (
+            bindings is not None
+            and not self._practice_restoring
+            and not self._readiness_switching
+            and new_context_id == old.context_id
+            and self._canonical_bindings(new_bindings) != self._canonical_bindings(old.bindings)
+        ):
+            self._invalidate_personal_live_grant("active bindings changed")
         authored_bindings = None
         previous_readiness_revision = self._readiness_behavior_revision() if self.model is not None else ""
         if (
@@ -2655,6 +2855,11 @@ class Window(QMainWindow):
             self.studio_authored_bindings = authored_bindings
             if previous_readiness_revision != self._readiness_behavior_revision():
                 self._invalidate_readiness("simulation settings changed")
+        if (
+            previous_personal_revision
+            and previous_personal_revision != self._practice_current_revision()
+        ):
+            self._invalidate_personal_live_grant("simulation settings changed")
         self.render_studio_status()
         return True
 
@@ -2883,7 +3088,13 @@ class Window(QMainWindow):
                 self.set_deck_file_status(f"{reason}: {exc}. Prior workspace retained.")
                 return False
         else:
-            if not self.configure_studio(context_id=workspace.id, bindings={}):
+            unchanged_context = (
+                self.routing is not None and not self.routing_manual_only
+                and self.routing.snapshot.context_id == workspace.id
+                and previous[0].id == workspace.id and same_deck
+            )
+            bindings = dict(self.routing.snapshot.bindings) if unchanged_context and self.routing is not None else {}
+            if not self.configure_studio(context_id=workspace.id, bindings=bindings):
                 (
                     self.workspace, self.viewer, self.runbook, self.deck_available, self.session_summary,
                     self.routing_manual_only, self.manual_context_id, self.manual_session_id, self.manual_mode,
@@ -3005,6 +3216,7 @@ class Window(QMainWindow):
         if not self.configure_studio():
             return False
         self._invalidate_readiness("camera selection changed")
+        self._invalidate_personal_live_grant("camera selection changed")
         self.camera_index = index
         self.camera_picker.setValue(index)
         self.start_button.setEnabled(self._can_start_studio_camera())
@@ -3032,6 +3244,7 @@ class Window(QMainWindow):
         if not self.pause():
             raise ValueError("Save the current evaluation trace before changing the model")
         self._invalidate_readiness("model or profile changed")
+        self._invalidate_personal_live_grant("model or profile changed")
         was_manual_only = self.routing_manual_only
         was_quick_actions = self.quick_actions_active
         self.model, self.chosen_hand, self.profile, self.vocabulary = model, hand, profile, vocabulary
@@ -3213,6 +3426,7 @@ class Window(QMainWindow):
         mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
         bindings = {} if self.routing_manual_only else dict(self.routing.snapshot.bindings)
         self._invalidate_readiness("Guest mode selected")
+        self._invalidate_personal_live_grant("Guest mode selected")
         self._clear_studio_model_to_manual(
             context_id=context_id,
             mode=mode,
@@ -3244,6 +3458,7 @@ class Window(QMainWindow):
         active = self.selected_profile_id == profile_id
         if active:
             self._invalidate_readiness("active profile deleted")
+            self._invalidate_personal_live_grant("active profile deleted")
         self._deleted_profile_ids.add(profile_id)
         if self.pending_profile_id == profile_id:
             self.pending_profile_id = None
@@ -3400,12 +3615,19 @@ class Window(QMainWindow):
             self.detail.setText("Finish or stop personal practice before starting normal camera control.")
             return
         if self.studio and self.routing is not None:
-            mode = self.manual_mode if self.routing_manual_only else self.routing.snapshot.mode
+            snapshot = self.routing.snapshot
+            mode = self.manual_mode if self.routing_manual_only else snapshot.mode
             if mode == RoutingMode.LIVE:
-                self.notice.setText("Live gesture launch is unavailable until longer personal readiness is completed.")
-                self.detail.setText("Use manual controls in Live mode, or switch back to Preview/Rehearsal for camera simulation.")
-                self.start_button.setEnabled(False)
-                return
+                if not self.isActiveWindow():
+                    self.notice.setText("Live gesture launch is unavailable: keep Studio focused, then press Start again.")
+                    self.detail.setText("Resume Studio focus before opening the LIVE camera.")
+                    return
+                reason = self._personal_live_gate_reason(snapshot)
+                if reason:
+                    self.notice.setText(f"Live gesture launch is unavailable: {reason}.")
+                    self.detail.setText("Use manual controls in Live mode, or switch to Preview/Rehearsal for simulation.")
+                    self.start_button.setEnabled(False)
+                    return
         if (
             self.model is None or self.worker is not None or self.model_loader is not None
             or self._closing or (self.studio and (
@@ -3416,6 +3638,7 @@ class Window(QMainWindow):
         if not self.finish_evaluation_trace():
             return
         if self.routing is not None:
+            self._live_ready_epoch = None
             snapshot = self.routing.resume()
             session = snapshot.session_id
             profile = snapshot.profile_id
@@ -3796,6 +4019,7 @@ class Window(QMainWindow):
 
     def changeEvent(self, event):
         if self.studio and event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
+            self._focus_epoch += 1
             self._cancel_practice_rehearsal("Practice interrupted: Studio focus lost.")
             self.pause()
             self.state.setText("Paused after focus loss. Resume Studio before gestures.")

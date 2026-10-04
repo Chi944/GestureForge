@@ -40,35 +40,41 @@ Slot buttons and **Test selected target** call Studio
 produce simulated outcomes only; explicit LIVE permits manual validated Windows
 launch requests without a recogniser. Unsupported platforms report an external-launch
 failure while the manual viewer remains usable. Gesture simulation requires explicit
-Start and NEUTRAL and works independently of deck/runbook content. Live gestures
-remain blocked pending the full personal readiness handoff. Tab selection does not activate a context.
+Start and NEUTRAL and works independently of deck/runbook content. Personal LIVE
+uses the current full-Practice grant for the exact authored Quick Actions map,
+after explicit Live selection, Apply, Start and fresh NEUTRAL. Selecting an
+already configured Quick Actions context preserves that grant; changing target
+meanings or slots expires it even if changed back. Tab selection does not activate a context.
 Target values stay in the private local registry, outside workspace/session
 exports. Reopening restores the library without activating it or replaying work.
 
-## Attached manual dispatcher and pending gesture gate
+## Attached manual dispatcher and personal gesture gate
 
 Studio retains one `Dispatcher` across context changes, with these boundaries:
 
 - `current()`: the current complete `RoutingSnapshot`.
 - `active()`: true only while current routing is eligible for gesture dispatch.
-- `ready(snapshot)`: the shell-owned version-bound readiness gate, checked for that exact
-  revision. It currently refuses live gestures; neither a `RoutingMode.LIVE` snapshot
-  nor the preliminary six-activation check supplies GF-P12's full personal readiness.
+- `ready(snapshot)`: the shell-owned personal LIVE gate, checked against the current
+  in-memory full-Practice grant, profile/model/hand/camera/behavior revision and exact
+  authored context map. The shell also requires current focus and no conflicting
+  Practice, Enrolment or profile work. Neither a `RoutingMode.LIVE` snapshot, the
+  preliminary six-activation check nor historical/imported results grants readiness.
 - `pause()`: synchronously call `RoutingSession.pause()`; synchronise runbook pause
   and shell status. Returning/focus gain must never call resume automatically.
 - `release_capture(snapshot)`: request shutdown of the existing capture worker and
   return true ONLY after its completed shutdown acknowledgement. The dispatcher
   revalidates snapshot/readiness and target immediately before opening Camera.
   No second camera worker. No sleeps as acknowledgements. A false result opens
-  nothing and leaves manual retry available.
+  nothing and requires a new explicit request after release; it never replays.
 - Matching optional `Viewer` / `Runbook`, private registry and `WindowsLauncher`.
 
 Manual buttons can work while gesture routing is paused and without recognition
 readiness. Preview/rehearsal manual requests still produce only `simulated` results.
 Real manual shortcuts require the shell's explicitly chosen LIVE mode; do not
 switch it implicitly because a button was clicked. Target tests use the same gate.
-Typed viewer actions and Continue/ADVANCE_STAGE also simulate in Preview/Rehearsal
-and execute only as manual LIVE requests. Previous-stage navigation, bookmark
+Typed manual viewer actions and Continue/ADVANCE_STAGE simulate in Preview/Rehearsal
+and execute after explicit LIVE selection. Gesture equivalents require the
+current full-Practice grant and normal protected routing. Previous-stage navigation, bookmark
 review/removal, restart and restore remain explicit navigation operations outside
 typed dispatch; none launches a target. Stage transitions stay paused, with no
 deferred automatic resume.
@@ -76,19 +82,20 @@ deferred automatic resume.
 `Runbook(reset_routing=...)` calls its callback BEFORE activation/restoration:
 `reset_routing(stage_or_None, resume_requested) -> bool`. Deston must configure the
 full profile/model/context/binding/mode map via `RoutingSession.configure`. LIVE
-gesture execution requires valid full personal readiness for that revision;
-the current gate refuses it. Preview/Rehearsal can run the simulated check without
-prior readiness. Stage transitions and restoration stay paused. Return true only when the reset is
+gesture execution requires the current full-Practice grant and the exact approved
+authored map. Preview/Rehearsal can run the simulated check without prior readiness. Stage transitions and restoration stay paused. Return true only when the reset is
 acknowledged. Exceptions/false preserve stage content. Configure an empty context
 as paused/manual-only; the current coordinator requires a nonempty map, so do not
 invent an enabled gesture binding to fill an empty map. The inspection harness
 uses a visibly simulated placeholder solely to satisfy that API.
 
-When a binding/profile/model/workspace changes, pause/reset routing and invalidate
-readiness as required. Stage selection alone resets the hold/generation. Retain
-assignment controller defaults and its entry point. Manual LIVE is attached;
-enabling live gestures still requires the full personal readiness handoff and
-integration evidence for readiness/capture/focus callbacks.
+Behavior, map, target or camera changes pause/reset routing and permanently
+expire the personal LIVE grant, even if changed back. Guest, model reload and
+app restart clear it. Cosmetic renames, ordinary pause and selecting an existing
+authored stage/Quick Actions context preserve eligibility; context changes still
+reset holds and require explicit Start and fresh NEUTRAL. Retain assignment
+controller defaults and its entry point. This gate does not establish participant
+performance or native readiness/capture/focus acceptance.
 
 SessionSummary accepts `Trial` records of Hau Jie's MEASURED expected/observed
 canonical labels (UNKNOWN/None are misses). It does not predict trial scores or
@@ -131,11 +138,16 @@ Use the documented synchronous prepare/delete/clear sequence and retain state on
 storage failure. Guest unloads the model without deleting saved files. The shell
 handles cosmetic rename and explicit Preview-start notifications and blocks competing
 setup operations while the selector is busy. Successful reconstruction stays paused
-and does not establish readiness; live gestures remain blocked. Saved loading
-reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HANDOFF.md).
+and does not establish readiness; loading or reloading clears any personal LIVE
+grant. Only the host's genuine current-session full Practice attempt can grant
+eligibility after all 50 covered windows, at least 9/10 correct for every pose
+including NEUTRAL, zero wrong activations and all ten negative windows correct,
+followed by terminal save, exact event reconciliation and paused restoration.
+The memory-only grant never selects LIVE or starts capture automatically. Saved
+loading reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HANDOFF.md).
 
 ## Remaining gates
 
-GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md); no further GF-P05 rerun is pending. Javier should sync main and verify the attached GF-P13/GF-P34 manual path, including exact snapshots, duplicate/stale requests, capture-release refusal and simulation-only outcomes, then record GF-P19's integrated Windows cases. Hau Jie supplies the longer personal protocol and measured revision-bound readiness result; Deston owns its shell gate. The short six-activation result is preliminary and cannot authorise live gestures. Standard starter availability, full personal readiness and broader both-laptop evidence remain separate. Keep shared shell,
+GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md); no further GF-P05 rerun is pending. Javier should sync main and verify the attached GF-P13/GF-P34 manual path, including exact snapshots, duplicate/stale requests, capture-release refusal and simulation-only outcomes, then record GF-P19's integrated Windows cases. Hau Jie supplies actual full Practice evidence and short software-defect reproductions; Deston owns the integrated shell gate and acceptance review. Javier runs personal LIVE cases only after his own qualifying current-session full pass. The short six-activation result is preliminary and cannot authorise live gestures. Standard starter availability, full personal readiness and broader both-laptop evidence remain separate. Keep shared shell,
 contracts/controller/routing, capture and recognition/profile changes in their
 owned lanes.

@@ -266,6 +266,7 @@ def test_single_pose_diagnostic_finish_banner_does_not_look_like_full_pass(qapp)
     window = Window(model=model(vocabulary), studio=True, vocabulary=vocabulary)
     try:
         result = diagnostic_result([diagnostic_trial("NEUTRAL", "missed")])
+        window.practice_attempt = Mock(status="cancelled", result=Mock(return_value=result))
 
         assert window._finish_practice_rehearsal(result)
 
@@ -1028,7 +1029,7 @@ def test_practice_completes_full_50_window_host_regression(
         assert counts["acknowledged_completion"] == 0
         expected_status = "failed" if late_during_ninth else "passed"
         assert f"practice {expected_status}" in window.practice_status.text().lower()
-        assert "Open Session summary" in window.practice_status.text()
+        assert "Session summary" in window.practice_status.text()
         saved = list((tmp_path / "studio" / "practice").glob("practice-*.json"))
         assert len(saved) == 1
         review = window._practice_review
@@ -1119,6 +1120,48 @@ def test_practice_completes_full_50_window_host_regression(
         unexpected = Outcome("unexpected-event", expected_session, "gesture", "simulated", Action(ActionType.NEXT), "", review.context_id, review.result.model_version)
         unexpected_review = app_module.HistoricalPracticeReview(review.result, review.outcomes + (unexpected,), review.context_id, review.bindings, review.scope, review.saved_path)
         assert window._practice_review_reconciliation(unexpected_review)["unexpected"] == 1
+
+        # The measured host lifecycle, not a fabricated PASS or imported review,
+        # is the source of eligibility. LIVE still needs an explicit start and
+        # a new neutral hold. No native application is opened by this test.
+        monkeypatch.setattr(window, "isActiveWindow", lambda: True)
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert window.worker is None
+        assert window.routing.state == "PAUSED"
+        assert window.viewer.position == 0
+        assert window._can_start_studio_camera() is (not late_during_ninth)
+        window.start_camera()
+        if late_during_ninth:
+            assert window.worker is None
+            assert window.viewer.position == 0
+        else:
+            live_worker = workers[-1]
+            assert window.worker is live_worker
+            # Holding a command before neutral cannot move a card.
+            feed_window(window, live_worker, clock, "G1", seconds=1.0)
+            assert window.viewer.position == 0
+            for _ in range(6):
+                enqueue(window, live_worker, clock, "NEUTRAL")
+            feed_window(window, live_worker, clock, "G1", seconds=5.0)
+            assert window.viewer.position == 1
+            assert window.session_summary.counts()["applied"] == 1
+            for _ in range(6):
+                enqueue(window, live_worker, clock, "NEUTRAL")
+            feed_window(window, live_worker, clock, "G2", seconds=1.0)
+            assert window.viewer.position == 0
+            for _ in range(6):
+                enqueue(window, live_worker, clock, "NEUTRAL")
+            feed_window(window, live_worker, clock, "G3", seconds=1.0)
+            assert window.viewer.bookmarks == (window.viewer.current_card,)
+            assert window.session_summary.counts()["applied"] == 3
+            assert window.session_summary.counts()["launch_requested"] == 0
+            assert window.pause()
+            finish_worker(window, live_worker)
+            # Changing back to the old camera must not resurrect acceptance.
+            original_camera = window.camera_index
+            assert window.set_studio_camera(original_camera + 1)
+            assert window.set_studio_camera(original_camera)
+            assert not window._can_start_studio_camera()
         window._reset_session_summary()
         assert window._practice_review is review
         assert "historical scope differs" in window.practice_review_label.text().lower()

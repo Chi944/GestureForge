@@ -1865,7 +1865,9 @@ def test_studio_rejects_startup_live_mode_but_allows_explicit_manual_live(qapp) 
         assert window.routing is not None
         assert window.configure_studio(mode=RoutingMode.LIVE)
         assert window.routing.snapshot.mode == RoutingMode.LIVE
-        assert "Live (manual controls)" in window.boundary.text()
+        assert "Studio Live" in window.boundary.text()
+        assert "Live manual controls active" in window.boundary.text()
+        assert "Gesture launch blocked" in window.boundary.text()
     finally:
         window.close()
 

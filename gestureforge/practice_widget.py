@@ -6,7 +6,7 @@ from PySide6.QtCore import QTimer, Signal, Qt
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from .contracts import Prediction
-from .practice import PersonalRehearsal
+from .practice import PersonalRehearsal, PracticeResult
 
 
 class PersonalRehearsalWidget(QWidget):
@@ -30,6 +30,7 @@ class PersonalRehearsalWidget(QWidget):
         self._announced = False
         self._terminal_autosave_attempted = False
         self.save_error = False
+        self.last_saved_result: PracticeResult | None = None
         self._last_status: str | None = None
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -134,9 +135,11 @@ class PersonalRehearsalWidget(QWidget):
             path = self.attempt.save(self.output_root)
         except (OSError, ValueError) as exc:
             self.save_error = True
+            self.last_saved_result = None
             self.feedback.setText(f'Results remain in memory. Fix storage and retry: {exc}')
         else:
             self.save_error = False
+            self.last_saved_result = self.attempt.result()
             self.feedback.setText('Local rehearsal results saved. Full details are in Session summary.')
             self.feedback.setToolTip(str(path))
         self.prepare_button.setEnabled(self.attempt.status == 'idle' and not self.save_error)

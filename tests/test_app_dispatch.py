@@ -222,9 +222,10 @@ def test_dispatcher_uses_replaced_workspace_viewer_and_summary(qapp):
         window.close()
 
 
-def test_short_readiness_pass_does_not_unlock_live_gesture_start(qapp):
+def test_short_readiness_pass_does_not_unlock_live_gesture_start(qapp, monkeypatch):
     window, _ = window_with_dispatcher()
     try:
+        monkeypatch.setattr(window, "isActiveWindow", lambda: True)
         window.selected_profile_id = window.profile
         window.selected_profile_name = "Profile"
         window.readiness_pass_revision = window._readiness_behavior_revision()
@@ -234,8 +235,8 @@ def test_short_readiness_pass_does_not_unlock_live_gesture_start(qapp):
         window.start_camera()
 
         assert window.worker is None
-        assert "longer personal readiness" in window.notice.text()
-        assert "longer LIVE gesture readiness" in window.studio_status.text()
+        assert "full personal Practice pass" in window.notice.text()
+        assert "full personal Practice pass" in window.studio_status.text()
     finally:
         window.close()
 

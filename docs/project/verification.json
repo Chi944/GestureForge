@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-04T18:14:30.545196+00:00",
+  "timestamp_utc": "2026-10-04T19:06:28.842847+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.18,
+      "seconds": 0.853,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 14.415,
-      "stdout": "Success: no issues found in 85 source files\n",
+      "seconds": 13.749,
+      "stdout": "Success: no issues found in 86 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 267.538,
-      "stdout": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 27%]\n........................................................................ [ 36%]\n........................................................................ [ 45%]\n..............................................s......................... [ 54%]\n........................................................................ [ 63%]\n........................................................................ [ 72%]\n........................................................................ [ 81%]\n........................................................................ [ 90%]\n........................................................................ [ 99%]\n....                                                                     [100%]\n795 passed, 1 skipped in 256.57s (0:04:16)\n",
+      "seconds": 263.92,
+      "stdout": "........................................................................ [  8%]\n........................................................................ [ 17%]\n........................................................................ [ 26%]\n........................................................................ [ 35%]\n........................................................................ [ 44%]\n........................................................s............... [ 53%]\n........................................................................ [ 62%]\n........................................................................ [ 71%]\n........................................................................ [ 80%]\n........................................................................ [ 89%]\n........................................................................ [ 98%]\n..............                                                           [100%]\n805 passed, 1 skipped in 250.54s (0:04:10)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 3.474,
+      "seconds": 4.788,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 3.145,
+      "seconds": 5.884,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 1.799,
+      "seconds": 3.439,
       "stdout": "",
       "stderr": ""
     }
@@ -56,15 +56,18 @@
   "limitations": [
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md.",
-    "Native capture diagnostic and prior Setup/Practice observations below retain their original source identities; they were not rerun for this evaluator change.",
-    "Frozen hashes record reproducibility, not independent chronology, consent or physical pose equivalence."
+    "Prior native capture and Setup/Practice observations retain their original source identities and were not repeated for this software change.",
+    "A memory-only per-session personal LIVE grant is not imported from saved evidence and does not establish a new participant outcome."
   ],
-  "source_base_commit": "c315307048aa2e1db5b7c017590a49836347c5e8",
+  "source_base_commit": "6645541bc54a93fd04032d6c601253b7a903d7ca",
   "validated_changes_sha256": {
-    "gestureforge/collect.py": "22132d5a8021a1ca86bf0b5e50ef4e693aca0651de4af2a8a1ea7680ce0e66bf",
-    "gestureforge/paired_evaluate.py": "e48b96ae91b816269c1633d4ac3b05fbb6b3eb9d6d9e0c771a95468395bfd89c",
-    "tests/test_collect.py": "a363b79031e80873d03beeb57f325787c5e27b5367942dffa2ce4cacddfdb6d1",
-    "tests/test_paired_evaluate.py": "bff5f6046ea9241b3c53a37d83815501d9ca3bad99e7bf8cd2a47fe7570fe3ff"
+    "gestureforge/app.py": "cfc85e3b2b0d79e49c3a179b7788de922f5d0e0f23631dd3703fd35c5a5e40e8",
+    "gestureforge/practice_widget.py": "0672a93963d9872ebe577a4fe8707e98df03e344b2165d0a418e903a4287c1d6",
+    "tests/test_app_personal_live.py": "f7a807948b7878db28477cf1672fb98dbe8d0a04bbd10f1d4030dab7b31d3073",
+    "tests/test_app_practice.py": "737a9fb060effa51f23cca87122637cdbcbb70c8872211dee415e06671646932",
+    "tests/test_app_dispatch.py": "06831e50ad05e1b1d5525f74b38090b260dea65b15c8f7c18701914f5f06cc42",
+    "tests/test_app.py": "09422d44ad7a6cfe60faa31c2b0ec6cbacd6071d92fda11c9f9963da7667851c",
+    "tests/test_app_layout.py": "3458bd8765fc19054d8e2a376c245cafbf5b4aef9c3a99728a5b17e0d2c18611"
   },
   "previous_practice_verification": {
     "timestamp_utc": "2026-10-04T09:53:55.414793+00:00",
@@ -105,9 +108,9 @@
     }
   },
   "code_review": {
-    "scope": "Paired evaluator and positive TEST collector plus their regressions.",
-    "result": "APPROVE after repairs, with zero remaining blocking findings.",
-    "method": "Independent read-only code review plus root integration review; actual test outputs recorded separately."
+    "scope": "Personal full-Practice-to-LIVE host integration, save proof, exact context authorization, invalidation, recovery and dispatch regressions.",
+    "result": "APPROVE after repairs; no essential correctness or security issues remain.",
+    "method": "Independent read-only code review plus root integration review; actual check output recorded separately."
   },
   "native_capture_diagnostic": {
     "scope": "60-second Windows camera/landmark/personal-classifier pipeline; no GUI/controller/actions or pose scoring",
@@ -232,16 +235,12 @@
     }
   },
   "verification_repair": {
-    "initial_typecheck": {
-      "command": "python -m mypy gestureforge scripts tests",
-      "returncode": 1,
-      "seconds": 12.256,
-      "stdout": "tests\\test_paired_evaluate.py:41: error: Need type annotation for \"features\" (hint: \"features: list[<type>] = ...\")  [var-annotated]\nFound 1 error in 1 file (checked 85 source files)\n",
-      "stderr": ""
-    },
-    "fix": "Added the missing list[np.ndarray] annotation to the generated feature fixture; no runtime behaviour change.",
-    "recheck_timestamp_utc": "2026-10-04T18:12:13.158806+00:00",
-    "result": "Full-project Ruff and mypy rerun passed; runtime tests, both startup modes and synthetic evaluation passed in the broad run."
+    "initial_timestamp_utc": "2026-10-04T18:58:23.102978+00:00",
+    "initial_typecheck": "gestureforge\\app.py:2574: error: Item \"None\" of \"RoutingSession | None\" has no attribute \"snapshot\"  [union-attr]\ntests\\test_app_personal_live.py:350: error: Item \"None\" of \"RoutingSession | None\" has no attribute \"state\"  [union-attr]\nFound 2 errors in 2 files (checked 86 source files)\n",
+    "initial_tests": "800 passed, 3 failed, 1 skipped. Two obsolete Live label assertions and a diagnostic fixture without a current attempt failed.",
+    "fix": "Narrowed routing types; updated current UI label assertions; attached a current diagnostic attempt in the fixture. Ignored no-current-attempt finish signals without granting or erasing eligibility.",
+    "recheck_timestamp_utc": "2026-10-04T19:06:28.842847+00:00",
+    "result": "All six canonical checks passed after repairs and additional recovery regressions."
   },
   "paired_evaluation_verification": {
     "scope": "Generated fixtures only; no participant data opened or new camera session requested.",
@@ -255,5 +254,55 @@
       "Positive TEST collection separated from development, guarded before camera acquisition."
     ],
     "limits": "No actual GF-P18 result, starter approval, full Practice acceptance, new-user reliability, final negative protocol, live-controller score, second-machine install or native Mac acceptance."
+  },
+  "previous_paired_software_verification": {
+    "timestamp_utc": "2026-10-04T18:14:30.545196+00:00",
+    "source_base_commit": "c315307048aa2e1db5b7c017590a49836347c5e8",
+    "validated_changes_sha256": {
+      "gestureforge/collect.py": "22132d5a8021a1ca86bf0b5e50ef4e693aca0651de4af2a8a1ea7680ce0e66bf",
+      "gestureforge/paired_evaluate.py": "e48b96ae91b816269c1633d4ac3b05fbb6b3eb9d6d9e0c771a95468395bfd89c",
+      "tests/test_collect.py": "a363b79031e80873d03beeb57f325787c5e27b5367942dffa2ce4cacddfdb6d1",
+      "tests/test_paired_evaluate.py": "bff5f6046ea9241b3c53a37d83815501d9ca3bad99e7bf8cd2a47fe7570fe3ff"
+    },
+    "checks_summary": "795 passed, 1 Windows symlink fixture skipped; Ruff, mypy (85 files), both startup modes and synthetic evaluation passed.",
+    "code_review": {
+      "scope": "Paired evaluator and positive TEST collector plus their regressions.",
+      "result": "APPROVE after repairs, with zero remaining blocking findings.",
+      "method": "Independent read-only code review plus root integration review; actual test outputs recorded separately."
+    },
+    "verification_repair": {
+      "initial_typecheck": {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 1,
+        "seconds": 12.256,
+        "stdout": "tests\\test_paired_evaluate.py:41: error: Need type annotation for \"features\" (hint: \"features: list[<type>] = ...\")  [var-annotated]\nFound 1 error in 1 file (checked 85 source files)\n",
+        "stderr": ""
+      },
+      "fix": "Added the missing list[np.ndarray] annotation to the generated feature fixture; no runtime behaviour change.",
+      "recheck_timestamp_utc": "2026-10-04T18:12:13.158806+00:00",
+      "result": "Full-project Ruff and mypy rerun passed; runtime tests, both startup modes and synthetic evaluation passed in the broad run."
+    }
+  },
+  "validated_hash_scope": "UTF-8 source with LF line endings, matching Git canonical text content; platform checkout line endings may differ.",
+  "personal_live_verification": {
+    "scope": "Software evidence with generated predictions and mocked external launch; no new participant or native-device result.",
+    "regression_reproduction": [
+      "Before implementation, the full fifty-window host pass could not start LIVE; new host regression failed and then passed.",
+      "Three recovery regressions first failed: same-workspace cosmetic reload and missing-resource activation/recovery from active or inactive Quick Actions. All passed after preserving semantic bindings while paused."
+    ],
+    "focused_checks": [
+      "Four full fifty-window host cases passed in 41.89s.",
+      "Final personal-LIVE and repaired diagnostic/UI cases: 13 passed in 6.80s."
+    ],
+    "coverage": [
+      "Grant needs active full-protocol pass, successful local save, matching behavior/camera and clean action reconciliation; routing restores paused.",
+      "Short diagnostics, failed/inconclusive runs, imported/historical signals and save failures cannot grant LIVE.",
+      "Explicit LIVE, Start and fresh NEUTRAL before NEXT/PREVIOUS/BOOKMARK; one action during a five-second hold and neutral rearm.",
+      "Exact authored context membership; finished runbook, inactive Quick Actions and stale contexts refused.",
+      "Real camera/model/profile/mapping/target edits revoke, including changed-back values; cosmetics, unchanged contexts and ordinary pauses preserve eligibility.",
+      "Intentional dispatcher camera-release pause can complete one authorized launch; real focus loss during release rejects it even when focus returns; duplicate event cannot replay.",
+      "Temporary missing target remains paused/manual-only and can recover without repeating an unchanged Practice pass."
+    ],
+    "limits": "No qualifying starter supplied, no new human full-Practice pass, six-stage scenario acceptance, held-out evaluation, independent Windows installation/stability or native Mac acceptance."
   }
 }

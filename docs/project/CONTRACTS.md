@@ -2,13 +2,13 @@
 
 Project contract version 1 | Design frozen 2 October 2026 | Owner Deston
 
-This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates workspace/runbook editing and persistence, session summaries, Quick Actions, shared-camera enrolment and Profiles. One persistent dispatcher handles typed manual requests and gesture simulations. Explicit LIVE mode enables manual actions; LIVE gesture control remains blocked pending measured personal acceptance and the reviewed readiness gate. Standard starter availability remains separate work.
+This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates workspace/runbook editing and persistence, session summaries, Quick Actions, shared-camera enrolment and Profiles. One persistent dispatcher handles typed manual requests, gesture simulations and eligible personal LIVE actions. Explicit LIVE mode enables manual actions; personal LIVE control requires the current in-memory full-Practice grant and explicit Start/NEUTRAL. Standard starter availability remains separate work.
 
 ## GF-P02 design freeze - 2 October 2026
 
 Deston's integration baseline adopts the approved [project plan](PROJECT_PLAN.md) and [screen/transition design](TEAM_GUIDE.md#initial-screen-design): Try standard gestures first, optional Personalise, and exactly one typed action per bound stage slot. Reviewed merged PRs #10, #14 and #15 supply the vocabulary, profile and workspace/component interfaces below. Independent acceptance and architecture review reconciled these handoffs with the implementation. This records the approved design and its adoption in reviewed code; it does not claim a separate team meeting or tutor approval.
 
-The final flow is **Try standard gestures -> simulated readiness check -> explicit Start/NEUTRAL -> eligible control**. A failed check offers retry, optional Personalise or manual controls. An unavailable starter shows its reason and preserves manual access. Saved profiles may be loaded without collecting again; loading alone never proves readiness. Preview/Rehearsal can run before readiness. The implemented six-activation check does not satisfy GF-P12's longer personal protocol: LIVE gesture Start and dispatch remain blocked. Manual typed actions simulate in Preview/Rehearsal and execute only after explicit LIVE selection, without requiring a recogniser. This design freeze does not complete starter evaluation, readiness or hardware acceptance.
+The final flow is **Try standard gestures -> simulated readiness check -> explicit Start/NEUTRAL -> eligible control**. A failed check offers retry, optional Personalise or manual controls. An unavailable starter shows its reason and preserves manual access. Saved profiles may be loaded without collecting again; loading alone never proves readiness. Preview/Rehearsal can run before readiness. The implemented six-activation check does not satisfy GF-P12's longer personal protocol and cannot grant LIVE eligibility. The current personal gate is specified below. Manual typed actions simulate in Preview/Rehearsal and execute only after explicit LIVE selection, without requiring a recogniser. This design freeze does not complete starter evaluation, readiness or hardware acceptance.
 
 ## Records and responsibilities
 
@@ -35,6 +35,7 @@ These are logical handoffs, not a request for four new Python record classes. Ha
 | Workspace selection, implemented by `workspace.Workspace` | `id` (workspace identity), `title`, optional `deck`, semantic `shortcuts`, ordered `stages` | Schema 1. There is no separate `WorkspaceSelection` class or stored `workspace_revision` field. Validate the complete value before replacement. The short readiness revision binds to all authored action meanings; navigation/session revision IDs are not readiness proof. |
 | Runbook context, implemented by `workspace.Stage` and `runbook.Runbook` | `id` (stage/context identity), title/instructions, optional `card_id`, zero to three typed `bindings`; runbook owns continue/finish state | `Window.reset_runbook_stage(stage, resume)` applies the complete context. Empty stages stay manual-only. Other transitions clear holds and require NEUTRAL; selecting an already configured stage does not itself change the authored binding revision. |
 | `readiness.ReadinessCheck` and shell-held pass revision | `revision`, `status`, `reason`, expected pose, completed count and measured `Trial` records | Session-local; no saved readiness credential. `behavior_revision` hashes profile/model/hand, feature version, controller policy, authored bindings, all workspace stage/Quick Actions mappings and local target meanings. Model revision already binds training data/settings. Behaviour changes expire a pass; cosmetic names and stage position do not. |
+| Host-held personal LIVE grant | Successful active full Practice identity, profile/model/hand/camera/behavior revision and exact authored context maps | Memory-only. Issue only after terminal save, exact event reconciliation and paused restoration. Short checks and historical/imported JSON cannot grant it; behavior edits permanently expire it even if changed back. |
 
 Atomic save means write a new validated file, replace the old file only after the write succeeds, and keep the last working file available after failures. Loading must never partially replace an active profile, workspace, runbook or binding map.
 
@@ -53,7 +54,7 @@ Use plain PySide signals or direct method calls carrying these records; do not c
 | Studio readiness controls | `start_readiness_check()` / `finish_readiness_check()` | Temporarily route all three poses through simulation with the existing camera/controller, then restore the previous context paused. Only protected simulated gesture events count. Passing this short check does not enable LIVE gestures. |
 | `WorkspaceWidget` / `RunbookEditorWidget` | `workspace_changed(Workspace)` | `accept_workspace_widget_change` / `accept_runbook_editor_change` pause and validate before replacing content. Imported targets remain semantic references. |
 | `RunbookWidget` / `Runbook` | `action_requested(Action)`, `previous_stage_requested()`, `completion_acknowledged(stage_id)`; runbook callback `(Stage or None, resume)` | `reset_runbook_stage` applies the complete map and invalidates holds; viewing a tab does not activate it. |
-| `QuickActionsWidget` | `before_publish() -> bool`, then `bindings_changed(...)` after successful local save | Pause before mutation; failed save preserves the registry. Clear active routing and require explicit Use Quick Actions. Changed action meanings expire the short readiness result. |
+| `QuickActionsWidget` | `before_publish() -> bool`, then `bindings_changed(...)` after successful local save | Pause before mutation; failed save preserves the registry. Clear active routing and require explicit Use Quick Actions. Changed action meanings expire the short readiness result and permanently invalidate the personal LIVE grant. |
 
 ## Minimal use
 
@@ -90,13 +91,48 @@ Use monotonic capture timestamps and increasing frame IDs in real operation. The
 
 `process(prediction, now)` emits at most one event per continuous hold. `route(event, now)` accepts only an exact event issued by this coordinator, once, with current identity/model and age no greater than 200 ms. Altered/stale events are consumed; repeating them cannot recover an action. Pause, tracking loss, rearming and generation changes invalidate pending events.
 
-PREVIEW and REHEARSAL populate only `simulated_action`. LIVE populates `action`. Studio attaches Javier's dispatcher for simulations and explicit manual LIVE requests; its gesture readiness callback currently returns false. The longer personal rehearsal is attached in Practice; its measured acceptance and a separate reviewed revision-bound gate are required before enabling LIVE gestures. Construction or passing the short check alone is not permission to execute OS actions.
+PREVIEW and REHEARSAL populate only `simulated_action`. LIVE populates `action`. Studio attaches Javier's dispatcher for simulations and explicit manual LIVE requests; its gesture readiness callback requires the current full-Practice grant, current behavior and exact approved route map. The longer personal rehearsal is attached in Practice and remains simulation-only throughout measurement. Construction or passing the short check alone is not permission to execute OS actions.
 
 All coordinator calls and immediate routing/dispatch belong on one owner thread. A RoutingResult is not a durable token: do not queue it for execution after a mode/profile/stage change. The final dispatcher must independently consume event IDs once and record outcomes. Camera release and any asynchronous action preparation require a fresh snapshot check before the side effect.
 
 Manual actions use the same validated target/action handlers, labelled `source=manual`; do not manufacture a prediction or held-gesture event for a button click. Enrolment/practice must have no route to an actual external launcher. Actions are never executed on configuration import or state restoration.
 
-Studio owns one persistent `Dispatcher`; context/profile/workspace changes must not clear its consumed event IDs. Refresh its viewer, runbook and summary references before routing a request. A preservation failure raises `DispatchFailure` before any external launch. Camera handoff interrupts the current worker and requires bounded shutdown acknowledgement; timeout consumes the request, opens nothing and requires a new manual request after release. Returning focus never resumes or replays actions. `launch_requested` records the request only, not completion of the user's external task. External targets use the existing Windows launcher; portable viewer/runbook controls remain available on other platforms.
+Studio owns one persistent `Dispatcher`; context/profile/workspace changes must not clear its consumed event IDs. Refresh its viewer, runbook and summary references before routing a request. A preservation failure raises `DispatchFailure` before any external launch. Camera handoff interrupts the current worker and requires bounded shutdown acknowledgement; timeout consumes the request, opens nothing and requires a new explicit request after release. An eligible gesture launch uses the same acknowledgement and snapshot checks; it is never automatically replayed. Returning focus never resumes or replays actions. `launch_requested` records the request only, not completion of the user's external task. External targets use the existing Windows launcher; portable viewer/runbook controls remain available on other platforms.
+
+## Personal full-Practice LIVE gate
+
+The host issues an in-memory grant only from its genuine active full Practice
+attempt in the current app session. The attempt must complete all 50 windows
+with full capture coverage, at least 9/10 correct for each enrolled action pose
+and NEUTRAL, zero wrong activations and all ten negative windows correct. It must
+reach terminal state, save successfully, reconcile its exact simulated events
+with the frozen dispatcher outcomes, and restore the previous context paused
+before the grant is issued. Pending or failed preservation/restoration cannot
+authorise dispatch. Practice remains REHEARSAL throughout measurement.
+
+The grant pins the personal profile, model revision, selected hand, camera,
+semantic behavior revision and exact authored context-to-action maps, including
+workspace, stage and Quick Actions maps. Both Start and dispatch must match the
+current context's exact approved map; a matching context ID alone is insufficient.
+Behavior, mapping, target or camera changes permanently invalidate that grant,
+even if the old values are restored. Guest, model reload/replacement and app
+restart clear it. Cosmetic renames, ordinary pause and selection of an existing
+authored stage or Quick Actions context do not themselves require a full retake;
+those transitions still invalidate queued work and require explicit resume.
+
+Short readiness passes, single-pose diagnostics, constructed result objects,
+historical review and imported/saved JSON are not grant sources. A JSON file is
+evidence, not a replayable credential. The historical review remains read-only
+and may survive changes that invalidate the grant.
+
+A grant never selects LIVE, applies configuration, opens capture or issues an
+action. The user explicitly selects LIVE and applies it, then starts capture
+after the previous worker releases and presents fresh NEUTRAL. Dispatch retains
+current snapshot/target validation, once-only event consumption and acknowledged
+camera release before a launch. Failed release opens nothing and never replays;
+focus return never resumes. Manual LIVE requests remain available without a
+recogniser or grant. Standard starter gestures remain unavailable, and this gate
+does not establish participant performance or native-device acceptance.
 
 ## Verification and remaining work
 
@@ -106,7 +142,7 @@ Checks cover custom IDs, all typed actions, default NEXT-only behaviour, once-pe
 
 ## Current shell adapter (Deston)
 
-`Window(..., studio=True, vocabulary=bundle.vocabulary)` exposes `configure_studio(context_id=None, mode=None, bindings=None)`. The default vocabulary preserves legacy labels. The three vocabulary action IDs initially map in order to NEXT, PREVIOUS and BOOKMARK simulations. Omitted configuration values preserve the current snapshot. Supplied bindings replace the whole map (up to three enrolled IDs to typed `Action` objects); an empty map pauses routing and keeps the context manual-only. The complete draft, including membership in the selected vocabulary, is validated before changing active state; invalid inputs raise `ValueError` and leave the current session/capture intact. Startup accepts PREVIEW/REHEARSAL only. Explicit UI configuration may select LIVE for manual controls; it never starts capture.
+`Window(..., studio=True, vocabulary=bundle.vocabulary)` exposes `configure_studio(context_id=None, mode=None, bindings=None)`. The default vocabulary preserves legacy labels. The three vocabulary action IDs initially map in order to NEXT, PREVIOUS and BOOKMARK simulations. Omitted configuration values preserve the current snapshot. Supplied bindings replace the whole map (up to three enrolled IDs to typed `Action` objects); an empty map pauses routing and keeps the context manual-only. The complete draft, including membership in the selected vocabulary, is validated before changing active state; invalid inputs raise `ValueError` and leave the current session/capture intact. Startup accepts PREVIEW/REHEARSAL only. Explicit UI configuration may select LIVE for manual controls or eligible personal gestures; it never starts capture. Personal LIVE Start requires the full-Practice grant and a fresh NEUTRAL hold.
 
 Successful application pauses capture, clears the old prediction display, creates a fresh routing session, updates the visible legend and records the semantic configuration locally. Interrupted workers and packets with old session/profile/model identities cannot overwrite the new display. Explicit resume still waits for worker shutdown and requires NEUTRAL. The on-screen selectors edit a draft; Apply and pause performs the change. These mappings are in memory only.
 
@@ -152,7 +188,7 @@ Session save writes schema version, the current workspace JSON, current stage ID
 
 Studio's **Edit runbook** tab wraps `RunbookEditorWidget`: New, Save stage, Delete, Move up and Move down emit a fully validated workspace and never execute actions. Accepted edits call the same workspace activation path as imports. If the deck is unchanged, Studio preserves deck review state; otherwise it replaces the workspace, resets routing and stays paused. Local target bindings and personal profiles are never written into portable workspace content.
 
-Studio's **Session summary** tab wraps `SessionSummaryWidget`. Refresh shows current counts, and **Export session results** writes scope, counts, outcomes, trials and acknowledged stage completions to local JSON. The scope carries workspace identity plus a generated review `revision_id`; it is a review marker, not a deterministic content hash or readiness proof. Counts cover typed manual requests, gesture simulations/rejections and external launch requests/failures from the shared dispatcher. Bookmark list review/removal remains outside this summary; a launch request is never counted as task completion. Correct/wrong/missed are zero until measured `Trial` records are supplied, so zero is unmeasured, not a passed evaluation, and manual actions do not create automatic readiness evidence. Navigation saves use **Save session...** / **Restore session...** and are separate from measurement exports. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; archive failure blocks the change or close and retains the current counts. Successful restore/restart starts a fresh review summary. When the summary record limit is reached, export and start a fresh review session. If the separate 4,096-event dispatcher limit is reached, export and close/reopen Studio; resetting a summary does not clear consumed action IDs.
+Studio's **Session summary** tab wraps `SessionSummaryWidget`. Refresh shows current counts, and **Export session results** writes scope, counts, outcomes, trials and acknowledged stage completions to local JSON. The scope carries workspace identity plus a generated review `revision_id`; it is a review marker, not a deterministic content hash or readiness proof. Counts cover typed manual requests, simulated and eligible LIVE gesture outcomes/rejections, and external launch requests/failures from the shared dispatcher. Bookmark list review/removal remains outside this summary; a launch request is never counted as task completion. Correct/wrong/missed are zero until measured `Trial` records are supplied, so zero is unmeasured, not a passed evaluation, and manual actions do not create automatic readiness evidence. Navigation saves use **Save session...** / **Restore session...** and are separate from measurement exports. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; archive failure blocks the change or close and retains the current counts. Successful restore/restart starts a fresh review summary. When the summary record limit is reached, export and start a fresh review session. If the separate 4,096-event dispatcher limit is reached, export and close/reopen Studio; resetting a summary does not clear consumed action IDs.
 
 ### Short readiness check
 
@@ -179,7 +215,7 @@ reinterpret that historical snapshot. Existing `SessionSummary.Trial` rows and
 the SessionSummary JSON schema remain unchanged; the separate private Practice
 JSON is the full trial export. This view grants no readiness or LIVE permission.
 
-Changing context, losing focus, pausing or a camera fault interrupts an active attempt. Local save failure retains evidence and blocks replacement or close until retry succeeds. The previous context restores paused after preservation. A measured pass neither sets the preliminary check's pass field nor enables LIVE gestures. Native measured acceptance and the reviewed live-readiness gate remain separate work.
+Changing context, losing focus, pausing or a camera fault interrupts an active attempt. Local save failure retains evidence and blocks replacement or close until retry succeeds. The previous context restores paused after preservation. A measured pass never sets the preliminary check's pass field. Only the host's qualifying current-session full attempt can grant temporary personal LIVE eligibility after terminal saving, exact event reconciliation and paused restoration. Native measured acceptance remains separate work.
 
 
 ### Practice guidance and timing follow-up — 4 October

@@ -313,7 +313,7 @@ def test_guest_setup_manual_mode_and_apply_are_visible_without_scrolling(qapp) -
         assert (window.width(), window.height()) == (900, 620)
         assert window.studio_scroll.verticalScrollBar().value() == 0
         assert window.mode_picker.currentData() == RoutingMode.PREVIEW.value
-        assert window.mode_picker.findText("Live (manual controls)") >= 0
+        assert window.mode_picker.findText("Live") >= 0
         for widget in (window.mode_picker, window.apply_bindings_button):
             assert widget.isVisible() and widget.isEnabled()
             assert _rect_in_workflow_viewport(window, widget)
