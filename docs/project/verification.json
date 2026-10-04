@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-04T16:18:05.748494+00:00",
+  "timestamp_utc": "2026-10-04T18:14:30.545196+00:00",
   "python": "3.11.16",
   "platform": "Windows-10-10.0.26200-SP0",
   "versions": {
@@ -13,42 +13,42 @@
     {
       "command": "python -m ruff check gestureforge tests scripts",
       "returncode": 0,
-      "seconds": 0.202,
+      "seconds": 0.18,
       "stdout": "All checks passed!\n",
       "stderr": ""
     },
     {
       "command": "python -m mypy gestureforge scripts tests",
       "returncode": 0,
-      "seconds": 21.164,
-      "stdout": "Success: no issues found in 83 source files\n",
+      "seconds": 14.415,
+      "stdout": "Success: no issues found in 85 source files\n",
       "stderr": ""
     },
     {
       "command": "python -m pytest -q",
       "returncode": 0,
-      "seconds": 373.969,
-      "stdout": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 27%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n......................................s................................. [ 55%]\n........................................................................ [ 65%]\n........................................................................ [ 74%]\n........................................................................ [ 83%]\n........................................................................ [ 93%]\n.....................................................                    [100%]\n772 passed, 1 skipped in 357.55s (0:05:57)\n",
+      "seconds": 267.538,
+      "stdout": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 27%]\n........................................................................ [ 36%]\n........................................................................ [ 45%]\n..............................................s......................... [ 54%]\n........................................................................ [ 63%]\n........................................................................ [ 72%]\n........................................................................ [ 81%]\n........................................................................ [ 90%]\n........................................................................ [ 99%]\n....                                                                     [100%]\n795 passed, 1 skipped in 256.57s (0:04:16)\n",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --smoke-test",
       "returncode": 0,
-      "seconds": 4.62,
+      "seconds": 3.474,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge --studio --smoke-test",
       "returncode": 0,
-      "seconds": 4.279,
+      "seconds": 3.145,
       "stdout": "",
       "stderr": ""
     },
     {
       "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\project-synthetic.json",
       "returncode": 0,
-      "seconds": 2.565,
+      "seconds": 1.799,
       "stdout": "",
       "stderr": ""
     }
@@ -56,15 +56,15 @@
   "limitations": [
     "Synthetic evaluation is software evidence only.",
     "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md.",
-    "Native capture diagnostic below belongs to its separately identified earlier revision; it is not a fresh physical acceptance run of this repair."
+    "Native capture diagnostic and prior Setup/Practice observations below retain their original source identities; they were not rerun for this evaluator change.",
+    "Frozen hashes record reproducibility, not independent chronology, consent or physical pose equivalence."
   ],
-  "source_base_commit": "a8eb37d405765aff18dee32bdc0f99199fe6016c",
+  "source_base_commit": "c315307048aa2e1db5b7c017590a49836347c5e8",
   "validated_changes_sha256": {
-    "gestureforge/app.py": "a21015741bafa1d12b5055c95bea878204e8c5709a6fc3ec2b91bb63756745b9",
-    "gestureforge/dataset.py": "0f65e86e7c32e9911c615ea1bf2cbec3840c5917b9f9d8e14973ce9a4cb7fce2",
-    "tests/test_app.py": "987a7161421a40e02527f5789c7e28009375fde2654b1491ad60c3288c0c52ef",
-    "tests/test_app_layout.py": "c112ebeb9b5129c6d0681727dbffc9fa058eccaee6d8005cfe0d4a45fbdfaca5",
-    "tests/test_dataset.py": "dc2153b1ab75f13539e96204541ca915ccde9782e23ca941549a25e9005a35a3"
+    "gestureforge/collect.py": "22132d5a8021a1ca86bf0b5e50ef4e693aca0651de4af2a8a1ea7680ce0e66bf",
+    "gestureforge/paired_evaluate.py": "e48b96ae91b816269c1633d4ac3b05fbb6b3eb9d6d9e0c771a95468395bfd89c",
+    "tests/test_collect.py": "a363b79031e80873d03beeb57f325787c5e27b5367942dffa2ce4cacddfdb6d1",
+    "tests/test_paired_evaluate.py": "bff5f6046ea9241b3c53a37d83815501d9ca3bad99e7bf8cd2a47fe7570fe3ff"
   },
   "previous_practice_verification": {
     "timestamp_utc": "2026-10-04T09:53:55.414793+00:00",
@@ -105,13 +105,9 @@
     }
   },
   "code_review": {
-    "scope": [
-      "gestureforge/app.py",
-      "gestureforge/dataset.py",
-      "associated regressions and handoff documentation"
-    ],
-    "result": "No code blockers; stale walkthrough directions corrected before publication.",
-    "method": "Independent read-only review, followed by the complete local verification recorded above."
+    "scope": "Paired evaluator and positive TEST collector plus their regressions.",
+    "result": "APPROVE after repairs, with zero remaining blocking findings.",
+    "method": "Independent read-only code review plus root integration review; actual test outputs recorded separately."
   },
   "native_capture_diagnostic": {
     "scope": "60-second Windows camera/landmark/personal-classifier pipeline; no GUI/controller/actions or pose scoring",
@@ -213,5 +209,51 @@
     "native_ui_observation": "Existing primary Studio instance loaded P01 pilot successfully. Its Harbor session was saved locally before restart. This confirms loading and preserves navigation; it does not establish recognition quality or completed Practice.",
     "root_cause_limit": "Selecting ordinary workspace/deck JSON reproduced the reported vocabulary error; the originally selected user file was not confirmed.",
     "acceptance_delegation": "Hau Jie executes personal-data/profile and focused recognition checks; Javier executes manual Harbor and Windows evidence. Deston retains integration, design and final acceptance. No completion credit added."
+  },
+  "previous_setup_software_verification": {
+    "timestamp_utc": "2026-10-04T16:18:05.748494+00:00",
+    "source_base_commit": "a8eb37d405765aff18dee32bdc0f99199fe6016c",
+    "validated_changes_sha256": {
+      "gestureforge/app.py": "a21015741bafa1d12b5055c95bea878204e8c5709a6fc3ec2b91bb63756745b9",
+      "gestureforge/dataset.py": "0f65e86e7c32e9911c615ea1bf2cbec3840c5917b9f9d8e14973ce9a4cb7fce2",
+      "tests/test_app.py": "987a7161421a40e02527f5789c7e28009375fde2654b1491ad60c3288c0c52ef",
+      "tests/test_app_layout.py": "c112ebeb9b5129c6d0681727dbffc9fa058eccaee6d8005cfe0d4a45fbdfaca5",
+      "tests/test_dataset.py": "dc2153b1ab75f13539e96204541ca915ccde9782e23ca941549a25e9005a35a3"
+    },
+    "checks_summary": "772 passed, 1 Windows symlink fixture skipped; Ruff, mypy (83 files), both startup modes and synthetic evaluation passed.",
+    "code_review": {
+      "scope": [
+        "gestureforge/app.py",
+        "gestureforge/dataset.py",
+        "associated regressions and handoff documentation"
+      ],
+      "result": "No code blockers; stale walkthrough directions corrected before publication.",
+      "method": "Independent read-only review, followed by the complete local verification recorded above."
+    }
+  },
+  "verification_repair": {
+    "initial_typecheck": {
+      "command": "python -m mypy gestureforge scripts tests",
+      "returncode": 1,
+      "seconds": 12.256,
+      "stdout": "tests\\test_paired_evaluate.py:41: error: Need type annotation for \"features\" (hint: \"features: list[<type>] = ...\")  [var-annotated]\nFound 1 error in 1 file (checked 85 source files)\n",
+      "stderr": ""
+    },
+    "fix": "Added the missing list[np.ndarray] annotation to the generated feature fixture; no runtime behaviour change.",
+    "recheck_timestamp_utc": "2026-10-04T18:12:13.158806+00:00",
+    "result": "Full-project Ruff and mypy rerun passed; runtime tests, both startup modes and synthetic evaluation passed in the broad run."
+  },
+  "paired_evaluation_verification": {
+    "scope": "Generated fixtures only; no participant data opened or new camera session requested.",
+    "focused_checks": "27 passed in 12.51s: paired evaluator and collection regressions.",
+    "regression_reproduction": "Two added checks first failed for duplicate same-role features across manifests and all-invalid negative development; both passed after merging before leakage registration and checking the declared hand.",
+    "coverage": [
+      "kNN and SVM; TRAIN-only fitting with frozen inputs/settings; altered TEST does not alter fitted thresholds/revisions.",
+      "Participant/hand/vocabulary/pose/provenance separation; session/trial and exact-feature leakage refusal.",
+      "Invalid/missing/rejected slots as UNKNOWN; all-invalid TEST; custom G1/G2/G3 vocabulary.",
+      "Frozen path relocation; integrity checks; exclusive output preservation, competing writer and failed-publication cleanup.",
+      "Positive TEST collection separated from development, guarded before camera acquisition."
+    ],
+    "limits": "No actual GF-P18 result, starter approval, full Practice acceptance, new-user reliability, final negative protocol, live-controller score, second-machine install or native Mac acceptance."
   }
 }

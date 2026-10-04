@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 
 from .capture import DEFAULT_ASSET, HandCamera
-from .contracts import LABELS
+from .contracts import LABELS, validate_identifier
 from .dataset import SampleRecord, load_dataset, save_dataset
 from .features import extract_feature_vector
 from .vocabulary import GestureVocabulary
@@ -31,6 +31,9 @@ def scheduled_sample(observation, due, chosen_hand):
 
 
 def collect_trials(args):
+    pose_set_id = getattr(args, "pose_set_id", None)
+    if pose_set_id is not None:
+        validate_identifier(pose_set_id)
     vocabulary_path = getattr(args, "vocabulary", None)
     vocabulary = (None if vocabulary_path is None else GestureVocabulary.from_mapping(
         json.loads(Path(vocabulary_path).read_text(encoding="utf-8"))))
@@ -52,10 +55,20 @@ def collect_trials(args):
             raise ValueError("A dataset must use one chosen hand. Create a new dataset.")
         if any(record.provenance != "human" for record in existing.records):
             raise ValueError("Do not append participant data to a synthetic fixture.")
+        existing_pose_set = existing.metadata.get("pose_set_id")
+        if existing_pose_set is not None:
+            validate_identifier(existing_pose_set)
+        if pose_set_id is not None and pose_set_id != existing_pose_set:
+            raise ValueError("Collection pose set does not match the existing dataset. Create a new dataset.")
+        pose_set_id = existing_pose_set
+        if any((record.split == "test") != (args.split == "test") for record in existing.records):
+            raise ValueError("Use a separate TEST dataset; do not mix development and held-out trials.")
         records = list(existing.records)
         features = list(existing.features)
         sessions = list(existing.metadata.get("sessions", []))
         trial_start_times = dict(existing.metadata.get("trial_start_times", {}))
+    if args.split == "test" and pose_set_id is None:
+        raise ValueError("TEST collection requires --pose-set-id matching the frozen evaluation protocol.")
     session_id = f"{args.split}-{uuid4().hex[:12]}"
     sessions.append({"session_id": session_id, "split": args.split,
                      "collected_at": datetime.now(timezone.utc).isoformat(),
@@ -67,6 +80,8 @@ def collect_trials(args):
                 "sampling_offsets_seconds": list(SAMPLE_OFFSETS), "raw_video_recorded": False,
                 "trial_start_times": trial_start_times,
                 "timestamp_policy": "Capture time when observed; scheduled time for missing slots"}
+    if pose_set_id is not None:
+        metadata["pose_set_id"] = pose_set_id
     completed = 0
     try:
         with HandCamera(args.asset, args.camera, session_id, args.participant) as camera:
@@ -150,7 +165,8 @@ def main():
     parser.add_argument("--vocabulary", type=Path,
                         help="Versioned JSON vocabulary for three custom gesture IDs plus NEUTRAL")
     parser.add_argument("--participant", default="P01", help="Pseudonymous ID, not a name")
-    parser.add_argument("--split", choices=["train", "validation", "validation_negative"], required=True)
+    parser.add_argument("--split", choices=["train", "validation", "validation_negative", "test"], required=True)
+    parser.add_argument("--pose-set-id", help="Declared pose protocol ID; required for a new held-out TEST dataset")
     parser.add_argument("--hand", choices=["Left", "Right"], default="Right")
     parser.add_argument("--trials", type=int, default=8)
     parser.add_argument("--camera", type=int, default=0)

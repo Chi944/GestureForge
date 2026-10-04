@@ -30,6 +30,18 @@ The final project is now scoped as **GestureForge Studio** for corporate trainin
 
 Current project foundation on `main`:
 
+Manual validation is assigned in the updated [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md)
+and [Javier brief](docs/project/JAVIER_HANDOFF.md): profile/Practice evidence for Hau
+Jie, and Harbor/Windows recovery plus fresh-install/offline/stability checks for
+Javier. Deston retains design, integration and acceptance review. Both teammates
+push only their own branches and leave PRs for review.
+
+The [paired evaluation tool](docs/project/PAIRED_EVALUATION.md) freezes development
+inputs/settings, then compares starter and personal recognisers on identical
+held-out positive TEST trials. The collector supports separate TEST manifests
+with a declared pose ID. This prepares GF-P18; real independent-participant results
+and live false-action testing remain outstanding.
+
 Practice recovers from a late camera frame while waiting for **Begin**: it keeps
 the completed windows, leaves capture running and asks for a fresh NEUTRAL hold.
 The five-second measurement and 200 ms timing checks remain unchanged. See the

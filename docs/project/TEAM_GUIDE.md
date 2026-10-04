@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-Updated 3 October 2026 Â· Project deadline 7 November 2026
+Updated 5 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -14,9 +14,24 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 
 | Member | Owns | Current next step | Reviewer |
 |---|---|---|---|
-| Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | Prepare reproducible workflow comparisons; review real Practice and Windows workflow evidence before a live-gesture gate change | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P07 real enrolment walkthrough, trace-backed NEUTRAL investigation and GF-P12 measured 50-window Practice evidence; preserve PR #19 and PR #20 limits | Deston |
-| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | Verify manual LIVE Harbor and GF-P19 Windows recovery; inspect the attached historical Practice review with real evidence | Deston |
+| Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | Continue independent software fixes, integration/regression checks and evidence review; review delegated results before acceptance or a live-gesture gate change | Teammate review; Deston makes final release decision |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | Existing data/profile compatibility, short own-profile diagnostics, then missing GF-P07 workflow and GF-P12 Practice evidence; return the outputs in [your brief](HAU_JIE_HANDOFF.md#start-with-these-tasks) | Deston |
+| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | Camera-free Harbor, GF-P19 native Windows recovery on both laptops, then GF-P23 installation/offline/stability execution for Deston's review; return the outputs in [your brief](JAVIER_HANDOFF.md#start-with-these-tasks) | Deston |
+
+Manual execution is delegated to Hau Jie and Javier in the priorities above;
+each follows their own brief after syncing the reviewed software checkpoint.
+Return a concise evidence summary with the source revision, actual device and
+conditions, observed outcomes, private evidence references and unrun cases.
+Keep raw participant data and private result files out of Git/Trello. Deston can
+continue independent software and integration work while these checks run;
+repeated long trials by Deston are not a prerequisite for either lane.
+
+Teammates may use their own consented profiles and must identify whose data and
+performance were measured. Their results cannot replace or be relabelled as
+Deston's P01 personal-performance evidence. Existing P01 failures and gaps remain
+attributed to P01. Delegation does not change original task owners, weights or
+Done status; GF-P23 acceptance and final integration/release review remain with
+Deston. The priority sequence in the briefs supersedes older repeat-run advice.
 
 PR #10's vocabulary work, PR #13's evaluator and PR #14's reviewed [profile persistence component](PROFILE_PERSISTENCE_HANDOFF.md) are integrated. Hau Jie's [starter checkpoint](STARTER_EVALUATION_CHECKPOINT.md) reports the three-person collection and baseline comparison; neither classifier is ready for release. Preserve the baseline and private inputs, and request targeted repair collection only for a diagnosed defect. PR #16's [guided enrolment component](ENROLMENT_INTERFACE_PROPOSAL.md) is attached to the shared camera; the real recording walkthrough remains. PR #17's [selector](PROFILE_SELECTOR_HANDOFF.md) is attached in Profiles with Guest/manual fallback. Its [diagnostic slice](STARTER_FAILURE_ANALYSIS.md) is accepted. PR #19's [bounded comparison](GF_P11_BOUNDED_COMPARISON.md) was reviewed and repaired for reproducibility and evidence consistency; its supplied no-qualifying result is unchanged and has not been independently rerun. PR #20's local camera pilot is partial personal-pilot evidence only: 2/8 accepted NEUTRAL validation trials and kNN/SVM macro-F1 0.7209 remain attributed to Hau Jie's private pilot, not a new independent evaluation. Existing model/rejection thresholds and neutral hold/rearm policy are not relaxed from that result. Explicit LIVE now permits manual actions through one persistent dispatcher; live gestures still require the longer personal readiness handoff. The six-activation check is preliminary only. A new Hau Jie observation reports open palm sometimes remains LATCHED and movement can recover it, but the supplied screenshot does not show Prediction; do not claim the root cause resolved. Deston's reviewed feedback fix keeps prediction/rejection/rearm guidance in the fixed footer and clears stale errors on fresh accepted packets; accepted NEUTRAL rearming passes software regression checks. The physical intermittent report still needs Hau Jie's trace and intended-pose notes. Javier's [4 October checkpoint](JAVIER_OCT4_CHECKPOINT.md) preserves the historical Linux run. GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md). Teammates should sync main and reuse Deston's attachment: Hau Jie captures a trace-backed neutral rearm reproduction before threshold/data changes, while Javier verifies the integrated manual LIVE path for GF-P13/GF-P34 and then records GF-P19's Windows cases. Use [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv) for accepted task status and remaining evidence.
 

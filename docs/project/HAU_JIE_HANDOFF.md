@@ -18,26 +18,58 @@ Before every commit/push, confirm the current branch is `codex/hau-jie-profiles`
 
 ## Start with these tasks
 
-**Current assignment:** finish reproducible software fixes and checks
-before requesting more manual evidence. On the reviewed software checkpoint,
-you execute the recognition/profile validation below; Deston retains interface
-design, integration and final evidence review. This assigns execution within the
-existing tasks, without changing backlog ownership, weights or completion credit.
-This sequence supersedes earlier repeat-run instructions below.
+**Current assignment:** you execute this recognition/profile validation after
+syncing the reviewed software checkpoint into your own branch. Fix reproducible
+software defects before repeating affected manual checks; Deston retains shared
+interface design, integration and final review. Follow these priorities rather
+than the older repeat-run instructions below.
 
-1. Check the existing personal manifest/saved profile for compatible vocabulary,
-   selected hand, feature version and model/settings revision. Preserve the
-   original inputs and results; fix reproducible compatibility defects in your
-   owned modules and report shared-shell defects to Deston.
-2. Once the software checkpoint is handed over, verify reliable load/start and
-   fresh capture with the existing data, then run short, focused pose/NEUTRAL
-   diagnostics. Save the actual coverage, prediction/rejection and intended-pose
-   evidence; stop to diagnose a setup fault instead of repeating a long run.
-3. Attempt full GF-P12 Practice only after setup is reliable and the focused
-   checks support it. Preserve every miss, inconclusive window and prior attempt.
-   Request targeted repair samples only for a diagnosed collection defect;
-   do not ask Deston to rerecord a blanket dataset or repeat full Practice as
-   routine troubleshooting. No readiness pass or LIVE permission is implied.
+1. **Compatibility first.** Use your existing consented personal TRAIN manifest
+   or saved profile. Check vocabulary, selected hand, feature version and
+   model/settings revision; verify load, save/reload and preservation of the
+   previous selection on a failed load. **Return:** the source revision,
+   pseudonymous profile/data identity, actual settings, each outcome and any
+   reproducible error. A workspace/deck selected as a dataset is a file-selection
+   error, not a reason to recollect gestures.
+2. **Short own-profile diagnostics.** Establish reliable load/start and fresh
+   capture, then use individual five-second pose/NEUTRAL diagnostics as needed.
+   For a recognition miss, retain coverage, prediction/rejection output and
+   independent intended-pose notes; use the existing opt-in trace for the
+   open-palm/LATCHED report. **Return:** actual correct/wrong/missed/inconclusive
+   outcomes, timing/coverage and a focused reproduction. Stop to diagnose setup
+   faults instead of restarting a full Practice run.
+3. **Finish missing GF-P07 workflow evidence.** Preserve PR #22's existing
+   invalid/partial-slot observations. Demonstrate the remaining Enrolment to
+   personal-profile save/load workflow, including visible invalid feedback and
+   Stop preservation where evidence is still missing. Use your own consented
+   session and preserve the original dataset. **Return:** a short workflow
+   recording with permission, local manifest/profile references and exact
+   remaining gaps. If recording is unavailable, supply observation notes and
+   leave the recording criterion pending.
+4. **GF-P12 after reliable setup.** Run the full fifty-window protocol on your
+   own profile only after the focused checks support it. **Return:** the full
+   private Practice JSON reference, code/model/behaviour revisions, per-pose and
+   negative-window outcomes, coverage, interruptions and Session summary event
+   reconciliation. Retain every miss, inconclusive window and prior attempt;
+   an incomplete attempt is evidence, not a pass.
+
+Put a concise outcome summary and exact software check results in a focused PR;
+keep participant inputs, recordings and full result files private. Fix only your
+owned modules and report shared-shell defects to Deston with the reproduction.
+Do not ask Deston to repeat long trials for this lane. Your own-profile results
+cannot replace or be labelled as Deston's P01 personal-performance evidence.
+Request only narrowly targeted repair samples for a diagnosed collection defect.
+Original task ownership/weights and acceptance criteria remain unchanged; neither
+delegation nor a diagnostic result establishes readiness or LIVE permission.
+
+**GF-P17 preparation, 5 October:** Deston is supplying the
+[frozen paired evaluation tool](PAIRED_EVALUATION.md) and positive TEST collector
+support. Reuse these rather than building another scorer. Keep all fitting and
+tuning manifests, selected settings, hand and exact standard-pose descriptions
+ready for review. New TEST data require a separate manifest and matching pose ID;
+freeze before inspecting outcomes. Legacy development files stay unchanged.
+This is subsequent evaluation work, not a request to interrupt the priorities
+above or repeat Deston's recordings.
 
 Latest integration, 4 October: sync main before recording. Practice v3 queues
 Begin for up to two seconds while waiting for fresh capture/READY, and a
@@ -166,4 +198,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync the reviewed fix commit and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Complete reproducible software fixes/checks first. Validate the existing personal data/profile compatibility, then use short setup and pose/NEUTRAL diagnostics with that data. Run full Practice only after setup is reliable; preserve all old results, misses and inconclusive windows. Diagnose before changing thresholds or requesting narrowly targeted repair samples; do not ask Deston for blanket rerecording. Fix only your recognition/profile/enrolment/practice modules and tests; report shell issues to Deston. Keep participant data/private results local and report actual outcomes without claiming readiness or LIVE permission. Verify the branch before every commit/push; push only this branch and open a focused PR for Deston's integration and final review, leaving it unmerged. Do not push or merge into `main`, change task weights/status to claim delegated work is done, or edit private reports/logs.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Execute the priorities in this brief: existing consented personal data/profile compatibility, short own-profile pose/NEUTRAL diagnostics, missing GF-P07 collection/profile workflow evidence, then full GF-P12 Practice only after reliable setup. Return source/profile/model/behaviour revisions, actual outcomes and coverage, private evidence references, unresolved gaps and exact software check results. Preserve failures and prior data; diagnose before changing thresholds or requesting targeted repair samples. Do not require Deston to repeat long trials, and do not count your results as P01 performance or LIVE permission. Fix only your owned modules/tests and report shared-shell defects to Deston. Keep private inputs/results out of Git/Trello. Verify your branch before every commit/push; push only this branch and open a focused PR for Deston's review, leaving it unmerged. Never push/merge into `main` or mark delegated work Done without acceptance evidence.

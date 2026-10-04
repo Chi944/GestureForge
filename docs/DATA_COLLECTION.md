@@ -54,6 +54,14 @@ Maximum planned assignment size:
 
 ## Final Project Collection
 
+This is separate from the completed assignment pilot. The Studio plan uses the
+three team contributors for starter development, then at least two new consenting
+participants excluded from starter fitting and tuning. Each new participant's
+personal TRAIN/VALIDATION data and standard-pose TEST data remain separate.
+See [the paired evaluation guide](project/PAIRED_EVALUATION.md) for freezing
+configurations before opening final TEST results. Changed custom poses are a
+different experiment and must not be presented as the same-pose comparison.
+
 Participant count:
 
 - Two consenting participants.
@@ -103,6 +111,29 @@ Record these fields in the manifest:
 - Fit preprocessing only on training data.
 - Do not open final TEST results until model and rejection settings are frozen.
 
+The collector now accepts positive `--split test`. Use a new, TEST-only output
+folder and the same `--pose-set-id` recorded in the frozen evaluation. For example,
+after consent and protocol/configuration freeze, using the legacy four labels:
+
+```powershell
+.\.venv\Scripts\python.exe -m gestureforge.collect --participant P04 --split test --pose-set-id standard-v1 --trials 12 --hand Right --camera 0 --output data/local/P04/test --setup "Replace with actual recording conditions" --consent
+```
+
+Replace the participant, camera, hand, pose ID and conditions with actual agreed
+values. For G1/G2/G3 or another custom vocabulary, also pass `--vocabulary` with
+the same versioned vocabulary JSON used for development. Do not mix label sets.
+The command stores numeric features only. Invalid and missing scheduled slots
+remain in the manifest. The operator controls each trial; this command is not a
+request for Deston to record now.
+
+Use `--pose-set-id` from the first TRAIN collection when starting a new protocol.
+Appending to a declared dataset preserves its ID if the option is omitted and
+rejects a conflicting ID. Existing legacy development data are not retroactively
+tagged by appending; document their pose equivalence explicitly when freezing.
+TEST and development records cannot be appended to each other's manifests.
+`validation_negative` remains development rejection evidence; it is not an
+independent final negative test split.
+
 ## Quality Notes
 
 Invalid detections are evidence. Keep them in the manifest and count them as UNKNOWN during scoring. Do not drop difficult samples silently because that would overstate performance.
@@ -114,7 +145,7 @@ Recommended paths:
 - `data/local/pilot/manifest.json` (sessions append to one participant's manifest)
 - `data/local/pilot/manifest.features.<hash>.npz` (numeric content-addressed sidecar)
 - `experiments/local/<date>-pilot-results.json`
-- `experiments/final/<date>-heldout-results.json`
+- `experiments/local/final/<date>-heldout-results.json`
 
 Do not commit private or non-consented data.
 

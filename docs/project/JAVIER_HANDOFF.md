@@ -18,25 +18,43 @@ Before every commit/push, confirm the current branch is `codex/javier-shortcuts`
 
 ## Start with these tasks
 
-**Current assignment:** finish reproducible software fixes and checks
-before requesting new manual evidence. After Deston hands over the reviewed
-software checkpoint, you execute the following acceptance work. Deston retains
-interface design, integration, acceptance decisions and final review; the existing
-backlog owners and weights remain unchanged, and delegation earns no Done credit.
+**Current assignment:** you execute the following acceptance work after syncing
+the reviewed software checkpoint into your own branch. Fix reproducible software
+defects before repeating affected manual checks. Deston retains interface design,
+integration and final acceptance; follow these priorities.
 
-1. Run the [camera-free six-stage Harbor walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
-   using manual LIVE controls. No profile, webcam or gesture recording is needed.
-   Record actual task outcomes and failures, missing-target recovery, paused
-   save/reload with no replay, and both Session summary segments. A launch request
-   is not a human task acknowledgement.
-2. Record GF-P19's remaining Windows device/launch/recovery cases on both laptops,
-   including target validation, trusted app/HTTPS selection, focus return and the
-   separate Camera release/recovery check. Preserve accepted GF-P05 evidence.
-3. Execute the Windows installation/offline evidence slice for Deston's GF-P23
-   review: identify the device and source revision, use the documented setup,
-   and observe the local workflow after setup without internet. Keep HTTPS and
-   external apps' online features separate. Mark unavailable/unrun cases honestly;
-   software tests do not establish native or human acceptance.
+1. **Camera-free Harbor first.** Run the [six-stage manual walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
+   in manual LIVE mode without a profile or webcam. **Return:** source revision,
+   device/Windows version, observed stage outcomes and acknowledgements, failures
+   and retries, missing-target recovery, paused reload/no-replay observations and
+   both Session summary segments. A launch request is not a human task outcome.
+2. **GF-P19 native recovery.** Follow the [Windows verification procedure](../evidence/WINDOWS_LAUNCH_PROCEDURE.md)
+   for the remaining integrated cases on both laptops: app/file/folder/HTTPS
+   targets, invalid/missing target or association, focus return, explicit retry,
+   and separate Camera release/recovery. Preserve accepted GF-P05 evidence.
+   **Return:** a per-device case/result summary with OS/Python/camera details,
+   source revision, exact commands, observed launches/errors/recovery and local
+   evidence references. Mark inaccessible devices and unrun cases explicitly.
+3. **GF-P23 execution for Deston's review.** Use the [Windows setup guide](../WINDOWS_LAPTOP.md)
+   for a fresh independent installation on the second Windows laptop; do not
+   copy an environment. Verify the
+   local workflow offline after dependencies/assets are installed, then record
+   the thirty-minute Studio workflow/stability and clean shutdown evidence.
+   Keep HTTPS and external apps' online features separate from offline core.
+   **Return:** device/source identity, guide steps and any help/deviations,
+   installation and offline outcomes, actual run duration, faults/recoveries,
+   measured observation rate/peak memory where available, and shutdown result.
+   Label unmeasured metrics and unrun cases; a short capture diagnostic does not
+   replace the full Studio run or independent-machine acceptance.
+
+Put a concise outcome summary and exact software check results in a focused PR;
+keep raw exports, private paths and participant records local. Fix only your
+owned modules and report shared-shell defects to Deston with a reproduction.
+You do not need Deston to repeat long trials. Use your own consented profile if
+a camera/recognition check needs one, and attribute its results to that profile;
+it cannot replace Deston's P01 personal-performance evidence. Existing backlog
+owners/weights remain unchanged, including Deston's GF-P23 accountability.
+Delegation and software tests alone do not mark native/human acceptance Done.
 
 Update, 2 October: your delivered components were reviewed, corrected and merged through PR #11; see [the integration review](JAVIER_DELIVERY_REVIEW.md). Do not reapply the ZIP patch or rebuild those components. Sync the reviewed main into your own branch, preserving local work. The viewer, workspace, runbook editor/navigation, session summary and Quick Actions simulation are attached to Studio. The [4 October checkpoint](JAVIER_OCT4_CHECKPOINT.md) preserves your historical 373-test Linux/offscreen run. GF-P05 is now accepted from PR #18's supplied [laptop-A observations and focused repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md), including refused failed-dispatch confirmation, recorded missing-target failure and successful recovery. Integration review did not independently repeat those native observations; no further GF-P05 rerun is pending.
 
@@ -111,4 +129,4 @@ pipeline diagnostic does not prove either. Do not build a second capture logger.
 
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/javier-shortcuts`; sync the reviewed fix commit and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Complete reproducible software fixes/checks first. Then execute the camera-free manual Harbor walkthrough, recording actual task outcomes, recovery and both summary segments around paused reload. Separately gather the remaining Windows device/launch/focus/Camera recovery evidence on both laptops and the fresh-install/offline local-workflow evidence for Deston's review. Preserve accepted GF-P05 results; distinguish simulated actions, launch requests and human acknowledgements, and mark unrun cases honestly. Fix only your viewer/workspace/runbook/shortcut/summary modules and tests; report shell issues to Deston. Verify the branch before every commit/push; push only this branch and open a focused PR for Deston's integration and final review, leaving it unmerged. Do not push or merge into `main`, change task weights/status to claim delegated work is done, or publish private data/logs.
+> Work only on `codex/javier-shortcuts`; sync reviewed main and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Execute camera-free Harbor first, GF-P19 native Windows target/focus/Camera recovery on both laptops second, then GF-P23 fresh-install, offline local workflow and thirty-minute Studio/shutdown evidence for Deston's review. Return device/source details, actual case outcomes, both Harbor summary segments, private evidence references, unrun cases and exact software check results. Preserve accepted GF-P05 evidence and distinguish launches from human acknowledgements. Do not require Deston to repeat long trials; any own-profile camera results remain yours, not P01 performance. Fix only your owned modules/tests and report shared-shell defects. Keep private exports/data out of Git/Trello. Verify your branch before every commit/push; push only this branch and open a focused PR for Deston's review, leaving it unmerged. Never push/merge into `main` or change original task weights/Done status merely because execution was delegated.

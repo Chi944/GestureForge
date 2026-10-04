@@ -1,6 +1,6 @@
 # GestureForge Studio progress
 
-Snapshot: 4 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 5 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
 
 ## Completion measure
 
@@ -21,6 +21,9 @@ Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) and Javie
 
 ## Built, but broader tasks still in progress
 
+- **5 October delegation:** Hau Jie now executes existing-profile compatibility, short own-profile diagnostics, the remaining GF-P07 workflow and GF-P12 Practice checks. Javier executes camera-free Harbor, the remaining GF-P19 two-laptop Windows cases, then GF-P23 installation/offline/thirty-minute Studio evidence for Deston's review. GF-P19 is selected as To Do; no physical execution is implied. Both briefs specify ordered steps, required outputs and branch-only delivery. Deston keeps product direction, shared integration and final acceptance; teammate measurements cannot replace P01 personal evidence.
+- **GF-P18 - Deston, In Progress:** the two-phase `paired_evaluate` CLI pins development inputs and selected settings before opening positive TEST files, rebuilds TRAIN-only models, and compares identical held-out trials with UNKNOWN misses retained. Participant/split/pose/hand/provenance and input-integrity checks guard the comparison. The collector now exposes the existing positive TEST split with a separate manifest and pose ID. See [PAIRED_EVALUATION.md](PAIRED_EVALUATION.md). This completes tooling, not the real GF-P17/GF-P18 evaluation: independent participant data, selected configurations, final negative/live protocols and accepted results remain. Original task weights and completion percentages are unchanged.
+
 - **GF-P07 - Hau Jie:** reviewed [PR #16](https://github.com/Chi944/GestureForge_304/pull/16) supplies timed observation-fed collection and an embeddable consent/pose/countdown widget. Review repaired delayed-frame expiry and camera release during failed-save cancellation, retaining trial evidence for retry. Deston's shared-camera adapter now attaches the widget to Studio with model-free observation capture and cancellation/save protection. [PR #20](https://github.com/Chi944/GestureForge_304/pull/20) adds partial P02 recording evidence. PR #22's supplied physical follow-up closes the invalid-feedback/partial-slot Stop gap: retained invalid and cancelled slots reload successfully. The short current-version collection/profile workflow recording remains; the task stays In Progress with no Done credit.
 - **GF-P28 - Hau Jie:** [PR #13](https://github.com/Chi944/GestureForge_304/pull/13) is merged with the participant-separated evaluator and [checkpoint](STARTER_EVALUATION_CHECKPOINT.md). Independent code and architecture review accepted the code after clarifying private input/output evidence. Integration checks passed 346 tests with one platform-specific skip, lint, types, both GUI startup checks and synthetic evaluation. Hau Jie reports P01 checksum validation and completed P02/P03 collection; their measurements were not rerun here without those private inputs. The baseline has poor NEUTRAL recognition and UNKNOWN rejection, so neither model is ready for release. GF-P28 is Review-Test while the private evidence/permission record is reconciled; GF-P06 profile lifecycle can proceed now.
 - **P01 starter contribution - 1 October:** new right-hand data was collected in two separate positive sessions and a separate UNKNOWN session. Session 1 contains 32 trials with 159/160 valid samples; session 2 contains 32 trials with 160/160; negatives contain eight trials with 40/40. The one missed scheduled timestamp is retained. All manifests and numeric sidecars passed loader/hash, trial-count and session-separation checks; the private handoff archive was extracted and reloaded successfully. This is 72 trials and 359 valid feature vectors, not a recognition-accuracy result. Data, collection notes and the handoff archive remain excluded from GitHub. Deston forwarded the private archive on 1 October. Hau Jie reports matching its checksums and evaluating all three contributors in PR #13; integration review distinguishes those supplied results from local software verification.
@@ -30,6 +33,15 @@ Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) and Javie
 - **GF-P13/P34 - Javier:** reviewed shortcut/summary components and a manual Windows probe are available. Manual viewer/workspace/runbook, stage-editor and session-summary attachment is implemented; GF-P08/P09/P29 are Done on their software acceptance evidence and GF-P05 on supplied native probe evidence. The shared dispatcher and manual LIVE actions are now attached. Integrated native launch/recovery and remaining Quick Actions/dispatch acceptance keep those tasks In Progress. GF-P31 is now separately accepted on software evidence after Deston's historical Practice review integration; real GF-P12/GF-P19 execution remains separate.
 
 Software checks are recorded in [verification.json](verification.json). Automated simulation is not live-camera, Windows launch, starter-recognition or second-laptop evidence. The submitted assignment archive remains unchanged. GitHub Actions is manual-only; these checks ran locally.
+
+**5 October software verification:** 795 tests passed with one unsupported Windows
+symlink fixture skipped; full-project Ruff and mypy (85 files), both startup modes
+and synthetic evaluation pass. The 27 focused collector/evaluator regressions
+also pass. Independent review approved the final repairs. A missing test-fixture
+type annotation found in the broad run was corrected and the full static checks
+rerun; `verification.json` records both the failure and successful recheck.
+Historical capture and Setup/Practice observations retain their original source
+identities. No new participant or physical acceptance result is claimed.
 
 The earlier dataset-loading slice passed 162 tests plus lint, type checks, both GUI smoke modes and synthetic evaluation. A native-window check loaded the existing local P01 dataset, enabled Start and retained a paused controller with no camera worker. The isolated check took 13.23 seconds including loading/imports (classifier fit 0.046 seconds); an earlier concurrent-check attempt exceeded its 30-second smoke timeout. This is one development-machine observation, not a recognition or cross-machine performance result. The updated interface was visually inspected.
 
