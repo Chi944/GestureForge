@@ -304,5 +304,22 @@
       "Temporary missing target remains paused/manual-only and can recover without repeating an unchanged Practice pass."
     ],
     "limits": "No qualifying starter supplied, no new human full-Practice pass, six-stage scenario acceptance, held-out evaluation, independent Windows installation/stability or native Mac acceptance."
+  },
+  "quick_actions_acceptance_regression": {
+    "scope": "Studio-level software regression with generated state and a fake launcher; no webcam, participant data or native application launch.",
+    "focused_check": "tests/test_quick_actions_acceptance.py: 1 passed in 4.43s",
+    "adjacent_check": "tests/test_quick_actions_acceptance.py tests/test_javier_widgets.py tests/test_app_personal_live.py: 30 passed in 14.08s",
+    "quality_checks": [
+      "ruff check tests/test_quick_actions_acceptance.py: All checks passed.",
+      "mypy tests/test_quick_actions_acceptance.py: Success, no issues found."
+    ],
+    "coverage": [
+      "Twelve saved local targets and three active Quick Action slots restore in Studio without a deck or active runbook.",
+      "Opening/reloading/activating Quick Actions does not launch an application; Preview records simulation only.",
+      "Local slot rebinding preserves the twelve-target library and requires explicit reactivation.",
+      "A moved target blocks activation with repair guidance, then recovers after a valid local binding is restored.",
+      "Manual LIVE shortcut dispatch pauses routing, records one launch request through the fake launcher and focus loss returns routing to PAUSED."
+    ],
+    "limits": "This advances GF-P34 software confidence only. Integrated native Windows launch/recovery evidence and GF-P19 two-laptop observations remain separate."
   }
 }
