@@ -15,7 +15,7 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 | Member | Owns | Current next step | Reviewer |
 |---|---|---|---|
 | Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | Continue independent software fixes, integration/regression checks and evidence review; review delegated results and the personal LIVE gate before native acceptance | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | Existing data/profile compatibility, short software-defect reproductions, then missing GF-P07 workflow and actual full GF-P12 Practice evidence; return the outputs in [your brief](HAU_JIE_HANDOFF.md#start-with-these-tasks) | Deston |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | Existing data/profile compatibility, short software-defect reproductions, then actual full GF-P12 Practice evidence and GF-P17 preparation; GF-P07 software workflow is accepted; return the outputs in [your brief](HAU_JIE_HANDOFF.md#start-with-these-tasks) | Deston |
 | Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | Camera-free Harbor, GF-P19 native Windows recovery on both laptops, then GF-P23 installation/offline/stability and personal LIVE only after an own-profile full Practice pass; return the outputs in [your brief](JAVIER_HANDOFF.md#start-with-these-tasks) | Deston |
 
 Manual execution is delegated to Hau Jie and Javier in the priorities above;

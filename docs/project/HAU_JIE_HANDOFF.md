@@ -38,15 +38,7 @@ than the older repeat-run instructions below.
    open-palm/LATCHED report. **Return:** actual correct/wrong/missed/inconclusive
    outcomes, timing/coverage and a focused reproduction. Stop to diagnose setup
    faults instead of restarting a full Practice run.
-3. **Finish missing GF-P07 workflow evidence.** Preserve PR #22's existing
-   invalid/partial-slot observations. Demonstrate the remaining Enrolment to
-   personal-profile save/load workflow, including visible invalid feedback and
-   Stop preservation where evidence is still missing. Use your own consented
-   session and preserve the original dataset. **Return:** a short workflow
-   recording with permission, local manifest/profile references and exact
-   remaining gaps. If recording is unavailable, supply observation notes and
-   leave the recording criterion pending.
-4. **GF-P12 after reliable setup.** Run the full fifty-window protocol on your
+3. **GF-P12 after reliable setup.** Run the full fifty-window protocol on your
    own profile only after the focused checks support it. **Return:** the full
    private Practice JSON reference, code/model/behaviour revisions, per-pose and
    negative-window outcomes, coverage, interruptions and Session summary event
@@ -58,6 +50,10 @@ than the older repeat-run instructions below.
    whether the host granted personal LIVE eligibility. A blocked/failed result
    remains useful evidence; diagnose a software fault with a short reproduction
    before repeating the full run.
+4. **GF-P17 preparation.** After GF-P12 is reliable, prepare the independent
+   participant data/configuration freeze for the paired evaluation. Keep private
+   data out of Git and return exact split/configuration references for Deston's
+   review before any held-out TEST files are opened.
 
 Put a concise outcome summary and exact software check results in a focused PR;
 keep participant inputs, recordings and full result files private. Fix only your
@@ -113,7 +109,7 @@ PR #17's selector is attached in Profiles. Creation/loading stays paused in Prev
 
 1. **GF-P06 - selector delivered and attached.** Keep the reviewed `ProfileStore` API and shell-owned loading. Preserve unavailable-starter messaging, independent profiles, atomic mutations and old state on failure. Deston owns integrated acceptance; see [PROGRESS.md](PROGRESS.md) for current evidence and status. Profile loading and Guest/manual access do not complete starter readiness.
 2. **GF-P11 - comparison supplied in PR #19.** The bounded nested comparison reports no qualifying candidate and disagreement between the inner participants' preferred settings in every fold. Review repairs cover reproducibility and evidence consistency; see [PROGRESS.md](PROGRESS.md) for acceptance. Preserve the private run and fixed baseline. A no-qualifying result does not require shipping a starter or blanket recollection.
-3. **GF-P07 by 11 October - complete guided enrolment acceptance.** PR #16's reviewed `EnrolmentSession`/`EnrolmentWidget` is now attached to Studio; read [ENROLMENT_INTERFACE_PROPOSAL.md](ENROLMENT_INTERFACE_PROPOSAL.md). Sync main and use the Enrolment tab for a real capture walkthrough, including invalid feedback, Stop and save/reload evidence. Deston owns the shared observation adapter; do not rebuild it or create another camera thread. The Profiles tab can explicitly create a saved profile from a completed TRAIN manifest. Preserve legacy imports and the implemented three-action-ID-plus-NEUTRAL vocabulary. UNKNOWN remains a rejection result, never a trained positive class.
+3. **GF-P07 accepted - preserve guided enrolment behaviour.** PR #16's reviewed `EnrolmentSession`/`EnrolmentWidget` is attached to Studio; read [ENROLMENT_INTERFACE_PROPOSAL.md](ENROLMENT_INTERFACE_PROPOSAL.md). The 5 October generated current-version walkthrough closes the collection/profile software workflow, while PR #22 preserves invalid feedback and Stop evidence. Deston owns the shared observation adapter; do not rebuild it or create another camera thread. The Profiles tab can explicitly create a saved profile from a completed TRAIN manifest. Preserve legacy imports and the implemented three-action-ID-plus-NEUTRAL vocabulary. UNKNOWN remains a rejection result, never a trained positive class.
 4. **GF-P12 by 18 October - collect measured Practice evidence and resolve demonstrated defects.** Follow the current assignment's compatibility, setup and focused-check sequence before a full attempt; PR #21's component is integrated in the embedded **Practice** tab. After saving, inspect Session summary's historical review for completed/recorded windows, coverage and exact event matches; keep the separate full Practice JSON. Do not rebuild it or attach a second camera. Once setup is reliable, complete fifty five-second windows: ten trials for each of the three enrolled action poses and NEUTRAL, followed by ten negative/transition windows. The prompted actions pass through the shared controller and persistent dispatcher in simulation. Preserve the saved local result, code revision, profile/model/behaviour revision, pose notes and any interruptions. The gate requires all fifty windows covered, at least nine correct out of ten for every pose including NEUTRAL, zero wrong activations and all ten negative windows correct; an incomplete or inconclusive attempt is not a pass. Inspect the negative instructions against your enrolled poses before starting. The host can grant temporary personal LIVE eligibility only after a genuine current-session full pass is saved, reconciled and restored paused. Explicit LIVE selection, Apply, Start and fresh NEUTRAL remain required. Deston still reviews the evidence for GF-P12 acceptance; the grant is not participant or hardware acceptance. Keep private evidence out of Git; send a permission-appropriate aggregate report and a focused defect PR if needed.
 
 ## Complete your lane
@@ -164,7 +160,7 @@ After the current compatibility/setup checks, use one real G1 window to verify
 Begin/measurement behavior and preserve its local timing diagnostics. Proceed
 to full Practice only after reliable setup and focused recognition checks. Preserve the
 reported partial-slot Stop evidence; the remaining collection/profile workflow
-recording is separate. Do not rebuild the footer, add another camera worker,
+recording has now been accepted as a generated current-version software walkthrough. Do not rebuild the footer, add another camera worker,
 change thresholds to hide failures or repeat blanket data collection.
 
 ## Starter prompt for your coding assistant
@@ -216,4 +212,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Execute the priorities in this brief: existing consented personal data/profile compatibility, short own-profile pose/NEUTRAL diagnostics, missing GF-P07 collection/profile workflow evidence, then full GF-P12 Practice only after reliable setup. Return source/profile/model/behaviour revisions, actual outcomes and coverage, private evidence references, unresolved gaps and exact software check results. Preserve failures and prior data; diagnose before changing thresholds or requesting targeted repair samples. Do not require Deston to repeat long trials, and do not count your results as P01 performance or native acceptance. Only the current app's qualifying full-Practice gate grants temporary personal LIVE eligibility; diagnostics and exported JSON cannot grant it. Fix only your owned modules/tests and report shared-shell defects to Deston. Keep private inputs/results out of Git/Trello. Verify your branch before every commit/push; push only this branch and open a focused PR for Deston's review, leaving it unmerged. Never push/merge into `main` or mark delegated work Done without acceptance evidence.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Execute the priorities in this brief: existing consented personal data/profile compatibility, short own-profile pose/NEUTRAL diagnostics, then full GF-P12 Practice only after reliable setup, followed by GF-P17 data/configuration preparation. GF-P07's generated collection/profile software walkthrough is accepted; do not repeat it unless a new defect appears. Return source/profile/model/behaviour revisions, actual outcomes and coverage, private evidence references, unresolved gaps and exact software check results. Preserve failures and prior data; diagnose before changing thresholds or requesting targeted repair samples. Do not require Deston to repeat long trials, and do not count your results as P01 performance or native acceptance. Only the current app's qualifying full-Practice gate grants temporary personal LIVE eligibility; diagnostics and exported JSON cannot grant it. Fix only your owned modules/tests and report shared-shell defects to Deston. Keep private inputs/results out of Git/Trello. Verify your branch before every commit/push; push only this branch and open a focused PR for Deston's review, leaving it unmerged. Never push/merge into `main` or mark delegated work Done without acceptance evidence.

@@ -305,6 +305,22 @@
     ],
     "limits": "No qualifying starter supplied, no new human full-Practice pass, six-stage scenario acceptance, held-out evaluation, independent Windows installation/stability or native Mac acceptance."
   },
+  "enrolment_profile_workflow_acceptance": {
+    "scope": "Private current-version Studio walkthrough using generated observations; no webcam, participant data, raw video or external launch.",
+    "source_sha": "296f552d3d4fd10a881f24f45fbf2abdc876c856",
+    "local_result": ".local/acceptance/enrolment_workflow/result.json",
+    "video": ".local/acceptance/enrolment_workflow/enrolment-profile-workflow.mp4",
+    "video_bytes": 520835,
+    "checks": [
+      "Observation-only capture worker used for enrolment.",
+      "Cancelled-slot manifest preserved before the successful session.",
+      "Completed TRAIN manifest saved with raw_video_recorded=false.",
+      "ProfileStore.create rebuilt a saved local profile from the manifest.",
+      "Studio loaded the saved profile, switched to Guest/manual without deleting it, and reloaded the profile.",
+      "External launches recorded: 0."
+    ],
+    "limits": "This accepts GF-P07's enrolment/profile software workflow only. It is not recognition accuracy, participant performance, GF-P12 Practice, GF-P17 collection or final live-demo evidence."
+  },
   "quick_actions_acceptance_regression": {
     "scope": "Studio-level software regression with generated state and a fake launcher; no webcam, participant data or native application launch.",
     "focused_check": "tests/test_quick_actions_acceptance.py: 1 passed in 4.43s",
