@@ -6,7 +6,7 @@ import pytest
 
 from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QFontDatabase
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QToolButton
 
 from gestureforge.app import Window
 
@@ -30,6 +30,11 @@ def _rect_in_window(window: Window, widget) -> bool:
     return window.rect().contains(widget.rect().translated(widget.mapTo(window, QPoint(0, 0))))
 
 
+def _rect_in_workflow_viewport(window: Window, widget) -> bool:
+    rect = widget.rect().translated(widget.mapTo(window.studio_scroll.viewport(), QPoint(0, 0)))
+    return window.studio_scroll.viewport().rect().contains(rect)
+
+
 def test_studio_workflow_scroll_does_not_displace_camera_controls(qapp) -> None:
     window = Window(model=object(), studio=True)
     window.resize(900, 620)
@@ -37,7 +42,7 @@ def test_studio_workflow_scroll_does_not_displace_camera_controls(qapp) -> None:
     qapp.processEvents()
     try:
         window.deck_tabs.setCurrentWidget(window.practice_page)
-        window.practice_negative_cues.setMinimumHeight(1200)
+        window.practice_host.setMinimumHeight(1200)
         qapp.processEvents()
 
         assert window.studio_scroll.widget() is window.deck_tabs
@@ -68,6 +73,75 @@ def test_studio_workflow_scroll_does_not_displace_camera_controls(qapp) -> None:
         for widget in (window.preview, window.start_button, window.pause_button):
             assert widget.isVisible()
             assert _rect_in_window(window, widget)
+    finally:
+        window.close()
+
+
+def test_practice_entry_controls_fit_half_width_workflow(qapp) -> None:
+    window = Window(model=object(), studio=True)
+    window.resize(900, 620)
+    window.show()
+    qapp.processEvents()
+    try:
+        window.deck_tabs.setCurrentWidget(window.practice_page)
+        window.studio_scroll.verticalScrollBar().setValue(0)
+        qapp.processEvents()
+
+        for widget in (
+            window.practice_status,
+            window.practice_consent,
+            window.practice_review_cues_button,
+            window.practice_start_button,
+        ):
+            assert widget.isVisible()
+            assert _rect_in_workflow_viewport(window, widget), widget.text()
+
+        assert not window.practice_negative_cues.isVisible()
+        assert window.studio_scroll.horizontalScrollBar().maximum() == 0
+
+        overflow_buttons = [button for button in window.deck_tabs.findChildren(QToolButton) if button.isVisible()]
+        assert overflow_buttons
+        assert {button.text() for button in overflow_buttons} == {"‹", "›"}
+        for button in overflow_buttons:
+            assert button.palette().button().color().name().lower() == "#223247"
+            assert _rect_in_window(window, button)
+            assert button.accessibleName() in {"Scroll tabs left", "Scroll tabs right"}
+        left = next(button for button in overflow_buttons if button.text() == "‹")
+        previous = window.deck_tabs.tabBar().tabRect(0).x()
+        left.click()
+        qapp.processEvents()
+        assert window.deck_tabs.tabBar().tabRect(0).x() > previous
+    finally:
+        window.close()
+
+
+def test_active_practice_actions_fit_half_width_workflow(qapp) -> None:
+    window = Window(model=object(), studio=True)
+    window.resize(900, 620)
+    window.show()
+    qapp.processEvents()
+    try:
+        window.deck_tabs.setCurrentWidget(window.practice_page)
+        window.practice_consent.setChecked(True)
+        assert window.start_practice_rehearsal()
+        qapp.processEvents()
+        qapp.processEvents()
+
+        assert window.practice_widget is not None
+        assert not window.practice_status.isVisible()
+        assert not window.practice_consent.isVisible()
+        assert not window.practice_review_cues_button.isVisible()
+        assert not window.practice_start_button.isVisible()
+        assert window.practice_negative_cues.isReadOnly()
+        assert _rect_in_workflow_viewport(window, window.practice_widget.prepare_button)
+        assert _rect_in_workflow_viewport(window, window.practice_widget.begin_button)
+
+        window.resize(1150, 740)
+        window._scroll_practice_actions_into_view()
+        qapp.processEvents()
+        assert _rect_in_workflow_viewport(window, window.practice_widget.prepare_button)
+        assert _rect_in_workflow_viewport(window, window.practice_widget.begin_button)
+        assert window.studio_scroll.horizontalScrollBar().maximum() == 0
     finally:
         window.close()
 

@@ -902,9 +902,12 @@ def test_terminal_practice_release_does_not_fault_restored_context(monkeypatch, 
         window.close()
 
 
-@pytest.mark.parametrize(("late_before_sixth", "late_during_ninth"), [(False, False), (True, False), (False, True)])
+@pytest.mark.parametrize(
+    ("late_before_sixth", "late_during_ninth", "retry_neutral_setup"),
+    [(False, False, False), (True, False, False), (False, True, False), (True, True, True)],
+)
 def test_practice_completes_full_50_window_host_regression(
-    monkeypatch, qapp, tmp_path, late_before_sixth, late_during_ninth,
+    monkeypatch, qapp, tmp_path, late_before_sixth, late_during_ninth, retry_neutral_setup,
 ):
     import gestureforge.app as app_module
 
@@ -928,8 +931,36 @@ def test_practice_completes_full_50_window_host_regression(
             widget.prepare()
             worker = workers[-1]
             if expected == "NEUTRAL":
+                if retry_neutral_setup and index == 3:
+                    attempt = window.practice_attempt
+                    assert attempt is not None
+                    previous_trials = attempt.result().trials
+                    clock.advance(30)
+                    widget.tick()
+                    assert window.practice_attempt is attempt
+                    assert attempt.status == "idle"
+                    assert attempt.result().trials == previous_trials
+                    assert len(previous_trials) == 3
+                    assert len(attempt.result().setup_retries) == 1
+                    assert widget.prepare_button.text() == "Retry setup"
+                    assert worker.interrupted
+                    finish_worker(window, worker)
+                    widget.prepare()
+                    worker = workers[-1]
                 enqueue(window, worker, clock, "NEUTRAL")
-                widget.begin()
+                if retry_neutral_setup and index == 3:
+                    clock.advance(.108)  # Last capture is now 218 ms old at Begin.
+                    widget.begin_button.click()
+                    assert attempt is not None
+                    assert attempt.begin_pending
+                    assert attempt.status == "preparing"
+                    assert not widget.begin_button.isEnabled()
+                    enqueue(window, worker, clock, "NEUTRAL")
+                    assert attempt.status == "measuring"
+                    assert not attempt.begin_pending
+                    assert "Measurement started" in widget.feedback.text()
+                else:
+                    widget.begin()
                 clock.advance(0.05)
                 feed_window(window, worker, clock, "NEUTRAL")
             elif expected == "NEGATIVE":
@@ -1004,6 +1035,8 @@ def test_practice_completes_full_50_window_host_regression(
         assert review is not None
         assert review.saved_path == saved[0]
         assert len(review.result.trials) == 50
+        assert len(review.result.setup_retries) == int(retry_neutral_setup)
+        assert json.loads(saved[0].read_text())["setup_retries"] == list(review.result.setup_retries)
         assert review.result.status == expected_status
         if late_during_ninth:
             affected = review.result.trials[8]

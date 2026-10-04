@@ -323,6 +323,28 @@ found no blockers. Check outputs, source hashes and regression scope
 are recorded in `verification.json`. Physical acceptance of this revision
 still requires a fresh run. Accepted-task weights are unchanged.
 
+## Practice setup continuity and compact controls — 4 October 2026
+
+The latest P01 attempt on `aaef21a` completed NEXT and PREVIOUS correctly,
+recorded a covered BOOKMARK miss, then hit the 30-second setup timeout before
+the first NEUTRAL window. The latest Begin request was rejected at 218 ms frame
+age. Its private result is unchanged; the BOOKMARK miss is separate from the
+setup defect and no recognition threshold was changed.
+
+Practice v3 queues an explicit Begin click for at most two seconds, retaining
+all capture/READY guards. A setup timeout pauses capture and offers Retry setup
+on the same prompt; separate saved setup-retry records earn no trial credit.
+The existing v2 measured-frame policy continues: late frames make that window
+inconclusive while the attempt continues. Four complete generated host runs
+cover normal operation, stale setup, late measurement, and the combined latest
+setup/Begin problem. The compact controls and dark tab arrows/scrollbars were
+rendered and tested at 900x620 and 125% scaling. Cues open in a separate dialog.
+Final verification passed **734 tests with one unsupported Windows symlink skip**,
+Ruff, mypy (81 files), both GUI startup checks and synthetic evaluation. Independent
+review approved; source hashes and regression scope are in `verification.json`.
+Physical acceptance is not established by these checks. Task weights remain
+unchanged; no additional participant recording is requested during software repair.
+
 ## Next deliverables
 
 - **Hau Jie:** sync main into `codex/hau-jie-profiles`; GF-P11 is complete with the supplied no-selection result. Capture the short open-palm/LATCHED reproduction with the existing opt-in trace and separate intended-pose notes before changing thresholds or data. Preserve PR #22's supplied partial-slot Stop/invalid-feedback evidence. Complete the short collection/profile workflow recording; first verify one Begin window using the corrected footer, then run the integrated Practice protocol on a real webcam, retaining its local result and exact code/model/behaviour revision. PR #21 supplies the component; do not rebuild it. Preserve the baseline and private inputs/results; standard starter release still needs qualifying evidence and permission. No blanket recollection is requested.

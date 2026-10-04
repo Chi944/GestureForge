@@ -74,21 +74,30 @@ not a full timeline of physical poses. An otherwise valid late frame during
 preparation, including READY while waiting for Begin, is discarded and resets
 neutral arming. The camera stays open and completed windows remain in the same
 attempt. Hold NEUTRAL again until READY before clicking Begin; the original
-30-second preparation deadline still applies. Under protocol `gf-p12-v2`, an
+30-second preparation deadline still applies. In protocol `gf-p12-v3`, an
 otherwise valid late frame during measurement is dropped without an action.
 The current window finishes on its original five-second timer as **inconclusive**;
 click **Prepare next trial** to continue the same session. Previous windows are
 retained, but any inconclusive window prevents a full pass. Its saved coverage
 diagnostics retain the late-frame count and largest observed age. This policy
-also applies to the v2 single-pose diagnostic. Malformed/out-of-order packets,
+also applies to the v3 single-pose diagnostic. Malformed/out-of-order packets,
 camera faults, focus loss and configuration changes still interrupt and preserve
 the result. A previously cancelled attempt cannot be resumed or combined with
-a new attempt for a full-protocol pass. Older v1 results remain unchanged.
+a new attempt for a full-protocol pass. Older v1/v2 results remain unchanged.
+
+If setup reaches 30 seconds before measurement starts, capture pauses and
+**Retry setup** repeats the same prompt. Completed windows remain saved in the
+same attempt; setup retries are recorded separately and earn no trial credit.
+After **Begin**, a brief **Waiting for fresh capture / READY** message means
+timing has not started: keep NEUTRAL until the countdown appears. This wait lasts
+at most two seconds; if it expires, keep NEUTRAL and click Begin again. Do not
+change poses until **Measurement started** appears. The 200 ms frame limit and
+five-second measured window are unchanged.
 
 Practice is the longer GF-P12 measurement workflow, separate from **Start/retry readiness**. It uses the loaded recogniser, shared camera, hold/rearm controller and existing dispatcher; every action is simulated. A passed result does not enable LIVE gestures.
 
 1. Load a personal dataset or profile and select the correct camera. Finish/cancel the short readiness check, pause any existing capture and wait for camera release.
-2. Open **Practice**. Review the ten negative/transition instructions and edit any that overlap your enrolled action poses; keep exactly ten nonempty lines. Select **Save local numeric rehearsal outcomes for this profile** only if you consent to local outcome recording. Cue text is also saved, so keep it free of personal details.
+2. Open **Practice**, then **Review negative cues**. Edit any of the ten instructions that overlap your enrolled action poses; keep exactly ten nonempty lines, then close the dialog. Select the local numeric outcome consent checkbox only if you consent to recording. Cue text is also saved, so keep it free of personal details. The instructions are fixed once practice starts.
 3. Click **Start personal practice**, then **Prepare next trial**. Wait for the matching camera preview. For action and negative trials, show accepted NEUTRAL until READY; for a NEUTRAL trial, the rearm transition must occur inside its measured window.
 4. Click **Begin five-second window** when ready and follow the displayed pose/instruction for the full window. Use **Prepare next trial** after the preceding capture releases. Ten rounds of the three action poses and NEUTRAL provide forty windows, followed by ten negative/transition windows: fifty five-second measurements, with preparation time in addition.
 5. Review the per-pose result and saved path. Local JSON files under `.local/studio/practice/practice-<attempt-id>.json` record trial outcomes, simulated event IDs, rejection counts, capture coverage and the profile/model/behaviour revision. They contain no images, video, landmarks or feature vectors. Keep these files private and preserve the code revision plus separate intended-pose notes with any reported issue.

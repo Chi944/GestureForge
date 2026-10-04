@@ -19,15 +19,17 @@ from .dispatcher import Dispatcher
 from .routing import RoutingSession
 from .storage import atomic_write_json
 
-PROTOCOL_VERSION = 'gf-p12-v2'
-DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v2'
-READABLE_PROTOCOL_VERSIONS = frozenset({PROTOCOL_VERSION, 'gf-p12-v1'})
+PROTOCOL_VERSION = 'gf-p12-v3'
+DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v3'
+READABLE_PROTOCOL_VERSIONS = frozenset({PROTOCOL_VERSION, 'gf-p12-v2', 'gf-p12-v1'})
 READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS = frozenset({
     DIAGNOSTIC_PROTOCOL_VERSION,
+    'gf-p12-single-pose-diagnostic-v2',
     'gf-p12-single-pose-diagnostic-v1',
 })
 TRIALS_PER_POSE = 10
 WINDOW_SECONDS = 5.0
+BEGIN_WAIT_SECONDS = 2.0
 NEGATIVE_CUES = (
     'Keep both hands out of view.',
     'Keep both hands out of view while moving your head normally.',
@@ -81,6 +83,7 @@ class PracticeResult:
     correct_per_pose: tuple[tuple[str, int], ...]
     negative_actions: int
     guidance: tuple[str, ...]
+    setup_retries: tuple[dict[str, Any], ...] = ()
 
 
 class PersonalRehearsal:
@@ -129,6 +132,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.status = 'idle'
         self.reason = 'Prepare the next trial. Actions remain simulated.'
         self._trials: list[PracticeTrial] = []
+        self._setup_retries: list[dict[str, Any]] = []
+        self._begin_requested_at: float | None = None
         self._clock: float | None = None
         self._started: float | None = None
         self._prepared_at: float | None = None
@@ -156,6 +161,10 @@ feeds the supplied router exactly once; the shell must not process packets again
     @property
     def completed(self) -> int:
         return len(self._trials)
+
+    @property
+    def begin_pending(self) -> bool:
+        return self._begin_requested_at is not None
 
     def select_diagnostic_pose(self, pose: str | None) -> None:
         """Select a separate one-window probe before any capture is prepared."""
@@ -197,6 +206,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.router.pause()
         self._snapshot = self.router.resume()
         self._started = None
+        self._begin_requested_at = None
         self._prepared_at = now
         self._last_packet, self._last_frame = None, -1
         self._actions, self._events = [], []
@@ -229,7 +239,8 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.last_begin_attempt['accepted'] = True
 
     def _begin_window(self, now: float) -> None:
-        if not self._check(now) or self.status not in {'preparing', 'armed'}:
+        self.tick(now)
+        if self.status not in {'preparing', 'armed'}:
             raise ValueError('prepare and arm the trial before beginning')
         prompt = self.expected
         assert prompt is not None
@@ -241,9 +252,42 @@ feeds the supplied router exactly once; the shell must not process packets again
         self._window_first, self._window_last, self._window_max_gap = None, None, None
         self._neutral_ready, self._coverage = False, True
         self.status = 'measuring'
+        self._begin_requested_at = None
         self.reason = prompt.instruction
 
+    def request_begin(self, now: float) -> bool:
+        """An explicit click may wait briefly for capture/READY, never skip guards."""
+        try:
+            self.begin_window(now)
+        except ValueError:
+            if self.status not in {'preparing', 'armed'}:
+                raise
+            # begin_window validates the clock before any transient guard.
+            if type(now) not in (float, int) or not math.isfinite(now) or now != self._clock:
+                raise
+            if self._begin_requested_at is None:
+                self._begin_requested_at = now
+            self.reason = 'Begin requested. Keep NEUTRAL while waiting for fresh capture / READY.'
+            return False
+        return True
+
     def receive(self, prediction: Prediction, now: float) -> None:
+        self._receive(prediction, now)
+        if (self.begin_pending and self.status in {'preparing', 'armed'}
+                and prediction.session_id == self._snapshot.session_id
+                and prediction.profile_id == self._snapshot.profile_id
+                and prediction.model_version == self._snapshot.model_version
+                and prediction.frame_id == self._last_frame
+                and prediction.timestamp == self._last_packet
+                and now - prediction.timestamp <= MAX_FRAME_GAP_SECONDS
+                and self.expected is not None
+                and (self.expected.expected == 'NEUTRAL' or self.router.state == 'READY')):
+            requested_at = self._begin_requested_at
+            self.begin_window(now)
+            assert self.last_begin_attempt is not None
+            self.last_begin_attempt['button_requested_at'] = requested_at
+
+    def _receive(self, prediction: Prediction, now: float) -> None:
         if not self._check(now) or self.status not in {'preparing', 'armed', 'measuring'}:
             return
         snapshot = self._snapshot
@@ -346,8 +390,24 @@ feeds the supplied router exactly once; the shell must not process packets again
         if not self._check(now):
             return
         if self.status in {'preparing', 'armed'} and self._prepared_at is not None and now - self._prepared_at >= 30:
-            self.cancel('Preparation timed out; review capture and NEUTRAL evidence.')
+            assert self.expected is not None
+            self._setup_retries.append({
+                'expected': self.expected.expected, 'repetition': self.expected.repetition,
+                'session_id': self._snapshot.session_id,
+                'prepared_at': self._prepared_at, 'ended_at': now,
+                'reason': 'Preparation timed out before measurement.',
+                'controller_state': self.router.state, 'last_capture_at': self._last_packet,
+                'last_begin_attempt': self.last_begin_attempt,
+                'last_capture_validation': self.last_capture_validation,
+            })
+            self.router.pause()
+            self._begin_requested_at = None
+            self.status = 'idle'
+            self.reason = 'Setup paused after 30 seconds. Retry setup for this prompt; completed windows are saved.'
             return
+        if self._begin_requested_at is not None and now - self._begin_requested_at >= BEGIN_WAIT_SECONDS:
+            self._begin_requested_at = None
+            self.reason = 'Begin wait expired. Keep NEUTRAL until READY. Click Begin again.'
         if self.status != 'measuring' or self._started is None:
             return
         if now > self._window_drain_deadline:
@@ -422,6 +482,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.status = 'expired' if expired else 'cancelled'
         self.reason = reason
         self._started = None
+        self._begin_requested_at = None
 
     def _counts(self) -> dict[str, int]:
         return {label: sum(t.expected == label and t.outcome == 'correct' for t in self._trials)
@@ -489,7 +550,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         return PracticeResult(self.attempt_id, self.revision, protocol,
                               self._base.profile_id, self._base.model_version,
                               self.status, self.reason, tuple(self._trials),
-                              tuple(counts.items()), negatives, tuple(guidance))
+                              tuple(counts.items()), negatives, tuple(guidance), tuple(self._setup_retries))
 
     def passed_for(self, revision: str) -> bool:
         result = self.result()
@@ -548,8 +609,11 @@ feeds the supplied router exactly once; the shell must not process packets again
             return False
         self.tick(now)
         if self.status not in {'preparing', 'armed'}:
-            self._record_capture_validation(prediction, now, reason, recovered=False, phase=original_status)
-            return False
+            self._record_capture_validation(
+                prediction, now, reason, recovered=False, phase=original_status,
+                decision='setup_retry' if self.status == 'idle' else None,
+            )
+            return self.status == 'idle'
         event = self.router.process(prediction, now)
         recovered = event is None
         self._record_capture_validation(prediction, now, reason, recovered=recovered, phase=original_status)

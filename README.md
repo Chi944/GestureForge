@@ -39,6 +39,12 @@ A late frame during measurement now makes that window **inconclusive** while
 the same 50-window session continues. Earlier results are retained. No late
 frame can trigger an action, and an inconclusive window prevents a full pass.
 
+Practice now waits up to two seconds for a fresh frame after **Begin**, and a
+30-second setup timeout offers **Retry setup** for the same prompt without
+ending the session. Setup retries are saved separately from scored windows.
+The compact Practice controls keep the next action visible; **Review negative
+cues** opens the editable instructions in a separate dialog.
+
 | Area | Status |
 | :--- | :--- |
 | Shared routing contract | Version-1 design frozen and independently reviewed: Try Now, optional Personalise, one action per slot and explicit context activation; implemented routing preserves stale-event and hold/rearm protection |

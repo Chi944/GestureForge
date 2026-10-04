@@ -1,5 +1,30 @@
 # Practice Begin timing diagnosis — 3 October 2026
 
+## Latest setup timeout and UI repair — 4 October
+
+The follow-up on `aaef21a` ended during setup for the first NEUTRAL window,
+after two correct covered actions and one covered BOOKMARK miss. The last Begin
+request saw a frame 218 ms old; the unchanged 30-second setup timer then cancelled
+the attempt. This differs from the earlier stale-frame failure during measurement.
+The BOOKMARK miss remains a measured miss; this diagnosis does not explain it
+or justify changing recognition thresholds. The original private export is
+preserved unchanged.
+
+Practice v3 waits up to two seconds after an explicit Begin request for a fresh
+packet and the required READY state. Setup timeout now releases capture and
+offers Retry setup for the same prompt, retaining completed windows and a
+separate setup-retry record. It does not retry or replace scored misses.
+The four generated 50-window host regressions include the observed Begin age,
+setup timeout, earlier stale setup and measured-frame cases. They demonstrate
+software continuity, not physical recognition accuracy. Original timing, order,
+focus and generation protection remain enforced.
+
+Practice entry and active action controls fit the tested 900x620 workflow pane
+at 125% scaling. Negative cues now open in a separate dialog; tab arrows and
+scrollbars use the dark palette. Current validation is recorded in
+`verification.json`. Physical acceptance of this revision remains unverified;
+do not request another long recording until software/review checks pass.
+
 ## Deston's P01 follow-up — 4 October
 
 An assisted webcam check on `a738c0a` used the existing P01 pilot recogniser

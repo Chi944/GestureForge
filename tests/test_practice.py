@@ -398,11 +398,15 @@ def test_widget_confirms_begin_success_and_distinguishes_rejected_click(tmp_path
     widget = PersonalRehearsalWidget(h.attempt, tmp_path, clock=lambda: h.now)
     widget.prepare()
     widget.begin()
-    assert 'Window not started' in widget.feedback.text()
+    assert 'Waiting for fresh capture' in widget.feedback.text()
     for _ in range(6):
-        h.feed('NEUTRAL')
-    widget.refresh()
-    widget.begin_button.click()
+        h.now += .1
+        h.frame += 1
+        snap = h.router.snapshot
+        widget.receive_prediction(Prediction(snap.session_id, snap.profile_id, h.frame, h.now,
+                                            'NEUTRAL', True, snap.model_version), h.now)
+        if h.attempt.status == 'measuring':
+            break
     assert h.attempt.status == 'measuring'
     assert 'Measurement started' in widget.feedback.text()
     assert '5.0 seconds remaining' in widget.countdown.text()
@@ -566,7 +570,7 @@ def test_stale_preparation_packet_after_partial_hold_requires_full_new_hold():
     assert h.attempt.status == 'armed'
 
 
-def test_stale_preparation_packet_at_timeout_preserves_timeout_cancel():
+def test_stale_preparation_packet_at_timeout_preserves_setup_retry():
     h = Harness()
     snap = h.attempt.prepare(h.now)
     h.frame += 1
@@ -574,9 +578,11 @@ def test_stale_preparation_packet_at_timeout_preserves_timeout_cancel():
                        'NEUTRAL', True, snap.model_version)
     h.attempt.receive(stale, h.now + 30.0)
     result = h.attempt.result()
-    assert result.status == 'cancelled'
-    assert result.reason == 'Preparation timed out; review capture and NEUTRAL evidence.'
-    assert result.trials[0].outcome == 'interrupted'
+    assert result.status == 'idle'
+    assert 'Retry setup' in result.reason
+    assert result.trials == ()
+    assert len(result.setup_retries) == 1
+    assert h.router.state == 'PAUSED'
 
 
 def test_armed_stale_packet_recovers_before_begin_and_preserves_completed_trials():
@@ -614,7 +620,7 @@ def test_armed_stale_packet_recovers_before_begin_and_preserves_completed_trials
     assert h.attempt.status == 'armed'
 
 
-def test_armed_stale_packet_at_timeout_preserves_timeout_cancel():
+def test_armed_stale_packet_at_timeout_preserves_setup_retry():
     h = Harness()
     snap = h.attempt.prepare(h.now)
     for _ in range(6):
@@ -624,10 +630,85 @@ def test_armed_stale_packet_at_timeout_preserves_timeout_cancel():
                        'NEUTRAL', True, snap.model_version)
     h.attempt.receive(stale, h.now + 29.4)
     result = h.attempt.result()
-    assert result.status == 'cancelled'
-    assert result.reason == 'Preparation timed out; review capture and NEUTRAL evidence.'
+    assert result.status == 'idle'
+    assert 'Retry setup' in result.reason
+    assert result.trials == ()
+    assert len(result.setup_retries) == 1
     assert h.attempt.last_capture_validation is not None
     assert h.attempt.last_capture_validation['phase'] == 'armed'
+
+
+def test_begin_request_waits_for_next_fresh_frame_without_scoring_setup():
+    h = Harness()
+    h.attempt.select_diagnostic_pose('NEUTRAL')
+    h.attempt.prepare(h.now)
+    h.feed('NEUTRAL')
+    h.now += .218
+    assert not h.attempt.request_begin(h.now)
+    assert h.attempt.begin_pending
+    assert h.attempt.status == 'preparing'
+    stale = h.feed_at('NEUTRAL', captured=h.now - .21, received=h.now + .01)
+    assert h.attempt.begin_pending
+    h.feed('NEUTRAL')
+    assert h.attempt.status == 'measuring'
+    assert not h.attempt.begin_pending
+    assert h.attempt.remaining_window_seconds(h.now) == 5
+    assert h.attempt.result().trials == ()
+    assert h.attempt.last_begin_attempt['button_requested_at'] < h.now
+    assert h.attempt.last_begin_attempt['accepted'] is True
+    assert h.attempt._frames == 0
+    assert h.attempt._last_frame > stale.frame_id
+    assert h.dispatcher.summary.outcomes == []
+
+
+def test_pending_begin_expires_and_cannot_start_from_later_or_wrong_generation_frame():
+    h = Harness()
+    h.attempt.select_diagnostic_pose('NEUTRAL')
+    snapshot = h.attempt.prepare(h.now)
+    assert not h.attempt.request_begin(h.now)
+    wrong = Prediction('old-session', snapshot.profile_id, 1, h.now + .1,
+                       'NEUTRAL', True, snapshot.model_version)
+    h.attempt.receive(wrong, h.now + .1)
+    assert h.attempt.status == 'preparing'
+    assert h.attempt.begin_pending
+    h.now += 2.01
+    h.attempt.tick(h.now)
+    assert not h.attempt.begin_pending
+    assert 'Click Begin again' in h.attempt.reason
+    h.feed('NEUTRAL')
+    assert h.attempt.status == 'preparing'
+    assert h.attempt.request_begin(h.now)
+    assert h.attempt.status == 'measuring'
+
+
+def test_setup_timeout_retains_scored_windows_and_saves_retry_without_trial_credit(tmp_path):
+    h = Harness()
+    h.window('G1')
+    h.window('G2')
+    completed = h.attempt.result().trials
+    old_snapshot = h.attempt.prepare(h.now)
+    assert not h.attempt.request_begin(h.now)
+    prepared_at = h.now
+    h.now += 30
+    h.attempt.tick(h.now)
+    assert h.attempt.status == 'idle'
+    assert not h.attempt.begin_pending
+    assert h.attempt.result().trials == completed
+    assert h.attempt.expected is not None
+    assert h.attempt.expected.expected == 'G3'
+    payload = json.loads(h.attempt.save(tmp_path).read_text())
+    assert len(payload['trials']) == 2
+    retry = payload['setup_retries'][0]
+    assert retry['expected'] == 'G3'
+    assert retry['prepared_at'] == prepared_at
+    assert retry['ended_at'] == h.now
+    assert retry['session_id'] == old_snapshot.session_id
+    h.window('G3')
+    assert h.attempt.completed == 3
+    assert h.attempt.result().trials[:2] == completed
+    assert h.attempt.result().trials[2].outcome == 'correct'
+    assert len(h.attempt.result().setup_retries) == 1
+    assert h.router.snapshot.session_id != old_snapshot.session_id
 
 
 def test_packet_after_armed_stale_recovery_must_still_advance_monotonic_watermark():

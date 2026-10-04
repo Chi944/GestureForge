@@ -17,7 +17,7 @@ from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
     QProgressBar, QFrame, QComboBox, QGridLayout, QScrollArea, QFileDialog, QSpinBox, QCheckBox,
-    QSizePolicy, QTabWidget, QTextEdit,
+    QSizePolicy, QTabWidget, QTextEdit, QDialog, QToolButton,
 )
 
 from .capture import HandCamera
@@ -710,9 +710,12 @@ class Window(QMainWindow):
             self.practice_page.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
             practice_layout = QVBoxLayout(self.practice_page)
             practice_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+            practice_layout.setContentsMargins(6, 6, 6, 6)
+            practice_layout.setSpacing(6)
             self.practice_status = QLabel("Practice unavailable until a personal recogniser is loaded.")
             self.practice_status.setWordWrap(True)
             self.practice_status.setTextFormat(Qt.TextFormat.PlainText)
+            self.practice_status.setMaximumHeight(76)
             practice_layout.addWidget(self.practice_status)
             self.practice_consent = QCheckBox("Save local numeric rehearsal outcomes for this profile")
             self.practice_consent.setToolTip(
@@ -724,9 +727,21 @@ class Window(QMainWindow):
             self.practice_negative_cues.setPlainText("\n".join(NEGATIVE_CUES))
             self.practice_negative_cues.setAccessibleName("Practice negative and transition cues")
             self.practice_negative_cues.setToolTip("Keep exactly ten lines. Edit any cue that overlaps your custom gestures.")
-            self.practice_negative_cues.setMinimumHeight(130)
-            practice_layout.addWidget(self.practice_negative_cues)
+            self.practice_negative_cues.setMinimumHeight(220)
+            self.practice_cues_dialog = QDialog(self)
+            self.practice_cues_dialog.setWindowTitle("Review negative cues")
+            self.practice_cues_dialog.setModal(True)
+            cues_dialog_layout = QVBoxLayout(self.practice_cues_dialog)
+            cues_dialog_layout.addWidget(self.practice_negative_cues)
+            self.practice_review_cues_button = QPushButton("Review negative cues")
+            self.practice_review_cues_button.setObjectName("compactButton")
+            self.practice_review_cues_button.setToolTip(
+                "Open the ten negative and transition cue lines before starting practice."
+            )
+            self.practice_review_cues_button.clicked.connect(self.open_practice_cues_dialog)
+            practice_layout.addWidget(self.practice_review_cues_button)
             self.practice_start_button = QPushButton("Start personal practice")
+            self.practice_start_button.setObjectName("compactButton")
             self.practice_start_button.clicked.connect(self.start_practice_rehearsal)
             practice_layout.addWidget(self.practice_start_button)
             self.practice_host = QWidget()
@@ -940,6 +955,21 @@ class Window(QMainWindow):
                                                border: 1px solid #486478; padding: 8px 12px; }
             QTabWidget#deckTabs QTabBar::tab:focus { border: 2px solid #62d6ad; }
             QTabWidget#deckTabs QTabBar::tab:selected { background: #355b72; color: #ffffff; }
+            QTabWidget#deckTabs QTabBar::scroller { width: 64px; }
+            QTabWidget#deckTabs QTabBar::tear { width: 0; }
+            QTabWidget#deckTabs QToolButton {
+                background: #223247; color: #e8eef4; border: 1px solid #486478;
+                padding: 0; border-radius: 0; font-size: 24px;
+            }
+            QTabWidget#deckTabs QToolButton:hover { background: #355b72; }
+            QScrollBar:vertical { background: #101923; width: 12px; margin: 0; }
+            QScrollBar::handle:vertical { background: #486478; min-height: 24px; border-radius: 5px; }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }
+            QScrollBar:horizontal { background: #101923; height: 12px; margin: 0; }
+            QScrollBar::handle:horizontal { background: #486478; min-width: 24px; border-radius: 5px; }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal { background: none; }
             QWidget#manualViewer { background: #101923; }
             QWidget#manualViewer QLabel { color: #e8eef4; background: transparent; }
             QWidget#manualViewer QTextEdit, QWidget#manualViewer QListWidget, QWidget#manualViewer QLineEdit {
@@ -955,6 +985,15 @@ class Window(QMainWindow):
             QProgressBar#deckProgress { background: #d5d1bf; height: 10px; }
             QProgressBar#deckProgress::chunk { background: #d97757; }
         """)
+        if self.studio:
+            for tab_button in self.deck_tabs.tabBar().findChildren(QToolButton):
+                direction = tab_button.arrowType()
+                if direction in (Qt.ArrowType.LeftArrow, Qt.ArrowType.RightArrow):
+                    scrolls_left = direction == Qt.ArrowType.LeftArrow
+                    tab_button.setArrowType(Qt.ArrowType.NoArrow)
+                    tab_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
+                    tab_button.setText("‹" if scrolls_left else "›")
+                    tab_button.setAccessibleName("Scroll tabs left" if scrolls_left else "Scroll tabs right")
         self.render_studio_status()
         self.render_card()
         self.sync_profile_selector(loaded_profile)
@@ -1376,7 +1415,14 @@ class Window(QMainWindow):
 
     def _set_practice_status(self, message: str) -> None:
         if hasattr(self, "practice_status"):
+            self.practice_status.setToolTip(message)
             self.practice_status.setText(message)
+
+    def open_practice_cues_dialog(self) -> None:
+        if not hasattr(self, "practice_cues_dialog"):
+            return
+        self.practice_cues_dialog.resize(520, 360)
+        self.practice_cues_dialog.open()
 
     def open_practice_page(self) -> None:
         if not self.studio or not hasattr(self, "practice_page"):
@@ -1419,7 +1465,7 @@ class Window(QMainWindow):
         elif self.model is None or self.routing is None:
             message = "Practice unavailable until a personal recogniser is loaded."
         else:
-            message = "Practice ready: tick local outcome recording consent, then start personal practice."
+            message = "Practice ready: consent, review cues, then start."
         self._set_practice_status(message)
 
     def _clear_practice_widget(self) -> None:
@@ -1468,9 +1514,13 @@ class Window(QMainWindow):
             self._clear_practice_widget()
             self.start_button.setEnabled(self._can_start_studio_camera())
             if hasattr(self, "practice_consent"):
+                self.practice_status.setVisible(True)
                 self.practice_consent.setVisible(True)
-                self.practice_negative_cues.setVisible(True)
+                self.practice_negative_cues.setReadOnly(False)
+                self.practice_review_cues_button.setVisible(True)
+                self.practice_review_cues_button.setEnabled(True)
                 self.practice_start_button.setVisible(True)
+                self.practice_start_button.setEnabled(True)
             if result is not None:
                 if self._is_single_pose_diagnostic(result):
                     pose, outcome, correct, _completed, _coverage_failures = self._single_pose_diagnostic_details(result)
@@ -1629,17 +1679,21 @@ class Window(QMainWindow):
         widget.capture_release_requested.connect(self.release_practice_capture)
         widget.result_ready.connect(self._finish_practice_rehearsal)
         widget.save_button.clicked.connect(lambda: self._finish_practice_rehearsal() if self.practice_attempt else None)
+        widget.controls_changed.connect(self._scroll_practice_actions_into_view)
         self.practice_widget = widget
         self.practice_host_layout.addWidget(widget)
         self.practice_start_button.setEnabled(False)
+        self.practice_status.setVisible(False)
         self.practice_consent.setVisible(False)
-        self.practice_negative_cues.setVisible(False)
+        self.practice_negative_cues.setReadOnly(True)
+        self.practice_review_cues_button.setVisible(False)
+        self.practice_review_cues_button.setEnabled(False)
         self.practice_start_button.setVisible(False)
         self.deck_tabs.setCurrentWidget(self.practice_page)
         self.feedback.setText("Practice started. Actions are simulated and recorded locally only.")
         self._set_practice_status("Practice started. Review the prompt, prepare a trial, then begin the five-second window.")
         self.render_studio_status()
-        self._scroll_studio_widget_into_view(widget)
+        self._scroll_practice_actions_into_view()
         return True
 
     def start_practice_capture(self, snapshot: RoutingSnapshot) -> None:
@@ -1655,7 +1709,7 @@ class Window(QMainWindow):
             self.practice_widget.prepare_button.setEnabled(False)
             self.state.setText("Waiting for previous camera release before practice.")
             self.preview.setText("Camera stopping...\n\nPractice will start after release.")
-            self._scroll_studio_widget_into_view(self.practice_widget)
+            self._scroll_practice_actions_into_view()
             return
         self._start_practice_capture_now(snapshot)
 
@@ -1677,7 +1731,7 @@ class Window(QMainWindow):
         self.preview.setText(f"Opening camera {self.camera_index} for practice...")
         self.prediction.setText("Practice: awaiting camera")
         self.detail.setText("Practice uses simulated actions only. Show NEUTRAL until READY.")
-        self._scroll_studio_widget_into_view(self.practice_widget)
+        self._scroll_practice_actions_into_view()
         return True
 
     def release_practice_capture(self) -> None:
@@ -1687,7 +1741,7 @@ class Window(QMainWindow):
             worker.requestInterruption()
         self._practice_pending_snapshot = None
         self.state.setText("Practice trial complete - camera releasing")
-        self._scroll_studio_widget_into_view(self.practice_widget)
+        self._scroll_practice_actions_into_view()
 
     def _practice_packet_active(self) -> bool:
         attempt = self.practice_attempt
@@ -1996,13 +2050,21 @@ class Window(QMainWindow):
         def scroll_to_widget() -> None:
             if (
                 self._closing
-                or target is not self.practice_widget
+                or self.practice_widget is None
+                or (not self.practice_widget.isAncestorOf(target) and target is not self.practice_widget)
                 or self.deck_tabs.currentWidget() is not self.practice_page
             ):
                 return
             self.studio_scroll.ensureWidgetVisible(target, 0, 12)
 
         QTimer.singleShot(0, scroll_to_widget)
+
+    def _scroll_practice_actions_into_view(self) -> None:
+        widget = self.practice_widget
+        if widget is None:
+            return
+        target = widget.begin_button if widget.begin_button.isVisible() else widget.prepare_button
+        self._scroll_studio_widget_into_view(target)
 
     def _stop_enrolment_for_pause(self) -> bool:
         if not self.studio or not hasattr(self, "enrolment_widget"):

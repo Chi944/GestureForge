@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 
 from PySide6.QtCore import QTimer, Signal, Qt
-from PySide6.QtWidgets import QComboBox, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from .contracts import Prediction
 from .practice import PersonalRehearsal
@@ -20,6 +20,7 @@ class PersonalRehearsalWidget(QWidget):
     snapshot_requested = Signal(object)
     capture_release_requested = Signal()
     result_ready = Signal(object)
+    controls_changed = Signal()
 
     def __init__(self, attempt: PersonalRehearsal, output_root: Path, parent=None,
                  *, clock=time.monotonic):
@@ -29,9 +30,10 @@ class PersonalRehearsalWidget(QWidget):
         self._announced = False
         self._terminal_autosave_attempted = False
         self.save_error = False
+        self._last_status: str | None = None
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel('Personal rehearsal — simulated actions only'))
-        layout.addWidget(QLabel('Choose a full rehearsal or test only one pose:'))
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(6)
         self.test_selection = QComboBox()
         self.test_selection.addItem('Full rehearsal — 50 windows', None)
         for pose in (*attempt.gesture_ids, 'NEUTRAL'):
@@ -43,21 +45,27 @@ class PersonalRehearsalWidget(QWidget):
         self.prompt.setWordWrap(True)
         self.prompt.setTextFormat(Qt.TextFormat.PlainText)
         layout.addWidget(self.prompt)
+        self.prepare_button = QPushButton('Prepare next trial')
+        self.begin_button = QPushButton('Begin five-second window')
+        actions = QHBoxLayout()
+        for button in (self.prepare_button, self.begin_button):
+            actions.addWidget(button)
+        layout.addLayout(actions)
         self.countdown = QLabel()
         self.countdown.setWordWrap(True)
         self.countdown.setTextFormat(Qt.TextFormat.PlainText)
         self.countdown.setAccessibleName('Practice countdown and next step')
         layout.addWidget(self.countdown)
-        self.feedback = QLabel('Confirm the ten negative instructions fit your enrolled poses with the host.')
+        self.feedback = QLabel('Simulated actions only. Results save locally after each trial.')
         self.feedback.setWordWrap(True)
         self.feedback.setTextFormat(Qt.TextFormat.PlainText)
         layout.addWidget(self.feedback)
-        self.prepare_button = QPushButton('Prepare next trial')
-        self.begin_button = QPushButton('Begin five-second window')
         self.stop_button = QPushButton('Stop rehearsal')
         self.save_button = QPushButton('Save / retry local results')
-        for button in (self.prepare_button, self.begin_button, self.stop_button, self.save_button):
-            layout.addWidget(button)
+        secondary = QHBoxLayout()
+        for button in (self.stop_button, self.save_button):
+            secondary.addWidget(button)
+        layout.addLayout(secondary)
         self.prepare_button.clicked.connect(self.prepare)
         self.begin_button.clicked.connect(self.begin)
         self.stop_button.clicked.connect(self.stop)
@@ -91,15 +99,21 @@ class PersonalRehearsalWidget(QWidget):
 
     def begin(self):
         try:
-            self.attempt.begin_window(self.clock())
+            started = self.attempt.request_begin(self.clock())
         except ValueError as exc:
             self.feedback.setText(f'Window not started: {exc}. Keep NEUTRAL and retry Begin.')
             return
-        self.feedback.setText('Measurement started. Now show the prompted pose for five seconds.')
+        self.feedback.setText(
+            'Measurement started. Now show the prompted pose for five seconds.' if started else
+            'Waiting for fresh capture / READY. Keep NEUTRAL until the countdown starts.'
+        )
         self.refresh()
 
     def receive_prediction(self, prediction: Prediction, received_at: float):
+        was_pending = self.attempt.begin_pending
         self.attempt.receive(prediction, received_at)
+        if was_pending and self.attempt.status == 'measuring':
+            self.feedback.setText('Measurement started. Now show the prompted pose for five seconds.')
         self.refresh()
 
     def tick(self):
@@ -123,7 +137,8 @@ class PersonalRehearsalWidget(QWidget):
             self.feedback.setText(f'Results remain in memory. Fix storage and retry: {exc}')
         else:
             self.save_error = False
-            self.feedback.setText(f'Local rehearsal results saved: {path}')
+            self.feedback.setText('Local rehearsal results saved. Full details are in Session summary.')
+            self.feedback.setToolTip(str(path))
         self.prepare_button.setEnabled(self.attempt.status == 'idle' and not self.save_error)
 
     def refresh(self):
@@ -137,27 +152,37 @@ class PersonalRehearsalWidget(QWidget):
         status_text = ('diagnostic complete' if diagnostic and attempt.completed == total
                        and attempt.result().trials[-1].outcome != 'interrupted' else attempt.status)
         scope = 'Diagnostic only | ' if diagnostic else ''
-        self.prompt.setText(f'{scope}{attempt.completed}/{total} completed | {status_text}\n{next_text}\n{attempt.reason}')
+        self.prompt.setText(f'{scope}{attempt.completed}/{total} completed | {status_text}\n{next_text}')
+        self.prompt.setToolTip(attempt.reason)
+        retry_setup = attempt.reason.startswith('Setup paused')
         remaining = attempt.remaining_window_seconds(self.clock())
         if remaining is not None:
             self.countdown.setText(
                 f'{remaining:.1f} seconds remaining — keep the prompted pose.'
                 if remaining > 0 else 'Five seconds complete — finishing the trial.'
             )
+        elif attempt.begin_pending:
+            self.countdown.setText('Waiting for fresh capture / READY — keep NEUTRAL. Timing has not started.')
+        elif 'Begin wait expired' in attempt.reason:
+            self.countdown.setText(attempt.reason)
         elif attempt.status == 'armed':
             self.countdown.setText('READY — keep NEUTRAL. Click Begin before showing the prompted pose.')
         elif attempt.status == 'preparing':
             self.countdown.setText('Timing has not started. Follow the preparation instructions above.')
         elif attempt.status == 'idle':
-            self.countdown.setText(
-                'Trial finished. Click Prepare next trial to continue.' if attempt.completed
-                else 'Click Prepare next trial to open the camera.'
-            )
+            if retry_setup:
+                self.countdown.setText(attempt.reason)
+            elif attempt.completed:
+                self.countdown.setText('Trial finished. Click Prepare next trial to continue.')
+            else:
+                self.countdown.setText('Click Prepare next trial to open the camera.')
         else:
             self.countdown.setText('Rehearsal ended. Review the result above.')
         self.prepare_button.setEnabled(attempt.status == 'idle' and not self.save_error)
-        self.begin_button.setEnabled(attempt.status == 'armed' or (
-            attempt.status == 'preparing' and prompt is not None and prompt.expected == 'NEUTRAL'))
+        self.prepare_button.setText('Retry setup' if retry_setup else 'Prepare next trial')
+        self.begin_button.setText('Waiting for capture…' if attempt.begin_pending else 'Begin five-second window')
+        self.begin_button.setEnabled(not attempt.begin_pending and (attempt.status == 'armed' or (
+            attempt.status == 'preparing' and prompt is not None and prompt.expected == 'NEUTRAL')))
         terminal = attempt.status in {'passed', 'failed', 'cancelled', 'expired'}
         self.stop_button.setEnabled(not terminal)
         should_autosave = False
@@ -172,6 +197,9 @@ class PersonalRehearsalWidget(QWidget):
             should_autosave = True
         if should_autosave:
             self.save()
+        if attempt.status != self._last_status:
+            self._last_status = attempt.status
+            self.controls_changed.emit()
         if terminal and not self._announced:
             self._announced = True
             self.result_ready.emit(attempt.result())

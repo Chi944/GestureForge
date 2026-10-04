@@ -71,7 +71,16 @@ threshold change is requested from a failing practice attempt.
    Packets captured after the five-second interval are excluded from scoring.
    The entire five seconds is observed, so rearming and emitting again records
    a duplicate rather than finishing on the first correct event. A preparation
-   action cancels and preserves its event; 30 seconds without beginning times out.
+   action cancels and preserves its event. In v3, 30 seconds without beginning
+   pauses capture and returns to idle for an explicit retry of the same prompt;
+   completed trial records remain unchanged. `setup_retries` records the prompt,
+   routing generation, setup timestamps, reason and latest diagnostics separately.
+   A setup retry is not a scored trial and cannot replace a measured miss.
+   The widget calls `request_begin(now)`: it starts immediately if eligible, or
+   queues the explicit click for at most two seconds. The next fresh current
+   packet is processed once before evaluating the unchanged capture/READY guards.
+   That setup packet earns no measurement credit. Timeout, cancellation and new
+   preparation clear queued intent. `begin_window(now)` remains the strict API.
 7. `capture_release_requested()` means release the worker and remain paused.
    It is emitted once per prepared trial on completion/interruption. On focus
    loss, camera faults or setup changes, call `capture_failed(reason)` or Stop.
@@ -120,8 +129,9 @@ coverage diagnostics retain `stale_prediction`, late-frame count and maximum age
 even after preparing another trial. One inconclusive window prevents a full pass.
 A stale packet captured after the scheduled end does not invalidate the preceding
 window. Camera faults and revision changes still retain partial evidence and
-prevent a pass. The same semantics use `gf-p12-single-pose-diagnostic-v2` for
-bounded diagnostics. Historical v1 exports remain readable without rescoring;
+prevent a pass. These measurement semantics continue in v3; its bounded
+diagnostic uses `gf-p12-single-pose-diagnostic-v3`. Historical v1/v2 exports
+remain readable without rescoring;
 `passed_for` accepts only the current full protocol and behaviour revision.
 
 ## LATCHED diagnostic and remaining human checks
