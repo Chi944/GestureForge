@@ -39,6 +39,8 @@ from .javier_widgets import (
     WorkspaceWidget,
 )
 from .enrolment_widget import EnrolmentWidget
+from .pose_repair_widget import PoseRepairWidget
+from .pose_repair import RepairCandidate
 from .profile_widget import ProfileSelectorWidget
 from .practice import READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS, NEGATIVE_CUES, PersonalRehearsal, PracticeResult
 from .practice_guidance import practice_next_steps
@@ -730,6 +732,14 @@ class Window(QMainWindow):
             self.enrolment_widget.capture_release_requested.connect(self.release_enrolment_capture)
             self.enrolment_widget.dataset_saved.connect(self.enrolment_dataset_saved)
             self.deck_tabs.addTab(self.enrolment_widget, "Enrolment")
+            self.pose_repair_widget = PoseRepairWidget(self.enrolment_root)
+            self.pose_repair_widget.setObjectName("manualViewer")
+            self.pose_repair_widget.setMinimumWidth(0)
+            self.pose_repair_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            self.pose_repair_widget.capture_requested.connect(self.start_enrolment_capture)
+            self.pose_repair_widget.capture_release_requested.connect(self.release_enrolment_capture)
+            self.pose_repair_widget.candidate_ready.connect(self.offer_pose_repair_candidate)
+            self.deck_tabs.addTab(self.pose_repair_widget, "Repair pose")
             self.practice_page = QWidget()
             self.practice_page.setObjectName("manualViewer")
             self.practice_page.setMinimumWidth(0)
@@ -2032,16 +2042,25 @@ class Window(QMainWindow):
             self._restore_readiness_routing()
         self.render_studio_status()
 
-    def _enrolment_state(self) -> str:
+    def _enrolment_widgets(self) -> tuple[EnrolmentWidget, ...]:
         if not self.studio or not hasattr(self, "enrolment_widget"):
-            return "idle"
-        session = self.enrolment_widget.session
-        return session.state if session is not None else "idle"
+            return ()
+        return (self.enrolment_widget, self.pose_repair_widget)
+
+    def _enrolment_owner(self, request_id: str) -> EnrolmentWidget | None:
+        return next((widget for widget in self._enrolment_widgets()
+                     if request_id and widget.request_id == request_id), None)
+
+    def _enrolment_state(self) -> str:
+        states = [widget.session.state for widget in self._enrolment_widgets()
+                  if widget.session is not None]
+        if "save_error" in states:
+            return "save_error"
+        return next((state for state in states if state not in ("complete", "cancelled")), "idle")
 
     def _enrolment_tab_selected(self) -> bool:
-        if not self.studio or not hasattr(self, "enrolment_widget"):
-            return False
-        return self.deck_tabs.currentWidget() is self.enrolment_widget
+        return bool(self._enrolment_widgets()
+                    and self.deck_tabs.currentWidget() in self._enrolment_widgets())
 
     def _enrolment_blocks_recognition(self) -> bool:
         if not self.studio or not hasattr(self, "enrolment_widget"):
@@ -2052,7 +2071,7 @@ class Window(QMainWindow):
         return bool(
             self.pending_enrolment_request_id
             or self.enrolment_request_id
-            or self.enrolment_widget.pending_plan is not None
+            or any(widget.pending_plan is not None for widget in self._enrolment_widgets())
             or state not in ("idle", "complete", "cancelled")
         )
 
@@ -2113,31 +2132,39 @@ class Window(QMainWindow):
 
     def _fail_enrolment_capture(self, reason: str) -> None:
         request_id = self.enrolment_request_id
-        if request_id and hasattr(self, "enrolment_widget"):
-            self.enrolment_widget.capture_failed(request_id, reason)
+        widget = self._enrolment_owner(request_id)
+        if widget is not None:
+            widget.capture_failed(request_id, reason)
         if request_id == self.enrolment_request_id:
             self._retire_enrolment_capture(request_id)
         self.detail.setText(reason)
 
     def start_enrolment_capture(self, plan, request_id: str) -> None:
+        widget = self._enrolment_owner(request_id)
         if (
             not request_id
-            or not hasattr(self, "enrolment_widget")
-            or self.enrolment_widget.request_id != request_id
-            or self.enrolment_widget.pending_plan is not plan
+            or widget is None
+            or widget.pending_plan is not plan
         ):
             return
         if (
             not self.studio or self._closing or self.model_loader is not None
             or self._profile_selector_change_blocked()
         ):
-            self.enrolment_widget.capture_failed(request_id, "Studio is busy; retry enrolment when the shell is idle.")
+            widget.capture_failed(request_id, "Studio is busy; retry enrolment when the shell is idle.")
             return
         if self._enrolment_state() == "save_error":
-            self.enrolment_widget.capture_failed(request_id, "Retry the unsaved enrolment trial before starting another capture.")
+            widget.capture_failed(request_id, "Retry the unsaved collection before starting another capture.")
+            return
+        if self.deck_tabs.currentWidget() is not widget or any(
+            other is not widget and (other.pending_plan is not None or
+                (other.session is not None and other.session.state not in ("complete", "cancelled")))
+            for other in self._enrolment_widgets()
+        ):
+            widget.capture_failed(request_id, "Finish the other collection and keep this collection tab visible.")
             return
         if not self._pause_capture_only():
-            self.enrolment_widget.capture_failed(request_id, "Save the current evaluation trace before enrolment.")
+            widget.capture_failed(request_id, "Save the current evaluation trace before enrolment.")
             return
         self.pending_enrolment_plan = plan
         self.pending_enrolment_request_id = request_id
@@ -2153,18 +2180,18 @@ class Window(QMainWindow):
         if self.worker is not None or not self.pending_enrolment_request_id or plan is None:
             return False
         request_id = self.pending_enrolment_request_id
+        widget = self._enrolment_owner(request_id)
         if (
             self._closing
-            or not hasattr(self, "enrolment_widget")
-            or self.enrolment_widget.pending_plan is not plan
-            or self.enrolment_widget.request_id != request_id
-            or self.deck_tabs.currentWidget() is not self.enrolment_widget
+            or widget is None
+            or widget.pending_plan is not plan
+            or self.deck_tabs.currentWidget() is not widget
         ):
             self.pending_enrolment_plan = None
             self.pending_enrolment_request_id = ""
             return False
         if self._profile_selector_change_blocked():
-            self.enrolment_widget.capture_failed(
+            widget.capture_failed(
                 request_id, "Studio is busy; retry enrolment when the shell is idle."
             )
             if request_id == self.pending_enrolment_request_id:
@@ -2206,11 +2233,13 @@ class Window(QMainWindow):
         self.enrolment_widget.cue.setText("Session saved. Review the manifest path below before training separately.")
 
     def _show_enrolment_retry_required(self) -> None:
-        if not self.studio or not hasattr(self, "enrolment_widget"):
+        widget = next((item for item in self._enrolment_widgets()
+                       if item.session is not None and item.session.state == "save_error"), None)
+        if widget is None:
             return
-        self.deck_tabs.setCurrentWidget(self.enrolment_widget)
-        self.enrolment_widget.feedback.setText("Retry saving the unsaved enrolment trial before leaving or changing context.")
-        self.detail.setText("Retry save in Enrolment, or keep this window open until the trial is saved.")
+        self.deck_tabs.setCurrentWidget(widget)
+        widget.feedback.setText("Retry saving the unsaved collection before leaving or changing context.")
+        self.detail.setText("Retry save in the collection tab, or keep this window open until the trial is saved.")
         self.state.setText("Enrolment save pending")
 
     def _scroll_enrolment_controls_into_view(self) -> None:
@@ -2254,27 +2283,49 @@ class Window(QMainWindow):
         self._scroll_studio_widget_into_view(target)
 
     def _stop_enrolment_for_pause(self) -> bool:
-        if not self.studio or not hasattr(self, "enrolment_widget"):
-            return True
-        state = self._enrolment_state()
-        if state == "save_error":
-            self.enrolment_widget.stop_collection()
-            if self.enrolment_request_id:
-                self._retire_enrolment_capture(self.enrolment_request_id)
-            self._show_enrolment_retry_required()
-            return False
-        if (
-            self.pending_enrolment_request_id or self.enrolment_request_id
-            or self.enrolment_widget.pending_plan is not None
-            or state not in ("idle", "complete", "cancelled")
-        ):
-            self.enrolment_widget.stop_collection()
-            if self._enrolment_state() == "save_error":
+        for widget in self._enrolment_widgets():
+            state = widget.session.state if widget.session is not None else "idle"
+            if widget.pending_plan is not None or state not in ("idle", "complete", "cancelled"):
+                widget.stop_collection()
+            if widget.session is not None and widget.session.state == "save_error":
                 if self.enrolment_request_id:
                     self._retire_enrolment_capture(self.enrolment_request_id)
                 self._show_enrolment_retry_required()
                 return False
         return True
+
+    def _sync_pose_repair_source(self) -> None:
+        widget = self.pose_repair_widget
+        if widget.pending_plan is not None or (widget.session is not None
+                and widget.session.state not in ("complete", "cancelled")):
+            return
+        try:
+            record = self.profile_store.read(self.selected_profile_id) if self.selected_profile_id else None
+            if record is not None and (
+                self.model is None or record.model_version != self.model.model_version
+                or record.profile_id != self.profile or record.selected_hand != self.chosen_hand
+                or record.vocabulary != self.vocabulary
+            ):
+                raise ValueError("Reload the saved profile before repairing it.")
+            if record != widget.source:
+                widget.set_source(record)
+        except (OSError, ValueError) as exc:
+            widget.set_source(None)
+            widget.source_notice.setText(f"Repair unavailable: {exc}")
+
+    def offer_pose_repair_candidate(self, candidate: RepairCandidate) -> None:
+        try:
+            if candidate.rollback_profile_id != self.selected_profile_id:
+                raise ValueError("Original profile is no longer selected; review the repair again.")
+            if not self.pause():
+                raise ValueError("Save the current collection or trace before reviewing the candidate.")
+            self.profile_selector.offer_repair_candidate(candidate)
+        except (OSError, ValueError) as exc:
+            self.pose_repair_widget.feedback.setText(f"Candidate retained locally; review not opened: {exc}")
+            self.pose_repair_widget.candidate_button.setEnabled(True)
+            return
+        self.deck_tabs.setCurrentWidget(self.profile_selector)
+        self.notice.setText("Repair candidate ready for review. Confirm permission and Create to train/load; original profile retained.")
 
     def on_studio_tab_changed(self, _index: int) -> None:
         self.render_card()
@@ -2286,6 +2337,8 @@ class Window(QMainWindow):
                 if not self.pause():
                     self.detail.setText("Enrolment not opened: save the current trace or collection first.")
                     return
+            if self.deck_tabs.currentWidget() is self.pose_repair_widget:
+                self._sync_pose_repair_source()
             self.prediction.setText("Enrolment mode: camera observations only")
             self.detail.setText(
                 "Request collection, wait for camera preview, then Begin trial. "
@@ -3396,6 +3449,8 @@ class Window(QMainWindow):
                 )
         selector.refresh()
         selector._controls()
+        if hasattr(self, "pose_repair_widget"):
+            self._sync_pose_repair_source()
 
     def rename_studio_profile(self, record) -> None:
         if self.selected_profile_id != record.profile_id:
@@ -4038,8 +4093,9 @@ class Window(QMainWindow):
             return
         now = time.monotonic()
         request_id = self.enrolment_request_id
+        widget = self._enrolment_owner(request_id)
         packet = worker.take_latest()
-        if packet is not None and request_id:
+        if packet is not None and request_id and widget is not None:
             frame, observation = packet
             if not isinstance(observation, Observation):
                 self._fail_enrolment_capture("Camera returned an invalid enrolment observation.")
@@ -4053,14 +4109,14 @@ class Window(QMainWindow):
                 self.last_result_at = now
                 self.enrolment_received_first_frame = True
                 if not self.enrolment_capture_attached:
-                    if not self.enrolment_widget.attach_capture(
+                    if not widget.attach_capture(
                         request_id, self.enrolment_capture_session, self.enrolment_capture_profile,
                     ):
                         self._retire_enrolment_capture(request_id)
                         return
                     self.enrolment_capture_attached = True
                     self._scroll_enrolment_controls_into_view()
-                self.enrolment_widget.receive_observation(observation)
+                widget.receive_observation(observation)
         if request_id and not worker.isInterruptionRequested():
             elapsed = now - (self.last_result_at if self.enrolment_received_first_frame else self.enrolment_capture_started_at)
             limit = 2 if self.enrolment_received_first_frame else 20
@@ -4072,10 +4128,10 @@ class Window(QMainWindow):
             worker.wait()
             self.worker = None
             if request_id == self.enrolment_request_id:
-                if error:
-                    self.enrolment_widget.capture_failed(request_id, error)
-                elif not worker.isInterruptionRequested():
-                    self.enrolment_widget.capture_failed(request_id, "Camera stopped")
+                if error and widget is not None:
+                    widget.capture_failed(request_id, error)
+                elif not worker.isInterruptionRequested() and widget is not None:
+                    widget.capture_failed(request_id, "Camera stopped")
                 self._clear_enrolment_capture()
             self.preview.clear()
             self.preview.setText("Camera off\n\nStart explicitly to reconnect")
@@ -4115,7 +4171,7 @@ class Window(QMainWindow):
             self.quick_actions_widget.close()
         if self.studio and hasattr(self, "profile_selector"):
             self.profile_selector.close()
-        if self.studio and hasattr(self, "enrolment_widget"):
-            self.enrolment_widget.close()
+        for widget in self._enrolment_widgets():
+            widget.close()
         self.timer.stop()
         event.accept()

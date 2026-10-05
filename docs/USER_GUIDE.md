@@ -166,7 +166,7 @@ control. Windows launch requests remain distinct from visible application
 readiness and human task completion; macOS external launches remain unsupported.
 Manual LIVE controls still need no profile or Practice pass. Standard starter
 gestures remain unavailable. This software gate does not establish new participant
-results, GF-P12 acceptance or native-device acceptance.
+results, repair need, candidate quality or native-device acceptance.
 
 ### Studio stays LATCHED with an open palm
 
@@ -203,6 +203,20 @@ Replace the example path with your saved trace. This writes a separate diagnosti
 **Stop collection**, Pause, Esc, leaving the tab or losing application focus stops collection and releases capture. Interrupted holds retain collected slots and mark remaining slots invalid. No gesture commands execute during collection; the selected model and mappings are retained. Returning to the tab does not resume recording.
 
 If saving fails, keep the application open, restore access to the output folder and click **Retry save**. The pending trial stays in memory and closing/replacing the active setup is blocked until it can be saved. Successful earlier trials remain on disk; crash/power-loss recovery of the unsaved trial is not available. No images or video are saved, and numeric data remains excluded from GitHub. This in-app path has software lifecycle tests; a real recording walkthrough still needs acceptance.
+
+### Repair One Pose
+
+Use **Repair pose** only after a diagnostic or reviewed trace points to one weak label in your own saved profile. Load that saved profile first in **Profiles**. Guest/manual mode, ad-hoc manifests and unsaved datasets are disabled for repair; save an ad-hoc TRAIN manifest as a profile before repairing it.
+
+1. Open **Repair pose**, confirm the source profile, choose the label to repair and enter the diagnostic reason, collection conditions and 2-12 trials.
+2. Select the numeric collection consent checkbox, then request collection. Studio pauses routing and uses the shared observation-only camera path; no gesture actions dispatch during repair.
+3. Capture only the prompted label. Invalid or missing slots stay recorded as evidence, but an incomplete repair cannot create a candidate.
+4. Review valid-slot and retained-class counts, then click **Save separate TRAIN candidate**. The candidate replaces the chosen label's TRAIN records only, preserves the other TRAIN classes, excludes VALIDATION, TEST and UNKNOWN rows from fitting, and verifies original dataset and reviewed collection hashes. If saving fails, leave the app open and retry; SaveError handling retains the original profile and collected evidence.
+5. When the candidate opens in **Profiles**, review it there. Only explicit permission plus **Create and load personal profile** trains and loads the new profile. The app stays paused in Preview, expires readiness and requires a fresh NEUTRAL hold before any later control.
+6. To roll back, load the original saved profile from **Profiles**. Rollback also stays paused and does not restore an old LIVE grant.
+
+Repair is targeted collection, not a full rehearsal pass. Do not repeat a full dataset or change thresholds until the diagnostic evidence says repair is needed.
+
 
 ### Assignment environment
 

@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
 
 from .profiles import LoadedProfile, ProfileSettings, ProfileStore
 from . import starter
+from .pose_repair import RepairCandidate
+from .dataset import file_sha256
 
 if TYPE_CHECKING:
     from .app import ModelLoadWorker, Window
@@ -41,6 +43,7 @@ class ProfileSelectorWidget(QWidget):
         self._host_load_id: str | None = None
         self._host_loader: ModelLoadWorker | None = None
         self.loaded: LoadedProfile | None = None
+        self._repair_candidate: RepairCandidate | None = None
         self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='profile-loader')
         self._future: Future[LoadedProfile] | None = None
         self._discard = False
@@ -91,7 +94,7 @@ class ProfileSelectorWidget(QWidget):
         self.algorithm.addItems(['knn', 'svm'])
         form.addRow('&Classifier', self.algorithm)
         self.consent = QCheckBox('Dataset permission confirmed')
-        self.manifest.textChanged.connect(lambda: self.consent.setChecked(False))
+        self.manifest.textChanged.connect(self._manifest_changed)
         form.addRow(self.consent)
         form.addRow(self._label('Confirm you have permission to use this dataset internally. '
                                 'Numeric data stays on this computer.'))
@@ -222,6 +225,30 @@ class ProfileSelectorWidget(QWidget):
         if path:
             self.manifest.setText(path)
 
+    def _manifest_changed(self):
+        self.consent.setChecked(False)
+        self._repair_candidate = None
+        self.algorithm.setEnabled(True)
+        self.hand.setEnabled(True)
+
+    def offer_repair_candidate(self, candidate: RepairCandidate):
+        """Populate review fields only. Training/loading requires the Create click."""
+        if self.busy or self._closed:
+            raise ValueError('Finish the current profile operation before reviewing a repair')
+        if file_sha256(candidate.manifest) != candidate.manifest_sha256:
+            raise ValueError('Candidate data changed before review')
+        self.manifest.setText(str(candidate.manifest))
+        self._repair_candidate = candidate
+        self.name.setText('Repaired ' + candidate.label)
+        self.hand.setCurrentText(candidate.hand)
+        self.algorithm.setCurrentText(candidate.settings.algorithm)
+        self.algorithm.setEnabled(False)
+        self.hand.setEnabled(False)
+        self.status.setText(f'Review separate TRAIN candidate: {candidate.valid_per_label}. '
+                            f'Settings retained: {candidate.settings}. '
+                            f'Rollback profile: {candidate.rollback_profile_id}. '
+                            'Confirm permission and click Create to train/load explicitly.')
+
     def _submit(self, operation: Callable[[], LoadedProfile]):
         self._discard = False
         self._future = self._executor.submit(operation)
@@ -241,8 +268,17 @@ class ProfileSelectorWidget(QWidget):
         if not self._prepare():
             return
         hand = self.hand.currentText()
-        settings = ProfileSettings('svm' if self.algorithm.currentText() == 'svm' else 'knn')
-        self._submit(lambda: self.store.create(name, path, hand, consent=True, settings=settings))
+        candidate = self._repair_candidate
+        settings = (candidate.settings if candidate else
+                    ProfileSettings('svm' if self.algorithm.currentText() == 'svm' else 'knn'))
+        names = dict(candidate.gesture_names) if candidate else None
+
+        def create():
+            if candidate and file_sha256(candidate.manifest) != candidate.manifest_sha256:
+                raise ValueError('Candidate changed after review; review it again')
+            return self.store.create(name, path, hand, consent=True, settings=settings, gesture_names=names)
+
+        self._submit(create)
 
     def load_selected(self):
         profile_id = self.selected_id()

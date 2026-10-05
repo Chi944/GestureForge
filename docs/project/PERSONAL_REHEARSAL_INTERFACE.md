@@ -1,10 +1,11 @@
 # GF-P12 personal rehearsal: component and Studio interface
 
 Owner: Hau Jie. Host integration/reviewer: Deston. Updated 5 October 2026.
-Status: the measurement component and current-session personal LIVE gate are
-implemented and attached. A real qualifying saved attempt is still required for
-each session's eligibility. Selected-pose repair remains undelivered; see the
-handoff below. Software verification does not establish a new human pass.
+Status: the measurement component, current-session personal LIVE gate and Repair
+pose host flow are implemented in the integration branch. A real qualifying saved
+attempt is still required for each session's eligibility. Repair creates only a
+reviewed TRAIN candidate from a diagnosed selected label; software verification
+does not establish a new human pass.
 
 ## Implemented measurement protocol
 
@@ -180,13 +181,14 @@ the synchronized checkout and recording the live reproduction remain pending.
 
 ## Selected pose repair handoff on 5 October
 
-The targeted repair component is not yet delivered. Hau Jie owns selected-label collection, a new TRAIN candidate manifest and review UI; Deston owns shared-camera attachment and final installation. The current `EnrolmentPlan` schedules all four labels, so routing a repair request through it unchanged does not implement selected-pose repair.
+Repair now lives in Studio as **Repair pose** via `Window.pose_repair_widget`. It uses the same observation-only capture path as Enrolment, suspends routing during collection and inherits the save-error lifecycle that preserves pending evidence until retry. It does not create a camera, classifier, dispatcher or profile loader.
 
-Reuse the existing host boundaries instead of creating another camera or model loader:
+Operator flow:
 
-- `start_enrolment_capture` and `poll_enrolment_capture` already feed observations and protect request generations. Their guards refer to the existing enrolment widget; the delivered component must state where its repair UI lives before Deston adapts those guards.
-- Existing enrolment release/save callbacks preserve interrupted work and block close or replacement after a failed save. A repair must preserve these rules and never dispatch actions while collecting.
-- Review the new manifest explicitly, then reuse `ProfileStore.create` through the consented profile Create flow. Create a separate candidate; do not replace the original profile or dataset.
-- `use_studio_profile` and `use_studio_model` already install paused and clear readiness. Reload the unchanged original profile through `ProfileStore.load` for rollback; rollback must also require fresh readiness.
+- Start from the installed saved personal profile. Guest/manual mode and ad-hoc manifests are disabled; save an ad-hoc TRAIN manifest as a profile before repair.
+- After diagnostic review, choose exactly one vocabulary label, including NEUTRAL if that is the diagnosed label, and collect 2-12 TRAIN trials for that label only.
+- Save a separate candidate only after reviewing valid-slot and retained-class counts. The candidate replaces the selected label's TRAIN rows, preserves the other TRAIN classes and original-dataset/reviewed-collection hash checks, and excludes VALIDATION, TEST and UNKNOWN rows from fitting.
+- `candidate_ready` opens the Profiles review path. Only explicit permission plus **Create and load personal profile** trains and installs the candidate with the existing `ProfileStore.create` and `use_studio_profile` lifecycle. The app returns paused in Preview with readiness expired.
+- Rollback uses the original saved profile through **Load selected**. A failed candidate create/load or rollback load retains the current selection and old profile.
 
-The focused PR must show: chosen positive label only; unaffected classes and original file hashes preserved; coherent sample indices and trial IDs; UNKNOWN/held-out TEST excluded from fitting; invalid/cancelled trials retained without automatic activation; failed-save retry without duplicate writes; failed create/load retaining the old selection; candidate and rollback both paused with expired grants; stale-packet/focus/camera-release protection; zero dispatch during repair. Include a short generated-data walkthrough and identify it as software evidence. Do not silently convert validation or TEST rows into TRAIN, or relax the full personal Practice gate.
+This is own-profile targeted repair only after diagnostic need. It does not relax the full Practice gate, grant LIVE eligibility, or justify blanket recollection. Keep original-dataset/reviewed-collection hash checks, operator permission, original task ownership and branch rules with the repair evidence.

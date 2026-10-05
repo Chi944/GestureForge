@@ -472,5 +472,108 @@
       "PR24 supplies attributed partial laptop-A observations on its documented source revisions; it does not close GF-P19.",
       "Original accepted weights and completion percentages are unchanged. Hosted Actions remain manual-only."
     ]
+  },
+  "selected_pose_repair_integration_verification": {
+    "timestamp_utc": "2026-10-05T09:00:23.524381+00:00",
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "versions": {
+      "numpy": "2.4.6",
+      "scikit-learn": "1.9.1",
+      "mediapipe": "1.0.1",
+      "PySide6": "6.11.2",
+      "opencv-contrib-python": "5.0.0.93"
+    },
+    "checks": [
+      {
+        "command": "python -m ruff check gestureforge tests scripts",
+        "returncode": 0,
+        "seconds": 0.241,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 0,
+        "seconds": 0.943,
+        "stdout": "Success: no issues found in 95 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m pytest -q",
+        "returncode": 0,
+        "seconds": 352.375,
+        "stdout": "........................................................................ [  8%]\n........................................................................ [ 16%]\n........................................................................ [ 25%]\n........................................................................ [ 33%]\n........................................................................ [ 41%]\n........................................................................ [ 50%]\n.s...................................................................... [ 58%]\n........................................................................ [ 66%]\n........................................................................ [ 75%]\n........................................................................ [ 83%]\n........................................................................ [ 91%]\n.......................................................................  [100%]\n862 passed, 1 skipped in 300.38s (0:05:00)\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --smoke-test",
+        "returncode": 0,
+        "seconds": 3.851,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --studio --smoke-test",
+        "returncode": 0,
+        "seconds": 3.857,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output .local\\repair-integration-synthetic.json",
+        "returncode": 0,
+        "seconds": 2.144,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "limitations": [
+      "Synthetic evaluation is software evidence only.",
+      "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."
+    ],
+    "base_commit": "19fec08f1e761f613f65bd6eff2d8af55b000a0a",
+    "integrated_pr": "https://github.com/Chi944/GestureForge_304/pull/25",
+    "integrated_pr_head": "0ddc757a6bf12ecaab9b1a6e0b6d70d52263ca59",
+    "scope": "Shared-camera selected-pose TRAIN repair; explicit profile creation and rollback; no native or participant acceptance.",
+    "code_review": "Independent adversarial review: no remaining findings after binding candidate input to the reviewed collection hashes.",
+    "source_sha256": {
+      "gestureforge/app.py": "455c116cbaee4165f8a671922bcc84b9c94191d29fe718bee7e22c147ee96d63",
+      "gestureforge/enrolment.py": "919c92965f2ae235b0bc0df1b960bb0d24870e7d661089d0df9320d204863e5a",
+      "gestureforge/enrolment_widget.py": "999e14674c0a121b5768f22b001020248dd93f547089619590e80620f3898f50",
+      "gestureforge/pose_repair.py": "f27ac9d6197a315ee42b09103207bb363c50957ed1cde5c46e82681959ac30b7",
+      "gestureforge/pose_repair_widget.py": "030449127be331d75a10277135744e7e5e519c5ea1be92d29cddcf90075d3b4e",
+      "gestureforge/profile_widget.py": "08a5b23b4109043f902a8215e582dd3af362fca1f57ebbe329ec4a3498475cc3",
+      "tests/test_pose_repair.py": "5f464f6530f9098050bd38f0d02d9311b92d250e634d841abfac2941f25d087b",
+      "tests/test_app_pose_repair.py": "726d5c7f6eed525eb133057c62d282b519a33992a0092c1830d75c4775820a0d",
+      "scripts/demo_pose_repair.py": "7c8a250b2707a66db39d397205e5046e3b9e66830729c720578611ad421f5856"
+    },
+    "generated_ui_workflow": {
+      "scope": "Generated software/UI workflow only; no human accuracy or native camera test",
+      "collection_records": 10,
+      "collected_label": "NEUTRAL",
+      "profiles_preserved": 2,
+      "candidate_created_only_after_explicit_click": true,
+      "rollback_original_unchanged": true,
+      "camera_workers_all_observation_only": true,
+      "recorded_action_outcomes": 0,
+      "readiness_granted": false,
+      "screenshots": {
+        "01-repair-form.png": "e1272646b652d2fa9d1d2f64e51d161936ff5c58a010e4320264c1103c21f5fb",
+        "02-collected-count-review.png": "7f2ab01880a0e44f8826178645f1db145334051642a333cca947a99cf3381315",
+        "03-candidate-profile-review.png": "efc590b25c7ce9bc5a803253f3ea784f5b088dd8153170f59de8c64fdb77bd78",
+        "04-new-profile-paused.png": "39cf3dff868c510aeedc946966436072fe5eb1968476ad618fe71a56762c4c90",
+        "05-original-profile-restored.png": "def7171aa862bf3045a903640163ed60c0f76872e327ad8bbba00e9c37a722a3"
+      },
+      "visual_review": "Five offscreen 1400x1000 renders inspected with Segoe UI: repair form, count review, candidate review, loaded candidate and restored original. Form content scrolls; fixed capture/status controls remain visible. No native camera used.",
+      "local_reference": ".local/pr-review/pr17-19095b3/.local/repair-integration-20261005/"
+    },
+    "acceptance": {
+      "task": "GF-P12",
+      "status": "Done",
+      "original_weight": 8,
+      "basis": "Original implementation criterion at 223c8c3: rehearsal and targeted recollection using the real controller/recording dispatcher and settings-bound readiness. PR21 plus integrated PR25 and reviewed software verification satisfy this criterion.",
+      "limits": "Physical repair, own-profile Practice outcomes, native integration and independent participant evaluation remain separately tracked; no new measured recognition result or LIVE grant claimed."
+    }
   }
 }
