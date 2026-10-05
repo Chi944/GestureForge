@@ -9,6 +9,8 @@ This preserves the original diagnostic and experiment proposal. PR #19 now
 supplies the [bounded comparison](GF_P11_BOUNDED_COMPARISON.md), reporting no
 qualifying candidate. Integration review repaired reproducibility and evidence
 consistency; the private measurements are unchanged and have not been rerun here.
+The [5 October decision](#5-october-2026-decision-and-next-investigation) below
+supersedes the historical next-delivery wording without changing those results.
 
 ## What the baseline already establishes
 
@@ -116,6 +118,117 @@ The profile selector is a separate component in this delivery. Shared-camera
 enrolment is now integrated on main and awaits a human walkthrough. No starter
 release, LIVE readiness or public-data permission is claimed. The diagnostic
 code and documentation are submitted for review without participant inputs or outputs.
+
+## 5 October 2026 decision and next investigation
+
+**Keep the starter blocked; review saved failures with Hau Jie before changing
+training, thresholds or features.** GF-P07 is now accepted in
+[PROGRESS.md](PROGRESS.md); its walkthrough is no longer the next starter task.
+GF-P12's selected-pose repair and GF-P10's starter integration are separate work.
+Completed feasibility/comparison work does not establish a qualifying starter.
+
+The [bounded comparison](GF_P11_BOUNDED_COMPARISON.md) exhausted the frozen
+48-candidate grid with zero qualifiers in every outer fold. Even the best
+worst-person inner macro-F1 was only 0.4542, 0.3535 and 0.4724, with respectively
+19, 9 and 36 valid UNKNOWN action accepts across the two inner people. The only
+two zero-action-acceptance candidates, in P02's development pair, scored
+0.2961/0.0294. Both inner people preferred different settings in all three folds.
+Thus this grid did not preserve genuine recognition while rejecting unfamiliar
+poses; choosing its least-bad row or repeating it cannot satisfy the fixed rule.
+This establishes failure of the tested grid, not the physical cause or failure
+of every possible method.
+
+The baseline gives different failure patterns: P01/P03 accept unfamiliar poses
+as actions while P02 rejects 38/64 genuine trials. Tightening a global cutoff
+cannot be assumed to repair both. Rejection is already class-conditional, and
+both classifiers share the same scaled 60-feature distances. The existing
+wrist translation and scale normalization do not explicitly align hand
+orientation; orientation is a hypothesis only, not a diagnosed collection
+defect. The original [project plan](PROJECT_PLAN.md#8-evaluation-that-adds-technical-depth)
+keeps starter macro-F1 at least 0.85 per held-out person, first action within two
+minutes, and a frozen candidate tested on at least two new consenting people.
+No target or feature policy changes in this decision.
+
+### D1: preregistered saved-failure audit (not yet executed)
+
+**Owner:** Hau Jie, for the private evidence and case review. **Reviewer:** Deston,
+for protocol compliance and the next-method decision. Freeze this D1 procedure
+before opening the private cases; retain the source commit, report SHA-256 and
+review date with the private findings. This is one descriptive investigation,
+with no fitting, parameter sweep, new dependency or candidate promotion.
+
+1. Obtain the regenerated six-fold baseline and its saved diagnostic referenced
+   by the bounded comparison, plus the original input-hash record and internal-use
+   permission confirmation. Reuse the diagnostic only when its
+   `source_report_sha256` matches that baseline. Otherwise run the existing reader
+   once to a new ignored output. Do not feed it the comparison JSON or patch the
+   older incompatible baseline to make it pass. Missing records, schema refusal,
+   a hash mismatch or inconsistent votes stop D1 for evidence repair, not retraining.
+2. Reconcile all six folds, each with 320 positive and 40 negative scheduled
+   slots, against the published counts. Tabulate each person's/model's NEUTRAL
+   trial confusion, positive sample outcomes/rejection reasons and valid UNKNOWN
+   rejection/NEUTRAL/action counts. Retain invalid detections separately. Use the
+   existing distance/threshold summaries descriptively; their ratios are neither
+   calibrated confidence nor evidence of a physical cause.
+3. Review the following fixed cases from the saved baseline's trial/sample rows.
+   Within each listed person/model, choose the lexicographically first trial ID
+   meeting the condition, inspect all five slots and record raw/scored labels,
+   acceptance, reason and available distance/threshold. Record an absent condition
+   explicitly; do not substitute a more persuasive example. This is at most ten
+   model/trial cases, not a sample for estimating a new performance rate.
+
+   | Case condition | Person/model |
+   |---|---|
+   | NEUTRAL trial scored PREVIOUS | P01, kNN and SVM |
+   | Genuine positive trial scored UNKNOWN | P02, kNN and SVM |
+   | NEUTRAL trial scored NEXT | P03, kNN |
+   | UNKNOWN trial containing an accepted action sample | P01 and P03, kNN and SVM |
+   | UNKNOWN trial with no valid features | P03, kNN (same detection input under SVM) |
+
+4. Hau Jie checks any available contemporaneous collection notes for these exact
+   IDs: intended pose, hand, session and recorded conditions. Missing pose or
+   camera evidence is reported as unknown. A collection-defect finding requires
+   an explicit contradiction with the collection protocol in those records;
+   confusion, a large distance or an invalid slot alone is insufficient. Record
+   the evidence and affected IDs before proposing any targeted repair. Preserve
+   the original data and results; do not silently relabel, remove or replace trials.
+5. **Decision/stop rule:** D1 is complete only when all six fold summaries reconcile
+   and every selected case has an evidence-backed finding or an explicit unknown.
+   For each person/model, record separate totals for valid positive classifier
+   rejections and accepted wrong positives; investigate its larger category first
+   (ties retain both), without treating that as a cause. If a collection defect is
+   evidenced, propose only its bounded repair. Otherwise record the unresolved
+   recognition/rejection problem and one testable method hypothesis for a new
+   versioned protocol; do not launch another grid from D1. Stop after that reviewed
+   decision, even if no cause can be established. Starter approval remains empty.
+
+From the repository root after normal setup, substitute Hau Jie's actual private
+baseline path; the placeholder below is not an assertion that a report exists:
+
+```powershell
+$env:PYTHONPATH = (Get-Location).Path
+.\.venv\Scripts\python.exe -m gestureforge.starter_diagnose `
+  --report "<private-regenerated-baseline.json>" `
+  --output "experiments/local/starter-diagnosis-2026-10-05-v1.json"
+```
+
+If that output already exists, validate/reuse its source hash or choose a new
+filename; never overwrite evidence. Keep reports, case IDs, notes and hashes
+private. Publish only a permission-checked aggregate decision. No matching
+starter/diagnosis report filename was found under the primary checkout's
+`experiments/local` during this filename-only review; no private report content
+was opened. Hau Jie's actual report location and matching evidence are therefore
+the execution input still needed, not a reason to regenerate training here.
+
+D1 cannot create an independent test: P01/P02/P03 already informed development.
+Any later method comparison must keep complete trials and people separated,
+fit scaling/calibration only on fitting people, and select inside each outer
+fold's development people. UNKNOWN never becomes a fitted positive class;
+invalid slots remain in five-slot votes, and UNKNOWN-as-NEUTRAL is not a rejection.
+Keep the existing per-inner-person 0.85/zero-valid-UNKNOWN-action screen. Freeze
+before new independent participants; obtain separate redistribution permission
+and controller/readiness/first-use evidence before release. This update runs no
+private experiment and claims no model improvement or LIVE readiness.
 
 ## Local verification
 

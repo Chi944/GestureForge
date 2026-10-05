@@ -1,10 +1,10 @@
 # GF-P12 personal rehearsal: component and Studio interface
 
-Owner: Hau Jie. Host integration/reviewer: Deston. 3 October 2026.
-Status: component implemented and attached to the Studio host for software review.
-It still requires current-version human measured acceptance before any LIVE gate.
-Hau Jie's component delivery is attached by Deston's `app.py` integration. The
-controller policy and LIVE readiness gate remain unchanged.
+Owner: Hau Jie. Host integration/reviewer: Deston. Updated 5 October 2026.
+Status: the measurement component and current-session personal LIVE gate are
+implemented and attached. A real qualifying saved attempt is still required for
+each session's eligibility. Selected-pose repair remains undelivered; see the
+handoff below. Software verification does not establish a new human pass.
 
 ## Implemented measurement protocol
 
@@ -21,12 +21,13 @@ exactly one intended simulated action; wrong or repeated actions fail that trial
 NEUTRAL trials require accepted controller READY inside the window and no action.
 Negative intervals require no action and full prediction-stream coverage.
 
-Proposed conservative pass: all 50 windows completed, at least 9/10 correct for
+Current pass rule: all 50 windows completed, at least 9/10 correct for
 each of the four poses, all ten negative windows covered with zero actions,
 no wrong/repeated action trial and no incomplete capture window. One missed
 trial per pose can be tolerated; wrong actions are not tolerated. These extra
 conditions prevent a nine-correct/one-wrong classifier from being certified.
-They require Deston's agreement before any LIVE gate uses this result.
+The host also requires successful saving, exact event reconciliation and paused
+context restoration before granting personal LIVE eligibility.
 
 Negative cues cover absent hands, unfamiliar poses, open-palm movement and
 transitions without sustained enrolled action poses. The host/operator must
@@ -176,3 +177,16 @@ revision expiry, cancellation, save retry, widget handoff, and trace reconstruct
 These are generated-prediction software tests. The user supplied warning logs
 ending at the older temporary-mirror prompt, without a fatal error. Restarting
 the synchronized checkout and recording the live reproduction remain pending.
+
+## Selected pose repair handoff on 5 October
+
+The targeted repair component is not yet delivered. Hau Jie owns selected-label collection, a new TRAIN candidate manifest and review UI; Deston owns shared-camera attachment and final installation. The current `EnrolmentPlan` schedules all four labels, so routing a repair request through it unchanged does not implement selected-pose repair.
+
+Reuse the existing host boundaries instead of creating another camera or model loader:
+
+- `start_enrolment_capture` and `poll_enrolment_capture` already feed observations and protect request generations. Their guards refer to the existing enrolment widget; the delivered component must state where its repair UI lives before Deston adapts those guards.
+- Existing enrolment release/save callbacks preserve interrupted work and block close or replacement after a failed save. A repair must preserve these rules and never dispatch actions while collecting.
+- Review the new manifest explicitly, then reuse `ProfileStore.create` through the consented profile Create flow. Create a separate candidate; do not replace the original profile or dataset.
+- `use_studio_profile` and `use_studio_model` already install paused and clear readiness. Reload the unchanged original profile through `ProfileStore.load` for rollback; rollback must also require fresh readiness.
+
+The focused PR must show: chosen positive label only; unaffected classes and original file hashes preserved; coherent sample indices and trial IDs; UNKNOWN/held-out TEST excluded from fitting; invalid/cancelled trials retained without automatic activation; failed-save retry without duplicate writes; failed create/load retaining the old selection; candidate and rollback both paused with expired grants; stale-packet/focus/camera-release protection; zero dispatch during repair. Include a short generated-data walkthrough and identify it as software evidence. Do not silently convert validation or TEST rows into TRAIN, or relax the full personal Practice gate.

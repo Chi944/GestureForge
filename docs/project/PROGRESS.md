@@ -2,6 +2,12 @@
 
 Snapshot: 5 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
 
+## Current work on 5 October
+
+Hau Jie's Windows laptop is assigned as laptop B, with Hau Jie operating it and Javier coordinating/consolidating GF-P19 evidence. Deston retains GF-P23 acceptance. No second-device result is inferred from this assignment. The fetched Hau Jie branch `1b4d87a` is already contained in `117eed8`; no selected-pose repair delivery or open PR exists at this checkpoint. The existing capture/profile integration boundaries and acceptance cases are documented in `PERSONAL_REHEARSAL_INTERFACE.md` for his next PR.
+
+GF-P26 now has local Word report and subsystem evidence matrix drafts plus a twelve-slide presentation with ten-minute speaker notes under ignored `.local/project-deliverables/`. These are development review drafts, not final results or release acceptance. Assignment documents and prompt/decision logs are unchanged. The starter investigation continues with a saved-report diagnostic gate in `STARTER_FAILURE_ANALYSIS.md`; no new fit, threshold change or qualifying model is claimed. Accepted weights remain unchanged.
+
 ## Completion measure
 
 Progress = the original estimated hours of fully completed tasks / the total original estimated hours in [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv). These are task weights, not hours actually worked. In-progress tasks receive no completion credit until their acceptance evidence is complete.

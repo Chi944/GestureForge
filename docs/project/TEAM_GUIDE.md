@@ -7,6 +7,8 @@ Deston has authorised project implementation. Build the approved Windows corpora
 
 **5 October integration update:** GF-P10's approved-standard loader and six-action activation route are implemented with generated-fixture verification. No standard model is enabled: the recorded bounded comparison found no qualifying candidate and redistribution permission is unresolved. Personal LIVE still requires full Practice. PR #24 is merged as partial laptop-A evidence; Javier continues the missing native cases. Hau Jie continues targeted GF-P12 repair. Deston keeps integration and final acceptance. See current PROGRESS.md; accepted completion remains 48.0%.
 
+**Device assignment, 5 October:** laptop A is Javier's Windows laptop and laptop B is Hau Jie's Windows laptop. Hau Jie operates laptop B; Javier coordinates and consolidates GF-P19 evidence; Deston reviews GF-P23 and final integration. Both use the same identified Studio build. No laptop-B test is yet recorded. Original task ownership and weights remain unchanged.
+
 ## Start here
 
 Read this guide, your individual brief, `CONTRACTS.md`, then `PROJECT_PLAN.md`, `TEAM_BACKLOG.csv` and `PROGRESS.md` in this directory. The full plan is revision 4: contextual AI assistance is removed. There is no chatbot, LLM, provider account or API-key feature. kNN/SVM gesture recognition is the AI subsystem.
@@ -17,9 +19,9 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 
 | Member | Owns | Current next step | Reviewer |
 |---|---|---|---|
-| Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | Complete the unavailable-by-default approved-starter adapter and standard Guest six-action activation path; retain qualifying-artifact gate; review delegated native evidence | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | Existing data/profile compatibility, short software-defect reproductions, then GF-P12 selected-pose repair and actual own-profile Practice evidence; return the outputs in [your brief](HAU_JIE_HANDOFF.md#start-with-these-tasks) | Deston |
-| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | Camera-free Harbor, GF-P19 native Windows recovery on both laptops, then GF-P23 installation/offline/stability and personal LIVE only after an own-profile full Practice pass; return the outputs in [your brief](JAVIER_HANDOFF.md#start-with-these-tasks) | Deston |
+| Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | Approved-starter adapter and activation path complete; review GF-P12 repair when delivered, starter diagnosis and delegated native evidence; prepare local report and presentation | Teammate review; Deston makes final release decision |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | GF-P12 selected-pose repair, saved-report starter diagnosis and laptop-B execution with Javier; actual own-profile Practice evidence; return the outputs in [your brief](HAU_JIE_HANDOFF.md#start-with-these-tasks) | Deston |
+| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | Coordinate GF-P19 on laptop A and Hau Jie-operated laptop B, consolidate evidence, then delegated GF-P23 installation/offline/stability and personal LIVE only after an own-profile full Practice pass; return the outputs in [your brief](JAVIER_HANDOFF.md#start-with-these-tasks) | Deston |
 
 Manual execution is delegated to Hau Jie and Javier in the priorities above;
 each follows their own brief after syncing the reviewed software checkpoint.
