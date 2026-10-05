@@ -112,6 +112,16 @@ class EnrolmentWidget(QWidget):
         except ValueError as exc:
             self.feedback.setText(str(exc))
             return
+        self.request_plan(plan)
+
+    def request_plan(self, plan: EnrolmentPlan):
+        """Submit a validated plan through the same shared-capture handshake."""
+        if not self.consent.isChecked():
+            self.feedback.setText('Confirm consent before requesting collection.')
+            return
+        if self.pending_plan is not None or (self.session is not None and
+                self.session.state not in ('complete', 'cancelled')):
+            return
         self.pending_plan = plan
         self.session = None
         self.request_id = uuid4().hex

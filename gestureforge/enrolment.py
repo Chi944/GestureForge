@@ -28,6 +28,7 @@ class EnrolmentPlan:
     split: str = 'train'
     trials: int = 12
     setup: str = ''
+    collection_labels: tuple[str, ...] | None = None
 
     def __post_init__(self):
         validate_identifier(self.participant)
@@ -46,6 +47,15 @@ class EnrolmentPlan:
         for _, instruction in self.instructions:
             text(instruction, 200)
         text(self.setup, 500)
+        if self.collection_labels is not None and (
+                self.split != 'train' or not isinstance(self.collection_labels, tuple)
+                or len(self.collection_labels) != 1
+                or self.collection_labels[0] not in self.vocabulary.labels):
+            raise ValueError('Targeted repair collects one positive TRAIN label')
+
+    @property
+    def labels(self) -> tuple[str, ...]:
+        return self.collection_labels or self.vocabulary.labels
 
 
 class EnrolmentSession:
@@ -86,11 +96,11 @@ class EnrolmentSession:
 
     @property
     def total(self):
-        return 4 * self.plan.trials
+        return len(self.plan.labels) * self.plan.trials
 
     @property
     def label(self):
-        return self.plan.vocabulary.labels[min(self.completed // self.plan.trials, 3)]
+        return self.plan.labels[min(self.completed // self.plan.trials, len(self.plan.labels) - 1)]
 
     @property
     def trial_id(self):
@@ -168,6 +178,9 @@ class EnrolmentSession:
             'raw_video_recorded': False, 'sampling_offsets_seconds': list(OFFSETS),
             'trial_start_times': self.starts,
             'pose_instructions': dict(self.plan.instructions),
+            'collection_labels': list(self.plan.labels),
+            'planned_trials': self.total,
+            'collection_complete': self.after_save != 'cancelled' and self.completed + 1 == self.total,
             'sessions': [{'session_id': self.session_id, 'split': self.plan.split,
                           'collected_at': self.created_at, 'setup': self.plan.setup,
                           'consent_confirmed_by_operator': True}],
