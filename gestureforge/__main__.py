@@ -58,8 +58,8 @@ def main():
     if args.studio:
         note = (
             "Studio preview • camera control needs a starter or personal dataset. "
-            "Use Enrolment to collect numeric samples; shortcut dispatch and profile readiness "
-            "remain in development. Workspace progress stays local."
+            "Use Enrolment to collect numeric samples, or Guest for manual controls. Standard gestures "
+            "remain unavailable until an approved model is supplied. Workspace progress stays local."
         )
     if args.profile_id:
         try:

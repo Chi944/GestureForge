@@ -410,5 +410,67 @@
       "Javier": "48/73 = 65.8%",
       "Team": "107/223 = 48.0%"
     }
+  },
+  "standard_starter_integration_verification": {
+    "timestamp_utc": "2026-10-05T07:16:58.894800+00:00",
+    "source_base_commit": "d267e949e5ca10de9ed7754ffc3137635a7883e0",
+    "validated_changes_sha256": {
+      "gestureforge/__main__.py": "cc6895ef5c25071c6ae775bc01753c7644225b9838db06dc38a02546c47c4af6",
+      "gestureforge/app.py": "ca81ea2c45e9763acf65228e2f1eb41824b4c8958bc6dd10eba77e207f76148b",
+      "gestureforge/profile_widget.py": "fd6c7660952d3e2a21b3ddc2b58661bb62608303d14c0e7406e70f6e4d28dea1",
+      "gestureforge/starter.py": "a2a03dc3f4628ce07557fa71d416b935aa1f9caad386b25c41851034bd66b4ad",
+      "tests/test_app_dispatch.py": "ba60ce7b6a04bf40107cc3fcdc65849c28814b2bf50e824c5fd212b386983d38",
+      "tests/test_app_personal_live.py": "719f8dac8a7561b5e4aaabbe75461d7f6dd677d82bafd83dca8d95a2690d645a",
+      "tests/test_app_starter.py": "5bbb019094e5a727940a224bf186bb46855b1df539d699a5345ad95b60f99744",
+      "tests/test_starter.py": "824427178b092c06837b2ce2e18e797e3534a49f46722ebb9468abfda13e4eeb"
+    },
+    "checks": [
+      {
+        "command": "python -m ruff check gestureforge tests scripts",
+        "returncode": 0,
+        "seconds": 0.196,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 0,
+        "seconds": 0.81,
+        "stdout": "Success: no issues found in 90 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m pytest -q",
+        "returncode": 0,
+        "seconds": 314.281,
+        "stdout": "........................................................................ [  8%]\n........................................................................ [ 17%]\n........................................................................ [ 25%]\n........................................................................ [ 34%]\n........................................................................ [ 43%]\n.................................................................s...... [ 51%]\n........................................................................ [ 60%]\n........................................................................ [ 69%]\n........................................................................ [ 77%]\n........................................................................ [ 86%]\n........................................................................ [ 95%]\n........................................                                 [100%]\n831 passed, 1 skipped in 294.18s (0:04:54)\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --smoke-test",
+        "returncode": 0,
+        "seconds": 3.375,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --studio --smoke-test --screenshot .local/standard-studio.png",
+        "returncode": 0,
+        "seconds": 3.804,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "code_review": "Independent final integration and loader review: no findings; known descriptor, numeric-type, symlink and invalid-row issues repaired before final full verification.",
+    "scope": "Code-approved standard TRAIN release loading and current-session six-action readiness; existing personal full-Practice gate retained. Action results mirrored into top notice.",
+    "visual_check": "Offscreen empty-Studio layout inspected after explicitly loading installed Segoe UI. Default offscreen smoke render had missing glyphs; neither render is native webcam evidence.",
+    "visual_sha256": "3e96a1ec562e1f67f1fbb4d0869ea7ae37663aefba4a100ad76260168dc8ce26",
+    "limits": [
+      "No approved starter descriptor or participant training artifact is supplied. Approval pin remains empty.",
+      "Generated release/UI fixtures establish software behavior only; recorded person-separated comparison found no qualifying candidate.",
+      "Private P02/P03 inputs were not rerun. No new participant, native camera, Windows launch, independent laptop or macOS acceptance is claimed.",
+      "PR24 supplies attributed partial laptop-A observations on its documented source revisions; it does not close GF-P19.",
+      "Original accepted weights and completion percentages are unchanged. Hosted Actions remain manual-only."
+    ]
   }
 }

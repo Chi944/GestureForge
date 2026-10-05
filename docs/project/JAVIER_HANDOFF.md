@@ -18,6 +18,8 @@ Before every commit/push, confirm the current branch is `codex/javier-shortcuts`
 
 ## Start with these tasks
 
+**PR #24 reviewed and merged, 5 October:** preserve your [Harbor laptop-A evidence](../evidence/GF_P19_HARBOR_LAPTOP_A_2026-10-04.md). Do not repeat the whole walkthrough. Deston now mirrors dispatch outcomes into the top notice so failures remain visible without scrolling. On your next affected check, verify the message and recovery on current main. Continue the missing laptop-B, target-association and active-capture recovery cases, then GF-P23. This PR does not close GF-P19. The standard starter path is implemented but remains unavailable until a qualifying permitted model is reviewed.
+
 **Current assignment:** you execute the following acceptance work after syncing
 the reviewed software checkpoint into your own branch. Fix reproducible software
 defects before repeating affected manual checks. Deston retains interface design,

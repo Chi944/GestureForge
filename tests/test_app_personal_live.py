@@ -186,15 +186,15 @@ def test_live_start_requires_live_selection_and_revokes_on_camera_change(qapp, t
         result = passed_result(window)
         assert grant(window, result, tmp_path)
         assert window.routing is not None
-        assert "select LIVE" in window._personal_live_gate_reason(window.routing.snapshot)
+        assert "select LIVE" in window._live_gate_reason(window.routing.snapshot)
 
         assert window.configure_studio(mode=RoutingMode.LIVE)
-        assert window._personal_live_gate_reason(window.routing.snapshot) == ""
+        assert window._live_gate_reason(window.routing.snapshot) == ""
         assert window._can_start_studio_camera()
 
         assert window.set_studio_camera(1)
         assert window._personal_live_grant is None
-        assert "complete and save" in window._personal_live_gate_reason(window.routing.snapshot)
+        assert "complete and save" in window._live_gate_reason(window.routing.snapshot)
         assert not window._can_start_studio_camera()
     finally:
         window.close()
@@ -218,15 +218,15 @@ def test_live_context_must_be_approved_current_stage_or_active_quick_actions(qap
 
         assert window.configure_studio(context_id=stage.id, mode=RoutingMode.LIVE, bindings={"G1": Action(ActionType.NEXT)})
         assert window.routing is not None
-        assert window._personal_live_gate_reason(window.routing.snapshot) == ""
+        assert window._live_gate_reason(window.routing.snapshot) == ""
 
         window.runbook.position = 0
         window.runbook.finished = True
-        assert "approved stage" in window._personal_live_gate_reason(window.routing.snapshot)
+        assert "approved stage" in window._live_gate_reason(window.routing.snapshot)
 
         assert window.configure_studio(context_id=window.quick_actions_context_id, mode=RoutingMode.LIVE, bindings={"G1": Action(ActionType.NEXT)})
         assert window.routing is not None
-        assert "approved stage" in window._personal_live_gate_reason(window.routing.snapshot)
+        assert "approved stage" in window._live_gate_reason(window.routing.snapshot)
 
         window.quick_registry.configure(Target("calc", "Calculator", TargetKind.BUILTIN, "calculator", True))
         window.quick_registry.bind_quick(("calc", None, None))
@@ -239,7 +239,7 @@ def test_live_context_must_be_approved_current_stage_or_active_quick_actions(qap
             bindings={"G1": Action(ActionType.OPEN_SHORTCUT, "calc")},
         )
         assert window.routing is not None
-        assert window._personal_live_gate_reason(window.routing.snapshot) == ""
+        assert window._live_gate_reason(window.routing.snapshot) == ""
         assert window._can_start_studio_camera()
     finally:
         window.close()
@@ -279,7 +279,7 @@ def test_live_grant_revocation_distinguishes_cosmetic_and_behavior_changes(qapp,
         assert window.use_quick_actions_context()
         assert window.configure_studio(mode=RoutingMode.LIVE)
         assert window.routing is not None
-        assert window._personal_live_gate_reason(window.routing.snapshot) == ""
+        assert window._live_gate_reason(window.routing.snapshot) == ""
         assert window.start_button.isEnabled()
 
         candidate = window.quick_registry.copy()
@@ -396,7 +396,7 @@ def test_missing_quick_target_does_not_change_practice_authorization(qapp, tmp_p
         assert window.configure_studio(mode=RoutingMode.LIVE)
         assert window.routing is not None
         assert window._personal_live_grant is accepted
-        assert window._personal_live_gate_reason(window.routing.snapshot) == ""
+        assert window._live_gate_reason(window.routing.snapshot) == ""
     finally:
         window.close()
 
@@ -414,7 +414,7 @@ def test_same_workspace_title_reload_preserves_personal_live_grant(qapp, tmp_pat
         assert window._personal_live_grant is accepted
         assert window.routing.state == "PAUSED"
         assert window.routing.snapshot.bindings == bindings
-        assert window._personal_live_gate_reason(window.routing.snapshot) == ""
+        assert window._live_gate_reason(window.routing.snapshot) == ""
         assert window._can_start_studio_camera()
     finally:
         window.close()

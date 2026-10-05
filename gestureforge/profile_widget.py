@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from .profiles import LoadedProfile, ProfileSettings, ProfileStore
+from . import starter
 
 if TYPE_CHECKING:
     from .app import ModelLoadWorker, Window
@@ -56,6 +57,7 @@ class ProfileSelectorWidget(QWidget):
         self.starter_button = QPushButton('Try standard gestures (unavailable)')
         self.starter_button.setEnabled(False)
         self.starter_button.setToolTip(self.starter_notice.text())
+        self.starter_button.clicked.connect(self.try_standard)
         layout.addWidget(self.starter_button)
         self.profiles = QListWidget()
         self.profiles.setAccessibleName('Saved personal profiles')
@@ -182,6 +184,16 @@ class ProfileSelectorWidget(QWidget):
         self.delete_button.setEnabled(idle and item is not None)
         self.delete_button.setToolTip('Deletes profile settings only; numeric data is kept.')
         self.guest_button.setEnabled(idle)
+        unavailable = starter.unavailable_reason()
+        self.starter_button.setEnabled(idle and self.host is not None
+                                       and self.host.model_loader is None and not unavailable)
+        self.starter_button.setText('Try standard gestures' if not unavailable
+                                    else 'Try standard gestures (unavailable)')
+        self.starter_notice.setText(unavailable or
+                                    'Standard poses: open palm = NEUTRAL, fist = NEXT, '
+                                    'thumb up = PREVIOUS, two fingers = BOOKMARK. '
+                                    'Load in Preview, then pass the six-action check in Setup.')
+        self.starter_button.setToolTip(self.starter_notice.text())
         self.guest_notice.setText('Guest uses manual controls and keeps saved profiles and data.')
         self.guest_button.setToolTip('Unload the recogniser without deleting your saved profile.')
         self.start_button.setEnabled(idle and self.loaded is not None
@@ -370,6 +382,12 @@ class ProfileSelectorWidget(QWidget):
         except Exception as exc:
             self.status.setText(f'Cannot switch to Guest: {exc}')
         self._controls()
+
+    def try_standard(self):
+        if self.host is not None and self._prepare():
+            self.host.load_studio_starter()
+            self.status.setText(self.host.notice.text())
+            self._controls()
 
     def request_start(self):
         if (not self._closed and not self.busy and self.loaded is not None

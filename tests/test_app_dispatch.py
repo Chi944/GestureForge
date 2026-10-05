@@ -169,6 +169,7 @@ def test_camera_release_failure_consumes_request_and_requires_fresh_retry(qapp):
 
         outcome = window._dispatch_action(action, event_id="camera-request", source="Quick Action")
         assert outcome.status == "failed"
+        assert window.notice.text() == f"Action failed: {outcome.reason}"
         assert worker.interrupted
         assert launcher.calls == []
 
@@ -177,6 +178,8 @@ def test_camera_release_failure_consumes_request_and_requires_fresh_retry(qapp):
         assert duplicate.status == "duplicate"
         fresh = window._dispatch_action(action, event_id="camera-request-2", source="Quick Action")
         assert fresh.status == "launch_requested"
+        assert window.notice.text() == window.feedback.text()
+        assert "request sent" in window.notice.text()
         assert launcher.calls == [("camera", "camera", "camera")]
     finally:
         window.close()

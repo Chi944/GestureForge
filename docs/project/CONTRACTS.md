@@ -2,13 +2,13 @@
 
 Project contract version 1 | Design frozen 2 October 2026 | Owner Deston
 
-This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates workspace/runbook editing and persistence, session summaries, Quick Actions, shared-camera enrolment and Profiles. One persistent dispatcher handles typed manual requests, gesture simulations and eligible personal LIVE actions. Explicit LIVE mode enables manual actions; personal LIVE control requires the current in-memory full-Practice grant and explicit Start/NEUTRAL. Standard starter availability remains separate work.
+This is the version-1 integration baseline. Legacy dataset schema 1 and custom-vocabulary schema 2 share `FEATURE_VERSION=1`; legacy labels and the NEXT-only default controller remain compatible. `PROJECT_CONTRACT_VERSION=1` versions the routing types separately. Studio integrates workspace/runbook editing and persistence, session summaries, Quick Actions, shared-camera enrolment and Profiles. One persistent dispatcher handles typed manual requests, gesture simulations and eligible personal LIVE actions. Explicit LIVE mode enables manual actions; personal LIVE control requires the current in-memory full-Practice grant and explicit Start/NEUTRAL. A checksum-pinned standard starter loader is integrated; no approved release is supplied.
 
 ## GF-P02 design freeze - 2 October 2026
 
 Deston's integration baseline adopts the approved [project plan](PROJECT_PLAN.md) and [screen/transition design](TEAM_GUIDE.md#initial-screen-design): Try standard gestures first, optional Personalise, and exactly one typed action per bound stage slot. Reviewed merged PRs #10, #14 and #15 supply the vocabulary, profile and workspace/component interfaces below. Independent acceptance and architecture review reconciled these handoffs with the implementation. This records the approved design and its adoption in reviewed code; it does not claim a separate team meeting or tutor approval.
 
-The final flow is **Try standard gestures -> simulated readiness check -> explicit Start/NEUTRAL -> eligible control**. A failed check offers retry, optional Personalise or manual controls. An unavailable starter shows its reason and preserves manual access. Saved profiles may be loaded without collecting again; loading alone never proves readiness. Preview/Rehearsal can run before readiness. The implemented six-activation check does not satisfy GF-P12's longer personal protocol and cannot grant LIVE eligibility. The current personal gate is specified below. Manual typed actions simulate in Preview/Rehearsal and execute only after explicit LIVE selection, without requiring a recogniser. This design freeze does not complete starter evaluation, readiness or hardware acceptance.
+The final flow is **Try standard gestures -> simulated readiness check -> explicit Start/NEUTRAL -> eligible control**. A failed check offers retry, optional Personalise or manual controls. An unavailable starter shows its reason and preserves manual access. Saved profiles may be loaded without collecting again; loading alone never proves readiness. Preview/Rehearsal can run before readiness. The six-activation check does not satisfy GF-P12's longer personal protocol. It grants LIVE eligibility only to a separately approved standard starter; personal models require the full Practice gate. The current personal gate is specified below. Manual typed actions simulate in Preview/Rehearsal and execute only after explicit LIVE selection, without requiring a recogniser. This design freeze does not complete starter evaluation, readiness or hardware acceptance.
 
 ## Records and responsibilities
 
@@ -51,7 +51,7 @@ Use plain PySide signals or direct method calls carrying these records; do not c
 |---|---|---|
 | `ProfileSelectorWidget` (Profiles tab) | Request load by `ProfileStore` and opaque profile ID; publish selection only after successful installation | Shell owns saved-model reconstruction and installs a complete `LoadedProfile`; creation fits in the component's background worker. Busy notifications serialize competing setup operations. Metadata-only `ProfileSelection` is for display. Deletion clears a matching active or pending selection through the shell; Guest unloads without deleting storage. |
 | `EnrolmentWidget` | `capture_requested(plan, request_id)`, `capture_release_requested(request_id)`, `dataset_saved(path)` | Shell pauses actions, retires the previous worker and starts observation-only capture. First matching observation acknowledges readiness to collect. Completion reports a private manifest, never model installation or readiness. See [enrolment handoff](ENROLMENT_INTERFACE_PROPOSAL.md). |
-| Studio readiness controls | `start_readiness_check()` / `finish_readiness_check()` | Temporarily route all three poses through simulation with the existing camera/controller, then restore the previous context paused. Only protected simulated gesture events count. Passing this short check does not enable LIVE gestures. |
+| Studio readiness controls | `start_readiness_check()` / `finish_readiness_check()` | Temporarily route all three poses through simulation with the existing camera/controller, then restore the previous context paused. Only protected simulated gesture events count. This short check can grant only approved-standard eligibility; personal LIVE requires full Practice. |
 | `WorkspaceWidget` / `RunbookEditorWidget` | `workspace_changed(Workspace)` | `accept_workspace_widget_change` / `accept_runbook_editor_change` pause and validate before replacing content. Imported targets remain semantic references. |
 | `RunbookWidget` / `Runbook` | `action_requested(Action)`, `previous_stage_requested()`, `completion_acknowledged(stage_id)`; runbook callback `(Stage or None, resume)` | `reset_runbook_stage` applies the complete map and invalidates holds; viewing a tab does not activate it. |
 | `QuickActionsWidget` | `before_publish() -> bool`, then `bindings_changed(...)` after successful local save | Pause before mutation; failed save preserves the registry. Clear active routing and require explicit Use Quick Actions. Changed action meanings expire the short readiness result and permanently invalidate the personal LIVE grant. |
@@ -91,7 +91,7 @@ Use monotonic capture timestamps and increasing frame IDs in real operation. The
 
 `process(prediction, now)` emits at most one event per continuous hold. `route(event, now)` accepts only an exact event issued by this coordinator, once, with current identity/model and age no greater than 200 ms. Altered/stale events are consumed; repeating them cannot recover an action. Pause, tracking loss, rearming and generation changes invalidate pending events.
 
-PREVIEW and REHEARSAL populate only `simulated_action`. LIVE populates `action`. Studio attaches Javier's dispatcher for simulations and explicit manual LIVE requests; its gesture readiness callback requires the current full-Practice grant, current behavior and exact approved route map. The longer personal rehearsal is attached in Practice and remains simulation-only throughout measurement. Construction or passing the short check alone is not permission to execute OS actions.
+PREVIEW and REHEARSAL populate only `simulated_action`. LIVE populates `action`. Studio attaches Javier's dispatcher for simulations and explicit manual LIVE requests; its gesture readiness callback requires the current personal full-Practice or approved-standard six-action grant, current behavior and exact approved route map. The longer personal rehearsal is attached in Practice and remains simulation-only throughout measurement. Construction or passing the short check alone is not permission to execute OS actions.
 
 All coordinator calls and immediate routing/dispatch belong on one owner thread. A RoutingResult is not a durable token: do not queue it for execution after a mode/profile/stage change. The final dispatcher must independently consume event IDs once and record outcomes. Camera release and any asynchronous action preparation require a fresh snapshot check before the side effect.
 
@@ -194,7 +194,7 @@ Studio's **Session summary** tab wraps `SessionSummaryWidget`. Refresh shows cur
 
 With a loaded recogniser, Studio prompts each of its three action IDs twice. The existing neutral/hold controller supplies the only scored events; manual controls and raw predictions cannot earn credit. A wrong activation fails the attempt. Finishing an incomplete or UNKNOWN-only attempt fails it. Capture interruption cancels the attempt and requires a new check. The previous context is restored paused; failed trace preservation retains recovery state.
 
-The result is a session-local six-activation check, not accuracy evaluation, identity authentication, an approved starter or permission to execute desktop actions. GF-P12's longer personal rehearsal is a separate workflow and result. Guest stays manual-only while no approved starter is available.
+The result is a session-local six-activation check, not accuracy evaluation, identity authentication, an approved starter or permission to execute desktop actions. GF-P12's longer personal rehearsal is a separate workflow and result. Guest stays manual-only while no approved starter is available. With a reviewed release, the shell grants standard eligibility only after six successful protected simulated events and paused context restoration; explicit LIVE selection, Start and fresh NEUTRAL remain mandatory.
 
 ### Measured personal rehearsal (GF-P12)
 
@@ -236,3 +236,39 @@ advice and unintended negative actions. The shell checks the captured event
 reconciliation before displaying pose guidance. Historical behavior/scope labels
 remain visible; unknown rejection text is counted without becoming instructions.
 The helper does not read files, alter models, rescore trials or grant readiness.
+
+### Approved standard release and Guest activation - 5 October
+
+`starter.load_starter()` rebuilds a single reviewed release from the fixed
+`assets/starter/release.json`. `APPROVED_RELEASE_SHA256` in `starter.py` is empty
+in this build: no candidate has qualified and no redistribution approval exists.
+An arbitrary local JSON flag, personal dataset or comparison report cannot
+promote itself. Selecting **Try standard gestures** uses `ModelLoadWorker` and
+`use_studio_model`; successful installation stays paused in Preview, failed
+loading keeps the prior model, and closing discards late results.
+
+Release review must approve the exact frozen fit, independent evidence and
+permissions before adding files or a descriptor digest. Schema 1 contains
+`schema_version`, `feature_version`, `manifest_file`, `manifest_sha256`, `hand`,
+`settings` and `model_version`. Settings contain `algorithm`, `knn_k`,
+`knn_weights`, `svm_c`, `svm_gamma`, `multiplier` and `margin`, passed explicitly
+to the existing trainer. Only local bounded JSON/NPZ files are read, with
+checksums and no executable model serialization. The TRAIN manifest uses the
+legacy standard vocabulary and Right hand with at least three contributors;
+each contributes valid samples for all four labels. Invalid detections remain
+in the manifest but do not enter fitting. Validation, TEST and UNKNOWN inputs
+are refused. A release fit needs its own reviewed revision; it is not an
+unselected GF-P11 fold. Changed inputs, settings or library-bound model revision
+must fail loading until reviewed again.
+
+The shell marks the exact installed starter model instance. Six correct events
+from the real simulation router can create a memory-only standard grant after
+successful paused restoration. The grant binds camera, model/profile/hand,
+behavior revision and exact authored workspace/stage/Quick Actions maps. Camera,
+model, mappings or target changes invalidate it even after change/revert.
+Normal unchanged stage navigation and pause preserve it. Wrong/incomplete or
+interrupted checks cannot grant eligibility; retries clear previous standard
+eligibility. Personal datasets never acquire this shorter path. Both kinds of
+grant use the existing focus, stale snapshot, capture-release and duplicate
+checks in the persistent dispatcher. Loading or passing never starts LIVE
+capture automatically. Generated fixtures test this software contract only.

@@ -2,6 +2,9 @@
 
 You own recognition and personalisation for GestureForge Studio. Build the reusable AI and profile components; Deston owns integration and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` first. Work is assigned for the project due 7 November 2026; the assignment is already submitted.
 
+
+**Starter integration update, 5 October:** Deston implemented the approved-release loader and separate standard six-action LIVE gate. No candidate is enabled: the recorded 48-setting comparison found none qualifying. Continue selected-pose GF-P12 repair and frozen candidate work. A later release needs the exact frozen TRAIN manifest/sidecar, all estimator settings, expected rebuilt revision, person-separated evidence and distribution permission for review. See CONTRACTS.md. Keep existing private inputs private.
+
 ## Your branch and delivery rule
 
 Create `codex/hau-jie-profiles` from the published `origin/main` before editing. Do not apply the old kickoff patch on top of it. If it already exists, switch to it instead. Commit and push only to this branch; never push to `main` or Javier's branch.
