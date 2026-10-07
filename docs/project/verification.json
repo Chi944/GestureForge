@@ -575,5 +575,77 @@
       "basis": "Original implementation criterion at 223c8c3: rehearsal and targeted recollection using the real controller/recording dispatcher and settings-bound readiness. PR21 plus integrated PR25 and reviewed software verification satisfy this criterion.",
       "limits": "Physical repair, own-profile Practice outcomes, native integration and independent participant evaluation remain separately tracked; no new measured recognition result or LIVE grant claimed."
     }
+  },
+  "paused_restore_verification_20261007": {
+    "timestamp_utc": "2026-10-07T14:57:48.442428+00:00",
+    "base_commit": "f86f003303821a10f3d18d3f8827d70d5b1d664d",
+    "scope": "Restoration from LIVE to paused Preview and refusal during profile creation; local software verification only.",
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "versions": {
+      "numpy": "2.4.6",
+      "scikit-learn": "1.9.1",
+      "mediapipe": "1.0.1",
+      "PySide6": "6.11.2",
+      "opencv-contrib-python": "5.0.0.93"
+    },
+    "checks": [
+      {
+        "command": "python -u -m pytest -q --durations=10",
+        "returncode": 0,
+        "stdout": "........................................................................ [  8%]\n........................................................................ [ 16%]\n........................................................................ [ 25%]\n........................................................................ [ 33%]\n........................................................................ [ 41%]\n........................................................................ [ 50%]\n.s...................................................................... [ 58%]\n........................................................................ [ 66%]\n........................................................................ [ 75%]\n........................................................................ [ 83%]\n........................................................................ [ 91%]\n.......................................................................  [100%]\n============================ slowest 10 durations =============================\n17.41s call     tests/test_pose_repair.py::test_changed_review_candidate_does_not_replace_selected_profile\n13.09s call     tests/test_paired_evaluate.py::test_cli_freeze_and_score_write_json_without_overwrite\n11.98s call     tests/test_starter_evaluate.py::test_bounded_comparison_keeps_inner_and_outer_people_separate\n10.47s call     tests/test_starter_evaluate.py::test_held_out_changes_do_not_affect_its_fitted_model\n8.10s call     tests/test_app_layout.py::test_studio_workflow_scroll_does_not_displace_camera_controls\n7.92s call     tests/test_starter_evaluate.py::test_no_qualifying_candidate_does_not_fit_outer\n7.77s call     tests/test_app_practice.py::test_practice_completes_full_50_window_host_regression[False-True-False]\n7.39s call     tests/test_app_practice.py::test_practice_completes_full_50_window_host_regression[True-True-True]\n6.77s call     tests/test_app_practice.py::test_practice_completes_full_50_window_host_regression[False-False-False]\n5.91s call     tests/test_app_practice.py::test_practice_completes_full_50_window_host_regression[True-False-False]\n862 passed, 1 skipped in 355.09s (0:05:55)\n"
+      },
+      {
+        "command": "python -m ruff check gestureforge tests scripts",
+        "returncode": 0,
+        "seconds": 6.305,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 0,
+        "seconds": 7.017,
+        "stdout": "Success: no issues found in 95 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --smoke-test",
+        "returncode": 0,
+        "seconds": 8.412,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --studio --smoke-test",
+        "returncode": 0,
+        "seconds": 6.237,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output .local/restore-synthetic-20261007.json",
+        "returncode": 0,
+        "seconds": 4.036,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "earlier_attempt": {
+      "command": "python scripts/verify.py",
+      "result": "Ruff and mypy passed; pytest exceeded the wrapper 600-second timeout. No completed full-suite result from that attempt."
+    },
+    "independent_review": "Busy-profile partial-restoration finding fixed and re-reviewed; no remaining findings.",
+    "source_sha256": {
+      "gestureforge/app.py": "188ba23d2392b86469ec0b9afdcbc5b57e14d1ea335160165d75f779b7887aa0",
+      "tests/test_app.py": "6b90e2bd87bb54d686dc78ca8c2bcfd4fe44a2fa12b0fb3cefc016e5c08e3d07",
+      "tests/test_app_dispatch.py": "b1a14b8a6f8f9892a658424901dc739603efae1dbec12b3c0d9471d4b7c02c82",
+      "tests/test_app_profiles.py": "903c541815b928377d18fb399e9753b978e3c824da9910b43d6b532fb3f5becc"
+    },
+    "limits": [
+      "PR26 observations are attributed laptop-A evidence at their recorded source revisions.",
+      "No native restore retest, webcam recording, independent Windows installation or macOS acceptance was performed.",
+      "Task weights and acceptance percentages are unchanged; GitHub Actions remains manual-only."
+    ]
   }
 }

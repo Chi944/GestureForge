@@ -168,7 +168,7 @@ def test_profile_selector_syncs_direct_shell_profile_guest_and_adhoc(tmp_path, q
         window.close()
 
 
-def test_profile_selector_busy_blocks_competing_shell_controls(tmp_path, qapp):
+def test_profile_selector_busy_blocks_competing_shell_controls(tmp_path, monkeypatch, qapp):
     from gestureforge.app import Window
 
     store, source, first, _second = generated_store(tmp_path)
@@ -185,10 +185,16 @@ def test_profile_selector_busy_blocks_competing_shell_controls(tmp_path, qapp):
         assert not window.load_studio_profile(store, first.record.profile_id)
         assert window.start_camera() is None
         deck_path = deck_file(tmp_path / "deck.json")
+        progress_path = tmp_path / "progress.json"
+        assert window.save_studio_progress(progress_path)
+        window.viewer.next_keyboard()
+        pause = Mock(return_value=True)
+        monkeypatch.setattr(window, "pause", pause)
         blocked_workspace = Workspace("blocked", "Blocked")
-        before = (window.selected_profile_id, window.workspace.id, window.viewer.deck.deck_id)
+        before = (window.selected_profile_id, window.workspace.id, window.viewer.deck.deck_id, window.viewer.position)
 
         assert not window.load_studio_deck(deck_path)
+        assert not window.restore_studio_progress(progress_path)
         assert not window.use_studio_workspace(blocked_workspace)
         assert not window.use_quick_actions_context()
         assert not window.use_studio_guest()
@@ -207,7 +213,8 @@ def test_profile_selector_busy_blocks_competing_shell_controls(tmp_path, qapp):
         with pytest.raises(ValueError, match="shell rejected"):
             window.quick_actions_widget._publish(candidate)
         assert not window.quick_actions_widget.state_path.exists()
-        assert (window.selected_profile_id, window.workspace.id, window.viewer.deck.deck_id) == before
+        assert (window.selected_profile_id, window.workspace.id, window.viewer.deck.deck_id, window.viewer.position) == before
+        pause.assert_not_called()
     finally:
         selector._future = None
         window.set_profile_selector_busy(False)

@@ -3089,7 +3089,7 @@ class Window(QMainWindow):
         return True
 
     def restore_studio_progress(self, path: Path) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing:
+        if not self.studio or self.model_loader is not None or self._closing or self._profile_selector_change_blocked():
             return False
         if not self.deck_available:
             self.set_deck_file_status("Progress not restored: this workspace has no deck.")
@@ -3102,6 +3102,8 @@ class Window(QMainWindow):
             self.viewer.restore_state(raw)
         except (OSError, ValueError) as exc:
             self.set_deck_file_status(f"Progress not restored: {exc}. Use progress saved for this deck.")
+            return False
+        if self.manual_mode == RoutingMode.LIVE and not self.configure_studio(mode=RoutingMode.PREVIEW):
             return False
         self.set_deck_file_status(f"Progress restored: {path}")
         self.render_card()
@@ -3228,6 +3230,8 @@ class Window(QMainWindow):
             self.runbook.restore(path)
         except (OSError, ValueError) as exc:
             self.set_deck_file_status(f"Session not restored: {exc}. Prior session retained.")
+            return False
+        if self.manual_mode == RoutingMode.LIVE and not self.configure_studio(mode=RoutingMode.PREVIEW):
             return False
         self._reset_session_summary()
         self._refresh_workspace_widgets()

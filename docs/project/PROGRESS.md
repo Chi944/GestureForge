@@ -1,6 +1,32 @@
 # GestureForge Studio progress
 
-Snapshot: 5 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 7 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current work on 7 October
+
+[PR #26](https://github.com/Chi944/GestureForge_304/pull/26) is reviewed and merged
+as attributed partial laptop-A evidence. Its missing-target notice/retry was
+observed on `5595129`; earlier Harbor/focus observations remain tied to `9e109a7`.
+The laptop-B operator conflict was corrected: Hau Jie operates, Javier
+coordinates, Deston accepts. The report preserves overlapping-export limits and
+unrun cases; no second-device result or full GF-P19/GF-P23 acceptance is inferred.
+
+The shared shell now returns LIVE mode to paused Preview after successful
+session/progress restoration. Previously camera control paused but the manual
+action mode stayed Live. The existing routing configuration path handles the
+reset; real manual actions require explicit Live and Apply again. Ordinary
+camera pause and stage changes retain their established behaviour. Teammate
+briefs specify the short affected native retest instead of repeating completed
+walkthroughs. Accepted task weights below remain unchanged.
+
+Verification: 862 tests passed with one skip in 355.09 seconds; the rerun exited
+successfully. Ruff, mypy across 95 source files, both GUI startup modes and
+synthetic evaluation passed. The first full-suite attempt exceeded the existing
+runner's 600-second limit; its timeout is retained alongside the successful
+direct rerun in `verification.json`. Independent review found a busy-profile
+progress-restore guard missing; that guard and its regression are now included,
+and re-review found no remaining issues. No native restore retest or participant
+measurement is claimed. GitHub Actions remains manual-only.
 
 ## Current work on 5 October
 

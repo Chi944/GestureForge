@@ -7,6 +7,18 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Laptop B assignment confirmed 5 October
 
+**7 October clarification:** Javier's PR #26 is accepted as partial laptop-A
+evidence. Its conflicting operator statement was corrected during review:
+you still operate laptop B and Javier coordinates. No laptop-B result was
+included. Do not repeat his accepted laptop-A checks or the full starter search;
+continue your D1 saved-report diagnosis and your assigned device checks.
+
+For the integrated restore check, sync the current main before testing:
+Restore session and Restore progress must return Live mode to paused Preview,
+preserve saved stage/card/bookmarks and launch nothing. Explicitly select Live
+and Apply and pause again before continuing manual real actions. Record your
+own device result; the regression test alone is not native acceptance.
+
 Your physical Windows laptop is **laptop B**. Javier's existing computer remains laptop A; he does not need to obtain another machine. You operate laptop B, Javier coordinates the GF-P19 case matrix and consolidates the evidence, and Deston reviews integration and GF-P23 release acceptance. Device assignment does not mean tests have passed or change the original task weights.
 
 Use a fresh installation of the current Studio source package following `docs/WINDOWS_LAPTOP.md`; do not copy another computer's `.venv`, private targets or profile. Record the exact commit/package hash, Windows/Python versions, camera index, operator and any assistance. Bind your own local targets. Manual Harbor and shortcut checks need no profile. Gesture cases use your own consented profile and the existing current-session Practice gate; retain unrun cases when that gate is unavailable.

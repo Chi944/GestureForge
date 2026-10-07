@@ -473,6 +473,7 @@ def test_studio_restore_pauses_and_ignores_stale_worker_packet(tmp_path, qapp) -
         assert window.restore_studio_progress(progress)
         assert worker.interrupted
         assert window.routing.state == "PAUSED"
+        assert window.manual_mode == RoutingMode.PREVIEW
         window.poll()
         assert window.viewer.position == 1
         assert "Studio simulation" not in window.feedback.text()
@@ -534,6 +535,7 @@ def test_studio_workspace_runbook_loads_stage_routes_and_session(tmp_path, qapp)
         assert window.restore_studio_session(session_path)
         assert window.runbook is not None
         assert window.runbook.position == 1 and window.routing_manual_only
+        assert window.manual_mode == RoutingMode.PREVIEW
         assert window.viewer.current_card.id == "close"
 
         window.restart_deck()
@@ -718,10 +720,12 @@ def test_studio_restore_and_restart_archive_then_reset_summary(tmp_path, qapp) -
         assert window.restore_studio_session(session_path)
         assert window.session_summary.counts()["applied"] == 0
         assert window.runbook is not None and window.runbook.position == 0
+        assert window.manual_mode == RoutingMode.PREVIEW
         archived = list(window.studio_state_folder.glob("studio-session-summary-*.json"))
         assert len(archived) == 1
         assert json.loads(archived[0].read_text(encoding="utf-8"))["counts"]["applied"] == 2
 
+        _set_live_manual(window)
         window.manual_viewer_action(Action(ActionType.BOOKMARK))
         assert window.session_summary.counts()["applied"] == 1
         window.restart_deck()

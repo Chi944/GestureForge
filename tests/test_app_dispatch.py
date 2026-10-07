@@ -426,8 +426,14 @@ def test_harbor_guest_manual_workflow_recovers_without_context_loss_or_replay(qa
         assert window.runbook.current_stage.id == "discussion"
         assert [card.id for card in window.viewer.bookmarks] == ["discussion"]
         assert window.runbook.paused and window.routing.state == "PAUSED"
+        assert window.manual_mode == RoutingMode.PREVIEW
         assert len(launcher.calls) == 4
         assert window.session_summary.outcomes == []
+        window.runbook_widget.continue_button.click()
+        assert window.session_summary.outcomes[-1].status == "simulated"
+        assert window.runbook.current_stage.id == "discussion"
+        assert len(launcher.calls) == 4
+        set_live(window)
         window.runbook_widget.continue_button.click()
         window.runbook_widget.complete.click()
         window.runbook_widget.continue_button.click()

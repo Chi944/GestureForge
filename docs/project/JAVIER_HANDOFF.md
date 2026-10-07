@@ -24,6 +24,22 @@ Before every commit/push, confirm the current branch is `codex/javier-shortcuts`
 
 ## Start with these tasks
 
+**Review update, 7 October:** [PR #26](https://github.com/Chi944/GestureForge_304/pull/26)
+is reviewed and merged as [partial laptop-A evidence](../evidence/GF_P19_HARBOR_LAPTOP_A_FOLLOWUP_2026-10-07.md).
+The missing-target notice/retry on `5595129` is recorded; do not repeat that
+unchanged case. Earlier Harbor/focus observations remain tied to `9e109a7`.
+Laptop B remains Hau Jie's machine, operated by Hau Jie; you coordinate and
+Deston accepts. Keep the two summary segments separate and retain overlapping
+export warnings. Neither this merge nor your software checks close GF-P19/GF-P23.
+
+**Next focused check after syncing the restore fix:** in manual Live, save a
+Harbor session at discussion with one bookmark, then restore it. Confirm the
+stage/bookmark remain, camera stays off, mode shows Preview and no resource
+opens. A typed stage action must simulate until you explicitly choose Live
+and Apply and pause. Export both summary segments. Repeat the same mode check
+for Restore progress. This short camera-free check replaces repeating the
+whole already-recorded walkthrough; it is not yet a passed native result.
+
 **PR #24 reviewed and merged, 5 October:** preserve your [Harbor laptop-A evidence](../evidence/GF_P19_HARBOR_LAPTOP_A_2026-10-04.md). Do not repeat the whole walkthrough. Deston now mirrors dispatch outcomes into the top notice so failures remain visible without scrolling. On your next affected check, verify the message and recovery on current main. Continue the missing laptop-B, target-association and active-capture recovery cases, then GF-P23. This PR does not close GF-P19. The standard starter path is implemented but remains unavailable until a qualifying permitted model is reviewed.
 
 **Current assignment:** you execute the following acceptance work after syncing
