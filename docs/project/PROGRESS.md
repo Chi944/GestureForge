@@ -1,6 +1,29 @@
 # GestureForge Studio progress
 
-Snapshot: 7 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 8 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current work on 8 October
+
+Deston's acceptance sweep used separate review lanes for local deliverables,
+paired-evaluation readiness and repository state. No open GitHub PR was found,
+and no new private participant, laptop-B or final evaluation evidence was
+available to accept. Current accepted progress therefore remains unchanged:
+Deston 21.3%, Hau Jie 68.0%, Javier 65.8% and team 51.6%.
+
+The ignored local project deliverables under `.local/project-deliverables/` were
+refreshed for the current 7 October software state without editing source,
+assignment submission files, prompt logs, decision logs or participant data. The
+local report draft is 14 pages and the subsystem evidence matrix is 4 pages;
+both rendered through Word export and passed document validation with all 17
+requirements present, repeated table headers and no paragraph borders. These
+remain development review drafts only. They do not close GF-P26, final
+submission readiness, a declaration, or a completed demo.
+
+The paired-evaluation lane found no implementation defect to fix from current
+main. Its targeted checks passed, but GF-P18 still requires Hau Jie's H2 packet:
+two new consenting independent participants, frozen development inputs before
+TEST, and accepted paired results. Poor measured results can still close GF-P18
+honestly, but synthetic/tooling checks alone cannot.
 
 ## Current work on 7 October
 
