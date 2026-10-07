@@ -19,11 +19,23 @@ requirements present, repeated table headers and no paragraph borders. These
 remain development review drafts only. They do not close GF-P26, final
 submission readiness, a declaration, or a completed demo.
 
+The local 12-slide presentation now reflects the same software checkpoint and
+current H1–H4/J1–J4 handoffs. Its editable tables, package and layout checks pass;
+all slides rendered, and the final speaker notes total 600 seconds. This is a
+presentation draft, not evidence of a completed rehearsal or native PowerPoint
+operation. All deliverables remain ignored and local.
+
 The paired-evaluation lane found no implementation defect to fix from current
 main. Its targeted checks passed, but GF-P18 still requires Hau Jie's H2 packet:
 two new consenting independent participants, frozen development inputs before
 TEST, and accepted paired results. Poor measured results can still close GF-P18
 honestly, but synthetic/tooling checks alone cannot.
+
+Fresh evaluator verification: 15 focused tests passed in 81.28 seconds and mypy
+passed on its source and test files. Review covered frozen input integrity,
+starter target exclusion, TRAIN-only fitting, identical positive TEST trials,
+UNKNOWN misses, provenance, overlap rejection and refusal to overwrite evidence.
+No speculative code or dependency change was needed.
 
 ## Current work on 7 October
 
