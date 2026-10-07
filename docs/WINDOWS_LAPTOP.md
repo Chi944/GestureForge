@@ -48,10 +48,10 @@ From PowerShell in the extracted folder, run the software and native-model check
 ```powershell
 .\.venv\Scripts\python.exe -m pip check
 .\.venv\Scripts\python.exe scripts/check_environment.py --model
-.\.venv\Scripts\python.exe scripts/verify.py
+.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/laptop-verification.json --synthetic-output experiments/local/laptop-synthetic.json
 ```
 
-The model check runs real MediaPipe inference on a blank generated image without opening a webcam. `verify.py` writes `docs/evidence/verification.json` on this laptop. Keep a copy labelled with its date and computer pseudonym; synthetic evaluation is software evidence only.
+The model check runs real MediaPipe inference on a blank generated image without opening a webcam. The command above saves this laptop's checks under ignored `experiments/local/`, preserving the published historical records. Use a distinct filename for each date/device/run. `--timeout 1200` permits twenty minutes per check; a timeout is recorded as a failure with available output while later checks continue. The default is ten minutes per check. Synthetic evaluation is software evidence only.
 
 ## 4. Choose this laptop's webcam
 

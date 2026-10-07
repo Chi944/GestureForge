@@ -647,5 +647,57 @@
       "No native restore retest, webcam recording, independent Windows installation or macOS acceptance was performed.",
       "Task weights and acceptance percentages are unchanged; GitHub Actions remains manual-only."
     ]
+  },
+  "verification_runner_repair_20261007": {
+    "timestamp_utc": "2026-10-07T15:37:35.533268+00:00",
+    "source_base": "7595d0d5d0ad4860596fe773adc023c88f5a0480",
+    "source_sha256": {
+      "scripts/verify.py": "dda749a80d1ebdde5c12b6d83a4408228c7151e718210a82818c6bd54fe09942",
+      "tests/test_verify_script.py": "6b1fe427cfe9c41dcbbd90b1364acfa252ea1150be7f74755b416cb6b7db9980"
+    },
+    "focused_pytest": {
+      "command": "python -m pytest tests/test_verify_script.py -q",
+      "returncode": 0,
+      "stdout": "7 passed in 1.82s",
+      "provenance": "Root tool run immediately before this verification; read successful process exit."
+    },
+    "checks": [
+      {
+        "command": "python -m ruff check gestureforge tests scripts",
+        "returncode": 0,
+        "seconds": 2.452,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 0,
+        "seconds": 2.299,
+        "stdout": "Success: no issues found in 96 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -c import time; print(\"started\", flush=True); time.sleep(5)",
+        "returncode": 124,
+        "seconds": 2.027,
+        "stdout": "started\n",
+        "stderr": "",
+        "timed_out": true
+      },
+      {
+        "command": "python -c print(\"next check finished\")",
+        "returncode": 0,
+        "seconds": 0.391,
+        "stdout": "next check finished\n",
+        "stderr": ""
+      }
+    ],
+    "timeout_probe_expected_failure": "The intentional sleeping child exits with timeout code 124; this is a successful regression probe, not a passing release check.",
+    "review": "Independent read-only review reported no findings.",
+    "limits": [
+      "This change affects the local verification runner and handoff documentation only.",
+      "The unchanged application last passed 862 tests with one skip at the paused-restore checkpoint; that full suite was not repeated for this runner-only change.",
+      "No new native device or participant results; no hosted CI run."
+    ]
   }
 }

@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime, timezone
 import importlib.metadata
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -14,12 +15,53 @@ import time
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def main():
+def _positive_finite_seconds(value: str) -> float:
+    try:
+        seconds = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("timeout must be a number of seconds") from exc
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise argparse.ArgumentTypeError("timeout must be a positive finite number of seconds")
+    return seconds
+
+
+def _text(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode(errors="replace")
+    return str(value)
+
+
+def _run_check(command: list[str], environment: dict[str, str], timeout: float) -> dict[str, object]:
+    started = time.perf_counter()
+    command_text = "python " + " ".join(command)
+    try:
+        process = subprocess.run([sys.executable, *command], cwd=ROOT, env=environment,
+                                 capture_output=True, text=True, timeout=timeout)
+        return {"command": command_text,
+                "returncode": process.returncode,
+                "seconds": round(time.perf_counter() - started, 3),
+                "stdout": process.stdout, "stderr": process.stderr}
+    except subprocess.TimeoutExpired as exc:
+        stdout = getattr(exc, "stdout", None)
+        if stdout is None:
+            stdout = getattr(exc, "output", None)
+        return {"command": command_text,
+                "returncode": 124,
+                "seconds": round(time.perf_counter() - started, 3),
+                "stdout": _text(stdout), "stderr": _text(exc.stderr),
+                "timed_out": True}
+
+
+def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "docs/evidence/verification.json")
     parser.add_argument("--synthetic-output", type=Path,
                         default=ROOT / "experiments/synthetic-software-check.json")
-    args = parser.parse_args()
+    parser.add_argument("--timeout", type=_positive_finite_seconds, default=600.0,
+                        help="Per-command timeout in seconds.")
+    args = parser.parse_args(argv)
     commands = [
         ["-m", "ruff", "check", "gestureforge", "tests", "scripts"],
         ["-m", "mypy", "gestureforge", "scripts", "tests"],
@@ -33,14 +75,10 @@ def main():
     environment = {**os.environ, "QT_QPA_PLATFORM": "offscreen",
                    "MPLCONFIGDIR": str(ROOT / ".cache" / "matplotlib")}
     for command in commands:
-        started = time.perf_counter()
-        process = subprocess.run([sys.executable, *command], cwd=ROOT, env=environment,
-                                 capture_output=True, text=True, timeout=600)
-        results.append({"command": "python " + " ".join(command),
-                        "returncode": process.returncode,
-                        "seconds": round(time.perf_counter() - started, 3),
-                        "stdout": process.stdout, "stderr": process.stderr})
-        print(results[-1]["command"], "PASS" if process.returncode == 0 else "FAIL", flush=True)
+        results.append(_run_check(command, environment, args.timeout))
+        print(results[-1]["command"],
+              "PASS" if results[-1]["returncode"] == 0 else "FAIL",
+              flush=True)
     report = {"timestamp_utc": datetime.now(timezone.utc).isoformat(),
               "python": platform.python_version(), "platform": platform.platform(),
               "versions": {name: importlib.metadata.version(name) for name in

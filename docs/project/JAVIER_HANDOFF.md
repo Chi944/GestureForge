@@ -2,6 +2,34 @@
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
+## Next delivery — assigned 7 October
+
+Work through J1–J4, returning each useful delivery separately. This is the
+current priority order; the detailed procedures and older checkpoints below
+remain reference evidence. You also coordinate the observations for Deston's
+GF-P20 and the release checks for GF-P23. He retains analysis and acceptance.
+
+| Priority | Work you execute | Return to Deston | Completion boundary |
+|---|---|---|---|
+| J1 — short restore retest | On current main, run the camera-free Restore session and Restore progress checks below. Complete remaining laptop-A target-association and active-capture Camera/focus recovery cases where available. | Focused GF-P19 PR: source/device/operator identity, observed before/after mode, saved state, no-launch outcome, explicit Live reactivation, failures/retries and separate summary segments. | Preserve PR #24/#26 as earlier-build evidence. Recheck affected cases only. Record active-capture Camera handoff separately from a Camera launch with capture already off. |
+| J2 — coordinate laptop B | Give Hau Jie the same identified build/package, guide and remaining case matrix. He operates his own Windows laptop; you consolidate GF-P19 and delegated GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. | Per-device matrix with actual operator, build, guide assistance, observed outcomes, faults, duration/rate/peak-memory/shutdown evidence and private references. | Do not claim you operated laptop B. Preliminary checks can start now; GF-P23 acceptance follows GF-P21/GF-P22 defect closure and affected retests. |
+| J3 — workflow observations | Prepare study order, observer records and disjoint exports using [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md). Coordinate the manual/standard/personal study and hold/negative/latency sessions once participants and frozen settings are ready. | For Deston's GF-P20 analysis: actual separate setup/readiness/task times, completion/errors/help/fallback, all attempts, frozen identities, disjoint summary exports, twenty five-second holds/profile, ten minutes of negative activity/profile and independently annotated stable-pose onset. | Plan condition order before the study. Preserve unavailable/failed conditions. No qualifying starter is currently supplied; never substitute a personal model or bypass readiness to claim standard success. Manual preparation can proceed now; final acceptance retains GF-P16/GF-P17 gates. |
+| J4 — guide and video preparation | Draft GF-P25 setup/troubleshooting, Harbor walkthrough and demo storyboard now. A camera-free manual walkthrough can be captured as a labelled draft; add the real gesture/first-use workflow and final results when verified. | Guide changes in your branch plus private video/storyboard files, mapping each shown capability to actual evidence and including one real limitation/recovery. | Final demo must show the committed product scope. Keep video/Word files local; draft footage is not final release evidence. The ten-minute presentation is a separate deliverable. |
+
+**First handoff:** return J1's short restore result before waiting for every
+remaining device case. Start J2 coordination and J4 in parallel. For J3, agree
+the observer and condition order before any measured task; coordinate frozen
+recognition inputs and participant recruitment with Hau Jie. Do not repeat a
+long trial merely to obtain a better result. Use the existing replay and
+comparison tools; ask Deston to resolve shared-shell faults using a minimal
+reproduction, rather than rebuilding his integration.
+
+Every PR must include task IDs, exact source revision, actual checks, outcomes,
+remaining cases and private evidence references. Push only
+`codex/javier-shortcuts`, open a PR to `main` and leave it unmerged for Deston.
+The additional execution work does not reassign original task ownership,
+change weights or mark a task Done before its evidence is accepted.
+
 ## Laptop B assignment confirmed 5 October
 
 **Laptop A is your existing Windows computer; laptop B is Hau Jie's physical Windows laptop.** You coordinate GF-P19 and consolidate the per-device results. Hau Jie installs and operates laptop B; Deston retains final acceptance, including GF-P23. You do not need another laptop. This assignment adds no completed test result.
@@ -23,6 +51,9 @@ git push -u origin codex/javier-shortcuts
 Before every commit/push, confirm the current branch is `codex/javier-shortcuts`. Open a PR from this branch into `main`, request Deston's review, and leave it unmerged. Only Deston integrates approved work into `main`; do not force-push shared history.
 
 ## Start with these tasks
+
+Use this section for the detailed J1/J2 procedure. The 7 October delivery table
+above controls priorities; completed earlier-build cases remain evidence.
 
 **Review update, 7 October:** [PR #26](https://github.com/Chi944/GestureForge_304/pull/26)
 is reviewed and merged as [partial laptop-A evidence](../evidence/GF_P19_HARBOR_LAPTOP_A_FOLLOWUP_2026-10-07.md).
@@ -56,8 +87,10 @@ software checks can proceed before a qualifying standard starter exists, but
 they cannot close that dependency. The two-laptop integrated cases below remain
 GF-P19, and independent installation/stability remains GF-P23.
 
-1. **Camera-free Harbor first.** Run the [six-stage manual walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
-   in manual LIVE mode without a profile or webcam. **Return:** source revision,
+1. **Preserve completed camera-free Harbor evidence.** Your laptop-A walkthrough
+   is already recorded. Retest its restore behaviour using J1 above; the
+   [six-stage manual walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
+   remains the procedure for Hau Jie's new laptop-B run. **Return:** source revision,
    device/Windows version, observed stage outcomes and acknowledgements, failures
    and retries, missing-target recovery, paused reload/no-replay observations and
    both Session summary segments. A launch request is not a human task outcome.
@@ -183,4 +216,4 @@ pipeline diagnostic does not prove either. Do not build a second capture logger.
 
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/javier-shortcuts`; sync reviewed main and read TEAM_GUIDE.md, this brief and CONTRACTS.md. Preserve accepted laptop-A observations. Laptop B is Hau Jie's physical Windows laptop: coordinate the remaining GF-P19 case matrix with him as operator, using the same identified build and fresh setup. Collect source/OS/camera/operator identity, actual outcomes, failures/retries, summary segments and private evidence references without claiming you operated laptop B. Check app/file/folder/HTTPS errors, focus return/no replay, actual active-capture Camera handoff and paused restore. Verify the new visible failure notice only in affected cases. Coordinate his GF-P23 fresh-install/offline/thirty-minute Studio/shutdown checks for Deston's review; keep online HTTPS and unrun gesture cases separate. Manual checks need no profile. Gesture cases use the operator's own profile and qualifying current-session Practice gate. Keep private paths/data/full exports local. Fix only your owned modules and report shared-shell defects with a short reproduction. Submit one focused consolidated evidence PR from your branch, leaving it unmerged. Never push/merge into main, invent test outcomes or change original owners/weights/Done status because execution was delegated.
+> Work only on `codex/javier-shortcuts`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md and WORKFLOW_COMPARISON.md. Follow J1–J4: first return the short current-main Restore session/Restore progress native check; preserve earlier PR #24/#26 results and complete only remaining laptop-A cases. Coordinate Hau Jie operating laptop B for the two-device matrix and GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. Prepare and coordinate Deston's GF-P20 observer records, study order, holds/negatives/latency and disjoint exports using frozen inputs from Hau Jie. Retain failed/unavailable conditions; never bypass Practice or relabel manual fallback as gesture success. Draft GF-P25 guide/storyboard now. Keep private data, paths, full exports, videos, Word reports and logs local. Fix only evidenced defects in your owned modules and send shared-shell reproductions to Deston. Push focused PRs only from your branch and leave them unmerged; Deston keeps integration, interpretation and acceptance. Do not change original task ownership, weights or Done status.

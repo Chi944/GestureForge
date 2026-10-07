@@ -1,8 +1,35 @@
 # GestureForge Studio team implementation guide
 
-Updated 5 October 2026 · Project deadline 7 November 2026
+Updated 7 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
+
+## Current deliveries — 7 October
+
+Read the **Next delivery** table at the top of your individual brief first.
+It supersedes older recording priorities. Return small, reviewable deliveries
+as they become available instead of waiting for your entire lane to finish.
+
+| Delivery | Execution | Deston's review / final gate |
+|---|---|---|
+| H1 / GF-P17 preparation | Hau Jie reconciles the saved D1 starter reports and fixed cases; no repeated search | Review provenance, counts and supported conclusions before a changed training protocol |
+| H2 / GF-P17 → GF-P18 | Hau Jie coordinates two new consenting independent participants, personal TRAIN/VALIDATION, all development settings and later untouched TEST | Freeze review before TEST; reproduce the paired comparison and accept results, including failed targets. This task does not depend on the GF-P20 live study or a successful deployment starter |
+| J1 / GF-P19 | Javier records the short current-main Restore session/Restore progress retest and remaining laptop-A cases | Review actual paused Preview/no replay and explicit reactivation; preserve PR #24/#26 build boundaries |
+| H3 + J2 / GF-P19, GF-P23 | Hau Jie operates laptop B; Javier coordinates and consolidates the two-device matrix, fresh install, offline core and thirty-minute Studio/shutdown evidence | Review evidence and affected retests after GF-P21/GF-P22; no new second-device result is yet claimed |
+| J3 / GF-P20 | Javier coordinates observer records, condition order, actual hold/negative/latency sessions and disjoint exports; Hau Jie supplies frozen recognition inputs | Deston analyses/replays measurements and accepts the integrated study after GF-P16/GF-P17. Unavailable standard mode is reported, never silently replaced |
+| H4 + J4 / GF-P24, GF-P25 | Hau Jie drafts methods/limitations; Javier drafts the guide and demo storyboard now | Final results, guide-only/native release evidence and complete demo are still required before GF-P26/GF-P27 |
+
+Original task owners, weights, dependencies and acceptance criteria stay fixed.
+Delegation shifts execution, not accountability. GF-P17/GF-P24/GF-P25 are selected
+for preparation now; their final dependencies do not prevent drafting or recruitment.
+Private participant data, full exports, videos and Word deliverables go through
+the team's existing private channel, not Git/Trello. Do not update the private
+prompt or decision logs as part of this handoff.
+
+Deston's next acceptance opportunity is GF-P18 (10 task-weight hours): the
+reviewable frozen packet and actual paired results would take his accepted
+total from 16/75 to 26/75 (34.7%) and the team from 115/223 to 125/223 (56.1%).
+These are conditional totals, not current completion claims.
 
 
 **5 October integration update:** GF-P10's approved-standard loader and six-action activation route are implemented with generated-fixture verification. No standard model is enabled: the recorded bounded comparison found no qualifying candidate and redistribution permission is unresolved. Personal LIVE still requires full Practice. PR #24 is merged as partial laptop-A evidence; Javier continues the missing native cases. PR #25 delivers GF-P12 selected-pose repair with Deston's shared-camera/Profile integration, explicit candidate create and rollback path; independent review accepts it against the original software criterion. Deston keeps final integration and release acceptance. See current PROGRESS.md; accepted completion is 51.6% (15/29 tasks).
@@ -20,8 +47,8 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 | Member | Owns | Current next step | Reviewer |
 |---|---|---|---|
 | Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | GF-P12 software integration accepted; seven open integration/evaluation/release tasks still need real inputs, hardware or final deliverables, so Deston's task percentage is unchanged | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | Run the D1 saved-report starter diagnosis, then do targeted own-profile physical repair only if diagnosed; coordinate laptop-B evidence with Javier; actual own-profile Practice/evaluation remains separate | Deston |
-| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | Coordinate GF-P19 on laptop A and Hau Jie-operated laptop B, consolidate evidence, then delegated GF-P23 installation/offline/stability and personal LIVE only after an own-profile full Practice pass; return the outputs in [your brief](JAVIER_HANDOFF.md#start-with-these-tasks) | Deston |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | H1 saved-report diagnosis; H2 independent data/freeze packet; H3 laptop-B checks; H4 methods draft, in [your brief](HAU_JIE_HANDOFF.md#next-delivery--assigned-7-october) | Deston |
+| Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | J1 short restore retest; J2 device/release evidence; J3 observer-study coordination; J4 guide/storyboard, in [your brief](JAVIER_HANDOFF.md#next-delivery--assigned-7-october) | Deston |
 
 Manual execution is delegated to Hau Jie and Javier in the priorities above;
 each follows their own brief after syncing the reviewed software checkpoint.

@@ -4,6 +4,39 @@ Snapshot: 7 October 2026. This measures the final-project extension, not the alr
 
 ## Current work on 7 October
 
+**Next deliveries assigned:** Hau Jie has H1 saved-report diagnosis, H2 independent
+participant/freeze inputs, H3 laptop-B operation and H4 methods drafting.
+Javier has J1 the short restore retest, J2 device/release evidence coordination,
+J3 the observer study and hold/negative/latency records, and J4 guide/storyboard
+preparation. Their briefs specify first handoffs, outputs and acceptance gates;
+the shared guide maps delegated execution to Deston's review. GF-P17/GF-P24/GF-P25
+are selected **To Do**, not claimed started or complete. Original owners,
+weights and final dependencies are unchanged.
+
+The acceptance review found no further complete Deston task from existing
+evidence. GF-P18 is the clearest next acceptance opportunity: Hau Jie's H2 packet
+and actual frozen paired results can close it even if recognition misses its
+target, with the failure explained honestly. It does not require GF-P20 or a
+deployable starter. Accepting that task would raise Deston to 34.7% and the team
+to 56.1%; current accepted progress remains 21.3% and 51.6% respectively.
+
+**Local verification repair:** `scripts/verify.py` now preserves partial output
+when a check times out, records it as failed with exit code 124, runs the remaining
+checks and writes the report. A positive finite `--timeout` controls each check;
+the default remains 600 seconds. README and the Windows guide use ignored local
+output paths and a 1,200-second limit for slower laptops, preserving published
+evidence. This addresses the aborted verification run described below; it does
+not turn a timed-out process into a pass or change application behaviour.
+
+Fresh verification for this bounded runner change: seven regression tests pass;
+full-project Ruff and mypy (96 source files) pass. A real sleeping child process
+was deliberately timed out: partial output and failure code 124 were retained,
+then a subsequent real check succeeded. Independent code and handoff reviews
+found no remaining issues. The unchanged application's 862-pass full-suite result
+below remains the previous checkpoint; it was not rerun for documentation and
+runner changes. Trello now reflects the eight updated acceptance/delivery cards
+and the three preparation cards selected To Do.
+
 [PR #26](https://github.com/Chi944/GestureForge_304/pull/26) is reviewed and merged
 as attributed partial laptop-A evidence. Its missing-target notice/retry was
 observed on `5595129`; earlier Harbor/focus observations remain tied to `9e109a7`.

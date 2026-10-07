@@ -147,7 +147,7 @@ Studio also accepts personal schema-2 datasets collected with `python -m gesture
 Verify the project without overwriting historical assignment evidence:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/verify.py --output docs/project/verification.json --synthetic-output experiments/local/project-software-check.json
+.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/project-verification.json --synthetic-output experiments/local/project-software-check.json
 ```
 
 [Current project checks](docs/project/verification.json) record software evidence. They do not establish live-camera performance or completion of remaining features.
@@ -250,7 +250,7 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 
 ```powershell
 # Automated tests, lint, type checks, GUI smoke and synthetic software checks
-.\.venv\Scripts\python.exe scripts/verify.py --output docs/project/verification.json --synthetic-output experiments/local/project-software-check.json
+.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/project-verification.json --synthetic-output experiments/local/project-software-check.json
 
 # Reproduce the recommended v3 comparison from the private P01 package
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/reproduced-pilot-v3.json
@@ -260,6 +260,13 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 ```
 
 CI runs locally with `scripts/verify.py`; release scripts produce the transferable ZIPs. GitHub Actions is disabled while hosted usage is unavailable, and the workflow is retained for manual use only. No deployment service is required for this desktop app.
+
+`--timeout` is a positive, finite limit in seconds **per check** (default 600).
+The example allows 1,200 seconds on slower laptops. A timed-out check stays
+failed with its partial output in the report; the remaining checks still run
+and the overall command exits unsuccessfully. Save each device/run under a
+distinct local output filename when retaining evidence. These local output
+paths keep the published historical verification records intact.
 
 [Recorded software checks](docs/evidence/verification.json) distinguish automated verification from live hardware evidence. Synthetic fixtures test the software; they are not human recognition results.
 

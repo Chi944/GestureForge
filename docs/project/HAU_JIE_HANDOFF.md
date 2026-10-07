@@ -2,8 +2,41 @@
 
 You own recognition and personalisation for GestureForge Studio. Build the reusable AI and profile components; Deston owns integration and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` first. Work is assigned for the project due 7 November 2026; the assignment is already submitted.
 
+## Next delivery — assigned 7 October
 
-**Starter integration update, 5 October:** Deston implemented the approved-release loader and separate standard six-action LIVE gate. No candidate is enabled: the recorded 48-setting comparison found none qualifying. Continue only the saved private D1 starter audit and any diagnosed own-profile selected-pose repair. A later release needs the exact frozen TRAIN manifest/sidecar, all estimator settings, expected rebuilt revision, person-separated evidence and distribution permission for review. See CONTRACTS.md. Keep existing private inputs private.
+Work through H1–H4 below, returning each useful delivery separately. This order
+supersedes the older recording instructions later in this brief. New independent
+evaluation participants are needed for GF-P17/GF-P18; this is separate from
+repairing or repeating the existing P01/P02/P03 development recordings.
+
+| Priority | Work you execute | Return to Deston | Completion boundary |
+|---|---|---|---|
+| H1 — saved-report diagnosis | Run D1 in [STARTER_FAILURE_ANALYSIS.md](STARTER_FAILURE_ANALYSIS.md): reconcile the matching baseline and diagnostic, all six folds and the fixed ten cases. Do not repeat the 48-setting search. | A focused aggregate evidence PR with source/configuration/input hashes, reconciled counts, each case or its documented absence, limits and one supported next hypothesis. Keep private inputs separate. | D1 can finish with an unresolved physical cause. Missing notes cannot establish orientation, lighting or pose as the cause. |
+| H2 — independent evaluation inputs | Coordinate two new consenting participants excluded from starter fitting **and tuning**. Prepare each person's separate personal TRAIN/VALIDATION sessions using the exact shared standard poses/hand. Disclose all development inputs and selected settings to Deston. | Private numeric manifests/sidecars, permission scope, pose descriptions, split/session provenance, hashes and the proposed [paired configuration](PAIRED_EVALUATION.md). After Deston's freeze review, collect separate untouched TEST sessions, retaining every scheduled invalid/rejected slot. | Freeze before collecting/scoring TEST. Deston reproduces and accepts GF-P18. Poor scores remain valid results; they do not approve a standard starter for deployment. Do not tune on TEST. |
+| H3 — operate laptop B | Follow Javier's agreed GF-P19 matrix and the [Windows guide](../WINDOWS_LAPTOP.md) on your physical laptop. Use a fresh setup, local bindings and the same identified build. Run offline core, thirty-minute Studio stability and clean shutdown checks for GF-P23. | Per-case outcomes to Javier: actual operator/device/build/package identity, help or guide deviations, failures/retries, duration, observation rate, peak memory, shutdown and private evidence references. Explicitly identify anything unmeasured or unrun. | Manual cases need no model. Gesture cases use your own profile and full current-session Practice gate. Javier consolidates; Deston accepts after the original defect gates. |
+| H4 — report preparation | Draft GF-P24 methods, data protocol, algorithm trade-offs, rejection, attribution and limitations now from the implemented code and saved evidence. Add final results after GF-P18/GF-P21. | Local Word methods/results contribution and verified reference list through the team's existing channel; measured and unmeasured results clearly separated. | Keep Word documents/data/logs out of Git. A methods draft is useful now; GF-P24 is Done only when final results and limits match the evidence. |
+
+**First handoff:** send H1 as a small PR; include the H2 recruitment/input status
+without claiming that participants have already been recruited or recorded.
+Participant preparation and H3/H4 may proceed while diagnosis is reviewed.
+If a file, permission or participant is unavailable, report that exact missing
+item and continue the independent work. Do not ask Deston to repeat long trials
+or collect the same development data again without a diagnosed need.
+
+For H2, follow the existing freeze-and-score commands in
+[PAIRED_EVALUATION.md](PAIRED_EVALUATION.md). Preserve the freeze file and hashes
+before TEST exists. A qualifying deployment starter is a separate GF-P10 gate;
+it is not a prerequisite for reporting an honest failed GF-P18 comparison.
+Do not identify existing development contributors as unseen participants.
+
+Every PR must name the task IDs, base/source commit, changed files, actual check
+results, evidence limits and private handoff references. Push only
+`codex/hau-jie-profiles`, open a PR to `main` and leave it for Deston's review.
+Deston retains shared-shell changes, freeze approval, integration and acceptance;
+delegated execution does not change the original task weights or Done status.
+
+
+**Starter integration update, 5 October:** Deston implemented the approved-release loader and separate standard six-action LIVE gate. No candidate is enabled: the recorded 48-setting comparison found none qualifying. Diagnose the existing starter through the saved private D1 audit; use selected-pose repair only for a diagnosed own-profile need. H2's new independent evaluation and H3/H4 can proceed separately. A later deployment release needs the exact frozen TRAIN manifest/sidecar, all estimator settings, expected rebuilt revision, person-separated evidence and distribution permission for review. See CONTRACTS.md. Keep existing private inputs private.
 
 ## Laptop B assignment confirmed 5 October
 
@@ -41,13 +74,12 @@ git push -u origin codex/hau-jie-profiles
 
 Before every commit/push, confirm the current branch is `codex/hau-jie-profiles`. Open a PR from this branch into `main`, request Deston's review, and leave it unmerged. Only Deston integrates approved work into `main`; do not force-push shared history.
 
-## Start with these tasks
+## Supporting procedures and earlier integration evidence
 
-**Current assignment:** you execute this recognition/profile validation after
-syncing the reviewed software checkpoint into your own branch. Fix reproducible
-software defects before repeating affected manual checks; Deston retains shared
-interface design, integration and final review. Follow these priorities rather
-than the older repeat-run instructions below.
+Use the following recognition/profile procedures when H1 diagnoses a need or a
+specific H3 gesture case requires them. They are not prerequisites for the new
+H2 participant preparation or H4 methods draft. Fix a reproducible software fault
+before repeating an affected recording; preserve earlier failures.
 
 **Acceptance update, 5 October:** GF-P28 is Done as a completed feasibility
 investigation with no qualifying starter. Review accepts your supplied
@@ -129,8 +161,8 @@ support. Reuse these rather than building another scorer. Keep all fitting and
 tuning manifests, selected settings, hand and exact standard-pose descriptions
 ready for review. New TEST data require a separate manifest and matching pose ID;
 freeze before inspecting outcomes. Legacy development files stay unchanged.
-This is subsequent evaluation work, not a request to interrupt the priorities
-above or repeat Deston's recordings.
+The 7 October H2 assignment now makes this an immediate preparation task;
+it does not request repetition of Deston's development recordings.
 
 Latest integration, 4 October: sync main before recording. Practice v3 queues
 Begin for up to two seconds while waiting for fresh capture/READY, and a
@@ -259,4 +291,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main and read TEAM_GUIDE.md, this brief, CONTRACTS.md and PERSONAL_REHEARSAL_INTERFACE.md. Use the integrated GF-P12 Repair pose flow for a separate reviewed TRAIN candidate, unchanged original profile/data and explicit rollback after diagnostic need. Reuse shared capture and existing profile create/load; do not build another camera or loader. Run D1 in STARTER_FAILURE_ANALYSIS.md on your matching saved private baseline/diagnostic; return an aggregate decision with provenance and no invented cause or new fit. Your Windows computer is laptop B: coordinate with Javier, install the identified current Studio package in a fresh environment, run the assigned GF-P19 cases and GF-P23 offline/thirty-minute checks, and record yourself as operator. Manual checks need no profile; any gesture result belongs to your own profile and requires the existing current-session gate. Preserve failures and unrun cases. Keep raw data, private paths and full exports local. Return concise results and private evidence references to Javier for his consolidated evidence PR. Push your code only to your own branch and open a focused PR for Deston, leaving it unmerged. Deston retains shared-shell integration and final acceptance. Do not repeat long Deston trials, relax readiness, relabel your results as P01 or change task weights/Done status without acceptance.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, STARTER_FAILURE_ANALYSIS.md and PAIRED_EVALUATION.md. Follow H1–H4: return the saved-report D1 audit first; prepare two genuinely new consenting participants and all personal/starter development inputs for Deston's configuration freeze; collect untouched TEST only after that freeze. Preserve failures and UNKNOWN slots; poor scores are reportable results, not a reason to tune TEST or enable a failed starter. Operate your laptop as laptop B for Javier's native matrix and GF-P23 fresh-install/offline/thirty-minute checks. Draft GF-P24 methods now and send Word files privately. Reuse existing collection/evaluation tools; repair only evidenced defects in your modules. Keep data, full exports, Word reports and logs local. Return one focused PR at a time with actual checks and limits; push only your branch and leave PRs to main unmerged for Deston. Do not change original owners, weights or acceptance status.
