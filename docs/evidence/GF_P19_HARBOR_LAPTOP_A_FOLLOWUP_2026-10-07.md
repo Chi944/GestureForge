@@ -118,9 +118,10 @@ $LASTEXITCODE
 
 ## Remaining work and limitations
 
-- Javier confirms Deston is operating laptop B, superseding the uploaded
-  handoff's Hau Jie assignment for this coordination. No laptop-B operator
-  record/results were supplied here; this statement adds no completed test.
+- Laptop B remains Hau Jie's Windows laptop, operated by Hau Jie, with Javier
+  coordinating and Deston reviewing acceptance, as assigned by Deston on
+  5 October. The supplied follow-up's different operator statement does not
+  change that assignment. No laptop-B operator record/results were supplied.
 - Laptop B integrated cases and fresh independent installation, offline core,
   thirty-minute Studio stability, measured rates/memory and clean shutdown
   evidence remain unverified in this follow-up. Deston retains final acceptance.
