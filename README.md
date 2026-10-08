@@ -30,6 +30,12 @@ The final project is now scoped as **GestureForge Studio** for corporate trainin
 
 Current project foundation on `main`:
 
+The [participant collection kits](docs/project/PARTICIPANT_KITS.md) prepare
+offline Windows/macOS browser recording without Python. Each local ZIP contains
+a PDF guide and downloads a clearly named return-data ZIP. These collect
+development poses only; extracted-file camera checks on both operating systems
+remain required before broad distribution. They do not replace the Studio app.
+
 Manual validation is assigned in the updated [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md)
 and [Javier brief](docs/project/JAVIER_HANDOFF.md): profile/Practice evidence for Hau
 Jie, and Harbor/Windows recovery plus fresh-install/offline/stability checks for

@@ -774,5 +774,32 @@
       "stage_refresh": "New test failed before the fix at Continue: internal eligibility true but Start disabled. After fix, Continue/Previous/Finish regression passes.",
       "standard_harbor": "Corrected standard fixtures use LEGACY_VOCABULARY. Authored standard asset preserves six stages/actions; mismatched custom asset stays manual-only; six generated routed advances finish once."
     }
+  },
+  "participant_kits_20261008": {
+    "timestamp_utc": "2026-10-08T03:05:29.691055+00:00",
+    "base_commit": "e00cfdb33ce6aed4e76a3b87263e33992a739cd9",
+    "scope": "Offline participant development collection and strict browser-to-native numeric import; generated fixtures only",
+    "python_targeted_tests": {
+      "passed": 72,
+      "seconds": 18.56,
+      "files": [
+        "test_import_participant.py",
+        "test_package_participant.py",
+        "test_dataset.py",
+        "test_features.py",
+        "test_paired_evaluate.py"
+      ]
+    },
+    "node_tests": {
+      "passed": 8,
+      "command": "node --test tests/participant_collector.test.mjs"
+    },
+    "ruff": "whole repository passed",
+    "mypy": "gestureforge and scripts: 53 source files passed",
+    "review": "Independent review cleared initial findings; root added consent-clear and storage failure recovery checks",
+    "documents": "Two OS-specific PDFs, two pages each; rendered and visually inspected",
+    "archives": "Two ZIPs built; CRC, asset checksum and embedded-file checks; local artifacts and hashes kept in .local/participant-deliverables",
+    "device_checks": "Not run: local-file browser automation is blocked. Actual Windows/macOS extracted-kit camera, offline, recovery and export/import checks still required.",
+    "evidence_limit": "No participant data collected; no native Studio or held-out recognition result; accepted percentages unchanged."
   }
 }

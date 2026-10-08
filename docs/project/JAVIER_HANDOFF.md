@@ -32,6 +32,14 @@ change weights or mark a task Done before its evidence is accepted.
 
 ## Laptop B assignment confirmed 5 October
 
+**8 October participant-kit check:** coordinate with Hau Jie on the new
+[Windows/macOS browser collection kits](PARTICIPANT_KITS.md). Verify the
+extracted ZIP's PDF-only instructions, camera permission, offline first trial,
+pause/reload/return-ZIP recovery and successful coordinator import. Record
+actual OS/browser/package hash and assistance; a Mac operator is still needed
+for Mac evidence. This is a small collection-tool check, separate from your
+existing Studio laptop-A/B release matrix and the thirty-minute stability run.
+
 **8 October integration follow-up:** the standard Harbor variant is
 `assets/harbor_standard_workspace.json` for recognisers using
 `NEXT/PREVIOUS/BOOKMARK`; the existing asset retains literal `G1/G2/G3`.

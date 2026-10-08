@@ -4,6 +4,24 @@ Snapshot: 8 October 2026. This measures the final-project extension, not the alr
 
 ## Current work on 8 October
 
+**Participant handoff tooling:** added an offline browser development recorder,
+strict return-ZIP importer using the existing feature pipeline, and a builder
+for separate Windows/macOS ZIPs with two-page PDF guides. No Python installation
+is needed on participant machines. The recorder saves numeric landmarks only,
+retains invalid slots and supports local draft/return-ZIP recovery. H2 remains
+two new independent people, 48 TRAIN + 48 VALIDATION + 8 development UNKNOWN
+trials per person; TEST collection remains excluded before configuration freeze.
+
+The coordinator confirmed development-first recording, internet availability,
+unknown Mac architecture, and deletion after marking/appeals with team/private
+marker access only. Each participant must consent individually. The briefs and
+GF-P17 Trello handoff now describe allocation, collection and private return.
+Browser/native acquisition differences remain recorded; shared model and feature
+code do not establish equivalent performance. Actual extracted-kit Windows/Mac
+camera checks are still unverified: this session's browser tool blocks local-file
+pages. This prepares GF-P17/GF-P18 without claiming new participant results.
+Accepted progress stays Deston 21.3%, Hau Jie 68.0%, Javier 65.8%, team 51.6%.
+
 **P10/P16 integration repair and starter handoff:** review found two concrete
 software defects. The approved standard contract uses `NEXT/PREVIOUS/BOOKMARK`,
 but the supplied Harbor workspace binds literal `G1/G2/G3`. A separate

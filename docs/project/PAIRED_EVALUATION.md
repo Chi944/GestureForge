@@ -28,6 +28,14 @@ first inspected results, consent, omitted tuning data or physical pose equivalen
 
 ## 1. Declare the selected development configuration
 
+For inexperienced remote participants, [PARTICIPANT_KITS.md](PARTICIPANT_KITS.md)
+describes offline browser development recording and strict import to the existing
+numeric format. Record the browser/runtime/model provenance and collection
+conditions. Shared model/feature hashes alone do not establish native/browser
+equivalence. Preserve the declared acquisition protocol for the later separate
+TEST session; review any runtime change before freezing. Browser kit completion
+does not complete the paired evaluation or approve a starter.
+
 Create a local JSON file, for example `experiments/local/P04-paired.json`.
 The example below uses the legacy NEXT/PREVIOUS/BOOKMARK/NEUTRAL vocabulary.
 Paths, participant, descriptions and settings are **illustrative**, not an approved

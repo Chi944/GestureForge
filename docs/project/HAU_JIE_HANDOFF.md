@@ -4,6 +4,19 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**8 October participant-kit handoff:** use the collection-only Windows/macOS
+ZIPs and PDF guides described in [PARTICIPANT_KITS.md](PARTICIPANT_KITS.md) for
+H2's two new independent participants. Allocate pseudonyms; confirm consent,
+team/private-marker access and retention individually. Coordinate one extracted
+kit camera/export check per OS before broad distribution. Have participants send
+the recorder's `EMAIL_THIS_*_development.zip` privately to Deston; do not request
+their program folder or any Python installation. Import and audit all scheduled
+slots, including invalid/partial ones, before selecting personal settings. These
+browser recordings identify their runtime separately from native inputs. Final
+TEST is excluded until Deston freezes the development packet. This preparation
+does not replace H1's existing multi-person starter audit packet or earn H2
+completion before actual participant data and freeze review exist.
+
 Work through H1–H4 below, returning each useful delivery separately. This order
 supersedes the older recording instructions later in this brief. New independent
 evaluation participants are needed for GF-P17/GF-P18; this is separate from

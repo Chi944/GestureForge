@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GestureForge Participant Collector</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, sans-serif; }
+    body { margin: 0; background: #f6f8fb; color: #152033; }
+    main { max-width: 1120px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin: 0 0 12px; font-size: 19px; }
+    section { background: #fff; border: 1px solid #d9e1ec; border-radius: 8px; padding: 18px; margin: 16px 0; }
+    label { display: block; font-weight: 700; margin-top: 12px; }
+    input, select, textarea, button { font: inherit; }
+    input, select, textarea { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #b9c5d5; border-radius: 6px; margin-top: 5px; }
+    textarea { min-height: 70px; resize: vertical; }
+    button { border: 0; border-radius: 6px; padding: 11px 14px; background: #1f5eff; color: #fff; cursor: pointer; margin: 8px 8px 0 0; }
+    button:disabled { background: #aeb8c7; cursor: not-allowed; }
+    .danger { background: #a22626; }
+    .secondary { background: #31516f; }
+    .grid { display: grid; grid-template-columns: minmax(320px, 1fr) 360px; gap: 18px; align-items: start; }
+    .videoBox { background: #101820; border-radius: 8px; overflow: hidden; aspect-ratio: 4 / 3; display: grid; place-items: center; }
+    video, canvas { width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+    video { display: none; }
+    .status { padding: 12px; border-radius: 6px; background: #eaf1ff; margin-top: 12px; }
+    .instruction { font-size: 30px; line-height: 1.2; font-weight: 800; margin: 8px 0; }
+    .muted { color: #526171; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .checks label { font-weight: 400; display: flex; gap: 8px; align-items: flex-start; }
+    .checks input { width: auto; margin-top: 2px; }
+    progress { width: 100%; height: 20px; }
+    code { background: #edf2f7; padding: 2px 5px; border-radius: 4px; }
+    @media (max-width: 800px) { main { padding: 12px; } .grid { grid-template-columns: 1fr; } .instruction { font-size: 24px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>GestureForge Participant Collector</h1>
+  <p class="muted">Collects numeric hand landmarks only. It does not save photos, video or audio.</p>
+
+  <section>
+    <h2>Participant Details</h2>
+    <div class="grid">
+      <div>
+        <label for="participantId">Pseudonym</label>
+        <input id="participantId" placeholder="Example: P04" autocomplete="off">
+
+        <label for="trainConditions">TRAIN session conditions</label>
+        <textarea id="trainConditions" placeholder="Lighting, background, seated/standing, approximate hand distance."></textarea>
+
+        <label for="validationConditions">VALIDATION session conditions</label>
+        <textarea id="validationConditions" placeholder="Record any changed lighting, camera or background conditions."></textarea>
+
+        <div class="checks">
+          <label><input type="checkbox" id="numericConsent"> I agree to local numeric hand landmark collection.</label>
+          <label><input type="checkbox" id="accessConsent"> I agree this numeric data can be shared with the GestureForge team and private marker/tutor. Data will be deleted after marking and appeals finish.</label>
+        </div>
+      </div>
+      <div>
+        <p><strong>Pose mapping</strong></p>
+        <p>Right hand only.</p>
+        <p><code>NEUTRAL</code> open palm<br><code>NEXT</code> fist<br><code>PREVIOUS</code> thumb up<br><code>BOOKMARK</code> index and middle fingers extended</p>
+        <p><strong>Unknown trials</strong></p>
+        <p class="muted">Follow the shown prompt and avoid the enrolled poses.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Camera And Collection</h2>
+    <div class="grid">
+      <div>
+        <div class="videoBox">
+          <canvas id="preview" width="640" height="480"></canvas>
+          <video id="video" playsinline muted></video>
+        </div>
+        <div class="status" id="cameraStatus">Camera not started.</div>
+      </div>
+      <div>
+        <label for="cameraSelect">Camera</label>
+        <select id="cameraSelect"></select>
+        <label for="sessionSelect">Session to collect</label>
+        <select id="sessionSelect">
+          <option value="train">TRAIN</option>
+          <option value="validation">VALIDATION</option>
+          <option value="validation_negative">UNKNOWN validation-negative</option>
+        </select>
+        <div class="row">
+          <button id="startCamera">Start Camera</button>
+          <button id="startCollection" disabled>Start Selected Session</button>
+          <button id="pause" class="danger" disabled>Pause</button>
+          <button id="exportZip" class="secondary">Export Return ZIP</button>
+          <button id="clearDraft" class="danger">Clear Local Draft</button>
+        </div>
+        <label for="importZip">Recover from a previous return ZIP</label>
+        <input id="importZip" type="file" accept=".zip,application/zip">
+        <div class="status">
+          <div class="instruction" id="instruction">Setup required</div>
+          <div id="detail" class="muted">Start the camera and complete the details above.</div>
+          <progress id="progress" value="0" max="1"></progress>
+          <p id="progressText">0 / 104 trials complete</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="application/octet-stream" id="sdk">__SDK_BASE64__</script>
+<script type="application/octet-stream" id="loader">__LOADER_BASE64__</script>
+<script type="application/octet-stream" id="wasm">__WASM_BASE64__</script>
+<script type="application/octet-stream" id="model">__MODEL_BASE64__</script>
+<script type="module" src="collector.mjs"></script>
+</body>
+</html>
