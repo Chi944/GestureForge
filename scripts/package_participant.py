@@ -131,10 +131,10 @@ def write_guide(path: Path, platform: str) -> None:
     ]))
     content += [table, Spacer(1, 12)]
     step("5  Finish the three sections", "Choose <b>TRAIN</b> in the session list, then click "
-         "<b>Start Selected Session</b>. Follow 48 short trials automatically (12 per pose). "
-         "Take a break, remove your hand, then explicitly start <b>VALIDATION</b>: another 48 trials. "
+         "<b>Start Selected Session</b>. Follow 48 short trials automatically (12 per pose; about 5-6 minutes). "
+         "Take a break, remove your hand, then explicitly start <b>VALIDATION</b>: another 48 trials, about 5-6 minutes. "
          "Enter the current conditions for each session. Finally complete the 8 <b>UNKNOWN</b> "
-         "development trials. This kit does not collect final TEST data. The team will contact "
+         "development trials (about 1 minute). Keep the recorder tab visible. This kit does not collect final TEST data. The team will contact "
          "you separately after the evaluation settings are frozen.")
     step("6  Save your return ZIP", "Click <b>Export Return ZIP</b> after each session "
          "and at the end. If still recording, click <b>Pause</b> first and wait for it to settle. "

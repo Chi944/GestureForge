@@ -82,10 +82,11 @@
         <select id="cameraSelect"></select>
         <label for="sessionSelect">Session to collect</label>
         <select id="sessionSelect">
-          <option value="train">TRAIN</option>
-          <option value="validation">VALIDATION</option>
-          <option value="validation_negative">UNKNOWN validation-negative</option>
+          <option value="train">TRAIN - 48 trials, about 5-6 minutes</option>
+          <option value="validation">VALIDATION - 48 trials, about 5-6 minutes</option>
+          <option value="validation_negative">UNKNOWN - 8 trials, about 1 minute</option>
         </select>
+        <p class="muted">Allow 15-20 minutes plus a break for all three sections, including setup and saving. Each trial: 3 seconds to get ready, 2 seconds to hold, then 1 second to relax. Keep this tab visible; use Pause before leaving it.</p>
         <div class="row">
           <button id="startCamera">Start Camera</button>
           <button id="startCollection" disabled>Start Selected Session</button>

@@ -4,6 +4,27 @@ Snapshot: 8 October 2026. This measures the final-project extension, not the alr
 
 ## Current work on 8 October
 
+**PR #27 review and participant recording reliability:** Hau Jie's saved-report
+D1 audit is reviewed and merged as attributed aggregate evidence. The private
+packet `H1-20261008` still needs delivery and independent verification; no
+qualifying starter, new participant recordings or accepted task is inferred.
+His brief now prioritizes that packet, consent/independence checks and a Windows
+kit rehearsal for his two reported prospective participants. Javier coordinates
+the rehearsal separately from the Studio device matrix.
+
+Recorder startup now discards completion callbacks after pause/tab-hide/camera
+loss during video or model loading. A recording session cannot restart the
+camera mid-trial. Session time estimates appear in the recorder and PDF guides:
+TRAIN/VALIDATION about 5-6 minutes each; UNKNOWN about one minute; allow 15-20
+minutes plus a break overall. These are scheduled estimates, not measured user
+times. Extracted-file camera checks on Windows/macOS remain outstanding.
+
+Verification: 11 browser-logic checks, 29 targeted Python tests, Ruff and mypy
+across 53 source files passed. Both two-page PDF guides were rendered and
+visually checked. Five generated Practice regressions and three dataset/paired
+checks passed while investigating PR #27's reported intermittent failures; no
+live-controller or filesystem cause/fix is established by those reruns.
+
 **Participant handoff tooling:** added an offline browser development recorder,
 strict return-ZIP importer using the existing feature pipeline, and a builder
 for separate Windows/macOS ZIPs with two-page PDF guides. No Python installation

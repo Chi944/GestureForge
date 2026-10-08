@@ -461,11 +461,14 @@ async function listCameras(el) {
   });
 }
 
-async function startCamera(el, state) {
-  if (state.cameraStarting) return;
+export async function startCamera(el, state) {
+  if (state.cameraStarting || state.collecting) return;
   const generation = state.generation + 1;
   state.generation = generation;
   state.cameraStarting = true;
+  state.cameraReady = false;
+  state.latest = null;
+  el.startCollection.disabled = true;
   el.startCamera.disabled = true;
   try {
     stopCamera(state);
@@ -483,11 +486,13 @@ async function startCamera(el, state) {
     });
     el.video.srcObject = state.stream;
     await el.video.play();
+    if (state.generation !== generation || !state.stream) return;
     if (el.video.videoWidth && el.video.videoHeight) {
       el.preview.width = el.video.videoWidth;
       el.preview.height = el.video.videoHeight;
     }
-    state.handLandmarker ??= await createLandmarker();
+    state.handLandmarker ??= await (state.createLandmarker?.() ?? createLandmarker());
+    if (state.generation !== generation || !state.stream) return;
     state.lastVideoTime = -1;
     state.lastVideoChange = nowSeconds();
     state.cameraReady = true;
@@ -509,6 +514,7 @@ async function startCamera(el, state) {
 function stopCamera(state) {
   state.stream?.getTracks?.().forEach((track) => track.stop());
   state.stream = null;
+  state.latest = null;
 }
 
 async function createLandmarker() {

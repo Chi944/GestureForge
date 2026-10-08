@@ -31,11 +31,17 @@ The shared physical poses are Right-hand open palm = NEUTRAL, fist = NEXT,
 thumb up = PREVIOUS, index and middle fingers extended = BOOKMARK. Keep the
 unmirrored inference input; only the preview is mirrored. Each person records:
 
-| Section | Trials | Scheduled samples |
-| --- | ---: | ---: |
-| TRAIN | 12 per pose, 48 total | 240 |
-| Separate VALIDATION session | 12 per pose, 48 total | 240 |
-| UNKNOWN development negatives | 8 | 40 |
+| Section | Trials | Scheduled samples | Time to allow |
+| --- | ---: | ---: | --- |
+| TRAIN | 12 per pose, 48 total | 240 | About 5-6 minutes |
+| Separate VALIDATION session | 12 per pose, 48 total | 240 | About 5-6 minutes |
+| UNKNOWN development negatives | 8 | 40 | About 1 minute |
+
+Allow **15-20 minutes plus a break** for setup, all three sections and export.
+Each trial has a three-second countdown, about two seconds holding the pose,
+and one second to relax. These are estimates derived from the schedule, not
+measured participant times; slower tracking, pauses and recovery add time.
+Keep the recorder tab visible and use Pause before leaving it.
 
 Five sample slots fall at 0.2, 0.6, 1.0, 1.4 and 1.8 seconds in each hold.
 Invalid, late and interrupted slots remain in the return data. These are

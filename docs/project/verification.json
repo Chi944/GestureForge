@@ -801,5 +801,53 @@
     "archives": "Two ZIPs built; CRC, asset checksum and embedded-file checks; local artifacts and hashes kept in .local/participant-deliverables",
     "device_checks": "Not run: local-file browser automation is blocked. Actual Windows/macOS extracted-kit camera, offline, recovery and export/import checks still required.",
     "evidence_limit": "No participant data collected; no native Studio or held-out recognition result; accepted percentages unchanged."
+  },
+  "participant_startup_20261008": {
+    "timestamp_utc": "2026-10-08T06:07:41.866535+00:00",
+    "base_commit": "9aa58e8f1dfac6a2f3be94807222f1130961698c",
+    "scope": "Cancel stale async camera startup and explain participant session duration",
+    "source_sha256": {
+      "participant\\collector.mjs": "240c24d4d2a7dec1520f9ada2d95708794f38a483507947fe083d8e8b0a9174e",
+      "tests\\participant_collector.test.mjs": "22249daa3b5c936426dbd05541553921c64874f94b9bef6accaf95eed875fcd4",
+      "participant\\collector.html": "ba4bde61109adac6f6060cc6ba2100214a1ba11e0851c9573c194fd918143a1e",
+      "scripts\\package_participant.py": "bc9a4a523813d3195b5c087d2ad981c44d472b59496105051cd04a968c4a60e7"
+    },
+    "checks": {
+      "node_tests": {
+        "passed": 11,
+        "failed": 0,
+        "command": "node --test tests/participant_collector.test.mjs"
+      },
+      "node_syntax": "passed",
+      "python_tests": {
+        "passed": 29,
+        "seconds": 2.15,
+        "files": [
+          "tests/test_import_participant.py",
+          "tests/test_package_participant.py"
+        ],
+        "warning": "Intentional duplicate ZIP entry rejection fixture"
+      },
+      "ruff": "gestureforge tests scripts passed",
+      "mypy": "gestureforge scripts: 53 source files passed",
+      "pdfs": "Both OS guides rendered and visually checked, two pages each"
+    },
+    "pr27": "Reviewed and merged as Hau Jie attributed aggregate H1 audit; private packet not independently received/reproduced here",
+    "studio_followup": {
+      "practice_generated": {
+        "passed": 5,
+        "scope": "full 50-window host regression and neutral-before-Begin helper"
+      },
+      "dataset_and_paired": {
+        "passed": 3,
+        "scope": "failed manifest replace recovery, frozen feature integrity and validation leakage"
+      },
+      "finding": "Reported intermittent failures not reproduced; no controller or storage patch claimed"
+    },
+    "limitations": [
+      "Stub camera/model promises prove cancellation logic, not real browser camera operation.",
+      "Windows/macOS extracted-file checks remain outstanding; no browser automation bypass used.",
+      "No new real participant data, starter approval, release acceptance or additional completed task weight."
+    ]
   }
 }

@@ -15,6 +15,7 @@ import {
   makeTrialPlan,
   readOwnCollectionZip,
   stampRecords,
+  startCamera,
   validateParticipantId,
 } from "../participant/collector.mjs";
 
@@ -155,3 +156,130 @@ test("camera loop guard rejects stale callbacks after pause or restart", () => {
   state.stream = null;
   assert.equal(cameraLoopActive(state, 4), false);
 });
+
+test("camera startup cancellation cannot enable collection", async (t) => {
+  for (const phase of ["video.play", "model load"]) {
+    await t.test(`paused during ${phase}`, async () => {
+      await runCancelledStartup(phase);
+    });
+  }
+});
+
+function deferred() {
+  let resolve;
+  const promise = new Promise((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+
+async function runCancelledStartup(phase) {
+  const navigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const animationFrameDescriptor = Object.getOwnPropertyDescriptor(globalThis, "requestAnimationFrame");
+  const mediaCalls = [];
+  const frameCallbacks = [];
+  const playGate = phase === "video.play" ? deferred() : null;
+  const modelGate = deferred();
+  const modelEntered = deferred();
+  const streams = [fakeStream("first"), fakeStream("second")];
+  const el = fakeCameraElements({ play: playGate ? () => playGate.promise : async () => {} });
+  const state = {
+    generation: 0,
+    cameraStarting: false,
+    collecting: false,
+    cameraReady: true,
+    paused: true,
+    latest: { frame_id: 99 },
+    stream: null,
+    handLandmarker: null,
+    createLandmarker: () => {
+      modelEntered.resolve();
+      return modelGate.promise;
+    },
+  };
+
+  Object.defineProperty(globalThis, "navigator", {
+    configurable: true,
+    value: { mediaDevices: { getUserMedia: async () => mediaCalls.push(streams.shift()) && mediaCalls.at(-1) } },
+  });
+  Object.defineProperty(globalThis, "requestAnimationFrame", {
+    configurable: true,
+    value: (callback) => frameCallbacks.push(callback),
+  });
+
+  try {
+    const starting = startCamera(el, state);
+    if (playGate) {
+      await until(() => mediaCalls[0]?.tracks[0].onended);
+      mediaCalls[0].tracks[0].onended();
+      playGate.resolve();
+    } else {
+      await modelEntered.promise;
+      assert.equal(mediaCalls.length, 1);
+      mediaCalls[0].tracks[0].onended();
+    }
+    modelGate.resolve({ detectForVideo: () => ({}) });
+    await starting;
+
+    assert.equal(state.cameraReady, false);
+    assert.equal(state.paused, true);
+    assert.equal(state.stream, null);
+    assert.equal(state.latest, null);
+    assert.equal(el.startCollection.disabled, true);
+    assert.equal(el.pause.disabled, true);
+    assert.equal(frameCallbacks.length, 0);
+
+    await startCamera(el, state);
+    modelGate.resolve({ detectForVideo: () => ({}) });
+    assert.equal(state.cameraReady, true);
+    assert.equal(state.paused, false);
+    assert.equal(state.stream.name, "second");
+    assert.equal(el.startCollection.disabled, false);
+    assert.equal(el.pause.disabled, false);
+    assert.equal(frameCallbacks.length, 1);
+
+    state.collecting = true;
+    await startCamera(el, state);
+    assert.equal(mediaCalls.length, 2);
+  } finally {
+    restoreGlobalProperty("navigator", navigatorDescriptor);
+    restoreGlobalProperty("requestAnimationFrame", animationFrameDescriptor);
+  }
+}
+
+function restoreGlobalProperty(name, descriptor) {
+  if (descriptor) Object.defineProperty(globalThis, name, descriptor);
+  else delete globalThis[name];
+}
+
+async function until(ready) {
+  while (!ready()) await Promise.resolve();
+}
+
+function fakeCameraElements({ play = async () => {} } = {}) {
+  return {
+    cameraSelect: { value: "" },
+    startCamera: { disabled: false },
+    startCollection: { disabled: false },
+    pause: { disabled: true },
+    cameraStatus: { textContent: "" },
+    instruction: { textContent: "" },
+    detail: { textContent: "" },
+    preview: { width: 0, height: 0 },
+    video: {
+      videoWidth: 640,
+      videoHeight: 480,
+      play,
+    },
+  };
+}
+
+function fakeStream(name) {
+  const tracks = [{ onended: null, stop() {} }];
+  return {
+    name,
+    tracks,
+    getTracks: () => tracks,
+    getVideoTracks: () => tracks,
+  };
+}

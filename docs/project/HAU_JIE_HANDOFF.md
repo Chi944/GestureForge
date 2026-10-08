@@ -4,6 +4,19 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**8 October PR #27 review:** your [saved-report D1 audit](H1_SAVED_REPORT_AUDIT_2026_10_08.md)
+is reviewed and merged as attributed aggregate evidence. Do not repeat the audit
+or the 48-setting search. Send the prepared private packet `H1-20261008` through
+the team's private channel so Deston can verify its bytes and provenance; it has
+not been independently reproduced here. Starter approval remains empty.
+
+You reported two willing prospective Windows participants. Before collecting,
+confirm each person's consent and exclusion from earlier starter fitting/tuning,
+and complete the extracted Windows kit camera/export/import check. Then use H2:
+about 5-6 minutes TRAIN, 5-6 minutes separate VALIDATION and one minute UNKNOWN;
+allow 15-20 minutes plus a break in total. This advances preparation, not H2
+acceptance or final TEST. A Mac check is needed before distributing to Mac users.
+
 **8 October participant-kit handoff:** use the collection-only Windows/macOS
 ZIPs and PDF guides described in [PARTICIPANT_KITS.md](PARTICIPANT_KITS.md) for
 H2's two new independent participants. Allocate pseudonyms; confirm consent,
@@ -29,8 +42,9 @@ repairing or repeating the existing P01/P02/P03 development recordings.
 | H3 — operate laptop B | Follow Javier's agreed GF-P19 matrix and the [Windows guide](../WINDOWS_LAPTOP.md) on your physical laptop. Use a fresh setup, local bindings and the same identified build. Run offline core, thirty-minute Studio stability and clean shutdown checks for GF-P23. | Per-case outcomes to Javier: actual operator/device/build/package identity, help or guide deviations, failures/retries, duration, observation rate, peak memory, shutdown and private evidence references. Explicitly identify anything unmeasured or unrun. | Manual cases need no model. Gesture cases use your own profile and full current-session Practice gate. Javier consolidates; Deston accepts after the original defect gates. |
 | H4 — report preparation | Draft GF-P24 methods, data protocol, algorithm trade-offs, rejection, attribution and limitations now from the implemented code and saved evidence. Add final results after GF-P18/GF-P21. | Local Word methods/results contribution and verified reference list through the team's existing channel; measured and unmeasured results clearly separated. | Keep Word documents/data/logs out of Git. A methods draft is useful now; GF-P24 is Done only when final results and limits match the evidence. |
 
-**First handoff:** send H1 as a small PR; include the H2 recruitment/input status
-without claiming that participants have already been recruited or recorded.
+**Next handoff:** deliver the existing private H1 packet and the H2 consent/
+independence and Windows kit-check status. PR #27 already supplies the aggregate
+H1 audit; do not open a duplicate PR or claim recordings before they exist.
 Participant preparation and H3/H4 may proceed while diagnosis is reviewed.
 If a file, permission or participant is unavailable, report that exact missing
 item and continue the independent work. Do not ask Deston to repeat long trials

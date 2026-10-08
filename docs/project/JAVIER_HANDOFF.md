@@ -32,7 +32,9 @@ change weights or mark a task Done before its evidence is accepted.
 
 ## Laptop B assignment confirmed 5 October
 
-**8 October participant-kit check:** coordinate with Hau Jie on the new
+**8 October participant-kit check:** Hau Jie reports two prospective Windows
+participants. Prioritize the Windows check with him before their recordings;
+Mac distribution still requires a separate Mac operator. Coordinate on the new
 [Windows/macOS browser collection kits](PARTICIPANT_KITS.md). Verify the
 extracted ZIP's PDF-only instructions, camera permission, offline first trial,
 pause/reload/return-ZIP recovery and successful coordinator import. Record

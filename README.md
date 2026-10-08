@@ -34,7 +34,9 @@ The [participant collection kits](docs/project/PARTICIPANT_KITS.md) prepare
 offline Windows/macOS browser recording without Python. Each local ZIP contains
 a PDF guide and downloads a clearly named return-data ZIP. These collect
 development poses only; extracted-file camera checks on both operating systems
-remain required before broad distribution. They do not replace the Studio app.
+remain required before broad distribution. Allow about 5-6 minutes for TRAIN,
+5-6 minutes for VALIDATION and one minute for UNKNOWN: 15-20 minutes plus a break
+including setup and export. Keep the recorder tab visible. They do not replace the Studio app.
 
 Manual validation is assigned in the updated [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md)
 and [Javier brief](docs/project/JAVIER_HANDOFF.md): profile/Practice evidence for Hau
