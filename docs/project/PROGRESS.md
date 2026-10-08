@@ -4,6 +4,37 @@ Snapshot: 8 October 2026. This measures the final-project extension, not the alr
 
 ## Current work on 8 October
 
+**P10/P16 integration repair and starter handoff:** review found two concrete
+software defects. The approved standard contract uses `NEXT/PREVIOUS/BOOKMARK`,
+but the supplied Harbor workspace binds literal `G1/G2/G3`. A separate
+`harbor_standard_workspace.json` now supplies the same six-stage scenario with
+the standard IDs and its own workspace/deck identity. The custom asset and
+strict vocabulary-mismatch refusal are preserved; no imported mapping is
+silently renamed. Standard test fixtures now use the actual release vocabulary.
+
+The second defect was stale Start/status after a runbook transition: routing
+reset runs before the new stage is committed. The shared workspace refresh now
+updates eligibility after the commit, keeping Continue/Previous usable after
+camera release and disabling Start after Finish. Reset acknowledgement still
+precedes mutation; no grant, pause or explicit-resume rule was weakened.
+
+The user confirmed no newer starter packet has been received. Hau Jie's brief
+and Trello now explicitly request his existing permitted multi-person numeric
+inputs, baseline/comparison reports, saved D1 diagnostic and provenance first.
+New starter recording needs a diagnosed gap. The later deployable candidate
+still needs qualifying results and distribution permission; the audit packet
+alone is not release approval. Javier's brief adds the affected stage-control
+check to his next eligible run, without repeating a whole Practice trial solely
+for this fix. No new native or participant evidence is claimed, and P10/P16
+remain In Progress with accepted percentages unchanged.
+
+Verification: 872 tests passed with one platform skip in 338.91 seconds;
+Ruff, mypy across 96 source files, both GUI startup modes and synthetic
+evaluation passed. Independent review found no issues and separately passed
+three focused regressions. `verification.json` retains the source hashes,
+actual outputs and earlier checkpoints. These checks use generated inputs;
+they do not establish live recognition or native-device acceptance.
+
 Deston's acceptance sweep used separate review lanes for local deliverables,
 paired-evaluation readiness and repository state. No open GitHub PR was found,
 and no new private participant, laptop-B or final evaluation evidence was

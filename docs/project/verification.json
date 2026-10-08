@@ -699,5 +699,80 @@
       "The unchanged application last passed 862 tests with one skip at the paused-restore checkpoint; that full suite was not repeated for this runner-only change.",
       "No new native device or participant results; no hosted CI run."
     ]
+  },
+  "p10_p16_integration_20261008": {
+    "timestamp_utc": "2026-10-08T01:46:45.605397+00:00",
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "versions": {
+      "numpy": "2.4.6",
+      "scikit-learn": "1.9.1",
+      "mediapipe": "1.0.1",
+      "PySide6": "6.11.2",
+      "opencv-contrib-python": "5.0.0.93"
+    },
+    "checks": [
+      {
+        "command": "python -m ruff check gestureforge tests scripts",
+        "returncode": 0,
+        "seconds": 0.21,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m mypy gestureforge scripts tests",
+        "returncode": 0,
+        "seconds": 2.044,
+        "stdout": "Success: no issues found in 96 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m pytest -q",
+        "returncode": 0,
+        "seconds": 380.909,
+        "stdout": "........................................................................ [  8%]\n........................................................................ [ 16%]\n........................................................................ [ 24%]\n........................................................................ [ 32%]\n........................................................................ [ 41%]\n........................................................................ [ 49%]\n....s................................................................... [ 57%]\n........................................................................ [ 65%]\n........................................................................ [ 74%]\n........................................................................ [ 82%]\n........................................................................ [ 90%]\n........................................................................ [ 98%]\n.........                                                                [100%]\n872 passed, 1 skipped in 338.91s (0:05:38)\n",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --smoke-test",
+        "returncode": 0,
+        "seconds": 5.081,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge --studio --smoke-test",
+        "returncode": 0,
+        "seconds": 3.931,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "python -m gestureforge.evaluate --config experiments/prototype.json --output experiments\\local\\p10-p16-synthetic-20261008.json",
+        "returncode": 0,
+        "seconds": 3.184,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "limitations": [
+      "Synthetic evaluation is software evidence only.",
+      "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md.",
+      "No qualifying starter bundle or newer private data has been supplied. No release hash was enabled.",
+      "No native webcam, target-launch or participant acceptance was performed; P10/P16 remain In Progress.",
+      "GitHub Actions remains manual; these are local checks."
+    ],
+    "source_base": "c7ff61e13fab1dd5a21287661926ee4a5e77bf10",
+    "source_sha256": {
+      "gestureforge/app.py": "74f4a6639bacb1d489df7a449f42e1b001da51504c04da72f66d49924c026969",
+      "tests/test_app_personal_live.py": "8caded3f75a60cc9af7bcb1fc1a7a2138677590af60a5df46b85b5a6a21cd301",
+      "tests/test_app_starter.py": "173ea3fbf580c2032afeb1beea2ec786cd2a806c768a255a264cb8430c4d21bd",
+      "assets/harbor_standard_workspace.json": "0420e17d43aeff78ade8845c9aae17838aea2c1ac0a8052f64dbe0e5bd3d6733"
+    },
+    "review": "Independent read-only code review found no issues; three focused regressions passed. Generated fixtures only.",
+    "regression_evidence": {
+      "stage_refresh": "New test failed before the fix at Continue: internal eligibility true but Start disabled. After fix, Continue/Previous/Finish regression passes.",
+      "standard_harbor": "Corrected standard fixtures use LEGACY_VOCABULARY. Authored standard asset preserves six stages/actions; mismatched custom asset stays manual-only; six generated routed advances finish once."
+    }
   }
 }

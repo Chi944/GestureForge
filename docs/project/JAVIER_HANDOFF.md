@@ -32,6 +32,16 @@ change weights or mark a task Done before its evidence is accepted.
 
 ## Laptop B assignment confirmed 5 October
 
+**8 October integration follow-up:** the standard Harbor variant is
+`assets/harbor_standard_workspace.json` for recognisers using
+`NEXT/PREVIOUS/BOOKMARK`; the existing asset retains literal `G1/G2/G3`.
+Neither loading an asset nor its generated tests approves a starter. On the
+next eligible personal LIVE run, check that Continue and Previous leave camera
+control paused but Start available after release, and Finish disables Start.
+The shared shell now refreshes these controls after committing the stage.
+Include these observations with J1/J2; do not repeat a full Practice trial
+solely for this update or claim the standard path before Hau Jie's release.
+
 **Laptop A is your existing Windows computer; laptop B is Hau Jie's physical Windows laptop.** You coordinate GF-P19 and consolidate the per-device results. Hau Jie installs and operates laptop B; Deston retains final acceptance, including GF-P23. You do not need another laptop. This assignment adds no completed test result.
 
 Give Hau Jie the current source commit/package hash, the Windows setup guide and the cases below. Agree which remaining case runs on which machine so accepted laptop-A observations are preserved. Hau Jie records himself as operator and returns actual observations, failures/retries, source/OS/camera identity and private evidence references. Use his own profile for gesture cases; manual checks need no profile. Review his record without claiming you personally operated laptop B. Submit a focused evidence PR from `codex/javier-shortcuts`; reference Hau Jie's operator record and keep raw/private exports out of Git/Trello. Neither the assignment's older second-laptop test nor a copied environment verifies the current Studio release.

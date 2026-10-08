@@ -23,11 +23,39 @@ If a file, permission or participant is unavailable, report that exact missing
 item and continue the independent work. Do not ask Deston to repeat long trials
 or collect the same development data again without a diagnosed need.
 
+**8 October first private handoff to Deston:** provide the existing complete
+multi-person consented numeric manifests and NPZ sidecars, or the exact missing
+status for any item. Include the fixed default baseline report, the 48-candidate
+comparison result reports, the saved diagnostic covering all six folds and the
+fixed ten cases, or the exact reason any report is absent. Include configuration,
+source/dependency/input hashes, pose descriptions, session provenance and
+permission scope, including the standard IDs `NEXT/PREVIOUS/BOOKMARK/NEUTRAL`
+and Right hand required by the starter contract. Send private data only through
+the team's private folder/archive; never put it in GitHub or Trello. The PR on `codex/hau-jie-profiles`
+should contain only sanitized aggregate evidence and stay unmerged for Deston's
+review. Do not record new starter data until D1 identifies a diagnosed need.
+Preserve the original input labels and report any mismatch; the listed IDs are
+the release contract, not permission to relabel existing recordings silently.
+
+Copy this first private message to Deston:
+
+> I will send the existing starter audit packet now: consented numeric
+> manifests/NPZ sidecars, fixed baseline, 48-candidate reports, saved D1
+> diagnostic for all six folds and fixed cases, hashes, legacy vocabulary,
+> Right hand, pose/session provenance and permission scope. If anything is
+> missing I will state the exact missing item. I will keep raw data private,
+> put only sanitized aggregate evidence on `codex/hau-jie-profiles`, and record
+> no new starter data unless D1 diagnoses a need.
+
 For H2, follow the existing freeze-and-score commands in
 [PAIRED_EVALUATION.md](PAIRED_EVALUATION.md). Preserve the freeze file and hashes
 before TEST exists. A qualifying deployment starter is a separate GF-P10 gate;
 it is not a prerequisite for reporting an honest failed GF-P18 comparison.
-Do not identify existing development contributors as unseen participants.
+Do not identify existing development contributors as unseen participants. The
+existing audit packet supports the D1 decision now; a deployable GF-P10 release
+candidate later requires qualifying person-separated independent results and
+explicit permission to distribute the bundle. Internal access for review is not
+redistribution approval.
 
 Every PR must name the task IDs, base/source commit, changed files, actual check
 results, evidence limits and private handoff references. Push only
@@ -37,6 +65,10 @@ delegated execution does not change the original task weights or Done status.
 
 
 **Starter integration update, 5 October:** Deston implemented the approved-release loader and separate standard six-action LIVE gate. No candidate is enabled: the recorded 48-setting comparison found none qualifying. Diagnose the existing starter through the saved private D1 audit; use selected-pose repair only for a diagnosed own-profile need. H2's new independent evaluation and H3/H4 can proceed separately. A later deployment release needs the exact frozen TRAIN manifest/sidecar, all estimator settings, expected rebuilt revision, person-separated evidence and distribution permission for review. See CONTRACTS.md. Keep existing private inputs private.
+
+GF-P16's standard-gesture path remains blocked wherever it depends on a
+qualifying GF-P10 starter. Personal LIVE software and manual workflows can
+continue under their separate Practice, explicit LIVE and native-evidence gates.
 
 ## Laptop B assignment confirmed 5 October
 

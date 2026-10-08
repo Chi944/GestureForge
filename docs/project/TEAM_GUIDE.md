@@ -23,8 +23,16 @@ Original task owners, weights, dependencies and acceptance criteria stay fixed.
 Delegation shifts execution, not accountability. GF-P17/GF-P24/GF-P25 are selected
 for preparation now; their final dependencies do not prevent drafting or recruitment.
 Private participant data, full exports, videos and Word deliverables go through
-the team's existing private channel, not Git/Trello. Do not update the private
+the team's existing private folder/archive, not Git/Trello. Do not update the private
 prompt or decision logs as part of this handoff.
+
+Hau Jie's 8 October first private handoff is the existing starter audit packet:
+complete consented numeric manifests/NPZ sidecars, baseline and 48-candidate
+reports, saved all-six-fold/fixed-case diagnostic, hashes, pose/session/source
+details, the legacy standard vocabulary, Right hand and permission scope, or
+exact missing-status notes. The matching PR on
+`codex/hau-jie-profiles` contains only sanitized aggregate evidence and remains
+unmerged. No newer starter recording is requested until D1 diagnoses a need.
 
 Deston's next acceptance opportunity is GF-P18 (10 task-weight hours): the
 reviewable frozen packet and actual paired results would take his accepted
@@ -33,6 +41,9 @@ These are conditional totals, not current completion claims.
 
 
 **5 October integration update:** GF-P10's approved-standard loader and six-action activation route are implemented with generated-fixture verification. No standard model is enabled: the recorded bounded comparison found no qualifying candidate and redistribution permission is unresolved. Personal LIVE still requires full Practice. PR #24 is merged as partial laptop-A evidence; Javier continues the missing native cases. PR #25 delivers GF-P12 selected-pose repair with Deston's shared-camera/Profile integration, explicit candidate create and rollback path; independent review accepts it against the original software criterion. Deston keeps final integration and release acceptance. See current PROGRESS.md; accepted completion is 51.6% (15/29 tasks).
+
+GF-P16's standard path remains blocked wherever it depends on GF-P10. Personal
+LIVE software and manual paths may continue through their separate gates.
 
 **Device assignment, 5 October:** laptop A is Javier's Windows laptop and laptop B is Hau Jie's Windows laptop. Hau Jie operates laptop B; Javier coordinates and consolidates GF-P19 evidence; Deston reviews GF-P23 and final integration. Both use the same identified Studio build. No laptop-B test is yet recorded. Original task ownership and weights remain unchanged.
 

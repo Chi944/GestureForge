@@ -1,4 +1,5 @@
 from dataclasses import replace
+from pathlib import Path
 from types import SimpleNamespace
 from typing import cast
 from unittest.mock import Mock
@@ -241,6 +242,52 @@ def test_live_context_must_be_approved_current_stage_or_active_quick_actions(qap
         assert window.routing is not None
         assert window._live_gate_reason(window.routing.snapshot) == ""
         assert window._can_start_studio_camera()
+    finally:
+        window.close()
+
+
+def test_live_runbook_navigation_refreshes_start_button_after_stage_commit(qapp, tmp_path):
+    window = Window(model=model(), studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
+    try:
+        assert window.load_studio_workspace(Path(__file__).resolve().parents[1] / "assets/harbor_workspace.json")
+        assert window.runbook is not None
+        assert window.runbook.current_stage is not None
+        result = passed_result(window)
+        assert grant(window, result, tmp_path)
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert window.routing is not None
+        assert window.runbook.current_stage.id == "intro"
+        assert window._live_gate_reason(window.routing.snapshot) == ""
+        assert window._can_start_studio_camera()
+        assert window.start_button.isEnabled()
+
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.runbook.current_stage is not None
+        assert window.runbook.current_stage.id == "budget"
+        assert window._live_gate_reason(window.routing.snapshot) == ""
+        assert window._can_start_studio_camera()
+        assert window.start_button.isEnabled()
+        assert "eligible" in window.studio_status.text()
+
+        window.previous_runbook_stage()
+        assert window.runbook.current_stage is not None
+        assert window.runbook.current_stage.id == "intro"
+        assert window._live_gate_reason(window.routing.snapshot) == ""
+        assert window._can_start_studio_camera()
+        assert window.start_button.isEnabled()
+
+        for _ in range(5):
+            window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.runbook.current_stage is not None
+        assert window.runbook.current_stage.id == "review"
+        assert window.start_button.isEnabled()
+
+        window.manual_runbook_action(Action(ActionType.ADVANCE_STAGE))
+        assert window.runbook.finished
+        assert "approved stage" in window._live_gate_reason(window.routing.snapshot)
+        assert not window._can_start_studio_camera()
+        assert not window.start_button.isEnabled()
+        assert "unavailable" in window.studio_status.text()
     finally:
         window.close()
 

@@ -2599,6 +2599,9 @@ class Window(QMainWindow):
         self._render_practice_review()
         if hasattr(self, "dispatcher"):
             self._sync_dispatcher_refs()
+        self.render_studio_status()
+        if hasattr(self, "start_button"):
+            self.start_button.setEnabled(self._can_start_studio_camera())
 
     def _quick_action_bindings(self) -> dict[str, Action]:
         if not self.studio:
