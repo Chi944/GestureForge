@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   LABELS,
   clearDraft,
+  importZip,
   validateFormForExport,
   SAMPLE_OFFSETS,
   SampleScheduler,
@@ -146,6 +147,98 @@ test("own zip reader restores collection and rejects extra files", () => {
   assert.throws(() => readOwnCollectionZip(extra), /exactly one file/);
 });
 
+test("importing UNKNOWN before VALIDATION restores notes from validation_negative", async () => {
+  const trainRecords = stampRecords(new SampleScheduler(trial, 0).finalize("missed_slot"), "P04");
+  const unknownTrial = { split: "validation_negative", label: "UNKNOWN", trial_id: "validation_negative-UNKNOWN-01" };
+  const unknownRecords = stampRecords(new SampleScheduler(unknownTrial, 3).finalize("missed_slot"), "P04");
+  const collection = makeCollection({
+    participantId: "P04",
+    trainConditions: "desk lighting",
+    validationConditions: "same room unknown prompts",
+    recordedAt: "2026-10-08T00:00:00.000Z",
+    sessionStartedAt: {
+      train: "2026-10-08T00:00:00.000Z",
+      validation_negative: "2026-10-08T00:08:00.000Z",
+    },
+    records: [...trainRecords, ...unknownRecords],
+  });
+  const zip = makeStoredZip({ "collection.json": JSON.stringify(collection) });
+  const el = fakeImportElements(zip);
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 2,
+    records: [],
+    sessionStartedAt: {},
+    stream: null,
+    frameId: 0,
+  };
+  const stored = [];
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem: (key, value) => stored.push([key, JSON.parse(value)]) };
+  try {
+    await importZip(el, state);
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(el.validationConditions.value, "same room unknown prompts");
+  assert.equal(state.validationConditions, "same room unknown prompts");
+  assert.equal(el.validationConditions.disabled, true);
+  assert.deepEqual(state.sessionStartedAt, {
+    train: "2026-10-08T00:00:00.000Z",
+    validation_negative: "2026-10-08T00:08:00.000Z",
+  });
+  assert.deepEqual(state.records, collection.records);
+  assert.equal(stored.at(-1)[1].validationConditions, "same room unknown prompts");
+  assert.equal(validateFormForExport(el, state), true);
+  const exportedAgain = makeCollection({
+    participantId: state.participantId,
+    trainConditions: state.trainConditions,
+    validationConditions: state.validationConditions,
+    recordedAt: state.consentRecordedAt,
+    sessionStartedAt: state.sessionStartedAt,
+    records: state.records,
+  });
+  assert.equal(readOwnCollectionZip(makeStoredZip({ "collection.json": JSON.stringify(exportedAgain) })).sessions.length, 2);
+});
+
+test("validation session notes take precedence over validation_negative on import", async () => {
+  const collection = makeCollection({
+    participantId: "P04",
+    trainConditions: "desk lighting",
+    validationConditions: "current validation notes",
+    recordedAt: "2026-10-08T00:00:00.000Z",
+    sessionStartedAt: {
+      train: "2026-10-08T00:00:00.000Z",
+      validation: "2026-10-08T00:05:00.000Z",
+      validation_negative: "2026-10-08T00:10:00.000Z",
+    },
+    records: [],
+  });
+  collection.sessions.find((row) => row.split === "validation_negative").conditions = "older unknown notes";
+  const el = fakeImportElements(makeStoredZip({ "collection.json": JSON.stringify(collection) }));
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem() {} };
+  try {
+    await importZip(el, {
+      collecting: false,
+      cameraStarting: false,
+      generation: 1,
+      records: [],
+      sessionStartedAt: {},
+      stream: null,
+      frameId: 0,
+    });
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(el.validationConditions.value, "current validation notes");
+});
+
 test("camera loop guard rejects stale callbacks after pause or restart", () => {
   const state = { stream: {}, paused: false, generation: 4 };
   assert.equal(cameraLoopActive(state, 4), true);
@@ -281,5 +374,19 @@ function fakeStream(name) {
     tracks,
     getTracks: () => tracks,
     getVideoTracks: () => tracks,
+  };
+}
+
+function fakeImportElements(zip) {
+  return {
+    importZip: { files: [{ size: zip.byteLength, arrayBuffer: async () => zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength) }], value: "return.zip" },
+    participantId: { value: "", disabled: false },
+    trainConditions: { value: "", disabled: false },
+    validationConditions: { value: "", disabled: false },
+    numericConsent: { checked: false },
+    accessConsent: { checked: false },
+    progress: { value: 0 },
+    progressText: { textContent: "" },
+    detail: { textContent: "" },
   };
 }

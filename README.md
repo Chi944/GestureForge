@@ -38,11 +38,20 @@ remain required before broad distribution. Allow about 5-6 minutes for TRAIN,
 5-6 minutes for VALIDATION and one minute for UNKNOWN: 15-20 minutes plus a break
 including setup and export. Keep the recorder tab visible. They do not replace the Studio app.
 
+Partial return ZIP recovery preserves UNKNOWN-session condition notes even when
+UNKNOWN was recorded before VALIDATION; previously that ordering could lock an
+empty field and block continuing or re-exporting the recording.
+
 Manual validation is assigned in the updated [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md)
 and [Javier brief](docs/project/JAVIER_HANDOFF.md): profile/Practice evidence for Hau
 Jie, and Harbor/Windows recovery plus fresh-install/offline/stability checks for
 Javier. Deston retains design, integration and acceptance review. Both teammates
 push only their own branches and leave PRs for review.
+
+Javier's [9 October Windows restore retest](docs/evidence/GF_P19_HARBOR_RESTORE_LAPTOP_A_2026-10-09.md)
+records both restore operations returning to paused Preview and requiring
+explicit Live reactivation. It was camera-free on laptop A; remaining native
+recovery, laptop-B and participant-kit checks are still assigned in the briefs.
 
 The [paired evaluation tool](docs/project/PAIRED_EVALUATION.md) freezes development
 inputs/settings, then compares starter and personal recognisers on identical

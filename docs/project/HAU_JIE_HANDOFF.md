@@ -37,7 +37,7 @@ repairing or repeating the existing P01/P02/P03 development recordings.
 
 | Priority | Work you execute | Return to Deston | Completion boundary |
 |---|---|---|---|
-| H1 — saved-report diagnosis | Run D1 in [STARTER_FAILURE_ANALYSIS.md](STARTER_FAILURE_ANALYSIS.md): reconcile the matching baseline and diagnostic, all six folds and the fixed ten cases. Do not repeat the 48-setting search. | A focused aggregate evidence PR with source/configuration/input hashes, reconciled counts, each case or its documented absence, limits and one supported next hypothesis. Keep private inputs separate. | D1 can finish with an unresolved physical cause. Missing notes cannot establish orientation, lighting or pose as the cause. |
+| H1 — private audit handoff | The aggregate D1 audit is merged in PR #27. Send the prepared `H1-20261008` packet through the team's private channel; do not repeat the audit or 48-setting search. | Permitted numeric manifests/sidecars, matching baseline/comparison and all-six-fold/fixed-case reports, hashes, session/source details and permission scope, or exact missing-item notes. | Deston verifies the supplied bytes and provenance. Missing notes cannot establish a physical cause; the aggregate audit does not approve a deployment starter. |
 | H2 — independent evaluation inputs | Coordinate two new consenting participants excluded from starter fitting **and tuning**. Prepare each person's separate personal TRAIN/VALIDATION sessions using the exact shared standard poses/hand. Disclose all development inputs and selected settings to Deston. | Private numeric manifests/sidecars, permission scope, pose descriptions, split/session provenance, hashes and the proposed [paired configuration](PAIRED_EVALUATION.md). After Deston's freeze review, collect separate untouched TEST sessions, retaining every scheduled invalid/rejected slot. | Freeze before collecting/scoring TEST. Deston reproduces and accepts GF-P18. Poor scores remain valid results; they do not approve a standard starter for deployment. Do not tune on TEST. |
 | H3 — operate laptop B | Follow Javier's agreed GF-P19 matrix and the [Windows guide](../WINDOWS_LAPTOP.md) on your physical laptop. Use a fresh setup, local bindings and the same identified build. Run offline core, thirty-minute Studio stability and clean shutdown checks for GF-P23. | Per-case outcomes to Javier: actual operator/device/build/package identity, help or guide deviations, failures/retries, duration, observation rate, peak memory, shutdown and private evidence references. Explicitly identify anything unmeasured or unrun. | Manual cases need no model. Gesture cases use your own profile and full current-session Practice gate. Javier consolidates; Deston accepts after the original defect gates. |
 | H4 — report preparation | Draft GF-P24 methods, data protocol, algorithm trade-offs, rejection, attribution and limitations now from the implemented code and saved evidence. Add final results after GF-P18/GF-P21. | Local Word methods/results contribution and verified reference list through the team's existing channel; measured and unmeasured results clearly separated. | Keep Word documents/data/logs out of Git. A methods draft is useful now; GF-P24 is Done only when final results and limits match the evidence. |
@@ -98,6 +98,11 @@ qualifying GF-P10 starter. Personal LIVE software and manual workflows can
 continue under their separate Practice, explicit LIVE and native-evidence gates.
 
 ## Laptop B assignment confirmed 5 October
+
+**9 October update:** Javier's [PR #28 restore retest](../evidence/GF_P19_HARBOR_RESTORE_LAPTOP_A_2026-10-09.md)
+is merged as laptop-A evidence on `a1bb37a`. Both restores returned to Preview;
+the camera stayed off. This does not replace your laptop-B checks or cover
+active-capture handoff. Coordinate only your remaining device cases with Javier.
 
 **7 October clarification:** Javier's PR #26 is accepted as partial laptop-A
 evidence. Its conflicting operator statement was corrected during review:

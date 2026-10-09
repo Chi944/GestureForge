@@ -1,6 +1,36 @@
 # GestureForge Studio progress
 
-Snapshot: 8 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 9 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current work on 9 October
+
+**PR #28 reviewed and merged:** Javier's [laptop-A restore retest](../evidence/GF_P19_HARBOR_RESTORE_LAPTOP_A_2026-10-09.md)
+records both restores returning to camera-off/paused Preview on `a1bb37a`.
+Typed stage navigation simulated until explicit Live reactivation. The review
+found no blockers and verified the report's scope and count arithmetic; raw
+private exports and physical observations were not independently repeated.
+Only disjoint snapshots contribute the reported 19 simulated and 8 applied
+outcomes. There were no real launches in this run. GF-P19 retains the remaining
+native association/active-capture and laptop-B cases. Javier's next tasks now
+exclude repeating the completed short restore retest.
+
+**Participant recovery repair:** a valid UNKNOWN-first partial return ZIP
+could lose its saved condition notes when imported. The blank field then locked,
+blocking continued collection and producing an invalid re-export. Import now
+uses the UNKNOWN notes when a VALIDATION session does not yet exist, retaining
+the recorded samples and session metadata. The regression exercises the actual
+import path with generated ZIPs; it does not claim a physical browser run.
+
+Verification: 13 Node checks and 29 targeted Python importer/package tests pass;
+Ruff and mypy across 53 source files also pass. The Python warning comes from
+the intentional duplicate-ZIP-entry rejection fixture. Tests reproduce the
+missing-notes failure before the fix and verify valid re-export afterwards.
+
+Hau Jie's next H1 delivery remains the private `H1-20261008` packet, followed by
+H2 independent development collection and freeze review. The aggregate audit
+does not need repeating. Laptop B and extracted Windows/macOS kit checks remain
+assigned to human operators. No new complete task is accepted: Deston 21.3%,
+Hau Jie 68.0%, Javier 65.8%, team 51.6% (15/29 tasks).
 
 ## Current work on 8 October
 

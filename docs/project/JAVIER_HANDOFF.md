@@ -11,13 +11,14 @@ GF-P20 and the release checks for GF-P23. He retains analysis and acceptance.
 
 | Priority | Work you execute | Return to Deston | Completion boundary |
 |---|---|---|---|
-| J1 — short restore retest | On current main, run the camera-free Restore session and Restore progress checks below. Complete remaining laptop-A target-association and active-capture Camera/focus recovery cases where available. | Focused GF-P19 PR: source/device/operator identity, observed before/after mode, saved state, no-launch outcome, explicit Live reactivation, failures/retries and separate summary segments. | Preserve PR #24/#26 as earlier-build evidence. Recheck affected cases only. Record active-capture Camera handoff separately from a Camera launch with capture already off. |
+| J1 — remaining laptop-A cases | PR #28 records the short camera-free restore retest; do not repeat it. Complete remaining target-association and active-capture Camera/focus recovery cases where available. | Focused GF-P19 PR: source/device/operator identity, actual launches, failure/retry and recovery observations. Keep cumulative summary snapshots identifiable; do not add overlapping counts. | Preserve PR #24/#26/#28 with their build boundaries. PR #28 had unbound slots and no historical real launches; it does not verify no-replay after a real launch. Record active-capture Camera handoff separately from a Camera launch with capture already off. |
 | J2 — coordinate laptop B | Give Hau Jie the same identified build/package, guide and remaining case matrix. He operates his own Windows laptop; you consolidate GF-P19 and delegated GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. | Per-device matrix with actual operator, build, guide assistance, observed outcomes, faults, duration/rate/peak-memory/shutdown evidence and private references. | Do not claim you operated laptop B. Preliminary checks can start now; GF-P23 acceptance follows GF-P21/GF-P22 defect closure and affected retests. |
 | J3 — workflow observations | Prepare study order, observer records and disjoint exports using [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md). Coordinate the manual/standard/personal study and hold/negative/latency sessions once participants and frozen settings are ready. | For Deston's GF-P20 analysis: actual separate setup/readiness/task times, completion/errors/help/fallback, all attempts, frozen identities, disjoint summary exports, twenty five-second holds/profile, ten minutes of negative activity/profile and independently annotated stable-pose onset. | Plan condition order before the study. Preserve unavailable/failed conditions. No qualifying starter is currently supplied; never substitute a personal model or bypass readiness to claim standard success. Manual preparation can proceed now; final acceptance retains GF-P16/GF-P17 gates. |
 | J4 — guide and video preparation | Draft GF-P25 setup/troubleshooting, Harbor walkthrough and demo storyboard now. A camera-free manual walkthrough can be captured as a labelled draft; add the real gesture/first-use workflow and final results when verified. | Guide changes in your branch plus private video/storyboard files, mapping each shown capability to actual evidence and including one real limitation/recovery. | Final demo must show the committed product scope. Keep video/Word files local; draft footage is not final release evidence. The ten-minute presentation is a separate deliverable. |
 
-**First handoff:** return J1's short restore result before waiting for every
-remaining device case. Start J2 coordination and J4 in parallel. For J3, agree
+**9 October handoff:** J1's short restore result is reviewed and merged in
+[PR #28](https://github.com/Chi944/GestureForge_304/pull/28). Return remaining
+device cases as they become available. Continue J2 coordination and J4 in parallel. For J3, agree
 the observer and condition order before any measured task; coordinate frozen
 recognition inputs and participant recruitment with Hau Jie. Do not repeat a
 long trial merely to obtain a better result. Use the existing replay and
@@ -83,13 +84,16 @@ Laptop B remains Hau Jie's machine, operated by Hau Jie; you coordinate and
 Deston accepts. Keep the two summary segments separate and retain overlapping
 export warnings. Neither this merge nor your software checks close GF-P19/GF-P23.
 
-**Next focused check after syncing the restore fix:** in manual Live, save a
-Harbor session at discussion with one bookmark, then restore it. Confirm the
-stage/bookmark remain, camera stays off, mode shows Preview and no resource
-opens. A typed stage action must simulate until you explicitly choose Live
-and Apply and pause. Export both summary segments. Repeat the same mode check
-for Restore progress. This short camera-free check replaces repeating the
-whole already-recorded walkthrough; it is not yet a passed native result.
+**Restore retest reviewed, 9 October:** [PR #28's laptop-A record](../evidence/GF_P19_HARBOR_RESTORE_LAPTOP_A_2026-10-09.md)
+on `a1bb37a` reports both restores returning to camera-off/paused Preview, with
+typed stage actions simulated until explicit Live reactivation. The discussion
+bookmark was inspected after Restore session, not separately after Restore
+progress. Restore session started a new summary revision; Restore progress
+retained cumulative outcomes. Preserve the six private exports but use only
+disjoint snapshots for totals: 19 simulated and 8 applied outcomes. The review
+did not independently receive/reparse those private exports or operate Studio.
+This closes that short retest only. Continue the remaining native cases and
+laptop-B work; no full GF-P19/GF-P23/GF-P34 acceptance is inferred.
 
 **PR #24 reviewed and merged, 5 October:** preserve your [Harbor laptop-A evidence](../evidence/GF_P19_HARBOR_LAPTOP_A_2026-10-04.md). Do not repeat the whole walkthrough. Deston now mirrors dispatch outcomes into the top notice so failures remain visible without scrolling. On your next affected check, verify the message and recovery on current main. Continue the missing laptop-B, target-association and active-capture recovery cases, then GF-P23. This PR does not close GF-P19. The standard starter path is implemented but remains unavailable until a qualifying permitted model is reviewed.
 
@@ -108,7 +112,7 @@ they cannot close that dependency. The two-laptop integrated cases below remain
 GF-P19, and independent installation/stability remains GF-P23.
 
 1. **Preserve completed camera-free Harbor evidence.** Your laptop-A walkthrough
-   is already recorded. Retest its restore behaviour using J1 above; the
+   and short restore retest are already recorded. Preserve those results; the
    [six-stage manual walkthrough](DEMO_SCENARIO.md#manual-walkthrough-available-now)
    remains the procedure for Hau Jie's new laptop-B run. **Return:** source revision,
    device/Windows version, observed stage outcomes and acknowledgements, failures

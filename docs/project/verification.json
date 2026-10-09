@@ -849,5 +849,47 @@
       "Windows/macOS extracted-file checks remain outstanding; no browser automation bypass used.",
       "No new real participant data, starter approval, release acceptance or additional completed task weight."
     ]
+  },
+  "participant_resume_20261009": {
+    "timestamp_utc": "2026-10-09T11:29:55.522726+00:00",
+    "base_commit": "a96b1660f974a65c20248217d05b49d9f732287b",
+    "scope": "Preserve UNKNOWN condition notes when resuming a partial ZIP before VALIDATION exists",
+    "source_sha256": {
+      "participant/collector.mjs": "e4687877ac2a8a0bd69d670304e199ccc55eb941a3b9969227c3f77db14f8b0d",
+      "tests/participant_collector.test.mjs": "5c4bec620cbae9d3efdbf0d393d79c2b13f5c51d0ad5c54eaf944f1645f10069"
+    },
+    "regression": "New import regression failed before fix with blank notes; afterwards notes, locked settings, all records and session timestamps survive valid re-export. Existing validation-session precedence is retained.",
+    "checks": {
+      "node_tests": {
+        "passed": 13,
+        "failed": 0,
+        "command": "node --test tests/participant_collector.test.mjs"
+      },
+      "node_syntax": "collector and tests passed",
+      "python_tests": {
+        "passed": 29,
+        "seconds": 34.06,
+        "files": [
+          "tests/test_import_participant.py",
+          "tests/test_package_participant.py"
+        ],
+        "warning": "Intentional duplicate ZIP entry rejection fixture"
+      },
+      "ruff": "gestureforge tests scripts passed",
+      "mypy": "gestureforge scripts: 53 source files passed",
+      "docs": "Changed Markdown local links and 29-row backlog verified; accepted task weights unchanged"
+    },
+    "review": "Independent read-only review found no actionable issues in source/tests; independently reran 13 Node checks and both syntax checks.",
+    "pr28": {
+      "head": "a7ccc179ee764c1f691a7d5401f1f8be73c6f5b4",
+      "merge": "a96b1660f974a65c20248217d05b49d9f732287b",
+      "result": "Reviewed and merged as attributed laptop-A camera-free restore evidence; no review threads were open. Private exports and physical observations not independently reproduced."
+    },
+    "limitations": [
+      "Generated fixture checks only; no physical Windows/macOS extracted-kit or camera acceptance.",
+      "No new participant data or private H1 packet received; no starter release enabled.",
+      "Full Studio suite not rerun for the collector-only change; Javier supplied his earlier a1bb37a results separately.",
+      "Local verification only; GitHub Actions remains manual."
+    ]
   }
 }

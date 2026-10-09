@@ -25,6 +25,11 @@ static and generated tests do not prove this works on every machine. If camera
 or model loading is blocked, preserve the visible error. Do not bypass browser
 security or ask inexperienced participants to install a developer stack.
 
+Use the current rebuilt kit for recovery checks. The 9 October repair preserves
+UNKNOWN condition notes when loading a partial return ZIP before VALIDATION has
+started. Keep the original ZIP; resuming should retain recorded trials rather
+than require recording them again.
+
 ## First delivery: development only
 
 The shared physical poses are Right-hand open palm = NEUTRAL, fist = NEXT,

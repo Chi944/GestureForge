@@ -740,7 +740,7 @@ function exportZip(el, state) {
   link.click();
 }
 
-async function importZip(el, state) {
+export async function importZip(el, state) {
   const file = el.importZip.files?.[0];
   if (!file) return;
   if (state.collecting || state.cameraStarting) return fail(el, "Pause and wait for the current trial to finish before importing.");
@@ -755,7 +755,10 @@ async function importZip(el, state) {
     el.numericConsent.checked = collection.consent.numeric_data;
     el.accessConsent.checked = collection.consent.team_and_marker_access;
     el.trainConditions.value = collection.sessions.find((row) => row.split === "train")?.conditions ?? "";
-    el.validationConditions.value = collection.sessions.find((row) => row.split === "validation")?.conditions ?? "";
+    el.validationConditions.value = (
+      collection.sessions.find((row) => row.split === "validation") ??
+      collection.sessions.find((row) => row.split === "validation_negative")
+    )?.conditions ?? "";
     state.records = collection.records;
     state.participantId = collection.participant_id;
     state.trainConditions = el.trainConditions.value;
