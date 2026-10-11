@@ -1,6 +1,37 @@
 # GestureForge Studio progress
 
-Snapshot: 9 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 11 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current work on 11 October
+
+**Participant import recovery:** a delayed ZIP read could restore records and
+consent after Clear, overwrite a newer import, or replace a newer success message
+with an old read error. Each accepted import and successful Clear now invalidates
+older reads. Stale callbacks leave data, consent, storage, status and file selection
+alone; successful Clear resets its own file selection for another import. Cancelled
+Clear and storage failure preserve the existing draft.
+
+All three new race regressions fail on the prior source and pass with the fix.
+Verification: **16 Node checks**, **29 Python importer/package tests**, syntax,
+Ruff and mypy across 53 source files pass. Independent review checked shared-input
+ordering and failed/cancelled Clear; its file-reset follow-up is incorporated.
+These are generated/stub checks, not physical Windows/macOS camera acceptance.
+
+**Team handoff:** [the guide](TEAM_GUIDE.md) and individual briefs now separate
+manual work from coding-assistant tasks. Stale requests to repeat Hau Jie's
+merged D1 audit and Javier's completed restore retest are removed. Hau Jie sends
+the existing private H1 packet, coordinates new participants and operates laptop
+B; Javier completes remaining laptop-A recovery and consolidates device evidence.
+Deston reviews inputs, integration and acceptance. Browser kits collect development
+data only; later TEST collection must preserve the frozen acquisition protocol.
+
+No open PR or new qualifying evidence was found in this audit. No original task,
+dependency or weight changed: **Deston 16/75 (21.3%), Hau Jie 51/75 (68.0%), Javier
+48/73 (65.8%), team 115/223 (51.6%), 15/29 tasks accepted**. GF-P18 remains the next
+ten-weight-hour acceptance opportunity after complete GF-P17 inputs, reviewed
+freezes and actual same-pose paired TEST results from two new independent people.
+Poor results can complete honest evaluation; they cannot approve a deployment
+starter. Repeated software fixes alone cannot close those evidence gates.
 
 ## Current work on 9 October
 

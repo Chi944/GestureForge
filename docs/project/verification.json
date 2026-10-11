@@ -891,5 +891,42 @@
       "Full Studio suite not rerun for the collector-only change; Javier supplied his earlier a1bb37a results separately.",
       "Local verification only; GitHub Actions remains manual."
     ]
+  },
+  "participant_import_ordering_20261011": {
+    "timestamp_utc": "2026-10-11T14:35:15.286110+00:00",
+    "base_commit": "4cc54f1ea16ffa29a459a61c5a8b255fe977e42c",
+    "scope": "Cancel stale async return-ZIP imports after a newer import or successful draft clear; clarify manual and GPT handoffs",
+    "source_sha256_lf": {
+      "participant/collector.mjs": "eeefebd298b1644af4a18b2606724a5b2e8be118394d92fea2065ece95ed4608",
+      "tests/participant_collector.test.mjs": "476cf415967c493dda8b4024f2e6a5968814039e81ecabe2fbb86760fb3e8d85"
+    },
+    "regression": "All 3 added deferred-promise regressions failed against pristine base source (clear revived storage, older P04 overwrote P05, stale error replaced success); same shared-input tests pass after correction.",
+    "checks": {
+      "node_tests": {
+        "passed": 16,
+        "failed": 0,
+        "command": "node --test tests/participant_collector.test.mjs"
+      },
+      "node_syntax": "collector and tests passed",
+      "python_tests": {
+        "passed": 29,
+        "seconds": 8.08,
+        "files": [
+          "tests/test_import_participant.py",
+          "tests/test_package_participant.py"
+        ],
+        "warning": "Intentional duplicate ZIP entry rejection fixture"
+      },
+      "ruff": "gestureforge tests scripts passed",
+      "mypy": "gestureforge scripts: 53 source files passed"
+    },
+    "review": "Independent source/tests review approved after successful Clear input reset; supplemental shared-DOM, cancelled Clear and storage-failed Clear checks passed.",
+    "acceptance_audit": "Original task criteria reviewed; no complete task can newly close with available evidence. 15/29 Done; Deston16/75, HauJie51/75, Javier48/73, team115/223.",
+    "limitations": [
+      "Generated fixture/stub checks only; no real Windows/macOS extracted-kit camera acceptance.",
+      "No new private H1 packet or participant return was identified; no starter release approved.",
+      "Full Studio suite not rerun for this collector-only change.",
+      "GitHub Actions remains manual; these are local checks."
+    ]
   }
 }

@@ -29,7 +29,8 @@ test("export requires consent and clearing a draft removes the old person's agre
     "detail", "progress", "progressText",
   ].map(key => [key, { value: "notes", checked: true, disabled: false, textContent: "" }]));
   el.participantId.value = "P04";
-  const state = { records: [], sessionStartedAt: {}, frameId: 5, stream: null };
+  el.importZip = { value: "return.zip" };
+  const state = { records: [], sessionStartedAt: {}, frameId: 5, stream: null, generation: 0 };
   el.numericConsent.checked = false;
   assert.equal(validateFormForExport(el, state), false);
   el.numericConsent.checked = true;
@@ -239,6 +240,123 @@ test("validation session notes take precedence over validation_negative on impor
   assert.equal(el.validationConditions.value, "current validation notes");
 });
 
+test("clearing a draft cancels a pending return ZIP import", async () => {
+  const zip = collectionZip("P04", "old train", "old validation");
+  const gate = deferred();
+  const el = fakeImportElements(zip, () => gate.promise);
+  el.participantId.value = "P03";
+  el.numericConsent.checked = true;
+  el.accessConsent.checked = true;
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 5,
+    records: stampRecords(new SampleScheduler(trial, 0).finalize("missed_slot"), "P03"),
+    sessionStartedAt: { train: "2026-10-08T00:00:00.000Z" },
+    stream: null,
+    frameId: 5,
+  };
+  const storageCalls = [];
+  const previousStorage = globalThis.localStorage;
+  const previousConfirm = globalThis.confirm;
+  globalThis.localStorage = {
+    removeItem: key => storageCalls.push(["remove", key]),
+    setItem: (key, value) => storageCalls.push(["set", key, JSON.parse(value)]),
+  };
+  globalThis.confirm = () => true;
+  try {
+    const importing = importZip(el, state);
+    clearDraft(el, state);
+    gate.resolve(zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength));
+    await importing;
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+    if (previousConfirm === undefined) delete globalThis.confirm;
+    else globalThis.confirm = previousConfirm;
+  }
+
+  assert.deepEqual(storageCalls.map(([action]) => action), ["remove"]);
+  assert.equal(state.generation, 7);
+  assert.deepEqual(state.records, []);
+  assert.equal(el.participantId.value, "");
+  assert.equal(el.numericConsent.checked, false);
+  assert.equal(el.accessConsent.checked, false);
+  assert.equal(el.detail.textContent, "Local draft cleared from this browser.");
+  assert.equal(el.importZip.value, "");
+});
+
+test("newer return ZIP import wins over an older pending import", async () => {
+  const oldZip = collectionZip("P04", "old train", "old validation");
+  const newZip = collectionZip("P05", "new train", "new validation");
+  const gate = deferred();
+  const el = fakeImportElements(oldZip, () => gate.promise);
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 0,
+    records: [],
+    sessionStartedAt: {},
+    stream: null,
+    frameId: 0,
+  };
+  const stored = [];
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem: (key, value) => stored.push([key, JSON.parse(value)]) };
+  try {
+    const olderImport = importZip(el, state);
+    el.importZip.files = fakeImportElements(newZip).importZip.files;
+    await importZip(el, state);
+    el.importZip.value = "next-selection.zip";
+    gate.resolve(oldZip.buffer.slice(oldZip.byteOffset, oldZip.byteOffset + oldZip.byteLength));
+    await olderImport;
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(state.participantId, "P05");
+  assert.equal(state.trainConditions, "new train");
+  assert.equal(el.participantId.value, "P05");
+  assert.equal(stored.length, 1);
+  assert.equal(stored[0][1].participantId, "P05");
+  assert.equal(el.detail.textContent, "Recovered records from the selected return ZIP.");
+  assert.equal(el.importZip.value, "next-selection.zip");
+});
+
+test("stale rejected return ZIP import cannot overwrite a newer success", async () => {
+  const oldZip = collectionZip("P04", "old train", "old validation");
+  const newZip = collectionZip("P05", "new train", "new validation");
+  const gate = deferred();
+  const el = fakeImportElements(oldZip, () => gate.promise);
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 0,
+    records: [],
+    sessionStartedAt: {},
+    stream: null,
+    frameId: 0,
+  };
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem() {} };
+  try {
+    const olderImport = importZip(el, state);
+    el.importZip.files = fakeImportElements(newZip).importZip.files;
+    await importZip(el, state);
+    el.importZip.value = "next-selection.zip";
+    gate.reject(new Error("file read failed"));
+    await olderImport;
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(state.participantId, "P05");
+  assert.equal(el.detail.textContent, "Recovered records from the selected return ZIP.");
+  assert.equal(el.importZip.value, "next-selection.zip");
+});
+
 test("camera loop guard rejects stale callbacks after pause or restart", () => {
   const state = { stream: {}, paused: false, generation: 4 };
   assert.equal(cameraLoopActive(state, 4), true);
@@ -260,10 +378,12 @@ test("camera startup cancellation cannot enable collection", async (t) => {
 
 function deferred() {
   let resolve;
-  const promise = new Promise((done) => {
+  let reject;
+  const promise = new Promise((done, fail) => {
     resolve = done;
+    reject = fail;
   });
-  return { promise, resolve };
+  return { promise, resolve, reject };
 }
 
 async function runCancelledStartup(phase) {
@@ -377,9 +497,21 @@ function fakeStream(name) {
   };
 }
 
-function fakeImportElements(zip) {
+function collectionZip(participantId, trainConditions, validationConditions) {
+  const collection = makeCollection({
+    participantId,
+    trainConditions,
+    validationConditions,
+    recordedAt: "2026-10-08T00:00:00.000Z",
+    sessionStartedAt: { train: "2026-10-08T00:00:00.000Z" },
+    records: stampRecords(new SampleScheduler(trial, 0).finalize("missed_slot"), participantId),
+  });
+  return makeStoredZip({ "collection.json": JSON.stringify(collection) });
+}
+
+function fakeImportElements(zip, arrayBuffer = async () => zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength)) {
   return {
-    importZip: { files: [{ size: zip.byteLength, arrayBuffer: async () => zip.buffer.slice(zip.byteOffset, zip.byteOffset + zip.byteLength) }], value: "return.zip" },
+    importZip: { files: [{ size: zip.byteLength, arrayBuffer }], value: "return.zip" },
     participantId: { value: "", disabled: false },
     trainConditions: { value: "", disabled: false },
     validationConditions: { value: "", disabled: false },

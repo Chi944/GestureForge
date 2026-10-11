@@ -745,11 +745,12 @@ export async function importZip(el, state) {
   if (!file) return;
   if (state.collecting || state.cameraStarting) return fail(el, "Pause and wait for the current trial to finish before importing.");
   if (state.stream) pause(el, state, "Paused before importing a backup ZIP.");
-  const generation = state.generation;
+  const generation = state.generation + 1;
+  state.generation = generation;
   try {
     if (file.size > 10 * 1024 * 1024) throw new Error("Return ZIP is larger than 10 MB.");
     const buffer = await file.arrayBuffer();
-    if (state.generation !== generation) throw new Error("Import was cancelled by a newer camera action.");
+    if (state.generation !== generation) return;
     const collection = readOwnCollectionZip(buffer);
     el.participantId.value = collection.participant_id;
     el.numericConsent.checked = collection.consent.numeric_data;
@@ -770,9 +771,10 @@ export async function importZip(el, state) {
     renderProgress(el, state);
     el.detail.textContent = "Recovered records from the selected return ZIP.";
   } catch (error) {
+    if (state.generation !== generation) return;
     el.detail.textContent = `Could not import ZIP: ${error.message}`;
   } finally {
-    el.importZip.value = "";
+    if (state.generation === generation) el.importZip.value = "";
   }
 }
 
@@ -785,6 +787,7 @@ export function clearDraft(el, state) {
   } catch {
     return fail(el, "Browser storage is unavailable. Keep your return ZIP, then close this page to discard the in-memory recording.");
   }
+  state.generation += 1;
   state.records = [];
   state.sessionStartedAt = {};
   state.consentRecordedAt = "";
@@ -794,6 +797,7 @@ export function clearDraft(el, state) {
   el.participantId.value = "";
   el.trainConditions.value = "";
   el.validationConditions.value = "";
+  el.importZip.value = "";
   renderProgress(el, state);
   el.detail.textContent = "Local draft cleared from this browser.";
 }

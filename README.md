@@ -42,11 +42,16 @@ Partial return ZIP recovery preserves UNKNOWN-session condition notes even when
 UNKNOWN was recorded before VALIDATION; previously that ordering could lock an
 empty field and block continuing or re-exporting the recording.
 
-Manual validation is assigned in the updated [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md)
-and [Javier brief](docs/project/JAVIER_HANDOFF.md): profile/Practice evidence for Hau
-Jie, and Harbor/Windows recovery plus fresh-install/offline/stability checks for
-Javier. Deston retains design, integration and acceptance review. Both teammates
-push only their own branches and leave PRs for review.
+Pending ZIP reads cannot restore a cleared draft or overwrite a newer import.
+Stale success/error callbacks leave the current data, consent and messages alone.
+
+The [team guide](docs/project/TEAM_GUIDE.md) separates manual checks from work a
+coding assistant can do. [Hau Jie](docs/project/HAU_JIE_HANDOFF.md) supplies the
+existing private H1 packet, coordinates new participants and operates laptop B.
+[Javier](docs/project/JAVIER_HANDOFF.md) completes remaining laptop-A recovery
+checks and consolidates the two-device installation/offline/stability evidence.
+Deston owns integration, analysis and acceptance. Both teammates push only their
+own branches and leave PRs for review; completed audits/retests are not repeated.
 
 Javier's [9 October Windows restore retest](docs/evidence/GF_P19_HARBOR_RESTORE_LAPTOP_A_2026-10-09.md)
 records both restore operations returning to paused Preview and requiring
@@ -55,9 +60,11 @@ recovery, laptop-B and participant-kit checks are still assigned in the briefs.
 
 The [paired evaluation tool](docs/project/PAIRED_EVALUATION.md) freezes development
 inputs/settings, then compares starter and personal recognisers on identical
-held-out positive TEST trials. The collector supports separate TEST manifests
-with a declared pose ID. This prepares GF-P18; real independent-participant results
-and live false-action testing remain outstanding.
+held-out positive TEST trials. The native collector supports separate TEST
+manifests with a declared pose ID. The browser development kits do not yet offer
+TEST collection; their later TEST route must preserve the frozen acquisition
+protocol. This prepares GF-P18; real independent-participant results and live
+false-action testing remain outstanding.
 
 Practice recovers from a late camera frame while waiting for **Begin**: it keeps
 the completed windows, leaves capture running and asks for a fresh NEUTRAL hold.

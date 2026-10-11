@@ -4,6 +4,9 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**11 October:** use the [manual/GPT task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
+to separate participant and laptop work from coding-assistant preparation.
+
 **8 October PR #27 review:** your [saved-report D1 audit](H1_SAVED_REPORT_AUDIT_2026_10_08.md)
 is reviewed and merged as attributed aggregate evidence. Do not repeat the audit
 or the 48-setting search. Send the prepared private packet `H1-20261008` through
@@ -122,7 +125,7 @@ Use a fresh installation of the current Studio source package following `docs/WI
 
 Coordinate with Javier using his brief's GF-P19 and GF-P23 procedures: target launch/error/recovery, focus return/no replay, actual active-capture Camera handoff, paused reload, then offline local operation and a thirty-minute Studio workflow with clean shutdown. An HTTPS page itself is not an offline-core check. Preserve failures, retries, source identities and separate summary segments. Keep full traces, private paths and recordings local; send Javier the concise per-case outcomes and private evidence references through the team's existing channel. Attribute every observation to laptop B and you as operator. Do not repeat accepted laptop-A work.
 
-Your next GF-P12 work is operator validation of the integrated **Repair pose** flow, not rebuilding the component. Complete the saved-report D1 diagnostic in `STARTER_FAILURE_ANALYSIS.md` before proposing new training or feature changes. No blanket data recollection is requested.
+Your next GF-P12 work is operator validation of the integrated **Repair pose** flow, not rebuilding the component. Send the existing private H1 packet first so Deston can verify the saved reports, hashes, provenance and permission scope before any new starter decision. Do not repeat the D1 audit or 48-setting search unless a missing file or reproduced defect makes it necessary. No blanket data recollection is requested.
 
 ## Your branch and delivery rule
 
@@ -355,4 +358,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, STARTER_FAILURE_ANALYSIS.md and PAIRED_EVALUATION.md. Follow H1–H4: return the saved-report D1 audit first; prepare two genuinely new consenting participants and all personal/starter development inputs for Deston's configuration freeze; collect untouched TEST only after that freeze. Preserve failures and UNKNOWN slots; poor scores are reportable results, not a reason to tune TEST or enable a failed starter. Operate your laptop as laptop B for Javier's native matrix and GF-P23 fresh-install/offline/thirty-minute checks. Draft GF-P24 methods now and send Word files privately. Reuse existing collection/evaluation tools; repair only evidenced defects in your modules. Keep data, full exports, Word reports and logs local. Return one focused PR at a time with actual checks and limits; push only your branch and leave PRs to main unmerged for Deston. Do not change original owners, weights or acceptance status.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, PARTICIPANT_KITS.md and PAIRED_EVALUATION.md. Follow H1–H4: send the existing private `H1-20261008` packet first, with saved reports, hashes, provenance and permission scope; do not repeat the D1 audit or 48-setting search unless a missing file or reproduced defect requires it. Prepare two genuinely new consenting development participants and all personal/starter development inputs for Deston's configuration freeze; collect untouched TEST only after that freeze. Preserve failures and UNKNOWN slots; poor scores are reportable results, not a reason to tune TEST or enable a failed starter. Operate your laptop as laptop B for Javier's native matrix and GF-P23 fresh-install/offline/thirty-minute checks. Draft GF-P24 methods now and send Word files privately. Reuse existing collection/evaluation tools; repair only evidenced defects in your modules. Keep data, full exports, Word reports and logs local. Return one focused PR at a time with actual checks and limits; push only your branch and leave PRs to main unmerged for Deston. Do not change original owners, weights or acceptance status.
