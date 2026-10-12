@@ -30,6 +30,15 @@ The final project is now scoped as **GestureForge Studio** for corporate trainin
 
 Current project foundation on `main`:
 
+Javier's [12 October camera/focus checks](docs/evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
+are reviewed and merged. They cover Preview focus pause/reconnect, a simulated
+Camera request and a native Camera launch after capture was already off.
+Active-capture handoff and laptop-B acceptance remain separate.
+
+Quick Actions now refreshes availability after **Test selected target**: a
+restored file enables its bound button, and a newly missing file disables it.
+The refresh preserves mappings and readiness; requests still use the dispatcher.
+
 The [participant collection kits](docs/project/PARTICIPANT_KITS.md) prepare
 offline Windows/macOS browser recording without Python. Each local ZIP contains
 a PDF guide and downloads a clearly named return-data ZIP. These collect

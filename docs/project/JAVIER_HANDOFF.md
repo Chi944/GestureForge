@@ -14,7 +14,7 @@ GF-P20 and the release checks for GF-P23. He retains analysis and acceptance.
 
 | Priority | Work you execute | Return to Deston | Completion boundary |
 |---|---|---|---|
-| J1 — remaining laptop-A cases | PR #28 records the short camera-free restore retest; do not repeat it. Complete remaining target-association and active-capture Camera/focus recovery cases where available. | Focused GF-P19 PR: source/device/operator identity, actual launches, failure/retry and recovery observations. Keep cumulative summary snapshots identifiable; do not add overlapping counts. | Preserve PR #24/#26/#28 with their build boundaries. PR #28 had unbound slots and no historical real launches; it does not verify no-replay after a real launch. Record active-capture Camera handoff separately from a Camera launch with capture already off. |
+| J1 — remaining laptop-A cases | PR #28 records the short camera-free restore retest and PR #29 records isolated Preview focus pause/reconnect plus Camera Preview simulation and native Camera opening after capture was already off. Do not repeat those accepted cases. Complete remaining target-association, failure/retry, historical real-launch restore/no-replay and active-capture Camera handoff cases where available. | Focused GF-P19 PR: source/device/operator identity, actual launches, failure/retry and recovery observations. Keep cumulative summary snapshots identifiable; do not add overlapping counts. | Preserve PR #24/#26/#28/#29 with their build boundaries. PR #29 does not verify active-capture shutdown ordering or Live gesture readiness. Record active-capture Camera handoff separately from a Camera launch with capture already off. |
 | J2 — coordinate laptop B | Give Hau Jie the same identified build/package, guide and remaining case matrix. He operates his own Windows laptop; you consolidate GF-P19 and delegated GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. | Per-device matrix with actual operator, build, guide assistance, observed outcomes, faults, duration/rate/peak-memory/shutdown evidence and private references. | Do not claim you operated laptop B. Preliminary checks can start now; GF-P23 acceptance follows GF-P21/GF-P22 defect closure and affected retests. |
 | J3 — workflow observations | Prepare study order, observer records and disjoint exports using [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md). Coordinate the manual/standard/personal study and hold/negative/latency sessions once participants and frozen settings are ready. | For Deston's GF-P20 analysis: actual separate setup/readiness/task times, completion/errors/help/fallback, all attempts, frozen identities, disjoint summary exports, twenty five-second holds/profile, ten minutes of negative activity/profile and independently annotated stable-pose onset. | Plan condition order before the study. Preserve unavailable/failed conditions. No qualifying starter is currently supplied; never substitute a personal model or bypass readiness to claim standard success. Manual preparation can proceed now; final acceptance retains GF-P16/GF-P17 gates. |
 | J4 — guide and video preparation | Draft GF-P25 setup/troubleshooting, Harbor walkthrough and demo storyboard now. A camera-free manual walkthrough can be captured as a labelled draft; add the real gesture/first-use workflow and final results when verified. | Guide changes in your branch plus private video/storyboard files, mapping each shown capability to actual evidence and including one real limitation/recovery. | Final demo must show the committed product scope. Keep video/Word files local; draft footage is not final release evidence. The ten-minute presentation is a separate deliverable. |
@@ -27,6 +27,15 @@ recognition inputs and participant recruitment with Hau Jie. Do not repeat a
 long trial merely to obtain a better result. Use the existing replay and
 comparison tools; ask Deston to resolve shared-shell faults using a minimal
 reproduction, rather than rebuilding his integration.
+
+**12 October handoff:** [PR #29's laptop-A camera/focus record](../evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
+is reviewed as bounded GF-P19 evidence on `ffa0af7`. It covers isolated Preview
+focus loss returning to paused Camera off, explicit Preview recovery, a simulated
+Camera request that left Studio video live, a native Camera launch after Live
+Apply had already paused capture, and later Preview reacquisition. Do not repeat
+those laptop-A focus/reacquisition checks unless a new defect appears. It does
+not cover selected trusted `.exe`, missing association, native failure/retry,
+historical real-launch restore/no-replay or active-capture native Camera handoff.
 
 Every PR must include task IDs, exact source revision, actual checks, outcomes,
 remaining cases and private evidence references. Push only
@@ -123,8 +132,11 @@ GF-P19, and independent installation/stability remains GF-P23.
    both Session summary segments. A launch request is not a human task outcome.
 2. **GF-P19 native recovery.** Follow the [Windows verification procedure](../evidence/WINDOWS_LAUNCH_PROCEDURE.md)
    for the remaining integrated cases on both laptops: app/file/folder/HTTPS
-   targets, invalid/missing target or association, focus return, explicit retry,
-   and separate Camera release/recovery. Preserve accepted GF-P05 evidence.
+   targets, invalid/missing target or association, explicit retry, historical
+   real-launch restore/no-replay and separate Camera release/recovery. Laptop A
+   already has PR #29's isolated Preview focus pause/reconnect and native Camera
+   launch after capture was off; laptop B still needs its own result. Preserve
+   accepted GF-P05 evidence.
    **Return:** a per-device case/result summary with OS/Python/camera details,
    source revision, exact commands, observed launches/errors/recovery and local
    evidence references. Mark inaccessible devices and unrun cases explicitly.
@@ -141,16 +153,19 @@ GF-P19, and independent installation/stability remains GF-P23.
    replace the full Studio run or independent-machine acceptance.
 
 4. **Personal LIVE only after your own full Practice pass.** Configure the
-   intended workspace, stage maps and Quick Actions targets first. If you run
-   gesture cases, use your own consented profile and complete a genuine full
-   50-window pass in that app session: every window covered, at least 9/10
-   correct for each pose including NEUTRAL, zero wrong activations and all ten
-   negatives correct. Wait for save, exact event reconciliation and paused
-   restoration; then select **Live**, **Apply and pause**, explicitly Start and
-   show fresh NEUTRAL. Record the granted identity/revision, once-per-hold action,
-   explicit stage/Quick Actions resume, camera-release refusal/retry and no
-   automatic replay. Keep unrun gesture cases explicit if the pass is unavailable;
-   manual Harbor and native recovery work can still proceed without a profile.
+   intended workspace, stage maps and Quick Actions targets before a genuine
+   same-session full personal Practice grant. If you run gesture cases, use your
+   own consented profile and complete the full 50-window pass in that app
+   session: every window covered, at least 9/10 correct for each pose including
+   NEUTRAL, zero wrong activations and all ten negatives correct. Wait for save,
+   exact event reconciliation and paused restoration; then select **Live**,
+   **Apply and pause**, explicitly Start and show fresh NEUTRAL before requesting
+   Camera from an active capture state. Record the granted identity/revision,
+   once-per-hold action, explicit stage/Quick Actions resume, camera-release
+   refusal/retry and no automatic replay. If no valid grant is available, report
+   the active-capture case **NOT RUN** because readiness is missing; do not bypass
+   the gate or keep toggling Live. Manual Harbor and native recovery work can
+   still proceed without a profile.
 
 The personal LIVE grant exists only in memory for the exact profile/model/hand,
 camera, behavior revision and authored workspace/stage/Quick Actions maps.

@@ -928,5 +928,48 @@
       "Full Studio suite not rerun for this collector-only change.",
       "GitHub Actions remains manual; these are local checks."
     ]
+  },
+  "quick_target_recovery_20261012": {
+    "timestamp_utc": "2026-10-12T06:36:53.242862+00:00",
+    "base_commit": "a3e4d98a383428b89525cc6cdb198a9fd760d08c",
+    "scope": "Refresh Quick Actions target availability after explicit Test; update PR29 and Studio device handoff instructions",
+    "source_sha256_lf": {
+      "gestureforge/javier_widgets.py": "ee9486e0ee36da2fd92a4c64578d685e8dbefe7f6f7c0f37a0401fa411a4b53f",
+      "tests/test_javier_widgets.py": "c8a21e2618da2b12ee86c7be0614f330a83ffdfea0ea7c47e97f532c9f4b1d04"
+    },
+    "regression": "Both restored-target and deleted-target regressions failed before the one-line refresh and pass afterwards; no mapping-change signal is emitted.",
+    "checks": {
+      "pytest": {
+        "passed": 62,
+        "seconds": 92.15,
+        "command": "python -m pytest tests/test_javier_widgets.py tests/test_app_dispatch.py tests/test_app_personal_live.py tests/test_package_release.py -q"
+      },
+      "ruff": "gestureforge tests scripts passed",
+      "mypy": "gestureforge scripts: 53 source files passed",
+      "studio_smoke": "python -m gestureforge --studio --smoke-test: exit 0 with offscreen Qt",
+      "docs": "Changed Markdown local file links verified; original criteria/dependencies/statuses/weights unchanged across 29 backlog rows"
+    },
+    "review": "Independent read-only review found no actionable code/test findings, reran 21 widget tests and checked Live readiness and Studio packaging/launch instructions against code.",
+    "pr29": {
+      "head": "e6eb87d2b2f724d0a6e8589f8e9274ad91903a85",
+      "merge": "a3e4d98a383428b89525cc6cdb198a9fd760d08c",
+      "result": "Reviewed and merged as attributed laptop-A Preview focus/reconnect, Camera simulation and native Camera launch after capture off; active-capture native handoff explicitly not run",
+      "attributed_checks": "Javier reports 900 passed / 2 skipped, Ruff, mypy100 and smoke on ffa0af7; not a fresh integration-reviewer full-suite run",
+      "private_summary": "One simulated plus one launch_requested Camera event reported; raw private JSON/screenshots not independently received here"
+    },
+    "acceptance": {
+      "Deston": "16/75",
+      "Hau Jie": "51/75",
+      "Javier": "48/73",
+      "team": "115/223",
+      "done_tasks": 15,
+      "total_tasks": 29
+    },
+    "limitations": [
+      "Generated/offscreen local checks; full Studio suite and physical native launches/camera runs not repeated.",
+      "No new H1 packet, independent participant returns, qualifying starter or laptop-B evidence received.",
+      "Source package integrity does not establish fresh-device installation or release acceptance.",
+      "GitHub Actions remains manual; these results are local."
+    ]
   }
 }

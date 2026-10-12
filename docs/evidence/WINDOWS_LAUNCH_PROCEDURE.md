@@ -1,7 +1,8 @@
 # Windows verification procedure — GF-P05 and GF-P19
 
-Status: prepared, NOT executed on either laptop in this environment. Do not mark
-these cards Done from fake-adapter tests or Linux offscreen screenshots.
+Status: prepared, with bounded laptop-A focus/Camera evidence recorded separately
+in `GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md`. Do not mark these cards Done
+from fake-adapter tests, Linux offscreen screenshots or a standalone probe.
 
 Use `python -m scripts.windows_launch_probe` from the [component guide](../COMPONENT_GUIDE.md). Preserve each
 machine's actual JSON output under ignored `.local/`, along with pseudonymous
@@ -25,6 +26,14 @@ measure recogniser quality or total capture-frame throughput.
 | Camera timeout/error | if naturally encountered, record actual refusal and recovery; do not invent a timeout or treat an untested scenario as passed |
 | Reload | local bindings and empty Quick Actions reload; no resource opens merely on load; progress/bookmarks restore paused in the integrated session |
 | Duplicate/stale requests | use automated fake-adapter evidence; then verify long holds and stale context cancellation through the integrated shell, with all protections enabled |
+
+For active-capture Camera handoff, configure the workspace and targets before a
+genuine same-session full personal Practice grant. After the grant is saved,
+reconciled and restored paused, select Live, Apply and pause, explicitly Start,
+show fresh NEUTRAL, then request Camera from active capture. If the grant is not
+available, report active-capture Camera as NOT RUN because readiness is missing;
+complete the manual native cases that do not need a profile. Do not bypass the
+gate or repeat Live toggling to force a result.
 
 Leave an unavailable check explicitly NOT RUN with a reason. OS codes differ by
 association/device/configuration. Do not manufacture missing-association evidence

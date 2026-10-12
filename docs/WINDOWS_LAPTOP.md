@@ -1,5 +1,32 @@
 # Run GestureForge on another Windows laptop
 
+## Studio project handoff
+
+For current GF-P19/GF-P23 checks, use **gestureforge-studio-source.zip** and its
+matching JSON checksum/commit record. The assignment archive named below is the
+preserved earlier submission. Both source packages need Python and dependency
+setup; the participant browser collection kits are different tools.
+
+1. Extract the Studio ZIP into a fresh writable folder; follow the Python/setup
+   instructions in section 2. Do not copy another laptop's environment or private
+   profile/targets.
+2. Open PowerShell in the extracted `gestureforge` folder and run
+   `.\run.cmd --studio`. Double-clicking `run.cmd` without that option opens the
+   assignment interface. For a software launch check use
+   `.\run.cmd --studio --smoke-test`.
+3. Use the [Studio controls](project/TEAM_GUIDE.md) and
+   [Windows case procedure](evidence/WINDOWS_LAUNCH_PROCEDURE.md). Bind this
+   laptop's local targets. Preview simulates; explicit Live permits manual
+   actions. Live camera control requires the operator's valid current-session
+   readiness grant. Do not repeat the assignment pilot collection below merely
+   to run manual Studio cases.
+4. Record the package hash, commit, operator/device and actual results using
+   [Hau Jie's laptop-B brief](project/HAU_JIE_HANDOFF.md) and
+   [Javier's device matrix](project/JAVIER_HANDOFF.md). Existing assignment/P02
+   observations below do not establish a Studio release pass.
+
+## Preserved assignment prototype instructions
+
 Target: Intel/AMD Windows 10/11 with **64-bit Python 3.11**, a webcam and internet for first setup. [P02 feedback recorded in the consolidated results](evidence/RESULTS.md#p02-qualitative-feedback) reports successful ZIP use with a personal right-hand dataset on another laptop. On 29 September the user confirmed offline operation and camera pause/restart both passed. Exact package checksum, Windows version, camera index, dataset size and guide-only setup details are not recorded. Do not copy a `.venv` from another computer.
 
 ## 1. Transfer and extract

@@ -156,6 +156,59 @@ def test_quick_missing_target_test_emits_validation_failure(qt_app, tmp_path: Pa
     widget.close()
 
 
+def test_quick_test_refreshes_restored_bound_target_without_rebinding(qt_app, tmp_path: Path) -> None:
+    path = tmp_path / 'reference.txt'
+    path.write_text('fixture')
+    registry = TargetRegistry()
+    registry.configure(Target('reference', 'Reference', TargetKind.FILE, str(path)))
+    registry.bind_quick(('reference', None, None))
+    path.unlink()
+    widget = QuickActionsWidget(registry, before_publish=lambda: False)
+    requests: list[Action] = []
+    changes: list[Any] = []
+    failures: list[tuple[str, str]] = []
+    widget.action_requested.connect(requests.append)
+    widget.bindings_changed.connect(changes.append)
+    widget.target_validation_failed.connect(lambda target_id, reason: failures.append((target_id, reason)))
+    widget.target_id.setText('reference')
+    assert not widget.launch_buttons[0].isEnabled()
+    assert 'Unavailable' in widget.library.item(0).text()
+    path.write_text('restored')
+    click(widget, 'Test selected target')
+    assert requests == [Action(ActionType.OPEN_SHORTCUT, 'reference')]
+    assert changes == [] and failures == []
+    assert widget.launch_buttons[0].isEnabled()
+    assert 'unavailable' not in widget.launch_buttons[0].text().lower()
+    assert 'Configured' in widget.library.item(0).text()
+    widget.close()
+
+
+def test_quick_test_refreshes_deleted_bound_target_without_rebinding(qt_app, tmp_path: Path) -> None:
+    path = tmp_path / 'reference.txt'
+    path.write_text('fixture')
+    registry = TargetRegistry()
+    registry.configure(Target('reference', 'Reference', TargetKind.FILE, str(path)))
+    registry.bind_quick(('reference', None, None))
+    widget = QuickActionsWidget(registry, before_publish=lambda: False)
+    requests: list[Action] = []
+    changes: list[Any] = []
+    failures: list[tuple[str, str]] = []
+    widget.action_requested.connect(requests.append)
+    widget.bindings_changed.connect(changes.append)
+    widget.target_validation_failed.connect(lambda target_id, reason: failures.append((target_id, reason)))
+    widget.target_id.setText('reference')
+    assert widget.launch_buttons[0].isEnabled()
+    path.unlink()
+    click(widget, 'Test selected target')
+    assert requests == []
+    assert changes == []
+    assert failures and failures[0][0] == 'reference'
+    assert not widget.launch_buttons[0].isEnabled()
+    assert 'unavailable' in widget.launch_buttons[0].text().lower()
+    assert 'Unavailable' in widget.library.item(0).text()
+    widget.close()
+
+
 def test_viewer_widget_plain_text_boundary_buttons_and_explicit_remove(qt_app) -> None:
     viewer = Viewer(project_actions=True)
     widget = ViewerWidget(viewer)

@@ -307,6 +307,7 @@ class QuickActionsWidget(QWidget):
             reason = str(exc)
             self.status.setText(f'Cannot test target: {reason}')
             self.target_validation_failed.emit(self.target_id.text().strip(), reason)
+        self.refresh()
 
 
 class RunbookEditorWidget(QWidget):

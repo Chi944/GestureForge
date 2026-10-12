@@ -1,6 +1,45 @@
 # GestureForge Studio progress
 
-Snapshot: 11 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 12 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current work on 12 October
+
+**PR #29 reviewed and merged:** Javier's [camera/focus record](../evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
+adds bounded laptop-A evidence on `ffa0af7`: isolated Preview focus pause and
+explicit recovery, simulated Camera with capture continuing, native Camera
+after capture was already off, then Preview reacquisition. The supplied
+cumulative summary contains one simulated and one launch-requested Camera event;
+raw private JSON and screenshots were not independently received/reparsed here.
+His 900 passed / 2 skipped tests are attributed checks on that source, not a
+fresh run by the integration reviewer.
+
+Active-capture native handoff remains NOT RUN. The updated briefs and Windows
+procedure explain its prerequisite: configure targets before a genuine
+same-session full personal Practice grant, then explicitly select Live, Apply
+and pause, Start and show fresh NEUTRAL. Applying Live alone pauses capture;
+Preview requests simulate. Missing readiness must remain visible in the evidence.
+
+**Quick Actions recovery:** explicit target testing now refreshes library and
+slot availability after a file is restored or removed. Two regressions fail on
+the previous source and pass with the one-line fix. Refresh does not publish
+bindings, grant readiness or bypass the shared dispatcher. Independent review
+found no actionable issues and independently reran all 21 widget tests.
+
+Fresh local verification: **62 tests passed** across widget recovery, Studio
+dispatch, personal Live gating and release packaging; Ruff and mypy (53 source
+files) passed. These checks use generated/offscreen fixtures; no new native
+launch or camera result is claimed.
+
+Hau Jie still sends the existing private H1 packet and operates laptop B.
+Javier completes remaining native target/recovery cases and consolidates both
+device records. Deston reviews inputs, integration, evaluation and acceptance.
+The existing Studio source packager prepares an identified handoff after commit;
+it requires the normal setup guide and is separate from participant browser kits.
+
+No original task criterion, dependency or weight changed: **Deston 16/75 (21.3%),
+Hau Jie 51/75 (68.0%), Javier 48/73 (65.8%), team 115/223 (51.6%), 15/29 tasks
+accepted**. PR #29 advances GF-P19's case coverage; its remaining native and
+laptop-B cases, and GF-P34 dependency, prevent whole-task acceptance.
 
 ## Current work on 11 October
 

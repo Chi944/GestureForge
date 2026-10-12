@@ -107,6 +107,14 @@ is merged as laptop-A evidence on `a1bb37a`. Both restores returned to Preview;
 the camera stayed off. This does not replace your laptop-B checks or cover
 active-capture handoff. Coordinate only your remaining device cases with Javier.
 
+**12 October update:** Javier's [PR #29 camera/focus record](../evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
+is merged as bounded laptop-A evidence on `ffa0af7`. It covers isolated Preview
+focus pause/reconnect, Camera Preview simulation, native Camera opening after
+capture was already off and later Preview reacquisition. Do not repeat those
+laptop-A cases. It does not replace your laptop-B run and does not cover
+active-capture native Camera handoff, selected trusted `.exe`, missing
+association, native failure/retry or historical real-launch restore/no-replay.
+
 **7 October clarification:** Javier's PR #26 is accepted as partial laptop-A
 evidence. Its conflicting operator statement was corrected during review:
 you still operate laptop B and Javier coordinates. No laptop-B result was
@@ -123,7 +131,7 @@ Your physical Windows laptop is **laptop B**. Javier's existing computer remains
 
 Use a fresh installation of the current Studio source package following `docs/WINDOWS_LAPTOP.md`; do not copy another computer's `.venv`, private targets or profile. Record the exact commit/package hash, Windows/Python versions, camera index, operator and any assistance. Bind your own local targets. Manual Harbor and shortcut checks need no profile. Gesture cases use your own consented profile and the existing current-session Practice gate; retain unrun cases when that gate is unavailable.
 
-Coordinate with Javier using his brief's GF-P19 and GF-P23 procedures: target launch/error/recovery, focus return/no replay, actual active-capture Camera handoff, paused reload, then offline local operation and a thirty-minute Studio workflow with clean shutdown. An HTTPS page itself is not an offline-core check. Preserve failures, retries, source identities and separate summary segments. Keep full traces, private paths and recordings local; send Javier the concise per-case outcomes and private evidence references through the team's existing channel. Attribute every observation to laptop B and you as operator. Do not repeat accepted laptop-A work.
+Coordinate with Javier using his brief's GF-P19 and GF-P23 procedures: target launch/error/recovery, focus return/no replay, actual active-capture Camera handoff, paused reload, then offline local operation and a thirty-minute Studio workflow with clean shutdown. For active-capture Camera, configure workspace/targets before any genuine same-session full personal Practice grant, then use explicit Live, Apply and pause, Start and fresh NEUTRAL before requesting Camera; if the grant is unavailable, mark that case NOT RUN and complete the manual cases. An HTTPS page itself is not an offline-core check. Preserve failures, retries, source identities and separate summary segments. Keep full traces, private paths and recordings local; send Javier the concise per-case outcomes and private evidence references through the team's existing channel. Attribute every observation to laptop B and you as operator. Do not repeat accepted laptop-A work.
 
 Your next GF-P12 work is operator validation of the integrated **Repair pose** flow, not rebuilding the component. Send the existing private H1 packet first so Deston can verify the saved reports, hashes, provenance and permission scope before any new starter decision. Do not repeat the D1 audit or 48-setting search unless a missing file or reproduced defect makes it necessary. No blanket data recollection is requested.
 
