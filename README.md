@@ -47,6 +47,12 @@ remain required before broad distribution. Allow about 5-6 minutes for TRAIN,
 5-6 minutes for VALIDATION and one minute for UNKNOWN: 15-20 minutes plus a break
 including setup and export. Keep the recorder tab visible. They do not replace the Studio app.
 
+The 12 October kit repair lets TRAIN start with its own condition notes; enter
+VALIDATION notes after the break. Missing setup fields receive focus, and the
+trial instructions/countdown now appear above the camera. After Pause, use
+**Start Camera**, then **Start Selected Session** to resume. Send the rebuilt
+kits and updated three-page PDF guides; retain any existing return-data ZIPs.
+
 Partial return ZIP recovery preserves UNKNOWN-session condition notes even when
 UNKNOWN was recorded before VALIDATION; previously that ordering could lock an
 empty field and block continuing or re-exporting the recording.

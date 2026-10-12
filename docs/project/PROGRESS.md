@@ -4,6 +4,21 @@ Snapshot: 12 October 2026. This measures the final-project extension, not the al
 
 ## Current work on 12 October
 
+**Participant kit start repair:** supplied feedback exposed a setup mismatch:
+TRAIN demanded future VALIDATION condition notes, while the guide told people
+to enter those after a break. Validation now checks the selected section and
+focuses the exact missing input without weakening consent. The trial instruction
+and countdown moved above the camera after footage showed the active controls
+disabled with their explanation below the viewport. Guides explain those states,
+Pause/camera restart, recovery and the exact return ZIP to email.
+
+The new regression runs all 104 trials and exports 520 synthetic records through
+the actual session/export functions. Restoring the old validation makes it fail
+before TRAIN records anything. All 21 Node checks and 29 Python importer/package
+checks pass. Independent review identified and resolved a missing camera-restart
+instruction. These checks do not establish participant webcam performance or
+native Windows/macOS browser acceptance. No task weight or accepted total changes.
+
 **PR #29 reviewed and merged:** Javier's [camera/focus record](../evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
 adds bounded laptop-A evidence on `ffa0af7`: isolated Preview focus pause and
 explicit recovery, simulated Camera with capture continuing, native Camera

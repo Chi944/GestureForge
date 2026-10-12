@@ -444,7 +444,7 @@ function ids() {
   for (const id of [
     "participantId", "trainConditions", "validationConditions", "numericConsent",
     "accessConsent", "cameraSelect", "sessionSelect", "startCamera", "startCollection", "pause", "exportZip", "clearDraft", "importZip",
-    "preview", "video", "cameraStatus", "instruction", "detail", "progress", "progressText",
+    "preview", "video", "cameraStatus", "collectionStatus", "instruction", "detail", "progress", "progressText",
   ]) out[id] = document.getElementById(id);
   return out;
 }
@@ -554,7 +554,7 @@ function cameraLoop(el, state, generation) {
     state.latest = observationFromResult(result, state.frameId += 1, capturedAt);
     el.cameraStatus.textContent = state.latest.hand_count === 1
       ? `${state.latest.hand ?? "Unknown"} hand detected${state.latest.hand === "Right" ? "." : " - use your right hand."}`
-      : state.latest.hand_count > 1 ? "Multiple hands - keep only your right hand in view." : "No hand detected.";
+      : state.latest.hand_count > 1 ? "Multiple hands - keep only your right hand in view." : "No hand detected. Improve lighting and keep your whole right hand visible.";
   } catch (error) {
     pause(el, state, `Camera paused after tracking error: ${error.message}`);
     return;
@@ -576,7 +576,7 @@ function observationFromResult(result, frameId, capturedAt) {
   };
 }
 
-async function startCollection(el, state) {
+export async function startCollection(el, state) {
   if (state.collecting) return;
   if (!validateForm(el, state)) return;
   state.paused = false;
@@ -585,6 +585,7 @@ async function startCollection(el, state) {
   el.exportZip.disabled = true;
   el.importZip.disabled = true;
   el.clearDraft.disabled = true;
+  scrollToStatus(el);
   const generation = state.generation;
   const split = el.sessionSelect.value;
   state.sessionStartedAt[split] ??= new Date().toISOString();
@@ -614,17 +615,31 @@ function validateForm(el, state) {
   state.participantId = el.participantId.value.trim();
   state.trainConditions = el.trainConditions.value.trim();
   state.validationConditions = el.validationConditions.value.trim();
-  if (!validateParticipantId(state.participantId)) return fail(el, "Enter a pseudonym such as P04 using letters, digits, hyphen or underscore.");
-  if (!state.trainConditions || !state.validationConditions) return fail(el, "Enter both session condition notes.");
-  if (!el.numericConsent.checked || !el.accessConsent.checked) return fail(el, "Tick both consent boxes before collecting.");
-  if (!state.cameraReady) return fail(el, "Start the camera first.");
+  const split = el.sessionSelect.value;
+  if (!validateParticipantId(state.participantId)) return fail(el, "Enter a pseudonym such as P04 using letters, digits, hyphen or underscore.", el.participantId);
+  if (split === "train" && !state.trainConditions) {
+    return fail(el, "Enter TRAIN session condition notes before starting this section.", el.trainConditions);
+  }
+  if (split !== "train" && !state.validationConditions) {
+    return fail(el, "Enter VALIDATION session condition notes before starting this section.", el.validationConditions);
+  }
+  if (!el.numericConsent.checked || !el.accessConsent.checked) {
+    return fail(el, "Tick both consent boxes before collecting.", el.numericConsent.checked ? el.accessConsent : el.numericConsent);
+  }
+  if (!state.cameraReady) return fail(el, "Start the camera first.", el.startCamera);
   state.consentRecordedAt ||= new Date().toISOString();
   return true;
 }
 
-function fail(el, message) {
+function fail(el, message, target = null) {
   el.detail.textContent = message;
+  target?.focus?.();
+  target?.scrollIntoView?.({ block: "center", behavior: "smooth" });
   return false;
+}
+
+function scrollToStatus(el) {
+  el.collectionStatus?.scrollIntoView?.({ block: "start", behavior: "smooth" });
 }
 
 async function runTrial(el, state, trial, generation) {
@@ -720,7 +735,7 @@ function restoreDraft(el, state) {
   }
 }
 
-function exportZip(el, state) {
+export function exportZip(el, state) {
   if (!validateFormForExport(el, state)) return;
   state.consentRecordedAt ||= new Date().toISOString();
   const recordedAt = state.consentRecordedAt;

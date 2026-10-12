@@ -30,6 +30,40 @@ UNKNOWN condition notes when loading a partial return ZIP before VALIDATION has
 started. Keep the original ZIP; resuming should retain recorded trials rather
 than require recording them again.
 
+## Starting a session and resolving setup messages
+
+The participant enters their assigned code, reviews the consent items, and
+describes **TRAIN conditions** before starting TRAIN. They should describe their
+actual lighting, background, sitting/standing position and approximate hand
+distance. **VALIDATION conditions are entered after the break**, immediately
+before starting VALIDATION. UNKNOWN uses the VALIDATION condition notes and
+should be recorded under those same conditions. Future session notes are not
+required to start TRAIN.
+
+Click **Start Camera**, allow camera access when asked, wait for the detector,
+and check that the whole right hand is visible with **Right hand detected**.
+Choose TRAIN and click **Start Selected Session**. Successful start brings the
+large instruction and countdown above the camera preview into view. Camera
+video and hand feedback by themselves are not evidence that recording started.
+
+If **Setup required** appears, the message identifies the missing information
+and the page focuses that field or consent item. Complete or review that item,
+then start the selected session again; a working camera does not need restarting.
+During an active session, Start and Export are unavailable intentionally. Pause
+remains available. Pause and wait for the trial to settle before exporting or
+leaving the tab.
+
+Pause turns the camera off. To resume, click **Start Camera**, wait for the
+detector, then **Start Selected Session**. Completed trials are retained and
+skipped; the current interrupted trial keeps its invalid sample slots.
+
+For persistent **No hand detected** or wrong-hand feedback, pause and check that
+light falls on the whole right palm, fingers and wrist are unobstructed, and the
+hand is far enough back to fit the picture. Click **Start Camera** to check the
+adjusted view; feedback cannot update while the camera is paused. If this does not resolve it, contact
+the team before recording more trials. Retain partial returns and errors rather
+than deleting unsuccessful observations.
+
 ## First delivery: development only
 
 The shared physical poses are Right-hand open palm = NEUTRAL, fist = NEXT,

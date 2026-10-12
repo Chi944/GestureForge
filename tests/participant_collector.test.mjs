@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   LABELS,
   clearDraft,
+  exportZip,
   importZip,
   validateFormForExport,
   SAMPLE_OFFSETS,
@@ -17,6 +19,7 @@ import {
   readOwnCollectionZip,
   stampRecords,
   startCamera,
+  startCollection,
   validateParticipantId,
 } from "../participant/collector.mjs";
 
@@ -368,6 +371,93 @@ test("camera loop guard rejects stale callbacks after pause or restart", () => {
   assert.equal(cameraLoopActive(state, 4), false);
 });
 
+test("TRAIN can start before future validation notes are entered", async () => {
+  const el = fakeCollectionElements({ split: "train", trainConditions: "bright room", validationConditions: "" });
+  const state = fakeCollectionState({ records: completedRecordsForSplit("train", "P04") });
+
+  await startCollection(el, state);
+
+  assert.equal(el.detail.textContent, "Select the next session when you are ready, or export the return ZIP.");
+  assert.match(state.sessionStartedAt.train, /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(el.validationConditions.focused, false);
+});
+
+test("fresh collection can run TRAIN first, then export all sessions", async () => {
+  const restoreClock = installCollectionClock();
+  const restoreBrowser = installExportBrowser();
+  const el = fakeCollectionElements({ split: "train", trainConditions: "bright room", validationConditions: "" });
+  const state = fakeCollectionState();
+  state.latest = freshObservation(0, 0);
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem() {} };
+  try {
+    restoreClock.bind(state);
+    await startCollection(el, state);
+    assert.equal(state.records.length, 48 * SAMPLE_OFFSETS.length);
+    assert.deepEqual(Object.keys(state.sessionStartedAt), ["train"]);
+    assert.equal(el.validationConditions.value, "");
+
+    el.validationConditions.value = "same room, second section";
+    el.sessionSelect.value = "validation";
+    await startCollection(el, state);
+    el.sessionSelect.value = "validation_negative";
+    await startCollection(el, state);
+    assert.equal(state.records.length, makeTrialPlan().length * SAMPLE_OFFSETS.length);
+
+    exportZip(el, state);
+    const exported = await restoreBrowser.exportedZip();
+    const collection = readOwnCollectionZip(new Uint8Array(exported.bytes));
+    assert.equal(exported.name, "EMAIL_THIS_P04_development.zip");
+    assert.equal(collection.records.length, 520);
+    assert.deepEqual(collection.sessions.map((row) => row.split), ["train", "validation", "validation_negative"]);
+    assert.deepEqual(collection.sessions.map((row) => row.conditions), [
+      "bright room",
+      "same room, second section",
+      "same room, second section",
+    ]);
+    assert.equal(new Set(collection.records.map((row) => row.validity_reason)).size, 1);
+    assert.equal(collection.records[0].validity_reason, "");
+  } finally {
+    restoreClock();
+    restoreBrowser();
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+});
+
+test("VALIDATION and UNKNOWN require validation notes and move focus to that field", async () => {
+  for (const split of ["validation", "validation_negative"]) {
+    const el = fakeCollectionElements({ split, trainConditions: "bright room", validationConditions: "" });
+    const state = fakeCollectionState();
+
+    await startCollection(el, state);
+
+    assert.equal(el.detail.textContent, "Enter VALIDATION session condition notes before starting this section.");
+    assert.equal(el.validationConditions.focused, true);
+    assert.equal(el.validationConditions.scrolled, true);
+    assert.equal(state.collecting, false);
+    assert.deepEqual(state.sessionStartedAt, {});
+  }
+});
+
+test("collection start still requires both consent boxes", async () => {
+  const el = fakeCollectionElements({ trainConditions: "bright room", validationConditions: "" });
+  el.accessConsent.checked = false;
+  const state = fakeCollectionState();
+
+  await startCollection(el, state);
+
+  assert.equal(el.detail.textContent, "Tick both consent boxes before collecting.");
+  assert.equal(el.accessConsent.focused, true);
+  assert.equal(el.accessConsent.scrolled, true);
+});
+
+test("collection status appears before the camera preview so started trials are visible", async () => {
+  const html = await readFile(new URL("../participant/collector.html", import.meta.url), "utf8");
+
+  assert.ok(html.indexOf('id="collectionStatus"') < html.indexOf('id="preview"'));
+});
+
 test("camera startup cancellation cannot enable collection", async (t) => {
   for (const phase of ["video.play", "model load"]) {
     await t.test(`paused during ${phase}`, async () => {
@@ -495,6 +585,122 @@ function fakeStream(name) {
     getTracks: () => tracks,
     getVideoTracks: () => tracks,
   };
+}
+
+function fakeCollectionElements({
+  split = "train",
+  participantId = "P04",
+  trainConditions = "bright room",
+  validationConditions = "same room",
+} = {}) {
+  const focusable = (value = "") => ({
+    value,
+    checked: true,
+    disabled: false,
+    focused: false,
+    scrolled: false,
+    focus() { this.focused = true; },
+    scrollIntoView() { this.scrolled = true; },
+  });
+  return {
+    participantId: focusable(participantId),
+    trainConditions: focusable(trainConditions),
+    validationConditions: focusable(validationConditions),
+    numericConsent: focusable(),
+    accessConsent: focusable(),
+    sessionSelect: { value: split },
+    startCollection: { disabled: false },
+    exportZip: { disabled: false },
+    importZip: { disabled: false },
+    clearDraft: { disabled: false },
+    detail: { textContent: "" },
+    instruction: { textContent: "" },
+    progress: { value: 0 },
+    progressText: { textContent: "" },
+    collectionStatus: { scrollIntoView() { this.scrolled = true; }, scrolled: false },
+  };
+}
+
+function fakeCollectionState({ records = [] } = {}) {
+  return {
+    records,
+    sessionStartedAt: {},
+    cameraReady: true,
+    collecting: false,
+    generation: 0,
+    paused: true,
+  };
+}
+
+function completedRecordsForSplit(split, participantId) {
+  const plan = makeTrialPlan().filter((row) => row.split === split);
+  return plan.flatMap((row) => stampRecords(new SampleScheduler(row, 0).finalize("missed_slot"), participantId));
+}
+
+function installCollectionClock() {
+  let nowMs = 0;
+  let state = null;
+  let frame = 0;
+  const performanceDescriptor = Object.getOwnPropertyDescriptor(globalThis, "performance");
+  const timeoutDescriptor = Object.getOwnPropertyDescriptor(globalThis, "setTimeout");
+  Object.defineProperty(globalThis, "performance", {
+    configurable: true,
+    value: { timeOrigin: 0, now: () => nowMs },
+  });
+  Object.defineProperty(globalThis, "setTimeout", {
+    configurable: true,
+    value: (callback, ms = 0) => {
+      nowMs += ms;
+      if (state) state.latest = freshObservation(nowMs / 1000, frame += 1);
+      callback();
+      return 1;
+    },
+  });
+  const restore = () => {
+    restoreGlobalProperty("performance", performanceDescriptor);
+    restoreGlobalProperty("setTimeout", timeoutDescriptor);
+  };
+  restore.bind = (nextState) => { state = nextState; };
+  return restore;
+}
+
+function freshObservation(timestamp, frameId) {
+  return {
+    timestamp,
+    frame_id: frameId,
+    hand_count: 1,
+    hand: "Right",
+    landmarks,
+    validity_reason: "",
+  };
+}
+
+function installExportBrowser() {
+  let link = null;
+  const documentDescriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
+  const urlDescriptor = Object.getOwnPropertyDescriptor(globalThis, "URL");
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: {
+      createElement: () => {
+        link = { href: "", download: "", clicked: false, click() { this.clicked = true; } };
+        return link;
+      },
+    },
+  });
+  Object.defineProperty(globalThis, "URL", {
+    configurable: true,
+    value: { createObjectURL: (blob) => blob },
+  });
+  const restore = () => {
+    restoreGlobalProperty("document", documentDescriptor);
+    restoreGlobalProperty("URL", urlDescriptor);
+  };
+  restore.exportedZip = async () => {
+    assert.equal(link?.clicked, true);
+    return { name: link.download, bytes: await link.href.arrayBuffer() };
+  };
+  return restore;
 }
 
 function collectionZip(participantId, trainConditions, validationConditions) {

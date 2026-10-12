@@ -77,7 +77,7 @@ def write_guide(path: Path, platform: str) -> None:
       "account or installation is needed. The hand detector is included in this download.", "Lead")
     p("<b>This is a data-collection kit, not the full GestureForge Studio app.</b> "
       "It records numeric hand positions and timing, not photographs, video or sound. "
-      "Nothing is uploaded automatically. It works offline after you receive the ZIP.")
+      "Nothing is uploaded automatically. The included detector does not need an internet connection.")
     step("1  Save and unzip", (
         "Save the Windows ZIP from the email. In Downloads, right-click the ZIP, choose "
         "<b>Extract All</b>, then <b>Extract</b>. Open the new folder. Do not run from inside the ZIP."
@@ -94,24 +94,30 @@ def write_guide(path: Path, platform: str) -> None:
     ) + " Keep this same file in the same folder until you finish. Close other camera apps. "
       "Keep your laptop plugged in and awake.")
     step("3  Enter your details and permission", "Use the participant code Deston or Hau Jie "
-         "gave you, not your name. Enter your lighting, background, sitting/standing position "
-         "and approximate hand distance. Read the consent text and tick the permission boxes "
+         "gave you, not your name. Read the consent text and tick the permission boxes "
          "only if you agree. Your numeric data is for the team and private marker only; "
          "the team will delete it after marking and appeals finish. Contact Deston or "
          "Hau Jie if you have questions before agreeing.")
-    step("4  Allow the camera", "Start the camera when prompted and select <b>Allow</b>. "
+    p("Fill in <b>TRAIN conditions</b> for your surroundings now: lighting, background, "
+      "sitting or standing, and approximate hand-to-camera distance. Describe what is true "
+      "for you. <b>Leave VALIDATION conditions until after your break.</b> You do not need "
+      "both sets of notes to start TRAIN.")
+    step("4  Check the camera, then start TRAIN", "Click <b>Start Camera</b> and select <b>Allow</b> "
+         "if the browser asks. "
          "Wait for the hand detector to finish loading. Keep your entire right hand visible, "
-         "palm towards the camera, with light on your hand. The preview is mirrored like a mirror. "
-         "The on-screen hand check should say Right; if it does not, stop and contact the team.")
-    p("<b>Before a full recording:</b> the coordinator should verify this extracted kit on "
-      "Windows and macOS, including camera permission and a saved return ZIP. These device "
-      "checks are separate from the software checks. If your browser cannot start the detector "
-      "or camera, stop and send the visible error to the team; do not change security settings.")
+         "palm towards the camera, with light on your hand. The preview is mirrored. Check for "
+         "<b>Right hand detected</b>. Select <b>TRAIN</b>, then click <b>Start Selected Session</b>.")
+    p("<b>If Setup required appears:</b> read the message. The page takes you to the missing "
+      "detail. Fill in that field or review the consent item, then click <b>Start Selected "
+      "Session</b> again. Camera video alone does not mean a trial has started. You do not "
+      "need to restart a working camera.")
     content.append(PageBreak())
-    p("Record, save, send", "Heading1")
-    p("Follow the large instruction on screen. Get ready during the countdown, hold still "
-      "during recording, then relax during the release interval. Plan about 15-20 minutes "
-      "plus a break; pause whenever you need to.", "Lead")
+    p("Record the three sections", "Heading1")
+    p("Plan about 15-20 minutes plus a break. Starting a session takes you to the large "
+      "instruction above the camera preview. Follow that instruction and countdown.", "Lead")
+    p("Get ready during the <b>3-second countdown</b>, hold the requested pose still for "
+      "about <b>2 seconds</b>, then relax for <b>1 second</b>. The trials continue automatically. "
+      "The completed count advances after each trial.")
     rows = [[Paragraph("On screen", styles["BodyText"]), Paragraph("Use your RIGHT hand", styles["BodyText"])]]
     for label, pose in [
         ("NEUTRAL", "Open palm towards the camera; fingers extended."),
@@ -130,12 +136,24 @@ def write_guide(path: Path, platform: str) -> None:
         ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
     ]))
     content += [table, Spacer(1, 12)]
-    step("5  Finish the three sections", "Choose <b>TRAIN</b> in the session list, then click "
-         "<b>Start Selected Session</b>. Follow 48 short trials automatically (12 per pose; about 5-6 minutes). "
-         "Take a break, remove your hand, then explicitly start <b>VALIDATION</b>: another 48 trials, about 5-6 minutes. "
-         "Enter the current conditions for each session. Finally complete the 8 <b>UNKNOWN</b> "
-         "development trials (about 1 minute). Keep the recorder tab visible. This kit does not collect final TEST data. The team will contact "
-         "you separately after the evaluation settings are frozen.")
+    step("5  TRAIN, break, VALIDATION, then UNKNOWN",
+         "<b>TRAIN:</b> finish 48 trials (12 per pose; about 5-6 minutes). Export a backup ZIP, "
+         "then take a break and remove your hand from view.<br/><br/>"
+         "<b>VALIDATION:</b> enter <b>VALIDATION conditions</b> for the current lighting, "
+         "background, sitting/standing position and hand distance. Select <b>VALIDATION</b>, "
+         "then click <b>Start Selected Session</b> for another 48 trials (about 5-6 minutes). "
+         "Export another backup.<br/><br/>"
+         "<b>UNKNOWN:</b> select <b>UNKNOWN</b> and start its 8 different non-command trials "
+         "(about 1 minute). These use your VALIDATION condition notes; keep those conditions "
+         "the same. Follow each on-screen instruction.")
+    p("<b>While recording:</b> Start and Export are deliberately unavailable so they cannot "
+      "interrupt a trial. <b>Pause</b> remains available. Keep this tab visible; pause before "
+      "leaving it. To save during a session, pause first and wait for recording to stop.")
+    p("This kit collects <b>development data only</b>. It does not collect final TEST data. "
+      "The team will contact you separately after the evaluation settings are frozen.")
+    content.append(PageBreak())
+    p("Save your data and send it back", "Heading1")
+    p("Send the ZIP downloaded by the recorder. You do not need to zip any folders yourself.", "Lead")
     step("6  Save your return ZIP", "Click <b>Export Return ZIP</b> after each session "
          "and at the end. If still recording, click <b>Pause</b> first and wait for it to settle. "
          "Your browser saves a ZIP in Downloads, or asks you where to save it. "
@@ -146,12 +164,27 @@ def write_guide(path: Path, platform: str) -> None:
          "do not unzip it or zip the program folder.</b> Include your participant code, Windows "
          "or macOS version, browser name, and any problems or help you needed. A file marked "
          "PARTIAL is incomplete; keep it and report the interruption instead of deleting trials.")
-    p("<b>If interrupted:</b> use Pause before leaving the page. Download a backup before "
-      "closing. Returning to the same file can recover the locally saved work; the recorder "
-      "also lets you load its previous return ZIP. Do not re-record completed trials or "
-      "edit the return data to remove mistakes. Camera or tab interruptions preserve missed "
-      "samples as invalid. After the team confirms receipt, <b>Clear Local Draft</b> removes "
-      "this browser's saved recording; keep your emailed ZIP until receipt is confirmed.")
+    step("If recording is interrupted", "Use <b>Pause</b> before leaving the page and export "
+         "a backup before closing. Reopening the same file can recover the locally saved work. "
+         "You can also use <b>Recover from a previous return ZIP</b> and choose your downloaded "
+         "EMAIL_THIS ZIP. Keep the original backup. Do not re-record completed trials or edit "
+         "out mistakes. Camera or tab interruptions preserve missed samples as invalid.")
+    p("After the team confirms receipt, <b>Clear Local Draft</b> removes this browser's saved "
+      "recording. Keep your emailed ZIP until receipt is confirmed.")
+    p("<b>To resume after Pause:</b> click <b>Start Camera</b>, wait for the detector, then "
+      "click <b>Start Selected Session</b>. Completed trials remain saved and are skipped.")
+    step("If your hand is not detected", "Pause first. Put light on your whole right palm, "
+         "keep it unobstructed and move it slightly farther from the camera so all fingers "
+         "and the wrist fit in the picture. Face your palm towards the camera, then click "
+         "<b>Start Camera</b> to check again. If the message "
+         "still does not say <b>Right hand detected</b>, contact the team before continuing.")
+    p("<b>If the camera or detector cannot start:</b> close other camera apps and check the "
+      "visible browser permission message. Send the exact error and your browser/OS version "
+      "to the team if it persists. Do not change browser security settings.")
+    p("<b>Coordinator check:</b> verify the extracted kit on both Windows and macOS, including "
+      "camera permission, a first trial, pause/recovery and a saved return ZIP. Browser camera "
+      "policies vary. Software checks alone do not establish that every laptop works, and "
+      "finishing a recording does not establish recognition accuracy.")
 
     def footer(canvas, doc):
         canvas.setFont("Helvetica", 8)
