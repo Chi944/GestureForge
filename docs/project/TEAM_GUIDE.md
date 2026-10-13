@@ -6,6 +6,14 @@ Deston has authorised project implementation. Build the approved Windows corpora
 
 ## Current deliveries — 13 October
 
+**H2 collection update:** one complete development return and a second Mac
+return with TRAIN only have arrived. Hau Jie coordinates recovery of that
+second return using the [updated participant guide](PARTICIPANT_KITS.md#continue-after-train-or-recover-a-partial-zip):
+retain all 48 TRAIN trials and collect only the remaining VALIDATION and UNKNOWN
+sections. Confirm the second person's independence, poses, session break and
+browser details; do not request blanket recollection. GPT can validate the new
+return and propose settings, but final TEST still waits for Deston's freeze.
+
 GF-P12's current personal LIVE protocol is now `gf-p12-v4`: three five-second
 windows for each enrolled action pose plus NEUTRAL, followed by ten negative
 windows. This 22-window pass can unlock normal personal LIVE use for the exact
@@ -54,7 +62,7 @@ prompt or decision logs as part of this handoff.
 | Member | Manual / physical work | GPT-assisted work that can continue now |
 |---|---|---|
 | Deston | Receive Hau Jie's private `H1-20261008` packet and new participant returns; approve the freeze before any untouched TEST collection; later review final demo/declaration facts from real evidence. | Integrate reviewed PRs, verify source checks, maintain contracts and progress evidence, reproduce freeze/score/replay commands once private files arrive, and prepare release/report packages without committing private Word logs or data. |
-| Hau Jie | Send the existing private `H1-20261008` packet; recruit and consent two independent development participants; operate laptop B for Javier's GF-P19/GF-P23 matrix. | Audit/import the returned development ZIPs, propose settings for Deston's freeze review, draft GF-P24 methods/limitations, and fix only evidenced recognition/profile defects on `codex/hau-jie-profiles`. |
+| Hau Jie | Send the existing private `H1-20261008` packet; coordinate completion of the second development return and confirm its independence/poses/session break; operate laptop B for Javier's GF-P19/GF-P23 matrix. | Audit/import the returned development ZIPs, propose settings for Deston's freeze review, draft GF-P24 methods/limitations, and fix only evidenced recognition/profile defects on `codex/hau-jie-profiles`. |
 | Javier | Complete remaining laptop-A trusted-app/association, failure/retry, real-launch restore/no-replay and active-capture Camera cases; coordinate laptop B and later observer sessions. Do not repeat PR #29's completed Preview focus/reconnect checks. | Consolidate per-device evidence, fix demonstrated viewer/shortcut/runbook defects, prepare GF-P25 guide/storyboard, and update summary/export handling on `codex/javier-shortcuts`. |
 
 GPT or synthetic checks cannot claim participant consent, physical laptop behavior,

@@ -57,6 +57,28 @@ Pause turns the camera off. To resume, click **Start Camera**, wait for the
 detector, then **Start Selected Session**. Completed trials are retained and
 skipped; the current interrupted trial keeps its invalid sample slots.
 
+### Continue after TRAIN or recover a partial ZIP
+
+The 13 October repair selects the first unfinished section after a section
+finishes, a saved draft is restored or a return ZIP is imported. It shows the
+next section and remaining trials; it never starts recording automatically.
+Previously, TRAIN could remain selected after all its trials were saved, so
+clicking Start immediately reported completion without advancing to VALIDATION.
+
+Keep the original return ZIP. Open `START_HERE.html` from the rebuilt kit and
+use **Recover from a previous return ZIP** to choose that ZIP without unzipping
+it. A TRAIN-only return should show **48 / 104 trials** and select **VALIDATION**.
+After the break, enter the actual VALIDATION condition notes, click **Start
+Camera**, wait for the detector, then **Start Selected Session**. Finish the
+48 VALIDATION trials and eight UNKNOWN trials. Export the new complete
+`EMAIL_THIS_<code>_development.zip`; it should show 104 / 104 without PARTIAL
+in the filename. Do not clear the draft or repeat completed TRAIN trials.
+
+VALIDATION notes remain editable until that section or UNKNOWN has started.
+If the displayed state differs, keep the backup and send the exact message,
+browser name and macOS/Windows version to the coordinator. This handoff repair
+does not establish the cause of every browser-specific camera or setup failure.
+
 For persistent **No hand detected** or wrong-hand feedback, pause and check that
 light falls on the whole right palm, fingers and wrist are unobstructed, and the
 hand is far enough back to fit the picture. Click **Start Camera** to check the

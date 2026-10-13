@@ -6,6 +6,7 @@ import {
   clearDraft,
   exportZip,
   importZip,
+  restoreDraft,
   validateFormForExport,
   SAMPLE_OFFSETS,
   SampleScheduler,
@@ -243,6 +244,195 @@ test("validation session notes take precedence over validation_negative on impor
   assert.equal(el.validationConditions.value, "current validation notes");
 });
 
+test("TRAIN-only return ZIP resumes at VALIDATION without mutating saved samples", async () => {
+  const trainRecords = completedRecordsForSplit("train", "P69");
+  const collection = makeCollection({
+    participantId: "P69",
+    trainConditions: "desk, bright light",
+    validationConditions: "",
+    recordedAt: "2026-10-13T10:00:00.000Z",
+    sessionStartedAt: { train: "2026-10-13T10:25:21.583Z" },
+    records: trainRecords,
+  });
+  const el = fakeImportElements(makeStoredZip({ "collection.json": JSON.stringify(collection) }));
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 1,
+    records: [],
+    sessionStartedAt: {},
+    stream: null,
+    frameId: 0,
+    cameraReady: false,
+  };
+  const stored = [];
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem: (key, value) => stored.push([key, JSON.parse(value)]) };
+  try {
+    await importZip(el, state);
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(el.sessionSelect.value, "validation");
+  assert.equal(el.validationConditions.disabled, false);
+  assert.equal(el.detail.textContent, "Recovered TRAIN. 48 VALIDATION trials remaining (56 total). After a break, enter actual VALIDATION notes, then Start Camera and Start Selected Session.");
+  assert.equal(el.startCollection.disabled, true);
+  assert.deepEqual(state.records, trainRecords);
+  assert.equal(stored.at(-1)[1].records.length, 240);
+});
+
+test("TRAIN-only return ZIP can finish remaining sections without re-recording TRAIN", async () => {
+  const restoreClock = installCollectionClock(200_000);
+  const restoreBrowser = installExportBrowser();
+  const trainRecords = completedRecordsForSplit("train", "P69");
+  const collection = makeCollection({
+    participantId: "P69",
+    trainConditions: "desk, bright light",
+    validationConditions: "",
+    recordedAt: "2026-10-13T10:00:00.000Z",
+    sessionStartedAt: { train: "2026-10-13T10:25:21.583Z" },
+    records: trainRecords,
+  });
+  const el = fakeImportElements(makeStoredZip({ "collection.json": JSON.stringify(collection) }));
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 1,
+    records: [],
+    sessionStartedAt: {},
+    stream: null,
+    frameId: 0,
+    cameraReady: true,
+    paused: false,
+  };
+  state.latest = freshObservation(0, 0);
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem() {} };
+  try {
+    restoreClock.bind(state);
+    await importZip(el, state);
+    el.validationConditions.value = "same room, after break";
+    await startCollection(el, state);
+    assert.equal(el.sessionSelect.value, "validation_negative");
+    await startCollection(el, state);
+
+    exportZip(el, state);
+    const exported = await restoreBrowser.exportedZip();
+    const exportedCollection = readOwnCollectionZip(new Uint8Array(exported.bytes));
+    assert.equal(exported.name, "EMAIL_THIS_P69_development.zip");
+    assert.equal(exportedCollection.records.length, 520);
+    assert.equal(completedTrialIds(exportedCollection.records).size, 104);
+    assert.deepEqual(exportedCollection.records.slice(0, 240), trainRecords);
+  } finally {
+    restoreClock();
+    restoreBrowser();
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+});
+
+test("partial VALIDATION recovery continues the locked validation session", async () => {
+  const trainRecords = completedRecordsForSplit("train", "P69");
+  const validationTrial = makeTrialPlan().find((row) => row.split === "validation");
+  const validationRecords = stampRecords(new SampleScheduler(validationTrial, 200).finalize("missed_slot"), "P69");
+  const collection = makeCollection({
+    participantId: "P69",
+    trainConditions: "desk, bright light",
+    validationConditions: "same room, after break",
+    recordedAt: "2026-10-13T10:00:00.000Z",
+    sessionStartedAt: {
+      train: "2026-10-13T10:25:21.583Z",
+      validation: "2026-10-13T10:40:21.583Z",
+    },
+    records: [...trainRecords, ...validationRecords],
+  });
+  const el = fakeImportElements(makeStoredZip({ "collection.json": JSON.stringify(collection) }));
+  const state = {
+    collecting: false,
+    cameraStarting: false,
+    generation: 1,
+    records: [],
+    sessionStartedAt: {},
+    stream: null,
+    frameId: 0,
+    cameraReady: false,
+  };
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = { setItem() {} };
+  try {
+    await importZip(el, state);
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(el.sessionSelect.value, "validation");
+  assert.equal(el.validationConditions.disabled, true);
+  assert.equal(el.detail.textContent, "Recovered VALIDATION. 47 VALIDATION trials remaining (55 total). Start Camera and Start Selected Session to continue VALIDATION.");
+});
+
+test("local TRAIN-only draft resumes at VALIDATION without locking validation notes", () => {
+  const trainRecords = completedRecordsForSplit("train", "P69");
+  const el = fakeImportElements(new Uint8Array());
+  const state = { records: [], sessionStartedAt: {}, consentRecordedAt: "", frameId: 0, cameraReady: false };
+  const previousStorage = globalThis.localStorage;
+  globalThis.localStorage = {
+    getItem: () => JSON.stringify({
+      participantId: "P69",
+      trainConditions: "desk, bright light",
+      validationConditions: "",
+      sessionStartedAt: { train: "2026-10-13T10:25:21.583Z" },
+      consentRecordedAt: "2026-10-13T10:00:00.000Z",
+      records: trainRecords,
+    }),
+  };
+  try {
+    restoreDraft(el, state);
+  } finally {
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+
+  assert.equal(el.sessionSelect.value, "validation");
+  assert.equal(el.validationConditions.disabled, false);
+  assert.equal(el.detail.textContent, "Recovered TRAIN. 48 VALIDATION trials remaining (56 total). After a break, enter actual VALIDATION notes, then Start Camera and Start Selected Session.");
+  assert.deepEqual(state.records, trainRecords);
+});
+
+test("UNKNOWN before VALIDATION keeps saved condition notes without requesting edits", async () => {
+  const unknown = makeTrialPlan().find(row => row.split === "validation_negative");
+  const collection = makeCollection({
+    participantId: "P04", trainConditions: "desk", validationConditions: "after break",
+    recordedAt: "2026-10-13T10:00:00.000Z",
+    sessionStartedAt: { train: "2026-10-13T10:00:00.000Z", validation_negative: "2026-10-13T10:15:00.000Z" },
+    records: [...completedRecordsForSplit("train", "P04"), ...stampRecords(new SampleScheduler(unknown, 200).finalize("missed_slot"), "P04")],
+  });
+  const el = fakeImportElements(makeStoredZip({ "collection.json": JSON.stringify(collection) }));
+  const state = fakeCollectionState();
+  await importZip(el, state);
+  assert.equal(el.sessionSelect.value, "validation");
+  assert.equal(el.validationConditions.disabled, true);
+  assert.equal(el.validationConditions.value, "after break");
+  assert.doesNotMatch(el.detail.textContent, /enter actual VALIDATION notes/i);
+  assert.match(el.detail.textContent, /continue VALIDATION/);
+});
+
+test("starting an already completed section keeps records unchanged and points to remaining work", async () => {
+  const trainRecords = completedRecordsForSplit("train", "P69");
+  const el = fakeCollectionElements({ split: "train", participantId: "P69", trainConditions: "desk", validationConditions: "" });
+  const state = fakeCollectionState({ records: trainRecords });
+  state.sessionStartedAt = { train: "2026-10-13T10:25:21.583Z" };
+
+  await startCollection(el, state);
+
+  assert.equal(el.sessionSelect.value, "validation");
+  assert.equal(el.detail.textContent, "TRAIN is already complete. 48 VALIDATION trials remaining (56 total). After a break, enter actual VALIDATION notes, then Start Selected Session.");
+  assert.deepEqual(state.records, trainRecords);
+  assert.deepEqual(state.sessionStartedAt, { train: "2026-10-13T10:25:21.583Z" });
+});
+
 test("clearing a draft cancels a pending return ZIP import", async () => {
   const zip = collectionZip("P04", "old train", "old validation");
   const gate = deferred();
@@ -323,7 +513,7 @@ test("newer return ZIP import wins over an older pending import", async () => {
   assert.equal(el.participantId.value, "P05");
   assert.equal(stored.length, 1);
   assert.equal(stored[0][1].participantId, "P05");
-  assert.equal(el.detail.textContent, "Recovered records from the selected return ZIP.");
+  assert.equal(el.detail.textContent, "Recovered draft. 47 TRAIN trials remaining (103 total). Start Camera and Start Selected Session to continue TRAIN.");
   assert.equal(el.importZip.value, "next-selection.zip");
 });
 
@@ -356,7 +546,7 @@ test("stale rejected return ZIP import cannot overwrite a newer success", async 
   }
 
   assert.equal(state.participantId, "P05");
-  assert.equal(el.detail.textContent, "Recovered records from the selected return ZIP.");
+  assert.equal(el.detail.textContent, "Recovered draft. 47 TRAIN trials remaining (103 total). Start Camera and Start Selected Session to continue TRAIN.");
   assert.equal(el.importZip.value, "next-selection.zip");
 });
 
@@ -371,14 +561,15 @@ test("camera loop guard rejects stale callbacks after pause or restart", () => {
   assert.equal(cameraLoopActive(state, 4), false);
 });
 
-test("TRAIN can start before future validation notes are entered", async () => {
+test("completed TRAIN can advance to VALIDATION before future validation notes are entered", async () => {
   const el = fakeCollectionElements({ split: "train", trainConditions: "bright room", validationConditions: "" });
   const state = fakeCollectionState({ records: completedRecordsForSplit("train", "P04") });
 
   await startCollection(el, state);
 
-  assert.equal(el.detail.textContent, "Select the next session when you are ready, or export the return ZIP.");
-  assert.match(state.sessionStartedAt.train, /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(el.detail.textContent, "TRAIN is already complete. 48 VALIDATION trials remaining (56 total). After a break, enter actual VALIDATION notes, then Start Selected Session.");
+  assert.deepEqual(state.sessionStartedAt, {});
+  assert.equal(el.sessionSelect.value, "validation");
   assert.equal(el.validationConditions.focused, false);
 });
 
@@ -396,11 +587,13 @@ test("fresh collection can run TRAIN first, then export all sessions", async () 
     assert.equal(state.records.length, 48 * SAMPLE_OFFSETS.length);
     assert.deepEqual(Object.keys(state.sessionStartedAt), ["train"]);
     assert.equal(el.validationConditions.value, "");
+    assert.equal(el.sessionSelect.value, "validation");
+    assert.equal(el.detail.textContent, "TRAIN complete. 48 VALIDATION trials remaining (56 total). After a break, enter actual VALIDATION notes, then Start Selected Session.");
 
     el.validationConditions.value = "same room, second section";
-    el.sessionSelect.value = "validation";
     await startCollection(el, state);
-    el.sessionSelect.value = "validation_negative";
+    assert.equal(el.sessionSelect.value, "validation_negative");
+    assert.equal(el.detail.textContent, "VALIDATION complete. 8 UNKNOWN trials remaining (8 total). Start Selected Session to continue UNKNOWN.");
     await startCollection(el, state);
     assert.equal(state.records.length, makeTrialPlan().length * SAMPLE_OFFSETS.length);
 
@@ -531,6 +724,7 @@ async function runCancelledStartup(phase) {
     assert.equal(el.startCollection.disabled, true);
     assert.equal(el.pause.disabled, true);
     assert.equal(frameCallbacks.length, 0);
+    assert.match(el.detail.textContent, /Start Camera.*Start Selected Session/);
 
     await startCamera(el, state);
     modelGate.resolve({ detectForVideo: () => ({}) });
@@ -634,11 +828,11 @@ function fakeCollectionState({ records = [] } = {}) {
 
 function completedRecordsForSplit(split, participantId) {
   const plan = makeTrialPlan().filter((row) => row.split === split);
-  return plan.flatMap((row) => stampRecords(new SampleScheduler(row, 0).finalize("missed_slot"), participantId));
+  return plan.flatMap((row, index) => stampRecords(new SampleScheduler(row, index * 3).finalize("missed_slot"), participantId));
 }
 
-function installCollectionClock() {
-  let nowMs = 0;
+function installCollectionClock(initialMs = 0) {
+  let nowMs = initialMs;
   let state = null;
   let frame = 0;
   const performanceDescriptor = Object.getOwnPropertyDescriptor(globalThis, "performance");
@@ -723,8 +917,13 @@ function fakeImportElements(zip, arrayBuffer = async () => zip.buffer.slice(zip.
     validationConditions: { value: "", disabled: false },
     numericConsent: { checked: false },
     accessConsent: { checked: false },
+    sessionSelect: { value: "train" },
+    startCollection: { disabled: false },
+    exportZip: { disabled: false },
+    clearDraft: { disabled: false },
     progress: { value: 0 },
     progressText: { textContent: "" },
+    instruction: { textContent: "" },
     detail: { textContent: "" },
   };
 }

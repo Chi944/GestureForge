@@ -138,14 +138,15 @@ def write_guide(path: Path, platform: str) -> None:
     content += [table, Spacer(1, 12)]
     step("5  TRAIN, break, VALIDATION, then UNKNOWN",
          "<b>TRAIN:</b> finish 48 trials (12 per pose; about 5-6 minutes). Export a backup ZIP, "
-         "then take a break and remove your hand from view.<br/><br/>"
+         "click <b>Pause</b>, then take a break.<br/><br/>"
          "<b>VALIDATION:</b> enter <b>VALIDATION conditions</b> for the current lighting, "
-         "background, sitting/standing position and hand distance. Select <b>VALIDATION</b>, "
-         "then click <b>Start Selected Session</b> for another 48 trials (about 5-6 minutes). "
-         "Export another backup.<br/><br/>"
-         "<b>UNKNOWN:</b> select <b>UNKNOWN</b> and start its 8 different non-command trials "
+         "background, sitting/standing position and hand distance. The recorder selects "
+         "<b>VALIDATION</b> next. Click <b>Start Camera</b>, wait for hand detection, then "
+         "<b>Start Selected Session</b> for 48 trials (about 5-6 minutes). Export another backup.<br/><br/>"
+         "<b>UNKNOWN:</b> the recorder selects <b>UNKNOWN</b> next. Click <b>Start Selected "
+         "Session</b> for its 8 different non-command trials "
          "(about 1 minute). These use your VALIDATION condition notes; keep those conditions "
-         "the same. Follow each on-screen instruction.")
+         "the same. If paused, click <b>Start Camera</b> first. Nothing records until you start it.")
     p("<b>While recording:</b> Start and Export are deliberately unavailable so they cannot "
       "interrupt a trial. <b>Pause</b> remains available. Keep this tab visible; pause before "
       "leaving it. To save during a session, pause first and wait for recording to stop.")
@@ -164,15 +165,20 @@ def write_guide(path: Path, platform: str) -> None:
          "do not unzip it or zip the program folder.</b> Include your participant code, Windows "
          "or macOS version, browser name, and any problems or help you needed. A file marked "
          "PARTIAL is incomplete; keep it and report the interruption instead of deleting trials.")
-    step("If recording is interrupted", "Use <b>Pause</b> before leaving the page and export "
-         "a backup before closing. Reopening the same file can recover the locally saved work. "
-         "You can also use <b>Recover from a previous return ZIP</b> and choose your downloaded "
-         "EMAIL_THIS ZIP. Keep the original backup. Do not re-record completed trials or edit "
-         "out mistakes. Camera or tab interruptions preserve missed samples as invalid.")
+    step("Resume a PARTIAL ZIP - do not repeat TRAIN",
+         "Open <b>START_HERE.html</b> from the newest kit. Under <b>Recover from a previous "
+         "return ZIP</b>, choose your original <b>EMAIL_THIS_...PARTIAL_development.zip</b>. "
+         "Keep that backup; do not unzip it or clear your draft.<br/>"
+         "The recorder selects the first unfinished section. With 48 TRAIN trials saved, "
+         "this is <b>VALIDATION</b>. After a break, fill in its actual condition notes, click "
+         "<b>Start Camera</b>, wait for hand detection, then <b>Start Selected Session</b>. "
+         "Finish VALIDATION and UNKNOWN, then export again. A complete return shows "
+         "<b>104 / 104 trials</b> and has no <b>PARTIAL</b> in its filename.")
     p("After the team confirms receipt, <b>Clear Local Draft</b> removes this browser's saved "
       "recording. Keep your emailed ZIP until receipt is confirmed.")
-    p("<b>To resume after Pause:</b> click <b>Start Camera</b>, wait for the detector, then "
-      "click <b>Start Selected Session</b>. Completed trials remain saved and are skipped.")
+    p("<b>Pause or switching tabs stops the camera.</b> To resume, click <b>Start Camera</b>, "
+      "then <b>Start Selected Session</b>. Reopening the same file can also recover a saved "
+      "draft. Completed trials are skipped; interrupted slots remain invalid. Do not edit out mistakes.")
     step("If your hand is not detected", "Pause first. Put light on your whole right palm, "
          "keep it unobstructed and move it slightly farther from the camera so all fingers "
          "and the wrist fit in the picture. Face your palm towards the camera, then click "

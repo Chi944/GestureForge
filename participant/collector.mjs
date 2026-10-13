@@ -222,6 +222,52 @@ export function collectionFileName(participantId, records) {
     : `EMAIL_THIS_${participantId}_PARTIAL_development.zip`;
 }
 
+function firstUnfinishedSplit(participantId, records) {
+  const done = completedTrialIds(records);
+  return ["train", "validation", "validation_negative"].find((split) => {
+    return makeTrialPlan()
+      .some((trial) => trial.split === split && !done.has(`${sessionId(participantId, split)}/${trial.trial_id}`));
+  }) ?? null;
+}
+
+function splitLabel(split) {
+  if (split === "validation_negative") return "UNKNOWN";
+  return split.toUpperCase();
+}
+
+function selectResumeSplit(el, state) {
+  const split = firstUnfinishedSplit(state.participantId, state.records);
+  if (split) el.sessionSelect.value = split;
+  return split;
+}
+
+function remainingTrialCount(participantId, records, split = null) {
+  const done = completedTrialIds(records);
+  return makeTrialPlan().filter((trial) => {
+    return (!split || trial.split === split) && !done.has(`${sessionId(participantId, trial.split)}/${trial.trial_id}`);
+  }).length;
+}
+
+function resumeMessage(state, nextSplit, prefix) {
+  if (!nextSplit) return "All 104 trials are complete. Export the return ZIP.";
+  const action = state.cameraReady ? "Start Selected Session" : "Start Camera and Start Selected Session";
+  const section = splitLabel(nextSplit);
+  const sectionRemaining = remainingTrialCount(state.participantId, state.records, nextSplit);
+  const totalRemaining = remainingTrialCount(state.participantId, state.records);
+  if (nextSplit === "validation" && !state.sessionStartedAt.validation && !state.sessionStartedAt.validation_negative) {
+    return `${prefix}. ${sectionRemaining} ${section} trials remaining (${totalRemaining} total). After a break, enter actual VALIDATION notes, then ${action}.`;
+  }
+  return `${prefix}. ${sectionRemaining} ${section} trials remaining (${totalRemaining} total). ${action} to continue ${section}.`;
+}
+
+function recoveryPrefix(state, nextSplit) {
+  if (nextSplit === "validation" && state.sessionStartedAt.validation) return "Recovered VALIDATION";
+  if (nextSplit === "validation" && state.sessionStartedAt.train) return "Recovered TRAIN";
+  if (nextSplit === "validation_negative" && state.sessionStartedAt.validation_negative) return "Recovered UNKNOWN";
+  if (nextSplit === "validation_negative" && state.sessionStartedAt.validation) return "Recovered VALIDATION";
+  return "Recovered draft";
+}
+
 export function cameraLoopActive(state, generation) {
   return Boolean(state.stream) && !state.paused && state.generation === generation;
 }
@@ -579,6 +625,17 @@ function observationFromResult(result, frameId, capturedAt) {
 export async function startCollection(el, state) {
   if (state.collecting) return;
   if (!validateForm(el, state)) return;
+  const split = el.sessionSelect.value;
+  const done = completedTrialIds(state.records);
+  const plan = makeTrialPlan().filter((trial) => {
+    return trial.split === split && !done.has(`${sessionId(state.participantId, trial.split)}/${trial.trial_id}`);
+  });
+  if (plan.length === 0) {
+    const next = selectResumeSplit(el, state);
+    renderProgress(el, state);
+    el.detail.textContent = resumeMessage(state, next, `${splitLabel(split)} is already complete`);
+    return;
+  }
   state.paused = false;
   state.collecting = true;
   el.startCollection.disabled = true;
@@ -587,13 +644,8 @@ export async function startCollection(el, state) {
   el.clearDraft.disabled = true;
   scrollToStatus(el);
   const generation = state.generation;
-  const split = el.sessionSelect.value;
   state.sessionStartedAt[split] ??= new Date().toISOString();
   renderProgress(el, state);
-  const done = completedTrialIds(state.records);
-  const plan = makeTrialPlan().filter((trial) => {
-    return trial.split === split && !done.has(`${sessionId(state.participantId, trial.split)}/${trial.trial_id}`);
-  });
   for (const trial of plan) {
     if (state.paused || state.generation !== generation) break;
     await runTrial(el, state, trial, generation);
@@ -606,8 +658,9 @@ export async function startCollection(el, state) {
   el.importZip.disabled = false;
   el.clearDraft.disabled = false;
   if (!state.paused && state.generation === generation) {
+    const next = selectResumeSplit(el, state);
     el.instruction.textContent = "Session complete";
-    el.detail.textContent = "Select the next session when you are ready, or export the return ZIP.";
+    el.detail.textContent = resumeMessage(state, next, `${splitLabel(split)} complete`);
   }
 }
 
@@ -681,7 +734,7 @@ function pause(el, state, message) {
   state.generation += 1;
   state.paused = true;
   el.instruction.textContent = "Paused";
-  el.detail.textContent = message;
+  el.detail.textContent = `${message} To resume, click Start Camera, wait for the detector, then Start Selected Session.`;
   stopCamera(state);
   state.cameraReady = false;
   el.pause.disabled = true;
@@ -717,7 +770,7 @@ function autosave(el, state) {
   }
 }
 
-function restoreDraft(el, state) {
+export function restoreDraft(el, state) {
   try {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return;
@@ -725,11 +778,16 @@ function restoreDraft(el, state) {
     el.participantId.value = draft.participantId || "";
     el.trainConditions.value = draft.trainConditions || "";
     el.validationConditions.value = draft.validationConditions || "";
+    state.participantId = el.participantId.value;
+    state.trainConditions = el.trainConditions.value;
+    state.validationConditions = el.validationConditions.value;
     state.sessionStartedAt = draft.sessionStartedAt || {};
     state.consentRecordedAt = draft.consentRecordedAt || "";
     state.records = Array.isArray(draft.records) ? draft.records : [];
     state.frameId = maxFrameId(state.records);
-    el.detail.textContent = "Recovered a local draft. Continue or export the current ZIP.";
+    const split = selectResumeSplit(el, state);
+    renderProgress(el, state);
+    el.detail.textContent = resumeMessage(state, split, recoveryPrefix(state, split));
   } catch {
     el.detail.textContent = "Local autosave could not be restored. Use a saved return ZIP, and download a backup before closing.";
   }
@@ -783,8 +841,10 @@ export async function importZip(el, state) {
     state.consentRecordedAt = collection.consent.recorded_at;
     state.frameId = maxFrameId(state.records);
     autosave(el, state);
+    const split = selectResumeSplit(el, state);
     renderProgress(el, state);
-    el.detail.textContent = "Recovered records from the selected return ZIP.";
+    el.startCollection.disabled = !state.cameraReady;
+    el.detail.textContent = resumeMessage(state, split, recoveryPrefix(state, split));
   } catch (error) {
     if (state.generation !== generation) return;
     el.detail.textContent = `Could not import ZIP: ${error.message}`;

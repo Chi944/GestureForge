@@ -4,6 +4,29 @@ Snapshot: 13 October 2026. This measures the final-project extension, not the al
 
 ## Current work on 13 October
 
+**Second development return is partial:** the Mac return contains all 48 TRAIN
+trials, with 240 records accepted by the existing importer as usable features.
+There are no VALIDATION or UNKNOWN records. The original ZIP, checksum, numeric
+import and intake notes remain private. Together with the earlier complete Mac
+return, this is one complete participant plus one partial participant, not two
+completed H2 inputs. The second person's browser/version, exact setup error,
+starter independence, physical pose mapping and break still need confirmation.
+
+The collector had a reproducible continuation gap: restoring a TRAIN-only ZIP
+left TRAIN selected, so Start could immediately report that already-finished
+section as complete. Recovery and section completion now point to the first
+unfinished section, with explicit camera-restart and condition-note guidance.
+Hau Jie should coordinate the remaining 48 VALIDATION and eight UNKNOWN trials
+using the rebuilt kit, preserving TRAIN. No task weight or accepted total changes.
+
+Verification: 27 collector checks cover recovery, automatic next-section
+selection, full 104-trial export, saved-record preservation, locked condition
+notes, camera restart and stale operations. The 29 Python importer/package
+checks, Ruff, mypy (53 source files) and changed-document link checks pass.
+Both three-page PDF guides were rendered and visually inspected. These checks
+do not establish the exact cause of the reported Mac setup issue or replace
+a physical retest on that participant's browser.
+
 **GF-P12 v4 protocol decision:** the current personal Practice gate uses a
 22-window protocol requiring every window to pass: three five-second windows for each enrolled
 action pose plus NEUTRAL, followed by ten negative windows. A pass can unlock

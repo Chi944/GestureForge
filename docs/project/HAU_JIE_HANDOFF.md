@@ -4,6 +4,17 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**13 October participant recovery:** Deston has one complete development return
+and a second Mac return containing all 48 TRAIN trials (240 usable samples),
+but no VALIDATION or UNKNOWN. The second return was privately imported as
+partial; do not count it as H2 complete or request TRAIN again. Use the rebuilt
+participant kit and [partial-ZIP recovery steps](PARTICIPANT_KITS.md#continue-after-train-or-recover-a-partial-zip)
+to finish its 48 VALIDATION and eight UNKNOWN trials. Confirm that second
+participant's independence, shared right-hand poses and session break, and
+record their browser/version and any assistance. Send the completed return
+privately for validation. TEST remains excluded until the reviewed freeze;
+the existing private H1 packet is still a separate delivery.
+
 **11 October:** use the [manual/GPT task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
 to separate participant and laptop work from coding-assistant preparation.
 
