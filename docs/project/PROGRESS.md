@@ -1,6 +1,42 @@
 # GestureForge Studio progress
 
-Snapshot: 12 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 13 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current work on 13 October
+
+**GF-P12 v4 protocol decision:** the current personal Practice gate uses a
+22-window protocol requiring every window to pass: three five-second windows for each enrolled
+action pose plus NEUTRAL, followed by ten negative windows. A pass can unlock
+normal personal LIVE use only for the exact current profile/model/hand/camera,
+behavior revision and authored workspace/stage/Quick Actions maps, after terminal
+save, exact event reconciliation and paused restoration. It remains separate
+from final performance evaluation, frozen TEST scoring and native-device
+acceptance, and it is less statistical reliability evidence than the older
+ten-trial-per-pose rehearsal.
+
+Historical v1-v3 50-window Practice results remain historical evidence and are
+not rewritten or converted into v4 eligibility. Javier's older P03 result remains
+a failed result; the next useful check is a short PREVIOUS diagnostic with the
+correct pose and intended-pose notes before another full v4 attempt. Any wrong
+actions must be understood before a fresh pass attempt; separate attempts cannot
+be combined.
+
+Documentation now directs ZIP users to replace the Studio source ZIP after the
+software change is packaged. Git users should pull or rebase instead. Participant
+browser collection kits are separate and do not need redistribution for this
+Studio-only gate. Existing private datasets, profiles and Practice evidence stay
+local and out of Git.
+
+Software verification on 13 October: **918 tests passed, one platform skip**;
+Ruff, mypy (100 files), both application startup modes and synthetic evaluation
+passed. An independent review found no remaining blocking defects. The focused
+Practice/Live suite passed all 153 checks, including every pose missing a window,
+negative actions, incomplete coverage, stale/legacy eligibility and the mixed
+`/3` pose versus `/10` negative counters. These are software results, not human
+recognition or second-device acceptance. The rebuilt Studio archive has its own
+local checksum and extracted-package verification record in `releases/`.
+No additional task is accepted from this protocol change: **Deston 16/75 (21.3%), Hau Jie 51/75 (68.0%),
+Javier 48/73 (65.8%), team 115/223 (51.6%), 15/29 tasks accepted**.
 
 ## Current work on 12 October
 

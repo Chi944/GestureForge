@@ -6,7 +6,7 @@ from math import isfinite
 
 from .practice import (
     READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS, READABLE_PROTOCOL_VERSIONS,
-    TRIALS_PER_POSE, PracticeResult, PracticeTrial,
+    NEGATIVE_CUES, PracticeResult, PracticeTrial, practice_pose_trials,
 )
 
 
@@ -54,7 +54,7 @@ def _rejection_summary(trials: list[PracticeTrial], label: str) -> str | None:
 
 def _diagnostic_next_steps(result: PracticeResult) -> tuple[str, ...]:
     manual = "Use manual controls while reviewing this diagnostic evidence; it does not enable LIVE gestures."
-    full_scope = "Full 50-window Practice was not performed; other poses and negative/transition windows were not assessed."
+    full_scope = "Full Practice was not performed; other poses and negative/transition windows were not assessed."
     if not result.trials:
         return (
             "No diagnostic window was recorded. Start Practice and complete the selected single-pose diagnostic before assessing it.",
@@ -136,7 +136,8 @@ def practice_next_steps(result: PracticeResult) -> tuple[str, ...]:
             "and capture timing, then retry Practice before interpreting misses or recollecting data."
         )
     poses = tuple(label for label, _count in result.correct_per_pose)
-    unattempted = max(0, (len(poses) + 1) * TRIALS_PER_POSE - len(result.trials))
+    pose_trials = practice_pose_trials(result.protocol_version)
+    unattempted = max(0, len(poses) * pose_trials + len(NEGATIVE_CUES) - len(result.trials))
     if unattempted or interrupted:
         steps.append(
             f"Incomplete attempt: {unattempted} window(s) unattempted; {interrupted} interrupted. "
@@ -151,7 +152,7 @@ def practice_next_steps(result: PracticeResult) -> tuple[str, ...]:
         if not missed and not wrong:
             continue
         correct = sum(trial.outcome == "correct" for trial in scored)
-        details = [f"{pose}: {correct}/{TRIALS_PER_POSE} correct; {missed} missed; {wrong} wrong."]
+        details = [f"{pose}: {correct}/{pose_trials} correct; {missed} missed; {wrong} wrong."]
         commands = _command_counts(scored, pose)
         repeated = sum(any(count > 1 for count in Counter(trial.actions).values()) for trial in scored)
         if commands:

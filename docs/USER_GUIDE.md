@@ -29,7 +29,7 @@ Check the active mappings, then click **Request Preview start** after the previo
 
 You can also launch `.\run.cmd --studio --profile-id YOUR_PROFILE_ID --camera 1`. The ID is the saved profile JSON filename without `.json`, usually under `.local/profiles`; `--profile-store PATH` selects a different private store for both startup and the Profiles tab. Keep the original numeric dataset at its recorded path. Saved classifier settings are authoritative: do not combine `--profile-id` with `--dataset`, `--algorithm`, `--multiplier` or `--margin`; intentional retraining requires a new profile. Loading displays the profile name/ID and stays paused. A successful load is not a readiness pass.
 
-With a personal recogniser loaded, click **Start/retry readiness** after the previous camera has released. This starts a preliminary simulated check: follow the prompts for two activations of each of the three enrolled action gestures, using NEUTRAL between activations. All six must pass through the protected controller with zero wrong activations. UNKNOWN does not count toward completion; **Finish readiness** fails an incomplete check. Guest has no standard recogniser and cannot run this check. A pass applies only to this session's behaviour revision; model, camera or active behaviour changes expire it, while cosmetic profile renaming and navigation through existing stages retain it. For personal models it does not enable live gestures. The separate **Practice** tab provides the longer fifty-window protocol below. Only a saved, reconciled full Practice pass from the current app session can grant personal LIVE eligibility; it never starts capture or actions automatically. Manual LIVE controls do not depend on either gesture check.
+With a personal recogniser loaded, click **Start/retry readiness** after the previous camera has released. This starts a preliminary simulated check: follow the prompts for two activations of each of the three enrolled action gestures, using NEUTRAL between activations. All six must pass through the protected controller with zero wrong activations. UNKNOWN does not count toward completion; **Finish readiness** fails an incomplete check. Guest has no standard recogniser and cannot run this check. A pass applies only to this session's behaviour revision; model, camera or active behaviour changes expire it, while cosmetic profile renaming and navigation through existing stages retain it. For personal models it does not enable live gestures. The separate **Practice** tab provides the longer measured protocol below. Only a saved, reconciled full Practice pass from the current app session can grant personal LIVE eligibility; it never starts capture or actions automatically. Manual LIVE controls do not depend on either gesture check.
 
 In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause**. Editing the number alone does not change capture. Applying a different index stops the old worker and clears its predictions. An applied camera change expires personal LIVE eligibility even if you later select the old index. To resume simulation, select Preview or Rehearsal in **Studio action mode** and click **Apply and pause**; LIVE Start requires a new qualifying full Practice pass. With a personal recogniser loaded, wait for the old camera to release, Start explicitly and hold NEUTRAL again. Camera changes preserve your active mappings and mode. The selection is not saved across launches; use `--camera` for a launch default.
 
@@ -47,7 +47,7 @@ enrolled pose after **Start personal practice**, before preparing. This records
 one five-second diagnostic and finishes automatically. Read the actual trial
 outcome: completing a diagnostic is not a full rehearsal pass. Other poses and
 negative activity are not assessed by that diagnostic. The default full rehearsal
-still requires all 50 windows; separate attempts cannot be combined into a pass.
+still requires all 22 windows; separate attempts cannot be combined into a pass.
 
 A recorded action can still have an **inconclusive** outcome if camera capture
 does not cover the whole measurement window. This is not, by itself, a recognition
@@ -87,7 +87,8 @@ diagnostics retain the late-frame count and largest observed age. This policy
 also applies to the v3 single-pose diagnostic. Malformed/out-of-order packets,
 camera faults, focus loss and configuration changes still interrupt and preserve
 the result. A previously cancelled attempt cannot be resumed or combined with
-a new attempt for a full-protocol pass. Older v1/v2 results remain unchanged.
+a new attempt for a full-protocol pass. Older v1/v2/v3 results remain unchanged
+and cannot be reused as a current `gf-p12-v4` personal LIVE grant.
 
 If setup reaches 30 seconds before measurement starts, capture pauses and
 **Retry setup** repeats the same prompt. Completed windows remain saved in the
@@ -103,10 +104,10 @@ Practice is the longer GF-P12 measurement workflow, separate from **Start/retry 
 1. Load a personal dataset or profile and select the correct camera. Finish/cancel the short readiness check, pause any existing capture and wait for camera release.
 2. Open **Practice**, then **Review negative cues**. Edit any of the ten instructions that overlap your enrolled action poses; keep exactly ten nonempty lines, then close the dialog. Select the local numeric outcome consent checkbox only if you consent to recording. Cue text is also saved, so keep it free of personal details. The instructions are fixed once practice starts.
 3. Click **Start personal practice**, then **Prepare next trial**. Wait for the matching camera preview. For action and negative trials, show accepted NEUTRAL until READY; for a NEUTRAL trial, the rearm transition must occur inside its measured window.
-4. Click **Begin five-second window** when ready and follow the displayed pose/instruction for the full window. Use **Prepare next trial** after the preceding capture releases. Ten rounds of the three action poses and NEUTRAL provide forty windows, followed by ten negative/transition windows: fifty five-second measurements, with preparation time in addition.
+4. Click **Begin five-second window** when ready and follow the displayed pose/instruction for the full window. Use **Prepare next trial** after the preceding capture releases. Protocol `gf-p12-v4` uses three rounds of the three action poses and NEUTRAL, followed by ten negative/transition windows: twenty-two five-second measurements, with preparation time in addition.
 5. Review the per-pose result and saved path. Local JSON files under `.local/studio/practice/practice-<attempt-id>.json` record trial outcomes, simulated event IDs, rejection counts, capture coverage and the profile/model/behaviour revision. They contain no images, video, landmarks or feature vectors. Keep these files private and preserve the code revision plus separate intended-pose notes with any reported issue.
 
-The personal LIVE pass requires all 50 windows with complete capture coverage, at least nine correct trials out of ten for each action pose and NEUTRAL, zero wrong activations and all ten negative windows correct. An interrupted or inconclusive attempt cannot pass; separate diagnostics or attempts cannot be combined. NEUTRAL and negative windows should not emit an action, so fifty windows do not mean fifty actions. The dedicated Practice JSON holds per-trial measurements; the session summary records dispatcher outcomes. Do not interpret a simulation count as a real launch or task completion.
+The personal LIVE pass requires all 22 windows with complete capture coverage, all three trials correct for each action pose and NEUTRAL, zero wrong or repeated activations and all ten negative windows correct. An interrupted or inconclusive attempt cannot pass; separate diagnostics or attempts cannot be combined. NEUTRAL and negative windows should not emit an action, so twenty-two windows do not mean twenty-two actions. The dedicated Practice JSON holds per-trial measurements; the session summary records dispatcher outcomes. Do not interpret a simulation count as a real launch or task completion.
 
 After saving, open **Session summary** for **Latest saved practice — historical**.
 It shows completed versus recorded windows, per-pose outcomes, unattempted
@@ -114,7 +115,8 @@ windows, coverage failures and negative actions. The event comparison checks eac
 recorded action against its original dispatcher event, including the session,
 model, context and typed action. Missing, duplicate, mismatched or unexpected
 events need investigation; they are not hidden by an aggregate total. A generated
-perfect run has fifty windows and thirty simulated command actions.
+perfect `gf-p12-v4` run has twenty-two windows and nine simulated command
+actions. Older v1-v3 examples with fifty windows remain historical records.
 
 This historical view survives summary reset and later profile changes within the
 open app. Its revision labels show whether it refers to the current behavior and
@@ -128,7 +130,7 @@ review automatically, and this view cannot enable LIVE gestures.
 ### Personal LIVE after Practice
 
 A qualifying full Practice attempt grants eligibility only in the app session
-that actually ran it. The host must finish the 50-window protocol, save the
+that actually ran it. The host must finish the 22-window protocol, save the
 terminal result, reconcile every simulated event with its original dispatcher
 outcome, and restore the previous context paused. A pending save, interruption,
 inconclusive window or reconciliation failure cannot grant eligibility. The
@@ -137,8 +139,8 @@ imported/saved JSON cannot grant or restore it. Practice itself always simulates
 
 To use an eligible personal profile:
 
-1. Confirm the full result satisfies all 50 covered windows, at least 9/10
-   correct for each of the three action poses and NEUTRAL, zero wrong activations
+1. Confirm the full result satisfies all 22 covered windows, all 3/3 trials
+   correct for each of the three action poses and NEUTRAL, zero wrong or repeated activations
    and all ten negative windows correct.
 2. In **Open Setup**, select **Live** in **Studio action mode**, then click
    **Apply and pause**. Check the active context and gesture meanings.

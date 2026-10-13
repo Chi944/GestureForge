@@ -1,6 +1,6 @@
 # GF-P12 personal rehearsal: component and Studio interface
 
-Owner: Hau Jie. Host integration/reviewer: Deston. Updated 5 October 2026.
+Owner: Hau Jie. Host integration/reviewer: Deston. Updated 13 October 2026.
 Status: the measurement component, current-session personal LIVE gate and Repair
 pose host flow are implemented in the integration branch. A real qualifying saved
 attempt is still required for each session's eligibility. Repair creates only a
@@ -14,21 +14,21 @@ and the host's persistent `Dispatcher`. It processes each prediction once and
 dispatches only protected simulated events. Raw labels, manual actions and a
 passed preliminary six-activation check cannot earn action-trial credit.
 
-The sequence is ten repetitions of each of the three action IDs **and NEUTRAL**,
-then ten five-second negative/transition intervals: 50 measured windows. This
-explicitly includes NEUTRAL in "ten trials per pose". Each window lasts five
-seconds. Each action trial requires
-exactly one intended simulated action; wrong or repeated actions fail that trial.
-NEUTRAL trials require accepted controller READY inside the window and no action.
-Negative intervals require no action and full prediction-stream coverage.
+Protocol `gf-p12-v4` uses three repetitions of each of the three action IDs
+**and NEUTRAL**, then ten five-second negative/transition intervals: 22 measured
+windows. This explicitly includes NEUTRAL in the measured pose set. Each window
+lasts five seconds. Each action trial requires exactly one intended simulated
+action; wrong or repeated actions fail that trial. NEUTRAL trials require
+accepted controller READY inside the window and no action. Negative intervals
+require no action and full prediction-stream coverage.
 
-Current pass rule: all 50 windows completed, at least 9/10 correct for
-each of the four poses, all ten negative windows covered with zero actions,
-no wrong/repeated action trial and no incomplete capture window. One missed
-trial per pose can be tolerated; wrong actions are not tolerated. These extra
-conditions prevent a nine-correct/one-wrong classifier from being certified.
-The host also requires successful saving, exact event reconciliation and paused
-context restoration before granting personal LIVE eligibility.
+Current pass rule: all 22 windows completed, all three trials correct for each
+of the four poses, all ten negative windows covered with zero actions, no
+wrong/repeated action trial and no incomplete capture window. The host also
+requires successful saving, exact event reconciliation and paused context
+restoration before granting personal LIVE eligibility. Historical v1-v3
+50-window results remain evidence but cannot be replayed or converted into a
+v4 LIVE grant.
 
 Negative cues cover absent hands, unfamiliar poses, open-palm movement and
 transitions without sustained enrolled action poses. The host/operator must

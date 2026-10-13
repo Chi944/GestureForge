@@ -140,9 +140,10 @@ handles cosmetic rename and explicit Preview-start notifications and blocks comp
 setup operations while the selector is busy. Successful reconstruction stays paused
 and does not establish readiness; loading or reloading clears any personal LIVE
 grant. Only the host's genuine current-session full Practice attempt can grant
-eligibility after all 50 covered windows, at least 9/10 correct for every pose
-including NEUTRAL, zero wrong activations and all ten negative windows correct,
+eligibility after the current 22 covered windows, all 3/3 trials correct for every pose
+including NEUTRAL, zero wrong or repeated activations and all ten negative windows correct,
 followed by terminal save, exact event reconciliation and paused restoration.
+This is a current-session safety gate, not equivalent reliability evaluation.
 The memory-only grant never selects LIVE or starts capture automatically. Saved
 loading reuses the existing model worker. See [the selector handoff](PROFILE_SELECTOR_HANDOFF.md).
 

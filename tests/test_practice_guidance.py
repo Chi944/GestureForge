@@ -33,14 +33,20 @@ def diagnostic_result(trials=(), *, status="cancelled", poses=POSES):
     return replace(result(trials, status=status, poses=poses), protocol_version=DIAGNOSTIC_PROTOCOL_VERSION)
 
 
-@pytest.mark.parametrize(("legacy", "current"), [
-    ("gf-p12-v1", PROTOCOL_VERSION),
-    ("gf-p12-single-pose-diagnostic-v1", DIAGNOSTIC_PROTOCOL_VERSION),
-])
-def test_historical_protocol_guidance_remains_read_only(legacy, current):
+def test_historical_diagnostic_protocol_guidance_remains_read_only():
+    legacy = "gf-p12-single-pose-diagnostic-v1"
     evidence = replace(result([trial("NEUTRAL", "missed")]), protocol_version=legacy)
     before = asdict(evidence)
-    assert practice_next_steps(evidence) == practice_next_steps(replace(evidence, protocol_version=current))
+    assert practice_next_steps(evidence) == practice_next_steps(replace(evidence, protocol_version=DIAGNOSTIC_PROTOCOL_VERSION))
+    assert asdict(evidence) == before
+
+
+def test_historical_full_protocol_guidance_uses_legacy_fifty_window_count():
+    evidence = replace(result([trial("NEUTRAL", "missed")]), protocol_version="gf-p12-v1")
+    before = asdict(evidence)
+    text = " ".join(practice_next_steps(evidence))
+    assert "49 window(s) unattempted" in text
+    assert "NEUTRAL: 0/10 correct; 1 missed; 0 wrong" in text
     assert asdict(evidence) == before
 
 
@@ -53,7 +59,7 @@ def test_no_windows_does_not_diagnose_unattempted_poses():
 
 def test_interrupted_preparation_is_not_a_recognition_miss():
     advice = practice_next_steps(result([trial(outcome="interrupted", coverage=False)]))
-    assert "49 window(s) unattempted; 1 interrupted" in advice[0]
+    assert "21 window(s) unattempted; 1 interrupted" in advice[0]
     assert not any("G1:" in line or "recollect" in line for line in advice)
 
 
@@ -64,10 +70,10 @@ def test_coverage_failure_precedes_guidance_and_does_not_diagnose_its_rejections
     assert not any("G1:" in line or "distance rejection" in line for line in advice)
 
 
-def test_nine_correct_one_wrong_names_unintended_command():
-    rows = [trial() for _ in range(9)] + [trial(outcome="wrong", actions=("G2",))]
+def test_two_correct_one_wrong_names_unintended_command():
+    rows = [trial() for _ in range(2)] + [trial(outcome="wrong", actions=("G2",))]
     text = " ".join(practice_next_steps(result(rows)))
-    assert "G1: 9/10 correct; 0 missed; 1 wrong" in text
+    assert "G1: 2/3 correct; 0 missed; 1 wrong" in text
     assert "Unintended simulated commands: G2 (1)" in text
     assert "targeted recollection" in text
     assert "passed" not in text
@@ -130,7 +136,7 @@ def test_secondary_rejection_counts_are_not_silently_lost():
 
 def test_neutral_miss_points_to_ready_and_trace_without_asserting_root_cause():
     text = " ".join(practice_next_steps(result([trial("NEUTRAL", "missed")])))
-    assert "NEUTRAL: 0/10 correct; 1 missed; 0 wrong" in text
+    assert "NEUTRAL: 0/3 correct; 1 missed; 0 wrong" in text
     assert "Show enrolled NEUTRAL until READY" in text
     assert "accepted/rejected NEUTRAL in the controller trace" in text
 
@@ -156,21 +162,30 @@ def test_negative_commands_remain_visible_even_with_incomplete_capture():
 
 def test_partial_nine_correct_windows_do_not_imply_completed_protocol():
     text = " ".join(practice_next_steps(result([trial() for _ in range(9)])))
-    assert "41 window(s) unattempted" in text
+    assert "13 window(s) unattempted" in text
     assert "G1:" not in text
     assert "passed" not in text
 
 
-def test_complete_pass_and_allowed_miss_do_not_establish_live_readiness():
-    rows = [trial(pose) for pose in (*POSES, "NEGATIVE") for _ in range(10)]
+def test_complete_pass_and_single_miss_do_not_establish_live_readiness():
+    rows = [trial(pose) for pose in POSES for _ in range(3)]
+    rows += [trial("NEGATIVE") for _ in range(10)]
     assert practice_next_steps(result(rows, status="passed")) == (
         "Use manual controls while reviewing this simulation evidence; it does not enable LIVE gestures.",
     )
     rows[0] = trial(outcome="missed")
     text = " ".join(practice_next_steps(result(rows, status="passed")))
-    assert "9/10 correct; 1 missed" in text
+    assert "2/3 correct; 1 missed" in text
     assert "failed" not in text
     assert "does not enable LIVE gestures" in text
+
+
+def test_legacy_protocol_guidance_keeps_ten_pose_trials_and_fifty_windows():
+    rows = [trial() for _ in range(9)]
+    legacy = replace(result(rows), protocol_version="gf-p12-v3")
+    text = " ".join(practice_next_steps(legacy))
+    assert "41 window(s) unattempted" in text
+    assert "G1:" not in text
 
 
 def test_custom_pose_evidence_is_immutable_deterministic_and_bounded():
@@ -183,7 +198,7 @@ def test_custom_pose_evidence_is_immutable_deterministic_and_bounded():
     advice = practice_next_steps(evidence)
     assert advice == practice_next_steps(evidence)
     assert asdict(evidence) == before
-    assert any("CUSTOM_A: 0/10 correct" in line for line in advice)
+    assert any("CUSTOM_A: 0/3 correct" in line for line in advice)
     assert len(advice) <= 12
     assert all(len(line) < 600 for line in advice)
 
@@ -203,7 +218,7 @@ def test_single_pose_diagnostic_miss_uses_one_window_evidence_without_full_proto
     assert "Single-pose diagnostic recorded NEUTRAL: missed; correct 0/1" in text
     assert "margin_rejection" not in text
     assert "ambiguous pose in 57/117 frames" in text
-    assert "Full 50-window Practice was not performed" in text
+    assert "Full Practice was not performed" in text
     assert "49 window" not in text
     assert "NEUTRAL: 0/10" not in text
     assert "does not enable LIVE gestures" in text

@@ -42,7 +42,8 @@ from .enrolment_widget import EnrolmentWidget
 from .pose_repair_widget import PoseRepairWidget
 from .pose_repair import RepairCandidate
 from .profile_widget import ProfileSelectorWidget
-from .practice import READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS, NEGATIVE_CUES, PersonalRehearsal, PracticeResult
+from .practice import (READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS, NEGATIVE_CUES,
+                       PersonalRehearsal, PracticeResult, practice_pose_trials)
 from .practice_guidance import practice_next_steps
 from .practice_widget import PersonalRehearsalWidget
 from .profiles import LoadedProfile, ProfileStore
@@ -1363,11 +1364,12 @@ class Window(QMainWindow):
         return "\n".join([
             "Latest saved practice — historical single-pose diagnostic",
             f"Attempt: {result.attempt_id}",
+            f"Protocol: {result.protocol_version}",
             f"Profile: {result.profile_id} | Model: {result.model_version}",
             f"Behavior revision: {result.behavior_revision} ({revision_state})",
             f"Scope revision: {scope_revision} ({scope_state})",
             f"Saved diagnostic export: {review.saved_path}",
-            "Diagnostic scope: one selected pose only; full 50-window rehearsal not performed; "
+            "Diagnostic scope: one selected pose only; full rehearsal not performed; "
             "other poses and negative/transition windows not assessed.",
             f"Windows recorded: {recorded_windows}/1 | completed five-second windows: {completed}/1 | "
             f"unattempted {max(0, 1 - recorded_windows)} | coverage failures {coverage_failures}",
@@ -1394,17 +1396,19 @@ class Window(QMainWindow):
         if self._is_single_pose_diagnostic(result):
             return self._practice_diagnostic_review_text(review, revision_state, scope_state, scope_revision)
         outcome_counts = Counter(trial.outcome for trial in result.trials)
+        pose_trials = practice_pose_trials(result.protocol_version)
+        total_windows = len(result.correct_per_pose) * pose_trials + len(NEGATIVE_CUES)
         recorded_windows = len(result.trials)
         completed_windows = sum(trial.outcome != "interrupted" for trial in result.trials)
-        unattempted_windows = max(0, 50 - recorded_windows)
+        unattempted_windows = max(0, total_windows - recorded_windows)
         coverage_failures = sum(not trial.coverage_ok for trial in result.trials)
         pose_lines = []
         for label, correct in result.correct_per_pose:
             trials = [trial for trial in result.trials if trial.expected == label]
             trial_counts = Counter(trial.outcome for trial in trials)
             pose_lines.append(
-                f"{label}: recorded {len(trials)}/10, completed {sum(trial.outcome != 'interrupted' for trial in trials)}/10, "
-                f"unattempted {max(0, 10 - len(trials))}, correct {correct}/10, wrong {trial_counts['wrong']}, "
+                f"{label}: recorded {len(trials)}/{pose_trials}, completed {sum(trial.outcome != 'interrupted' for trial in trials)}/{pose_trials}, "
+                f"unattempted {max(0, pose_trials - len(trials))}, correct {correct}/{pose_trials}, wrong {trial_counts['wrong']}, "
                 f"missed {trial_counts['missed']}, inconclusive {trial_counts['inconclusive']}, "
                 f"interrupted {trial_counts['interrupted']}, coverage failures {sum(not trial.coverage_ok for trial in trials)}"
             )
@@ -1413,11 +1417,12 @@ class Window(QMainWindow):
         return "\n".join([
             "Latest saved practice — historical",
             f"Attempt: {result.attempt_id}",
+            f"Protocol: {result.protocol_version}",
             f"Profile: {result.profile_id} | Model: {result.model_version}",
             f"Behavior revision: {result.behavior_revision} ({revision_state})",
             f"Scope revision: {scope_revision} ({scope_state})",
             f"Saved full trial export: {review.saved_path}",
-            f"Windows recorded: {recorded_windows}/50 | completed five-second windows: {completed_windows}/50 | unattempted {unattempted_windows} | coverage failures {coverage_failures}",
+            f"Windows recorded: {recorded_windows}/{total_windows} | completed five-second windows: {completed_windows}/{total_windows} | unattempted {unattempted_windows} | coverage failures {coverage_failures}",
             f"Status: {result.status} | reason: {result.reason}",
             "Window outcomes: " + ", ".join(
                 f"{name} {outcome_counts[name]}" for name in ("correct", "wrong", "missed", "inconclusive", "interrupted")
@@ -1720,12 +1725,13 @@ class Window(QMainWindow):
                     status = self._single_pose_diagnostic_status(result)
                     counts = f"{pose} {outcome} ({correct}/1 correct)"
                     guidance = (
-                        "Full 50-window rehearsal not performed; other poses and negative windows were not assessed. "
+                        "Full rehearsal not performed; other poses and negative windows were not assessed. "
                         "No readiness credit was granted. Open Session summary for the saved diagnostic's measured next steps."
                     )
                     status_prefix = f"Practice diagnostic {status}"
                 else:
-                    counts = ", ".join(f"{label} {count}/10" for label, count in result.correct_per_pose)
+                    pose_trials = practice_pose_trials(result.protocol_version)
+                    counts = ", ".join(f"{label} {count}/{pose_trials}" for label, count in result.correct_per_pose)
                     guidance = (
                         "Personal LIVE eligible for the approved current contexts; select LIVE, press Start, and show NEUTRAL."
                         if granted_live

@@ -102,13 +102,14 @@ Studio owns one persistent `Dispatcher`; context/profile/workspace changes must 
 ## Personal full-Practice LIVE gate
 
 The host issues an in-memory grant only from its genuine active full Practice
-attempt in the current app session. The attempt must complete all 50 windows
-with full capture coverage, at least 9/10 correct for each enrolled action pose
-and NEUTRAL, zero wrong activations and all ten negative windows correct. It must
-reach terminal state, save successfully, reconcile its exact simulated events
-with the frozen dispatcher outcomes, and restore the previous context paused
-before the grant is issued. Pending or failed preservation/restoration cannot
-authorise dispatch. Practice remains REHEARSAL throughout measurement.
+attempt in the current app session. Protocol `gf-p12-v4` must complete all
+22 windows with full capture coverage: three correct windows for each enrolled
+action pose and NEUTRAL, zero wrong or repeated activations and all ten negative
+windows correct. It must reach terminal state, save successfully, reconcile its
+exact simulated events with the frozen dispatcher outcomes, and restore the
+previous context paused before the grant is issued. Pending or failed
+preservation/restoration cannot authorise dispatch. Practice remains REHEARSAL
+throughout measurement.
 
 The grant pins the personal profile, model revision, selected hand, camera,
 semantic behavior revision and exact authored context-to-action maps, including
@@ -122,8 +123,9 @@ those transitions still invalidate queued work and require explicit resume.
 
 Short readiness passes, single-pose diagnostics, constructed result objects,
 historical review and imported/saved JSON are not grant sources. A JSON file is
-evidence, not a replayable credential. The historical review remains read-only
-and may survive changes that invalidate the grant.
+evidence, not a replayable credential. Older v1-v3 fifty-window results stay
+historical and cannot be converted into a v4 grant. The historical review remains
+read-only and may survive changes that invalidate the grant.
 
 A grant never selects LIVE, applies configuration, opens capture or issues an
 action. The user explicitly selects LIVE and applies it, then starts capture
@@ -198,7 +200,7 @@ The result is a session-local six-activation check, not accuracy evaluation, ide
 
 ### Measured personal rehearsal (GF-P12)
 
-The embedded **Practice** tab uses `PersonalRehearsal` and the existing persistent `Dispatcher` in REHEARSAL mode. It records ten five-second windows per enrolled pose (three commands plus NEUTRAL), then ten negative/transition windows. Users review the negative instructions against their custom vocabulary and consent to local outcome recording before starting. The protocol, capture-generation handshake, bounded late-frame handling and result format are defined in [PERSONAL_REHEARSAL_INTERFACE.md](PERSONAL_REHEARSAL_INTERFACE.md).
+The embedded **Practice** tab uses `PersonalRehearsal` and the existing persistent `Dispatcher` in REHEARSAL mode. Protocol `gf-p12-v4` records three five-second windows per enrolled pose (three commands plus NEUTRAL), then ten negative/transition windows. Users review the negative instructions against their custom vocabulary and consent to local outcome recording before starting. The protocol, capture-generation handshake, bounded late-frame handling and result format are defined in [PERSONAL_REHEARSAL_INTERFACE.md](PERSONAL_REHEARSAL_INTERFACE.md).
 
 The component processes each observation exactly once through the shared router. The shell supplies one camera worker stamped with the prepared snapshot, waits for the preceding worker to retire, and does not process those predictions a second time. Practice never launches applications or changes the viewer. Terminal results remain historical evidence after the previous context is restored; their applicability is checked against the current semantic behavior revision.
 

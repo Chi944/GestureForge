@@ -6,7 +6,7 @@ from PySide6.QtCore import QTimer, Signal, Qt
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from .contracts import Prediction
-from .practice import PersonalRehearsal, PracticeResult
+from .practice import NEGATIVE_CUES, PROTOCOL_VERSION, PersonalRehearsal, PracticeResult, practice_pose_trials
 
 
 class PersonalRehearsalWidget(QWidget):
@@ -36,7 +36,7 @@ class PersonalRehearsalWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
         self.test_selection = QComboBox()
-        self.test_selection.addItem('Full rehearsal — 50 windows', None)
+        self.test_selection.addItem(f'Full rehearsal — {len(attempt.sequence)} windows', None)
         for pose in (*attempt.gesture_ids, 'NEUTRAL'):
             self.test_selection.addItem(f'Test only {pose} — one diagnostic window', pose)
         self.test_selection.setAccessibleName('Practice test selection')
@@ -148,7 +148,10 @@ class PersonalRehearsalWidget(QWidget):
         attempt = self.attempt
         prompt = attempt.expected
         diagnostic = attempt.diagnostic_pose is not None
-        repetitions = 1 if diagnostic else 10
+        repetitions = (
+            1 if diagnostic else len(NEGATIVE_CUES)
+            if prompt is not None and prompt.expected == 'NEGATIVE' else practice_pose_trials(PROTOCOL_VERSION)
+        )
         total = len(attempt.sequence)
         next_text = (f'{prompt.expected} {prompt.repetition}/{repetitions}: {prompt.instruction}'
                      if prompt else 'All prompted windows recorded.')

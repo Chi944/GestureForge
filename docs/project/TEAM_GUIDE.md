@@ -1,10 +1,33 @@
 # GestureForge Studio team implementation guide
 
-Updated 12 October 2026 · Project deadline 7 November 2026
+Updated 13 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
-## Current deliveries — 12 October
+## Current deliveries — 13 October
+
+GF-P12's current personal LIVE protocol is now `gf-p12-v4`: three five-second
+windows for each enrolled action pose plus NEUTRAL, followed by ten negative
+windows. This 22-window pass can unlock normal personal LIVE use for the exact
+current profile/model/hand/camera/behavior and authored context after saving,
+event reconciliation and paused restoration. It is still not final performance
+evaluation or native-device acceptance. Historical v1-v3 50-window results
+remain old evidence and cannot grant v4 LIVE eligibility. Javier's previous P03
+attempt remains failed evidence; his next check is a short PREVIOUS diagnostic
+with the correct pose and intended-pose notes, then wrong-action diagnosis before
+any fresh 22-window attempt.
+
+Use a fresh Studio source ZIP only for teammates who run from ZIP. Git users
+should pull/rebase from `main`; participant browser collection kits are separate.
+Extract the new Studio ZIP into a fresh folder and keep old private profiles,
+datasets and `.local` evidence outside the replacement folder unless the guide
+explicitly tells you to import them.
+
+Software verification passed 918 tests (one platform skip), Ruff, mypy and both
+startup modes; the focused Practice/Live suite passed 153 checks. Follow the
+Studio archive's matching local verification record for package checks. These
+checks do not establish recognition on a participant's hand or native device
+acceptance. No additional Trello/backlog task is Done from the protocol change.
 
 Read the **Next delivery** table at the top of your individual brief first.
 It supersedes older recording priorities. Return small, reviewable deliveries
@@ -116,12 +139,12 @@ Deston owns the shell; teammates provide embeddable PySide6 widgets instead of s
 | Demo Studio | Card title/body and distinctive card transition, ordered stages/instructions and bookmarks | Current stage and gesture meanings; manual Next/Previous/Bookmark/Continue; pause |
 | Session Review | Correct/wrong/missed trials, would-be actions, retries and acknowledged task completion | Export results; distinguish simulated events from real launch requests |
 
-The current integration adds an embedded Practice tab from PR #21 alongside Profiles, Enrolment, Repair pose, an explicit mode selector, draft gesture mappings, workspace loading, Edit runbook, Runbook, Session summary, runbook session files and Quick Actions. Profiles supports explicit create/load/rename/delete and Guest/manual switching; successful installation stays paused in Preview, and busy profile work blocks competing setup operations. `--profile-store PATH` selects the store for both the tab and startup. Repair pose starts from the installed saved personal profile, disables Guest/ad-hoc sources, uses shared observation-only capture, opens candidate review in Profiles and supports explicit rollback by loading the original profile. Applying a mapping stops capture and requires neutral before gesture simulation resumes; those draft mappings are not persisted. Quick Actions saves its private target library and three slot choices locally; **Use Quick Actions** explicitly validates and activates them, while target edits pause and clear routing until reactivation. Typed action buttons and target tests simulate in Preview/Rehearsal. Explicit LIVE allows manual deck/stage actions without a recogniser and validated Windows launches; macOS reports external launches unsupported. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. **Start/retry readiness** runs a preliminary six-activation simulated check: two correct protected events per action, NEUTRAL between events and zero wrong activations. UNKNOWN does not complete a trial; **Finish readiness** fails an incomplete check. For personal models its short pass cannot enable LIVE. For a reviewed standard release the six-action check can grant session-local eligibility; no such release is currently supplied. The separate Practice protocol measures fifty five-second windows: ten for each action pose and NEUTRAL, followed by ten negative/transition intervals. It uses the existing capture/controller/dispatcher and saves local per-trial evidence. Only a genuine full Practice pass completed in the current app session, saved and reconciled before paused restoration, can grant temporary personal LIVE eligibility. That grant never starts capture or actions; final acceptance remains Deston's responsibility. GF-P12 software is accepted, but physical repair, native Practice and later evaluation remain separate. Guest remains manual-only without a starter.
+The current integration adds an embedded Practice tab from PR #21 alongside Profiles, Enrolment, Repair pose, an explicit mode selector, draft gesture mappings, workspace loading, Edit runbook, Runbook, Session summary, runbook session files and Quick Actions. Profiles supports explicit create/load/rename/delete and Guest/manual switching; successful installation stays paused in Preview, and busy profile work blocks competing setup operations. `--profile-store PATH` selects the store for both the tab and startup. Repair pose starts from the installed saved personal profile, disables Guest/ad-hoc sources, uses shared observation-only capture, opens candidate review in Profiles and supports explicit rollback by loading the original profile. Applying a mapping stops capture and requires neutral before gesture simulation resumes; those draft mappings are not persisted. Quick Actions saves its private target library and three slot choices locally; **Use Quick Actions** explicitly validates and activates them, while target edits pause and clear routing until reactivation. Typed action buttons and target tests simulate in Preview/Rehearsal. Explicit LIVE allows manual deck/stage actions without a recogniser and validated Windows launches; macOS reports external launches unsupported. Use `Window.configure_studio` as documented in `CONTRACTS.md` for context/mapping integration. **Start/retry readiness** runs a preliminary six-activation simulated check: two correct protected events per action, NEUTRAL between events and zero wrong activations. UNKNOWN does not complete a trial; **Finish readiness** fails an incomplete check. For personal models its short pass cannot enable LIVE. For a reviewed standard release the six-action check can grant session-local eligibility; no such release is currently supplied. The separate `gf-p12-v4` Practice protocol measures twenty-two five-second windows: three for each action pose and NEUTRAL, followed by ten negative/transition intervals. It uses the existing capture/controller/dispatcher and saves local per-trial evidence. Only a genuine full Practice pass completed in the current app session, saved and reconciled before paused restoration, can grant temporary personal LIVE eligibility. That grant never starts capture or actions; final acceptance remains Deston's responsibility. GF-P12 software is accepted, but physical repair, native Practice and later evaluation remain separate. Guest remains manual-only without a starter.
 
 The personal LIVE grant is held only in memory. It requires a genuine active
-full Practice attempt in the current app session: all 50 windows covered, at
-least 9/10 correct for every pose including NEUTRAL, no wrong activations and
-all ten negative windows correct. Saving, exact summary-event reconciliation
+full Practice attempt in the current app session: all 22 windows covered, all
+3/3 trials correct for every pose including NEUTRAL, no wrong or repeated
+activations and all ten negative windows correct. Saving, exact summary-event reconciliation
 and restoration of the previous context paused must all succeed first. The
 grant pins profile/model/hand/camera/behavior revision and exact authored
 workspace, stage and Quick Actions maps. Behavior, mapping, target or camera
@@ -129,6 +152,7 @@ edits expire it even if changed back; restarting Studio, Guest and model reload
 clear it. Historical/imported JSON, diagnostics and the short check cannot grant
 it. Cosmetic renames, ordinary pause and existing stage/Quick Actions selection
 retain eligibility, but every resume needs explicit Start and fresh NEUTRAL.
+Historical/imported v1-v3 fifty-window results cannot grant a v4 pass.
 LIVE selection and **Apply and pause** remain explicit. The grant does not mark
 physical repair, participant evaluation or native Windows acceptance complete.
 
@@ -142,7 +166,7 @@ Screen transitions use the same small rule set:
 | Select a saved profile or load a personal dataset | Pause camera, train/validate candidate off the UI thread, then either install the complete model/vocabulary and remain paused or keep the old selection with an error. |
 | Request Preview start from Profiles | Require the currently loaded profile/model and Preview mode, finish busy work and camera release, then use the normal Start/NEUTRAL path. |
 | Use Guest (manual only) | Pause and unload the recogniser without deleting saved profiles or datasets; preserve manual workspace state. Unavailable standard gestures remain disabled with a reason. |
-| Finish the short personal readiness check | Show pass/fail/expired readiness and the reason; incomplete or wrong activation fails. A pass remains simulation-only and does not substitute for Practice's fifty-window protocol. |
+| Finish the short personal readiness check | Show pass/fail/expired readiness and the reason; incomplete or wrong activation fails. A pass remains simulation-only and does not substitute for Practice's 22-window protocol. |
 | Start personal Practice | Use the loaded recogniser and shared capture/controller in REHEARSAL; all would-be actions go through the persistent dispatcher as simulations. Preserve the previous context for paused restoration. |
 | Complete qualifying full Practice | Save the terminal result, reconcile every simulated event and restore the previous context paused before issuing an in-memory personal LIVE grant. Never auto-select LIVE or start capture. |
 | Stop Practice, leave its tab or lose focus | Stop capture and preserve local evidence; restore the prior context paused only after evidence is saved. Failed storage retains the result for retry and blocks replacement. No automatic resume or LIVE permission. |

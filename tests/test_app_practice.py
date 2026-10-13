@@ -229,6 +229,27 @@ def diagnostic_review(window, result, tmp_path):
     )
 
 
+@pytest.mark.parametrize(("protocol", "pose_trials", "total"), [
+    ("gf-p12-v1", 10, 50), ("gf-p12-v2", 10, 50),
+    ("gf-p12-v3", 10, 50), ("gf-p12-v4", 3, 22),
+])
+def test_practice_review_preserves_protocol_denominators(qapp, tmp_path, protocol, pose_trials, total):
+    window = Window(model=model(), studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
+    try:
+        result = replace(diagnostic_result([]), protocol_version=protocol, reason="Stopped before capture")
+        review = diagnostic_review(window, result, tmp_path)
+        text = window._practice_review_text(review)
+        assert f"Protocol: {protocol}" in text
+        assert f"Windows recorded: 0/{total}" in text
+        assert f"G1: recorded 0/{pose_trials}" in text
+        assert "Negative windows: recorded 0/10" in text
+        assert f"unattempted {total}" in text
+        assert window._personal_live_grant is None
+        assert review.result == result
+    finally:
+        window.close()
+
+
 @pytest.mark.parametrize(("outcome", "expected_status", "expected_correct"), [
     ("correct", "diagnostic completed", "correct 1/1"),
     ("missed", "diagnostic completed", "correct 0/1"),
@@ -253,7 +274,7 @@ def test_single_pose_diagnostic_review_uses_one_window_scope(qapp, tmp_path, out
         assert "g3: not assessed" in text
         assert "neutral: not assessed" in text
         assert "negative windows: not assessed" in text
-        assert "full 50-window rehearsal not performed" in text
+        assert "full rehearsal not performed" in text
         assert "recorded 0/10" not in text
         assert "unattempted 49" not in text
         assert "correct 0/10" not in text
@@ -273,7 +294,7 @@ def test_single_pose_diagnostic_finish_banner_does_not_look_like_full_pass(qapp)
         text = window.practice_status.text().lower()
         assert "practice diagnostic completed" in text
         assert "neutral missed (0/1 correct)" in text
-        assert "full 50-window rehearsal not performed" in text
+        assert "full rehearsal not performed" in text
         assert "other poses and negative windows were not assessed" in text
         assert "no readiness credit" in text
         assert "neutral 0/10" not in text
@@ -907,7 +928,7 @@ def test_terminal_practice_release_does_not_fault_restored_context(monkeypatch, 
     ("late_before_sixth", "late_during_ninth", "retry_neutral_setup"),
     [(False, False, False), (True, False, False), (False, True, False), (True, True, True)],
 )
-def test_practice_completes_full_50_window_host_regression(
+def test_practice_completes_full_22_window_host_regression(
     monkeypatch, qapp, tmp_path, late_before_sixth, late_during_ninth, retry_neutral_setup,
 ):
     import gestureforge.app as app_module
@@ -924,7 +945,7 @@ def test_practice_completes_full_50_window_host_regression(
         previous = window.routing.snapshot
         start_practice(window)
 
-        sequence = [*(label for _ in range(10) for label in ("G1", "G2", "G3", "NEUTRAL")),
+        sequence = [*(label for _ in range(3) for label in ("G1", "G2", "G3", "NEUTRAL")),
                     *("NEGATIVE" for _ in range(10))]
         for index, expected in enumerate(sequence):
             widget = window.practice_widget
@@ -1023,7 +1044,7 @@ def test_practice_completes_full_50_window_host_regression(
         assert window.readiness_check is None
         assert window.readiness_pass_revision == ""
         counts = window.session_summary.counts()
-        expected_actions = 29 if late_during_ninth else 30
+        expected_actions = 8 if late_during_ninth else 9
         assert counts["simulated"] == expected_actions
         assert counts["launch_requested"] == 0
         assert counts["acknowledged_completion"] == 0
@@ -1035,7 +1056,9 @@ def test_practice_completes_full_50_window_host_regression(
         review = window._practice_review
         assert review is not None
         assert review.saved_path == saved[0]
-        assert len(review.result.trials) == 50
+        assert len(review.result.trials) == 22
+        assert review.result.protocol_version == "gf-p12-v4"
+        assert (window._personal_live_grant is not None) == (not late_during_ninth)
         assert len(review.result.setup_retries) == int(retry_neutral_setup)
         assert json.loads(saved[0].read_text())["setup_retries"] == list(review.result.setup_retries)
         assert review.result.status == expected_status
@@ -1049,8 +1072,8 @@ def test_practice_completes_full_50_window_host_regression(
             assert all(row.outcome == "correct" for row in review.result.trials[9:])
         review_text = window.practice_review_label.text().lower()
         assert "latest saved practice" in review_text
-        assert "windows recorded: 50/50" in review_text
-        assert "completed five-second windows: 50/50" in review_text
+        assert "windows recorded: 22/22" in review_text
+        assert "completed five-second windows: 22/22" in review_text
         assert "unattempted 0" in review_text
         assert f"coverage failures {int(late_during_ninth)}" in review_text
         assert "scope revision: revision-" in review_text

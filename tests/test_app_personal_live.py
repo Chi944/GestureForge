@@ -63,7 +63,7 @@ def passed_result(window: Window, *, status="passed") -> PracticeResult:
             "unit fixture",
         )
         for index, (expected, repetition) in enumerate(
-            [(pose, rep) for rep in range(1, 11) for pose in ("G1", "G2", "G3", "NEUTRAL")]
+            [(pose, rep) for rep in range(1, 4) for pose in ("G1", "G2", "G3", "NEUTRAL")]
             + [("NEGATIVE", rep) for rep in range(1, 11)]
         )
     )
@@ -76,7 +76,7 @@ def passed_result(window: Window, *, status="passed") -> PracticeResult:
         status,
         "unit full pass",
         trials,
-        (("G1", 10), ("G2", 10), ("G3", 10), ("NEUTRAL", 10)),
+        (("G1", 3), ("G2", 3), ("G3", 3), ("NEUTRAL", 3)),
         0,
         (),
     )

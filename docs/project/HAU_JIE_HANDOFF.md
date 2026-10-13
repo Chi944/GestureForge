@@ -196,14 +196,14 @@ is distinct from running another full human Practice attempt.
    your attributed PR #20/#22 physical collection/invalid/Stop evidence. Preserve
    those records. No new recognition accuracy or human Practice pass is implied.
    Your next repair task is the integrated selected-pose workflow specified above.
-4. **GF-P12 after reliable setup.** Run the full fifty-window protocol on your
+4. **GF-P12 after reliable setup.** Run the current `gf-p12-v4` 22-window protocol on your
    own profile only after the focused checks support it. **Return:** the full
    private Practice JSON reference, code/model/behaviour revisions, per-pose and
    negative-window outcomes, coverage, interruptions and Session summary event
    reconciliation. Retain every miss, inconclusive window and prior attempt;
-   an incomplete attempt is evidence, not a pass. Verify all 50 windows are
-   covered, every pose including NEUTRAL reaches at least 9/10 correct, there
-   are no wrong activations and all ten negative windows are correct. Record
+   an incomplete attempt is evidence, not a pass. Verify all 22 windows are
+   covered, every pose including NEUTRAL reaches 3/3 correct, there are no
+   wrong or repeated activations and all ten negative windows are correct. Record
    whether saving, event reconciliation and paused restoration completed and
    whether the host granted personal LIVE eligibility. A blocked/failed result
    remains useful evidence; diagnose a software fault with a short reproduction
@@ -241,7 +241,7 @@ it does not request repetition of Deston's development recordings.
 
 Latest integration, 4 October: sync main before recording. Practice v3 queues
 Begin for up to two seconds while waiting for fresh capture/READY, and a
-30-second setup timeout offers Retry setup without ending the 50-window attempt.
+30-second setup timeout offers Retry setup without ending the attempt.
 Setup retries are saved separately; measured misses/inconclusive windows are not
 replaced. Four complete generated host sequences verify continuity, including
 the latest P01 setup failure. These are software checks, not participant results.
@@ -264,7 +264,7 @@ PR #17's selector is attached in Profiles. Creation/loading stays paused in Prev
 1. **GF-P06 - selector delivered and attached.** Keep the reviewed `ProfileStore` API and shell-owned loading. Preserve unavailable-starter messaging, independent profiles, atomic mutations and old state on failure. Deston owns integrated acceptance; see [PROGRESS.md](PROGRESS.md) for current evidence and status. Profile loading and Guest/manual access do not complete starter readiness.
 2. **GF-P11 - comparison supplied in PR #19.** The bounded nested comparison reports no qualifying candidate and disagreement between the inner participants' preferred settings in every fold. Review repairs cover reproducibility and evidence consistency; see [PROGRESS.md](PROGRESS.md) for acceptance. Preserve the private run and fixed baseline. A no-qualifying result does not require shipping a starter or blanket recollection.
 3. **GF-P07 accepted on 5 October.** Preserve the reviewed Enrolment implementation and the existing physical/generated evidence. Fix demonstrated regressions; no repeat recording is required simply to obtain acceptance again.
-4. **GF-P12 by 18 October - validate targeted repair and retain actual Practice evidence.** Use the selected-pose workflow described above only after diagnostic need; the existing fifty-window component and host grant are already integrated and should not be rebuilt. Follow compatibility, setup and focused checks before collecting a full own-profile attempt. Preserve the saved Practice JSON, every miss/interruption, source/model/behaviour revisions and exact Session summary reconciliation. The existing eligibility rule still requires all fifty windows covered, at least nine correct out of ten for every pose including NEUTRAL, zero wrong activations and all ten negative windows correct. Saving, reconciliation and paused restoration must complete before explicit LIVE, Apply, Start and fresh NEUTRAL. Human outcomes remain attributed evidence; they do not replace later GF-P20 study evidence.
+4. **GF-P12 by 18 October - validate targeted repair and retain actual Practice evidence.** Use the selected-pose workflow described above only after diagnostic need; the current 22-window Practice component and host grant are integrated and should not be rebuilt. Follow compatibility, setup and focused checks before collecting a full own-profile attempt. Preserve the saved Practice JSON, every miss/interruption, source/model/behaviour revisions and exact Session summary reconciliation. The current eligibility rule requires all 22 windows covered, all three trials correct for every pose including NEUTRAL, zero wrong or repeated activations and all ten negative windows correct. Saving, reconciliation and paused restoration must complete before explicit LIVE, Apply, Start and fresh NEUTRAL. Human outcomes remain attributed evidence; they do not replace later GF-P20 study evidence. Historical v1-v3 fifty-window files cannot grant the current v4 pass.
 
 ## Complete your lane
 
@@ -293,7 +293,7 @@ Legacy dataset import may retain NEXT/PREVIOUS/BOOKMARK as stable gesture IDs; n
 - Starter: three consenting team members, two sessions, eight trials per four labels, at most five scheduled samples per trial: 960 vectors maximum. Use participant-separated development folds and separate negatives. Ship only data for which distribution permission exists.
 - Final personal comparison: at least two independent consenting participants excluded from starter fitting/tuning; separate TRAIN, VALIDATION and untouched TEST sessions. Twelve trials per label/session and at most five samples per trial: 1,440 vectors maximum across both profiles. Freeze before opening test results.
 - Compare starter and personal models on the same standard-pose test trials. Evaluate different custom poses separately. Retain invalid samples and count genuine rejections as UNKNOWN misses; report per-person trial macro-F1 and UNKNOWN confusion.
-- Starter check: two correct simulated activations per action pose with neutral rearming and zero incorrect activations. UNKNOWN-only cannot pass. Personal rehearsal: ten trials per pose and ten five-second negative/transition intervals; require all windows covered, at least nine correct of ten per pose including NEUTRAL, zero wrong activations and all ten negative windows correct.
+- Starter check: two correct simulated activations per action pose with neutral rearming and zero incorrect activations. UNKNOWN-only cannot pass. Personal rehearsal: three trials per pose and ten five-second negative/transition intervals; require all windows covered, all three correct per pose including NEUTRAL, zero wrong or repeated activations and all ten negative windows correct.
 - Personal LIVE eligibility is held only in memory and pins profile/model/hand/camera/behavior revision and exact authored workspace, stage and Quick Actions maps. Behavior, mapping, target or camera changes expire it even if changed back. Cosmetic renames, ordinary pause and selection of an existing configured stage/Quick Actions context preserve it; resume always needs explicit Start and fresh NEUTRAL. Restarting Studio, Guest and model reload clear it. Historical/imported JSON, the short check and diagnostics cannot grant it.
 - Bound search to kNN k={3,5,7}, uniform/distance; SVM C={0.1,1,10}, gamma={scale,0.1}. Tune rejection on validation positives and negatives. Save numeric examples/configuration, rebuild on load; do not accept arbitrary pickle/joblib files.
 
@@ -332,7 +332,7 @@ full rehearsal credit. Deston's P01 partial check recorded correct NEXT and
 PREVIOUS, then a pre-Begin capture validation stop. A bounded preparation-only
 late-frame recovery and exact timing diagnostics are integrated; do not widen
 freshness limits or change model thresholds from the old combined error. Retest
-the affected preparation/pose path before requesting a full 50-window run.
+the affected preparation/pose path before requesting a full Practice run.
 The subsequent P01 BOOKMARK diagnostic on `d1b68e7` completed five seconds and
 recorded one matching simulated BOOKMARK event with 45 frames and no recorded
 rejections. Its outcome remains inconclusive because capture coverage failed;

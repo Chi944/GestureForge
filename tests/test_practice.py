@@ -10,7 +10,7 @@ from gestureforge.dispatcher import Dispatcher
 from gestureforge.practice import (DIAGNOSTIC_PROTOCOL_VERSION, PROTOCOL_VERSION,
                                    READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS,
                                    READABLE_PROTOCOL_VERSIONS, PersonalRehearsal,
-                                   PracticeResult)
+                                   PracticeResult, PracticeTrial, practice_pose_trials)
 from gestureforge.routing import RoutingSession
 from gestureforge.shortcuts import TargetRegistry
 
@@ -103,7 +103,7 @@ def test_diagnostic_cannot_skip_or_replace_an_already_prepared_attempt():
         h.attempt.select_diagnostic_pose('UNKNOWN')
     h.attempt.select_diagnostic_pose('NEUTRAL')
     h.attempt.select_diagnostic_pose(None)
-    assert len(h.attempt.sequence) == 50
+    assert len(h.attempt.sequence) == 22
     h.attempt.prepare(h.now)
     with pytest.raises(ValueError, match='before preparing'):
         h.attempt.select_diagnostic_pose('NEUTRAL')
@@ -143,6 +143,37 @@ def test_single_pose_widget_uses_existing_capture_and_saves_once(tmp_path):
     assert len(results) == len(releases) == 1
 
 
+def test_full_practice_widget_names_current_window_count(tmp_path):
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.practice_widget import PersonalRehearsalWidget
+    app = QApplication.instance() or QApplication([])
+    h = Harness()
+    widget = PersonalRehearsalWidget(h.attempt, tmp_path, clock=lambda: h.now)
+    assert widget.test_selection.itemText(0) == 'Full rehearsal — 22 windows'
+    assert '0/22 completed' in widget.prompt.text()
+    widget.close()
+    app.processEvents()
+
+
+@pytest.mark.parametrize(('completed', 'expected_text'), [(12, 'NEGATIVE 1/10'), (21, 'NEGATIVE 10/10')])
+def test_full_practice_widget_uses_ten_negative_cue_denominator(completed, expected_text, tmp_path):
+    from PySide6.QtWidgets import QApplication
+    from gestureforge.practice_widget import PersonalRehearsalWidget
+    app = QApplication.instance() or QApplication([])
+    h = Harness()
+    h.attempt._trials = [  # noqa: SLF001 - verifies display for saved prompt positions.
+        PracticeTrial(
+            'G1', 1, 'Recorded cue', 'session', 0.0, 5.0, 'correct', (), (),
+            False, 50, (), True, 'Recorded reason',
+        )
+        for _ in range(completed)
+    ]
+    widget = PersonalRehearsalWidget(h.attempt, tmp_path, clock=lambda: h.now)
+    assert expected_text in widget.prompt.text()
+    widget.close()
+    app.processEvents()
+
+
 def test_full_protocol_uses_real_router_and_persistent_simulated_dispatcher(tmp_path):
     h = Harness()
     for prompt in h.attempt.sequence:
@@ -150,10 +181,10 @@ def test_full_protocol_uses_real_router_and_persistent_simulated_dispatcher(tmp_
         h.window(label, accepted=label != 'UNKNOWN', reason='margin_rejection' if label == 'UNKNOWN' else '')
     result = h.attempt.result()
     assert result.status == 'passed'
-    assert len(result.trials) == 50
-    assert dict(result.correct_per_pose) == {'G1': 10, 'G2': 10, 'G3': 10, 'NEUTRAL': 10}
+    assert len(result.trials) == 22
+    assert dict(result.correct_per_pose) == {'G1': 3, 'G2': 3, 'G3': 3, 'NEUTRAL': 3}
     assert result.negative_actions == 0
-    assert len(h.dispatcher.summary.outcomes) == 30
+    assert len(h.dispatcher.summary.outcomes) == 9
     assert all(o.status == 'simulated' for o in h.dispatcher.summary.outcomes)
     assert all(len(t.event_ids) == 1 for t in result.trials if t.expected in h.bindings)
     path = h.attempt.save(tmp_path)
@@ -175,6 +206,54 @@ def test_full_protocol_uses_real_router_and_persistent_simulated_dispatcher(tmp_
     h.revision = 'new-behavior'
     assert not h.attempt.passed_for('behavior-test')
     assert h.attempt.result().status == 'passed'
+
+
+def test_legacy_passed_protocol_never_grants_current_live(monkeypatch):
+    h = Harness()
+    for prompt in h.attempt.sequence:
+        label = prompt.expected if prompt.expected != 'NEGATIVE' else 'UNKNOWN'
+        h.window(label, accepted=label != 'UNKNOWN', reason='margin_rejection' if label == 'UNKNOWN' else '')
+    legacy = replace(h.attempt.result(), protocol_version='gf-p12-v3')
+    monkeypatch.setattr(h.attempt, 'result', lambda: legacy)
+    assert not h.attempt.passed_for(h.revision)
+
+
+def test_incomplete_negative_windows_never_grant_current_live():
+    h = Harness()
+    for prompt in h.attempt.sequence[:-1]:
+        label = prompt.expected if prompt.expected != 'NEGATIVE' else 'UNKNOWN'
+        h.window(label, accepted=label != 'UNKNOWN', reason='margin_rejection' if label == 'UNKNOWN' else '')
+    assert h.attempt.result().status == 'idle'
+    assert len(h.attempt.result().trials) == 21
+    assert not h.attempt.passed_for(h.revision)
+
+
+def test_current_practice_protocol_uses_three_pose_trials_and_keeps_legacy_counts():
+    assert PROTOCOL_VERSION == 'gf-p12-v4'
+    assert practice_pose_trials(PROTOCOL_VERSION) == 3
+    assert practice_pose_trials('gf-p12-v3') == 10
+    assert practice_pose_trials('gf-p12-v2') == 10
+    assert practice_pose_trials('gf-p12-v1') == 10
+    with pytest.raises(ValueError, match='unsupported Practice protocol'):
+        practice_pose_trials('future-protocol')
+
+
+@pytest.mark.parametrize('missed_pose', ['G1', 'G2', 'G3', 'NEUTRAL'])
+def test_any_missed_current_pose_window_fails_even_when_other_windows_pass(missed_pose):
+    h = Harness()
+    missed = False
+    for prompt in h.attempt.sequence:
+        if prompt.expected == missed_pose and not missed:
+            h.window('UNKNOWN', accepted=False, reason='margin_rejection')
+            missed = True
+            continue
+        label = prompt.expected if prompt.expected != 'NEGATIVE' else 'UNKNOWN'
+        h.window(label, accepted=label != 'UNKNOWN', reason='margin_rejection' if label == 'UNKNOWN' else '')
+    result = h.attempt.result()
+    assert result.status == 'failed'
+    assert len(result.trials) == 22
+    assert dict(result.correct_per_pose)[missed_pose] == 2
+    assert not h.attempt.passed_for(h.revision)
 
 
 def test_missing_neutral_never_arms_and_unknown_only_never_passes():
@@ -285,19 +364,19 @@ def test_neutral_trial_cannot_inherit_preparation_ready():
 
 def test_negative_activation_fails_after_otherwise_successful_pose_trials():
     h = Harness()
-    for prompt in h.attempt.sequence[:40]:
+    for prompt in h.attempt.sequence[:12]:
         h.window(prompt.expected)
     h.window('G1')
     for _ in range(9):
         h.window('UNKNOWN', accepted=False, reason='distance_rejection')
     result = h.attempt.result()
     assert result.status == 'failed' and result.negative_actions == 1
-    assert result.trials[40].outcome == 'wrong'
+    assert result.trials[12].outcome == 'wrong'
 
 
 def test_late_fresh_in_window_action_is_scored_before_drain_finishes():
     h = Harness()
-    for prompt in h.attempt.sequence[:40]:
+    for prompt in h.attempt.sequence[:12]:
         h.window(prompt.expected)
     h.prepare()
     start = h.now
@@ -800,8 +879,8 @@ def test_full_rehearsal_continues_after_one_stale_window_but_cannot_pass():
                  reason='margin_rejection' if label == 'UNKNOWN' else '')
     result = h.attempt.result()
     assert result.status == 'failed'
-    assert len(result.trials) == 50
-    assert dict(result.correct_per_pose)['G1'] == 9
+    assert len(result.trials) == 22
+    assert dict(result.correct_per_pose)['G1'] == 2
     assert not h.attempt.passed_for(h.revision)
 
 

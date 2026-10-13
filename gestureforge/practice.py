@@ -19,15 +19,16 @@ from .dispatcher import Dispatcher
 from .routing import RoutingSession
 from .storage import atomic_write_json
 
-PROTOCOL_VERSION = 'gf-p12-v3'
+PROTOCOL_VERSION = 'gf-p12-v4'
 DIAGNOSTIC_PROTOCOL_VERSION = 'gf-p12-single-pose-diagnostic-v3'
-READABLE_PROTOCOL_VERSIONS = frozenset({PROTOCOL_VERSION, 'gf-p12-v2', 'gf-p12-v1'})
+READABLE_PROTOCOL_VERSIONS = frozenset({PROTOCOL_VERSION, 'gf-p12-v3', 'gf-p12-v2', 'gf-p12-v1'})
 READABLE_DIAGNOSTIC_PROTOCOL_VERSIONS = frozenset({
     DIAGNOSTIC_PROTOCOL_VERSION,
     'gf-p12-single-pose-diagnostic-v2',
     'gf-p12-single-pose-diagnostic-v1',
 })
-TRIALS_PER_POSE = 10
+TRIALS_PER_POSE = 3
+LEGACY_TRIALS_PER_POSE = 10
 WINDOW_SECONDS = 5.0
 BEGIN_WAIT_SECONDS = 2.0
 NEGATIVE_CUES = (
@@ -42,6 +43,14 @@ NEGATIVE_CUES = (
     'Move between a relaxed hand and an open palm without holding an action pose.',
     'Rest your hand, then return to an open palm without holding an action pose.',
 )
+
+
+def practice_pose_trials(protocol_version: str) -> int:
+    if protocol_version == PROTOCOL_VERSION:
+        return TRIALS_PER_POSE
+    if protocol_version in {'gf-p12-v3', 'gf-p12-v2', 'gf-p12-v1'}:
+        return LEGACY_TRIALS_PER_POSE
+    raise ValueError('unsupported Practice protocol version')
 
 
 @dataclass(frozen=True)
@@ -87,7 +96,7 @@ class PracticeResult:
 
 
 class PersonalRehearsal:
-    """Fifty prompted windows, scored only from protected simulated events.
+    """Prompted windows, scored only from protected simulated events.
 
 Each window uses a new router generation. Host must attach shared capture to the
 returned snapshot before delivering predictions (never relabel old packets).
@@ -124,7 +133,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.attempt_id = uuid4().hex
         self.sequence = tuple(
             PracticePrompt(label, repetition, 'Hold ' + label + ' for the full window.')
-            for repetition in range(1, 11)
+            for repetition in range(1, practice_pose_trials(PROTOCOL_VERSION) + 1)
             for label in (*gesture_ids, 'NEUTRAL')
         ) + tuple(PracticePrompt('NEGATIVE', i + 1, cue) for i, cue in enumerate(negative_cues))
         self._full_sequence = self.sequence
@@ -453,13 +462,12 @@ feeds the supplied router exactly once; the shell must not process packets again
         if self.diagnostic_pose is not None:
             # Close the host's temporary practice context using its existing
             # terminal lifecycle; a diagnostic can never certify readiness.
-            self.cancel('Single-pose diagnostic complete. Full 50-window rehearsal not performed.')
+            self.cancel('Single-pose diagnostic complete. Full rehearsal not performed.')
             return
         if self.completed == len(self.sequence):
             counts = self._counts()
-            good = (all(value >= 9 for value in counts.values())
-                    and all(t.coverage_ok and t.outcome != 'wrong' for t in self._trials)
-                    and all(t.outcome == 'correct' for t in self._trials if t.expected == 'NEGATIVE'))
+            good = (all(value == practice_pose_trials(PROTOCOL_VERSION) for value in counts.values())
+                    and all(t.coverage_ok and t.outcome == 'correct' for t in self._trials))
             self.status = 'passed' if good else 'failed'
             self.reason = ('Measured rehearsal met the proposed target; await host acceptance.' if good
                            else 'Rehearsal target not met; review per-pose and rejection evidence.')
@@ -538,15 +546,16 @@ feeds the supplied router exactly once; the shell must not process packets again
     def result(self) -> PracticeResult:
         counts = self._counts()
         guidance = []
+        protocol = DIAGNOSTIC_PROTOCOL_VERSION if self.diagnostic_pose is not None else PROTOCOL_VERSION
+        pose_trials = 1 if self.diagnostic_pose is not None else practice_pose_trials(protocol)
         for label, count in counts.items():
-            if sum(t.expected == label for t in self._trials) == 10 and count < 9:
+            if sum(t.expected == label for t in self._trials) == pose_trials and count < pose_trials:
                 guidance.append(f'{label}: review accepted labels, rejection reasons and pose notes before targeted repair collection.')
         negatives = sum(len(t.actions) for t in self._trials if t.expected == 'NEGATIVE')
         if negatives:
             guidance.append('Negative actions occurred. Inspect transition evidence before changing thresholds.')
         if any(not t.coverage_ok for t in self._trials):
             guidance.append('Incomplete capture: resolve timing/interruption before repeating the attempt.')
-        protocol = DIAGNOSTIC_PROTOCOL_VERSION if self.diagnostic_pose is not None else PROTOCOL_VERSION
         return PracticeResult(self.attempt_id, self.revision, protocol,
                               self._base.profile_id, self._base.model_version,
                               self.status, self.reason, tuple(self._trials),
@@ -557,7 +566,7 @@ feeds the supplied router exactly once; the shell must not process packets again
         return (
             result.status == 'passed'
             and result.protocol_version == PROTOCOL_VERSION
-            and len(result.trials) == 50
+            and len(result.trials) == (4 * practice_pose_trials(PROTOCOL_VERSION) + len(NEGATIVE_CUES))
             and revision == result.behavior_revision
             and self.current_revision() == result.behavior_revision
         )
