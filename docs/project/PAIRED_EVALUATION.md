@@ -21,6 +21,15 @@ feature version, vocabulary and declared physical poses. Use one frozen file per
 evaluated person. At least two new people are required by the final evaluation
 plan; a tool accepting one person's file does not reduce that requirement.
 
+A contributor who stops after TRAIN can still supply development training data.
+Preserve the partial import and original split labels; do not divide neighbouring
+frames into invented VALIDATION or TEST sessions. Review consent, physical pose
+mapping and provenance before pooling data. A fitting-only check establishes
+numerical compatibility, not recognition accuracy or rejection performance.
+Anyone used in starter fitting or tuning is excluded from that model's unseen-user
+evaluation. A closed TRAIN-only contribution does not count as a completed paired
+evaluation participant, and no further recording is requested from that person.
+
 Do not tune after inspecting TEST. If a defect forces a development change,
 preserve the original result, document the change and arrange fresh held-out
 evaluation. Freeze files record input integrity; they cannot prove when a human

@@ -4,28 +4,40 @@ Snapshot: 13 October 2026. This measures the final-project extension, not the al
 
 ## Current work on 13 October
 
-**Second development return is partial:** the Mac return contains all 48 TRAIN
+**Second contributor's collection is closed:** the Mac return contains all 48 TRAIN
 trials, with 240 records accepted by the existing importer as usable features.
-There are no VALIDATION or UNKNOWN records. The original ZIP, checksum, numeric
-import and intake notes remain private. Together with the earlier complete Mac
-return, this is one complete participant plus one partial participant, not two
-completed H2 inputs. The second person's browser/version, exact setup error,
-starter independence, physical pose mapping and break still need confirmation.
+Deston authorised use of these existing samples and no further collection from
+this person. The import remains partial: there are no VALIDATION, UNKNOWN or TEST
+records. Keep the original splits and use the samples for TRAIN-only development;
+do not relabel or split frames to manufacture independent evaluation data.
+The original ZIP, checksum, numeric import and intake notes remain private.
+Together with the earlier complete Mac return, this is one complete development
+return plus one TRAIN-only contribution, not two completed H2 inputs. Safari is
+confirmed, and clicking Start Selected Session for VALIDATION reportedly did
+nothing. Browser/macOS versions, starter independence and physical pose mapping
+remain unverified; no further participant recording or recovery is requested.
+
+Both default classifiers fitted the 240 TRAIN samples in memory using trial-aware
+rejection references. No predictions or accuracy scores were produced, and no
+model was saved or approved. This checks numerical compatibility only; the fit
+record stays private alongside the intake notes.
 
 The collector had a reproducible continuation gap: restoring a TRAIN-only ZIP
 left TRAIN selected, so Start could immediately report that already-finished
 section as complete. Recovery and section completion now point to the first
 unfinished section, with explicit camera-restart and condition-note guidance.
-Hau Jie should coordinate the remaining 48 VALIDATION and eight UNKNOWN trials
-using the rebuilt kit, preserving TRAIN. No task weight or accepted total changes.
+The collector fix remains available for other participants. Hau Jie should use
+the existing TRAIN-only contribution within its evidence limits and obtain the
+missing independent evaluation coverage from another eligible participant.
+No task weight or accepted total changes.
 
 Verification: 27 collector checks cover recovery, automatic next-section
 selection, full 104-trial export, saved-record preservation, locked condition
 notes, camera restart and stale operations. The 29 Python importer/package
 checks, Ruff, mypy (53 source files) and changed-document link checks pass.
 Both three-page PDF guides were rendered and visually inspected. These checks
-do not establish the exact cause of the reported Mac setup issue or replace
-a physical retest on that participant's browser.
+do not establish the exact cause of the reported Safari issue. A physical Safari
+retest has not been performed, and none is requested from this contributor.
 
 **GF-P12 v4 protocol decision:** the current personal Practice gate uses a
 22-window protocol requiring every window to pass: three five-second windows for each enrolled
