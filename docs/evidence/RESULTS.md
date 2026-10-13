@@ -71,6 +71,9 @@ Rows are intended labels; columns are predictions for both classifiers at multip
 
 Reproduce the selected comparison from the repository root when the private P01 data is present:
 
+Choose a new output filename for each reproduction; evaluation now refuses
+existing files so earlier results and inputs cannot be replaced accidentally.
+
 ```powershell
 .\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
 ```

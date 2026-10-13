@@ -314,6 +314,12 @@ P01 confirmed two held NEXT gestures each advanced once after neutral rearming. 
 
 CI runs locally with `scripts/verify.py`; release scripts produce the transferable ZIPs. GitHub Actions is disabled while hosted usage is unavailable, and the workflow is retained for manual use only. No deployment service is required for this desktop app.
 
+Evaluation refuses to overwrite an existing output, including a configuration or
+dataset selected by mistake. Use a new result filename for each reproduction.
+Without `--synthetic-output`, local verification keeps synthetic results inside
+its verification report. If that optional path is supplied, it must be new and
+different from the verification report path; conflicts stop before checks run.
+
 `--timeout` is a positive, finite limit in seconds **per check** (default 600).
 The example allows 1,200 seconds on slower laptops. A timed-out check stays
 failed with its partial output in the report; the remaining checks still run

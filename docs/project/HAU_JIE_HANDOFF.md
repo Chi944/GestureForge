@@ -25,7 +25,8 @@ after rejection. All ten accepted negative predictions were BOOKMARK. Investigat
 this trade-off rather than disabling rejection. Keep both complete contributors out of starter fitting and
 tuning if they will serve as the two independent evaluation participants.
 
-Deston's private `GestureForge_PRIVATE_Development_Handoff_20261013.zip` contains
+Deston confirmed sending `GestureForge_PRIVATE_Development_Handoff_20261013.zip`
+to Hau Jie on 13 October. It contains
 the original returns, corrected numeric imports, intake notes and the new
 baseline/diagnostic. Follow its `READ_FIRST.txt`; it is a data handoff, not the
 participant collection app or an approved freeze packet. Pull current `main`

@@ -5,6 +5,7 @@ from dataclasses import replace
 
 import pytest
 
+import gestureforge.evaluate as evaluate_module
 from gestureforge.dataset import DatasetBundle
 from gestureforge.evaluate import (
     UNKNOWN,
@@ -125,6 +126,108 @@ def test_evaluate_cli_writes_json(tmp_path) -> None:
     assert completed.stdout == ""
     loaded = json.loads(output_path.read_text(encoding="utf-8"))
     assert loaded["results"][0]["algorithm"] == "knn"
+
+
+def test_evaluate_cli_refuses_existing_output_before_reading_config(tmp_path) -> None:
+    config_path = tmp_path / "config.json"
+    output_path = tmp_path / "result.json"
+    output_path.write_text("keep existing evidence", encoding="utf-8")
+
+    completed = subprocess.run(
+        [sys.executable, "-m", "gestureforge.evaluate", "--config", str(config_path), "--output", str(output_path)],
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 2
+    assert "output already exists" in completed.stderr
+    assert output_path.read_text(encoding="utf-8") == "keep existing evidence"
+
+
+def test_evaluate_cli_refuses_existing_manifest_output_before_fitting(tmp_path) -> None:
+    config_path = tmp_path / "config.json"
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text('{"schema_version": 1}', encoding="utf-8")
+
+    completed = subprocess.run(
+        [sys.executable, "-m", "gestureforge.evaluate", "--config", str(config_path), "--output", str(manifest_path)],
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 2
+    assert "output already exists" in completed.stderr
+    assert manifest_path.read_text(encoding="utf-8") == '{"schema_version": 1}'
+
+
+def test_evaluate_cli_refuses_output_same_as_config(tmp_path) -> None:
+    config_path = tmp_path / "config.json"
+    original = json.dumps(
+        {
+            "algorithm": "knn",
+            "synthetic_fixture": {
+                "trials_per_label_per_split": 2,
+                "samples_per_trial": 5,
+                "seed": 304,
+            },
+        }
+    )
+    config_path.write_text(original, encoding="utf-8")
+
+    completed = subprocess.run(
+        [sys.executable, "-m", "gestureforge.evaluate", "--config", str(config_path), "--output", str(config_path)],
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 2
+    assert "output already exists" in completed.stderr
+    assert config_path.read_text(encoding="utf-8") == original
+
+
+def test_evaluate_cli_preserves_output_created_during_evaluation(tmp_path, monkeypatch) -> None:
+    config_path = tmp_path / "config.json"
+    output_path = tmp_path / "result.json"
+    config_path.write_text(json.dumps({"synthetic_fixture": {}}), encoding="utf-8")
+
+    def create_conflict(_config):
+        output_path.write_text("racing writer", encoding="utf-8")
+        return {"ok": True}
+
+    monkeypatch.setattr(evaluate_module, "evaluate_config", create_conflict)
+
+    with pytest.raises(SystemExit) as exc:
+        evaluate_module.main(["--config", str(config_path), "--output", str(output_path)])
+
+    assert exc.value.code == 2
+    assert output_path.read_text(encoding="utf-8") == "racing writer"
+
+
+def test_evaluate_cli_prints_json_without_output(tmp_path) -> None:
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "algorithm": "knn",
+                "synthetic_fixture": {
+                    "trials_per_label_per_split": 2,
+                    "samples_per_trial": 5,
+                    "seed": 304,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    completed = subprocess.run(
+        [sys.executable, "-m", "gestureforge.evaluate", "--config", str(config_path)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.stderr == ""
+    assert json.loads(completed.stdout)["results"][0]["algorithm"] == "knn"
 
 
 def test_evaluate_rejects_synthetic_human_mixing() -> None:

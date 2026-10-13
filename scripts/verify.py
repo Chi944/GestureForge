@@ -58,18 +58,25 @@ def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "docs/evidence/verification.json")
     parser.add_argument("--synthetic-output", type=Path,
-                        default=ROOT / "experiments/synthetic-software-check.json")
+                        help="Optional new JSON file; otherwise synthetic results stay in the verification report.")
     parser.add_argument("--timeout", type=_positive_finite_seconds, default=600.0,
                         help="Per-command timeout in seconds.")
     args = parser.parse_args(argv)
+    if args.synthetic_output is not None:
+        if args.synthetic_output.exists() or args.synthetic_output.is_symlink():
+            parser.error("synthetic output already exists; choose a new output filename")
+        if args.synthetic_output.resolve() == args.output.resolve():
+            parser.error("synthetic and verification outputs must use different filenames")
+    synthetic_command = ["-m", "gestureforge.evaluate", "--config", "experiments/prototype.json"]
+    if args.synthetic_output is not None:
+        synthetic_command.extend(["--output", str(args.synthetic_output)])
     commands = [
         ["-m", "ruff", "check", "gestureforge", "tests", "scripts"],
         ["-m", "mypy", "gestureforge", "scripts", "tests"],
         ["-m", "pytest", "-q"],
         ["-m", "gestureforge", "--smoke-test"],
         ["-m", "gestureforge", "--studio", "--smoke-test"],
-        ["-m", "gestureforge.evaluate", "--config", "experiments/prototype.json",
-         "--output", str(args.synthetic_output)],
+        synthetic_command,
     ]
     results = []
     environment = {**os.environ, "QT_QPA_PLATFORM": "offscreen",

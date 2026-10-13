@@ -352,6 +352,9 @@ Reproduce the recorded human pilot using the private marker package or the retai
 
 The source ZIP alone excludes P01 data. For a synthetic software check without participant data, use `experiments/prototype.json` instead; its scores are not human recognition evidence.
 
+Use a new output filename for each run. Evaluation refuses existing files before
+fitting, preserving earlier results and any configuration/dataset chosen by mistake.
+
 Expected assignment output:
 
 - kNN results.

@@ -244,13 +244,20 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     config_path = Path(args.config)
+    output_path = Path(args.output) if args.output else None
+    if output_path is not None and (output_path.exists() or output_path.is_symlink()):
+        parser.error(f"output already exists: {output_path}; choose a new --output path or move the existing file")
+
     config = json.loads(config_path.read_text(encoding="utf-8"))
     result = evaluate_config(config)
     text = json.dumps(result, indent=2, sort_keys=True, default=_json_default) + "\n"
-    if args.output:
-        output_path = Path(args.output)
+    if output_path is not None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(text, encoding="utf-8")
+        try:
+            with output_path.open("x", encoding="utf-8") as handle:
+                handle.write(text)
+        except FileExistsError:
+            parser.error(f"output already exists: {output_path}; choose a new --output path or move the existing file")
     else:
         print(text, end="")
     return 0

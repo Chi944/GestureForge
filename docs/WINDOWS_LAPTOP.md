@@ -111,6 +111,10 @@ Record eight trials per label in TRAIN and again in a separate VALIDATION sessio
 
 Multiplier 2 is the original P01 prototype setting, not an accuracy guarantee for another enrolment. Inspect the new validation results before relying on control; reject poor enrolment and improve its development data. Preserve the original assignment evidence separately. PREVIOUS and BOOKMARK remain recognition preview only.
 
+Evaluation output files, including an optional verification `--synthetic-output`,
+must use a new filename. An existing file is refused rather than replaced.
+Omitting `--synthetic-output` keeps those software results in the verification report.
+
 ## 6. Physical laptop acceptance record
 
 Record actual observations here or in a copy of this table against the exact package being accepted. P02's assisted-use report is qualitative evidence in `docs/evidence/RESULTS.md`; it lacks the package/environment details needed to complete this acceptance record. Do not mark these passed from the development computer or CI.
