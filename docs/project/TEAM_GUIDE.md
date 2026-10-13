@@ -6,20 +6,23 @@ Deston has authorised project implementation. Build the approved Windows corpora
 
 ## Current deliveries — 13 October
 
-**H2 collection update:** two complete Mac/Safari development returns have now
-arrived and were privately imported: P67 and P1543 each have 48 TRAIN,
-48 VALIDATION and 8 UNKNOWN development trials. P1543 reported no collection
-issues and is confirmed to have used the supplied poses. P69 remains a closed
-TRAIN-only contribution with 48 TRAIN trials / 240 valid features; no recovery,
-further recording or TEST is requested from P69.
+**H2 collection update:** two complete development returns and one closed
+TRAIN-only contribution have arrived. The newest macOS/Safari return has all
+104 trials / 520 scheduled records (497 valid, 23 invalid); the user reports no
+collection issues and confirms the supplied poses. Its starter independence and
+break before VALIDATION still need confirmation. Its generic condition notes
+cannot establish actual recording conditions. Do not ask for more recordings
+before reviewing the existing data.
 
-The corrected private imports prefix browser trial IDs with the participant ID,
-so P67/P69/P1543 no longer collide when pooled. P1543's first development
-diagnosis shows that raw SVM labels can identify validation poses, but the
-current rejection settings over-reject NEUTRAL/NEXT/PREVIOUS while accepting
-BOOKMARK on 10/40 UNKNOWN samples. Hau Jie should audit provenance/exclusion,
-use P69 only within TRAIN-only limits, and propose settings from P67/P1543
-development evidence. Final TEST still waits for Deston's freeze.
+Baseline kNN and SVM (multiplier 2.0, margin 1.5) each scored 0.382 validation macro-F1 for the newest return;
+all NEUTRAL trials were rejected and 10/40 negative sample predictions were
+accepted commands. Hau Jie should diagnose these development results and propose
+bounded settings, not claim a deployment pass. Keep both complete contributors
+excluded from starter fitting/tuning if they are the intended independent
+evaluation participants. The closed contribution remains 48 TRAIN trials / 240
+usable samples with no recovery, further recording or TEST requested. Review
+pose/provenance before pooling it. GPT can prepare inputs and configurations;
+final TEST still waits for Deston's freeze and a reviewed acquisition route.
 
 GF-P12's current personal LIVE protocol is now `gf-p12-v4`: three five-second
 windows for each enrolled action pose plus NEUTRAL, followed by ten negative
@@ -51,7 +54,7 @@ as they become available instead of waiting for your entire lane to finish.
 | Delivery | Execution | Deston's review / final gate |
 |---|---|---|
 | H1 / GF-P17 preparation | PR #27's aggregate audit is merged; Hau Jie sends the existing private `H1-20261008` packet, without repeating the search | Verify the actual permitted inputs, reports, hashes and provenance; aggregate review does not approve a deployment starter |
-| H2 / GF-P17 → GF-P18 | Hau Jie coordinates two new consenting independent participants, personal TRAIN/VALIDATION, all development settings and later untouched TEST | Freeze review before TEST; reproduce the paired comparison and accept results, including failed targets. This task does not depend on the GF-P20 live study or a successful deployment starter |
+| H2 / GF-P17 → GF-P18 | Hau Jie audits the two complete development returns and the closed TRAIN-only contribution first, checks remaining eligibility facts, and prepares personal settings plus the starter baseline; untouched TEST follows the freeze | Freeze review before TEST; reproduce the paired comparison and accept results, including failed targets. This task does not depend on the GF-P20 live study or a successful deployment starter |
 | J1 / GF-P19 | PR #28's restore retest and PR #29's Preview focus/Camera-off launch checks are merged; Javier completes remaining laptop-A native target/recovery and active-capture Camera cases | Preserve PR #24/#26/#28/#29 build boundaries. Active-capture handoff needs a genuine full readiness grant; historical real-launch restore/no-replay and laptop B remain unverified |
 | H3 + J2 / GF-P19, GF-P23 | Hau Jie operates laptop B; Javier coordinates and consolidates the two-device matrix, fresh install, offline core and thirty-minute Studio/shutdown evidence | Review evidence and affected retests after GF-P21/GF-P22; no new second-device result is yet claimed |
 | J3 / GF-P20 | Javier coordinates observer records, condition order, actual hold/negative/latency sessions and disjoint exports; Hau Jie supplies frozen recognition inputs | Deston analyses/replays measurements and accepts the integrated study after GF-P16/GF-P17. Unavailable standard mode is reported, never silently replaced |
@@ -68,8 +71,8 @@ prompt or decision logs as part of this handoff.
 
 | Member | Manual / physical work | GPT-assisted work that can continue now |
 |---|---|---|
-| Deston | Receive Hau Jie's private `H1-20261008` packet and new participant returns; approve the freeze before any untouched TEST collection; later review final demo/declaration facts from real evidence. | Integrate reviewed PRs, verify source checks, maintain contracts and progress evidence, reproduce freeze/score/replay commands once private files arrive, and prepare release/report packages without committing private Word logs or data. |
-| Hau Jie | Send the existing private `H1-20261008` packet; confirm P67/P1543 exclusion from earlier fitting/tuning and preserve P69 as TRAIN-only; operate laptop B for Javier's GF-P19/GF-P23 matrix. | Audit the corrected private imports, diagnose P1543 rejection behaviour, propose development settings for Deston's freeze review, draft GF-P24 methods/limitations, and fix only evidenced recognition/profile defects on `codex/hau-jie-profiles`. |
+| Deston | Share the private development handoff with Hau Jie; receive `H1-20261008`; resolve the newest contributor's unanswered independence/break facts, then review freeze before untouched TEST; later review actual demo/declaration evidence. No new recording is requested now. | Integrate reviewed PRs, verify/use corrected browser imports, maintain evidence and progress, prepare freeze/score/replay and a browser-compatible TEST route once inputs/protocol are reviewed. Keep Word logs and participant data private. |
+| Hau Jie | Send the existing private `H1-20261008` packet; review eligibility/session facts for the two complete returns before planning TEST; no further collection from the closed TRAIN-only contributor. Operate laptop B for Javier's GF-P19/GF-P23 matrix. | Audit the new development results, diagnose rejected NEUTRAL versus pose/session differences, propose bounded settings and the paired configurations, use the closed contribution only as TRAIN development after provenance review, and draft GF-P24 methods/limitations on `codex/hau-jie-profiles`. |
 | Javier | Complete remaining laptop-A trusted-app/association, failure/retry, real-launch restore/no-replay and active-capture Camera cases; coordinate laptop B and later observer sessions. Do not repeat PR #29's completed Preview focus/reconnect checks. | Consolidate per-device evidence, fix demonstrated viewer/shortcut/runbook defects, prepare GF-P25 guide/storyboard, and update summary/export handling on `codex/javier-shortcuts`. |
 
 GPT or synthetic checks cannot claim participant consent, physical laptop behavior,

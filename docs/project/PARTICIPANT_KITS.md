@@ -133,6 +133,21 @@ conditions, consent and checksum with the imported data. Inspect the completion
 summary; partial imports do not satisfy H2's required counts. Do not commit
 private return files or full manifests/results.
 
+The coordinator importer assigns deterministic trial IDs from participant,
+session and the original browser trial ID. Different people's generic browser
+trial names can therefore be combined without collisions. The manifest retains
+the original-ID mapping and scheme version; duplicate or overlapping returns
+from the same person/session remain duplicates. Raw packet validation happens
+before this conversion, and labels, splits, sample slots and features are unchanged.
+
+For imports created before this fix, reimport the original ZIP into a new folder
+before combining browser datasets. Keep old imports and any frozen configurations
+as historical evidence. Use one import version per source; never combine old and
+corrected copies or partial and completed copies of the same collection. No
+participant kit replacement or rerecording is needed for this coordinator fix.
+The merge function rejects mixed, legacy or incompatible browser import schemes
+with a reimport instruction; a single historical dataset can still be used alone.
+
 MediaPipe Tasks Vision Web 1.1.0 and the checksum-pinned float16/1 hand model
 produce world landmarks. The existing Python normalizer produces the 60 numeric
 features. Using the same model and normalizer does not prove native/browser

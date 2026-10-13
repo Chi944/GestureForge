@@ -1,4 +1,5 @@
 import copy
+from dataclasses import replace
 import json
 from pathlib import Path
 import shutil
@@ -10,7 +11,7 @@ import numpy as np
 import pytest
 
 from gestureforge.contracts import LABELS
-from gestureforge.dataset import load_dataset
+from gestureforge.dataset import load_dataset, merge_datasets
 from gestureforge.features import extract_feature_vector
 from gestureforge.import_participant import MODEL_SHA256, RETENTION, import_browser_zip
 
@@ -51,7 +52,7 @@ def _record(
     }
 
 
-def _payload(*, partial: bool = True) -> dict:
+def _payload(*, partial: bool = True, participant_id: str = "P99") -> dict:
     records = []
     sessions = [
         {
@@ -101,7 +102,7 @@ def _payload(*, partial: bool = True) -> dict:
     return {
         "schema_version": 1,
         "protocol": "gestureforge-browser-development-v1",
-        "participant_id": "P99",
+        "participant_id": participant_id,
         "hand": "Right",
         "source": {
             "runtime": "mediapipe-tasks-vision-web",
@@ -129,6 +130,13 @@ def _zip(tmp_path, payload: dict, name: str = "collection.json"):
     return path
 
 
+def _import_payload(tmp_path, payload: dict, name: str):
+    zip_path = tmp_path / f"{name}.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("collection.json", json.dumps(payload))
+    return import_browser_zip(zip_path, tmp_path / name / "manifest.json")
+
+
 def test_import_browser_zip_round_trips_features_and_partial_status(tmp_path):
     payload = _payload()
     zip_path = _zip(tmp_path, payload)
@@ -143,14 +151,107 @@ def test_import_browser_zip_round_trips_features_and_partial_status(tmp_path):
     assert loaded.metadata["import_source"] == "browser-participant-kit"
     assert loaded.metadata["pose_set_id"] == "standard-v1"
     assert {record.provenance for record in loaded.records} == {"human"}
-    assert {record.trial_id for record in loaded.records} == {
-        f"P99-{record['trial_id']}" for record in payload["records"]
-    }
     browser = loaded.metadata["browser_collection"]
     assert browser["import_status"] == "partial"
     assert browser["complete"] is False
     assert browser["counts"]["train"] == {"NEUTRAL": 1, "NEXT": 1}
     assert browser["consent"]["retention"] == RETENTION
+    mapping = browser["trial_identity"]["mapping"]
+    assert browser["trial_identity"]["scheme"] == "sha256-canonical-json-participant-session-trial"
+    assert browser["trial_identity"]["version"] == 1
+    assert {row["original_trial_id"] for row in mapping} == {
+        record["trial_id"] for record in payload["records"]
+    }
+    assert all(len(row["normalised_trial_id"]) == 64 for row in mapping)
+    assert {record.trial_id for record in loaded.records} == {
+        row["normalised_trial_id"] for row in mapping
+    }
+
+
+def test_imported_browser_trials_do_not_collide_across_participants(tmp_path):
+    first = _payload(participant_id="P10")
+    second = _payload(participant_id="P11")
+
+    first_bundle = _import_payload(tmp_path, first, "first")
+    second_bundle = _import_payload(tmp_path, second, "second")
+    merged = merge_datasets([first_bundle, second_bundle])
+
+    assert len(merged.records) == len(first["records"]) + len(second["records"])
+    np.testing.assert_allclose(first_bundle.features, second_bundle.features)
+    assert not {record.trial_id for record in first_bundle.records}.intersection(
+        record.trial_id for record in second_bundle.records
+    )
+
+
+def test_imported_browser_trial_ids_are_stable_and_overlaps_still_collide(tmp_path):
+    partial = _payload(participant_id="P10")
+    full = _payload(partial=False, participant_id="P10")
+    first = _import_payload(tmp_path, partial, "first")
+    second = _import_payload(tmp_path, copy.deepcopy(partial), "second")
+    overlapping_full = _import_payload(tmp_path, full, "full")
+
+    assert [record.trial_id for record in first.records] == [record.trial_id for record in second.records]
+    assert [
+        (record.session_id, record.intended_label, record.split, record.sample_index, record.timestamp, record.valid)
+        for record in first.records
+    ] == [
+        (record.session_id, record.intended_label, record.split, record.sample_index, record.timestamp, record.valid)
+        for record in second.records
+    ]
+    np.testing.assert_allclose(first.features, second.features)
+    with pytest.raises(ValueError, match="would be overwritten"):
+        merge_datasets([first, second])
+    with pytest.raises(ValueError, match="would be overwritten"):
+        merge_datasets([first, overlapping_full])
+
+
+@pytest.mark.parametrize("identity", [None, {"scheme": "other", "version": 1}])
+def test_merge_rejects_legacy_or_incompatible_browser_identity(tmp_path, identity):
+    payload = _payload()
+    corrected = _import_payload(tmp_path, payload, "corrected")
+    metadata = copy.deepcopy(corrected.metadata)
+    metadata["browser_collection"]["trial_identity"] = identity
+    legacy = replace(
+        corrected,
+        records=tuple(replace(record, trial_id=source["trial_id"])
+                      for record, source in zip(corrected.records, payload["records"], strict=True)),
+        metadata=metadata,
+    )
+
+    assert len(merge_datasets([legacy]).records) == len(payload["records"])
+    with pytest.raises(ValueError, match="reimport.*original.*ZIP"):
+        merge_datasets([legacy, corrected])
+
+
+@pytest.mark.parametrize("record_index", [5, 10])
+def test_raw_same_trial_in_conflicting_identity_is_rejected_before_normalising(tmp_path, record_index):
+    payload = _payload()
+    payload["records"][record_index]["trial_id"] = payload["records"][0]["trial_id"]
+
+    with pytest.raises(ValueError, match="inconsistent session, label or split"):
+        import_browser_zip(_zip(tmp_path, payload), tmp_path / "manifest.json")
+
+
+def test_max_length_browser_ids_import_with_hashed_trial_identity(tmp_path):
+    payload = _payload(participant_id="P" + "1" * 63)
+    long_train_session = "T" + "2" * 63
+    long_validation_session = "V" + "3" * 63
+    long_negative_session = "N" + "4" * 63
+    session_map = {
+        "train-session": long_train_session,
+        "validation-session": long_validation_session,
+        "negative-session": long_negative_session,
+    }
+    for session in payload["sessions"]:
+        session["session_id"] = session_map[session["session_id"]]
+    for index, record in enumerate(payload["records"]):
+        record["session_id"] = session_map[record["session_id"]]
+        record["trial_id"] = f"T{index // 5:063d}"[-64:]
+
+    bundle = import_browser_zip(_zip(tmp_path, payload), tmp_path / "manifest.json")
+
+    assert all(len(record.trial_id) == 64 for record in bundle.records)
+    assert all(record.trial_id != source["trial_id"] for record, source in zip(bundle.records, payload["records"], strict=True))
 
 
 def test_full_development_packet_reports_complete_and_keeps_unknown_invalid(tmp_path):

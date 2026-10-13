@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from datetime import datetime
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -14,6 +16,8 @@ import numpy as np
 
 from .contracts import LABELS, Observation, validate_identifier
 from .dataset import (
+    BROWSER_TRIAL_IDENTITY_SCHEME,
+    BROWSER_TRIAL_IDENTITY_VERSION,
     UNKNOWN_LABEL,
     VALIDATION_NEGATIVE_SPLIT,
     VALIDATION_SPLIT,
@@ -132,6 +136,8 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
         if session_splits[session_id] != split:
             raise ValueError(f"trial {trial_id} split does not match its session")
     _validate_split_shape(counts, session_splits)
+    trial_map = _normalised_trial_ids(participant_id, trial_identity)
+    records = [replace(record, trial_id=trial_map[record.trial_id]) for record in records]
     completeness = _completeness(counts)
     metadata = {
         "provenance": "human",
@@ -145,6 +151,18 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
             "source": payload["source"],
             "consent": payload["consent"],
             "sessions": sessions,
+            "trial_identity": {
+                "scheme": BROWSER_TRIAL_IDENTITY_SCHEME,
+                "version": BROWSER_TRIAL_IDENTITY_VERSION,
+                "mapping": [
+                    {
+                        "original_trial_id": original_trial_id,
+                        "session_id": session_id,
+                        "normalised_trial_id": trial_map[original_trial_id],
+                    }
+                    for original_trial_id, (session_id, _label, _split) in sorted(trial_identity.items())
+                ],
+            },
             "complete": completeness["complete"],
             "counts": completeness["counts"],
             "expected_counts": EXPECTED_COUNTS,
@@ -156,6 +174,29 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
         },
     }
     return records, features, metadata
+
+
+def _normalised_trial_ids(
+    participant_id: str, trial_identity: dict[str, tuple[str, str, str]]
+) -> dict[str, str]:
+    result: dict[str, str] = {}
+    seen: set[str] = set()
+    for original_trial_id, (session_id, _label, _split) in trial_identity.items():
+        trial_id = _trial_identity_hash(participant_id, session_id, original_trial_id)
+        if trial_id in seen:
+            raise ValueError("browser trial identity collision")
+        seen.add(trial_id)
+        result[original_trial_id] = trial_id
+    return result
+
+
+def _trial_identity_hash(participant_id: str, session_id: str, original_trial_id: str) -> str:
+    payload = json.dumps(
+        [participant_id, session_id, original_trial_id],
+        ensure_ascii=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _convert_record(
@@ -176,7 +217,6 @@ def _convert_record(
         raise ValueError(f"record split does not match session {session_id}")
     trial_id = _strict_str(item, "trial_id")
     validate_identifier(trial_id)
-    imported_trial_id = f"{participant_id}-{trial_id}"
     label = _strict_str(item, "intended_label")
     if split in POSITIVE_SPLITS and label not in LABELS:
         raise ValueError(f"unknown intended label {label}")
@@ -218,7 +258,7 @@ def _convert_record(
         SampleRecord(
             participant_id=participant_id,
             session_id=session_id,
-            trial_id=imported_trial_id,
+            trial_id=trial_id,
             intended_label=label,
             split=split,
             sample_index=sample_index,

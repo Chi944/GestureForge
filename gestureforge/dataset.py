@@ -23,6 +23,8 @@ UNKNOWN_LABEL = "UNKNOWN"
 TRAIN_SPLIT = "train"
 VALIDATION_SPLIT = "validation"
 VALIDATION_NEGATIVE_SPLIT = "validation_negative"
+BROWSER_TRIAL_IDENTITY_SCHEME = "sha256-canonical-json-participant-session-trial"
+BROWSER_TRIAL_IDENTITY_VERSION = 1
 
 
 @dataclass(frozen=True)
@@ -150,6 +152,17 @@ def merge_datasets(bundles: Iterable[DatasetBundle]) -> DatasetBundle:
     vocabulary = bundle_list[0].vocabulary
     if any(bundle.vocabulary != vocabulary for bundle in bundle_list):
         raise ValueError("cannot merge different gesture vocabularies")
+    browser_bundles = [bundle for bundle in bundle_list
+                       if bundle.metadata.get("import_source") == "browser-participant-kit"]
+    if len(browser_bundles) > 1:
+        for bundle in browser_bundles:
+            collection = bundle.metadata.get("browser_collection")
+            identity = collection.get("trial_identity") if isinstance(collection, dict) else None
+            if (not isinstance(identity, dict)
+                    or identity.get("scheme") != BROWSER_TRIAL_IDENTITY_SCHEME
+                    or type(identity.get("version")) is not int
+                    or identity["version"] != BROWSER_TRIAL_IDENTITY_VERSION):
+                raise ValueError("reimport the original browser ZIP files before merging legacy or incompatible imports")
     merged_records, merged_features = _merge_records_and_features(
         [bundle.records for bundle in bundle_list], [bundle.features for bundle in bundle_list],
         vocabulary,

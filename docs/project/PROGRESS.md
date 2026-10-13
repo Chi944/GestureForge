@@ -4,44 +4,81 @@ Snapshot: 13 October 2026. This measures the final-project extension, not the al
 
 ## Current work on 13 October
 
-**P1543 development return received:** a new Mac/Safari participant return was
-privately imported and validated with no reported collection issues. It contains
-48 TRAIN, 48 VALIDATION and 8 UNKNOWN development trials: 520 scheduled records,
-497 valid feature rows and 23 preserved invalid slots. The participant is
-confirmed to have used the supplied poses. Browser/macOS version, exclusion from
-earlier starter fitting/tuning and the exact break conditions are not yet
-independently evidenced. Session notes are sparse (`lighting` / placeholder-like
-text), so they are retained verbatim and not treated as meaningful operating
-condition evidence.
+**Third development return received:** the newest macOS/Safari contributor
+completed 48 TRAIN, 48 VALIDATION and eight UNKNOWN trials without reported
+collection issues. All 520 scheduled records were imported: 497 usable features
+and 23 invalid detections retained. Consent/access/retention fields and archive
+integrity passed validation. The user confirmed the supplied poses; starter
+independence and the break before VALIDATION were not confirmed. Session IDs are
+distinct, but that does not establish a physical break. The condition notes are
+generic and cannot establish actual lighting, background, posture or distance.
 
-The browser importer now prefixes imported trial IDs with the participant ID.
-This prevents P67/P69/P1543 trial-name collisions when Hau Jie pools development
-manifests for starter or freeze preparation. Corrected private imports were
-created for P67, P69 and P1543 without overwriting the earlier imports. The
-corrected imports have zero cross-participant trial-ID collisions.
+Current inventory is **two complete development returns plus one closed
+TRAIN-only contribution**. Do not pool the complete contributors into starter
+fitting/tuning if they are intended as its independent evaluation participants.
+There is still no final TEST data or newly approved deployment starter.
 
-P1543 development scoring is useful diagnosis, not an accepted model result.
-With the current shared rejection settings (`multiplier=2.0`, `margin=1.5`),
-kNN and SVM both score macro-F1 0.382 on validation and accept 10/40 UNKNOWN
-samples as commands. The raw SVM classifier labels all 48 validation trials
-correctly before rejection, but the rejection layer rejects most NEUTRAL, NEXT
-and PREVIOUS validation samples while still allowing BOOKMARK on UNKNOWN
-samples. Hau Jie should use this evidence to tune/report development settings;
-it does not approve a starter or personal release.
+Baseline personal kNN and SVM (multiplier 2.0, margin 1.5) both achieved validation
+macro-F1 **0.382** for the new return. All 12 NEUTRAL trials were UNKNOWN; 10/40
+negative sample predictions were accepted commands. These are classifier
+development results, not live controller activations. No failures were removed,
+no settings selected on TEST, and no model was installed. The saved development
+results are prepared for Hau Jie's private handoff and diagnosis before proposing
+settings and a freeze.
 
-P69 remains closed as a TRAIN-only Mac/Safari contribution: 48 TRAIN trials and
-240 valid features, with no further collection requested. Keep original splits
-for P69 and use it only within its TRAIN-only evidence limits.
+A diagnostic without rejection scored raw SVM labels correctly on all 48
+validation trials (kNN: 43/48); after rejection each retained only 15 correct
+trials. This identifies rejection as a development problem to investigate,
+not permission to disable it: ten UNKNOWN sample predictions still became
+BOOKMARK under the current rules. Keep the failed baseline and diagnostic
+separate from any later selected settings.
+
+**Multi-participant import repair:** independently valid browser returns reused
+generic trial IDs, so combining two people failed the dataset's duplicate guard.
+The importer now assigns participant/session-specific deterministic IDs after
+raw validation and records the original mapping. Duplicate and overlapping
+collections remain invalid merges. Existing source ZIPs and old imports stay
+unchanged; corrected imports go into separate private folders. Participant kits
+do not need redistribution for this coordinator-only change.
+
+Multi-browser merges reject legacy or incompatible identity schemes with a
+reimport instruction, preventing the same collection being counted twice through
+old and corrected imports. A legacy import remains usable on its own. The focused
+importer, dataset, evaluation, paired-comparison, starter and vocabulary checks
+passed **118 tests**, including browser-generated ZIP interoperability.
+Ruff and mypy across all 100 source/test/tool files also passed; independent
+review found no remaining blockers. Reimports of the three actual returns
+preserve every record field except the trial ID and every feature value. An
+in-memory merge contains 256 distinct trials, 1,280 records and 1,242 valid
+features; it was a compatibility check only, with no pooled model fitted.
+The newest return's baseline metrics reproduced exactly after reimport.
+
+**Second contributor's collection is closed:** the Mac return contains all 48 TRAIN
+trials, with 240 records accepted by the existing importer as usable features.
+Deston authorised use of these existing samples and no further collection from
+this person. The import remains partial: there are no VALIDATION, UNKNOWN or TEST
+records. Keep the original splits and use the samples for TRAIN-only development;
+do not relabel or split frames to manufacture independent evaluation data.
+The original ZIP, checksum, numeric import and intake notes remain private.
+Together with both complete Mac returns, this remains a TRAIN-only contribution,
+not a completed H2 evaluation participant. Safari is confirmed, and clicking
+Start Selected Session for VALIDATION reportedly did
+nothing. Browser/macOS versions, starter independence and physical pose mapping
+remain unverified; no further participant recording or recovery is requested.
+
+Both default classifiers fitted the 240 TRAIN samples in memory using trial-aware
+rejection references. No predictions or accuracy scores were produced, and no
+model was saved or approved. This checks numerical compatibility only; the fit
+record stays private alongside the intake notes.
 
 The collector had a reproducible continuation gap: restoring a TRAIN-only ZIP
 left TRAIN selected, so Start could immediately report that already-finished
 section as complete. Recovery and section completion now point to the first
 unfinished section, with explicit camera-restart and condition-note guidance.
-The collector fix remains available for other participants. Hau Jie now has two
-complete development returns to audit for GF-P17, plus P69's TRAIN-only
-contribution, but still needs the H1 private packet, provenance/exclusion review,
-selected settings and Deston's freeze decision before any untouched TEST
-collection. No task weight or accepted total changes.
+The collector fix remains available for other participants. Hau Jie should use
+the existing TRAIN-only contribution within its evidence limits and review the
+two complete returns' eligibility for independent evaluation.
+No task weight or accepted total changes.
 
 Verification: 27 collector checks cover recovery, automatic next-section
 selection, full 104-trial export, saved-record preservation, locked condition

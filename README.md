@@ -30,6 +30,15 @@ The final project is now scoped as **GestureForge Studio** for corporate trainin
 
 Current project foundation on `main`:
 
+Two complete Mac development returns and one closed TRAIN-only contribution
+are now imported privately. The latest Safari return completed all 104 trials
+without reported collection issues. Its baseline classifiers still scored only
+0.382 validation macro-F1, so collection success does not mean recognition is
+ready for deployment. See the [current progress and next tasks](docs/project/PROGRESS.md)
+and [team guide](docs/project/TEAM_GUIDE.md). Private samples and full reports
+remain excluded from this repository; final TEST and native release checks are
+still outstanding.
+
 Javier's [12 October camera/focus checks](docs/evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
 are reviewed and merged. They cover Preview focus pause/reconnect, a simulated
 Camera request and a native Camera launch after capture was already off.
