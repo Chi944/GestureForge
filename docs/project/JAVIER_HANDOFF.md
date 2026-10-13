@@ -4,6 +4,27 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Next delivery — assigned 7 October
 
+**Immediate manual / GPT split, updated 13 October:**
+
+- **Manual:** agree an identified Studio build and remaining-case matrix with
+  Hau Jie. Finish your laptop-A trusted-app/association, failure/retry and
+  restore-after-real-launch/no-replay checks. Diagnose the short P03 PREVIOUS
+  wrong-action case before another full Practice attempt. Active-capture Camera
+  requires a genuine current-session 22-window pass; otherwise record NOT RUN.
+- **With GPT:** prepare and consolidate the attributed two-device matrix, check
+  disjoint exports, repair demonstrated faults in your modules, and draft the
+  guide, demo storyboard and later observer-study records.
+- **Return next:** a focused GF-P19 remaining-case evidence PR plus the laptop-B
+  observations Hau Jie supplies. Return guide/storyboard drafts separately.
+- **Later:** measured gesture study needs frozen recognition inputs and the
+  integration gates; final release evidence needs defect closure and affected
+  retests. Do not repeat accepted unchanged PR #24/#26/#28/#29 cases.
+
+You coordinate laptop B; Hau Jie installs and operates it. Push only
+`codex/javier-shortcuts` and leave PRs unmerged for Deston. Full exports/video and
+Word files stay private. See the [shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
+for current build/package instructions; no replacement Studio ZIP is claimed.
+
 **13 October current priority:** Deston has two complete Mac browser development
 returns plus a closed TRAIN-only contribution. This advances recognition input
 preparation; it does not verify native Studio, Windows shortcuts, a current
@@ -54,15 +75,15 @@ change weights or mark a task Done before its evidence is accepted.
 
 ## Laptop B assignment confirmed 5 October
 
-**8 October participant-kit check:** Hau Jie reports two prospective Windows
-participants. Prioritize the Windows check with him before their recordings;
-Mac distribution still requires a separate Mac operator. Coordinate on the new
-[Windows/macOS browser collection kits](PARTICIPANT_KITS.md). Verify the
-extracted ZIP's PDF-only instructions, camera permission, offline first trial,
-pause/reload/return-ZIP recovery and successful coordinator import. Record
-actual OS/browser/package hash and assistance; a Mac operator is still needed
-for Mac evidence. This is a small collection-tool check, separate from your
-existing Studio laptop-A/B release matrix and the thirty-minute stability run.
+**Participant-kit checks, updated 13 October:** two complete Mac development
+returns now provide reported collection evidence; the closed partial return
+retains its Safari continuation failure. They do not establish PDF-only setup,
+offline operation, recovery or native Studio acceptance. Additional development
+recruitment is not the immediate priority. If distributing kits again, verify
+the [collection kit](PARTICIPANT_KITS.md) on the intended OS/browser through
+permission, first trial, pause/reload/return-ZIP recovery and coordinator import;
+record package hash and assistance. These collection-tool checks remain separate
+from the Studio laptop-A/B and thirty-minute stability evidence.
 
 **8 October integration follow-up:** the standard Harbor variant is
 `assets/harbor_standard_workspace.json` for recognisers using

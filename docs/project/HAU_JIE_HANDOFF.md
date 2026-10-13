@@ -4,6 +4,28 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**Immediate manual / GPT split, updated 13 October:**
+
+- **Manual:** send the existing private `H1-20261008` audit packet. Help Deston
+  confirm only the newest contributor's unanswered starter-exclusion and break
+  facts. Agree a build and case list with Javier, then operate your Windows
+  laptop as laptop B for the native, fresh-install, offline and stability checks.
+- **With GPT:** audit the development handoff Deston has already sent; diagnose
+  rejected NEUTRAL and accepted UNKNOWN/BOOKMARK predictions, preserve the failed
+  baseline, and propose bounded personal settings plus the independent starter
+  baseline. Use fresh output filenames. Draft methods/limitations privately.
+- **Return next:** H1 archive and a separate H2 diagnosis/configuration/provenance
+  packet for Deston's review; send laptop-B observations to Javier. Do not wait
+  for every item before returning a useful completed delivery.
+- **Later:** untouched TEST follows the reviewed freeze and acquisition route.
+  Do not recruit or repeat development recording before diagnosing a gap, and
+  never request further recording from the closed TRAIN-only contributor.
+
+Use `codex/hau-jie-profiles` for code and sanitized evidence; leave PRs unmerged
+for Deston. Full data/results and Word contributions remain private. See the
+[shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work) for the order
+of deliveries and the current Studio source/package distinction.
+
 **13 October newest return:** a third contributor completed all 104 development
 trials on macOS/Safari with no reported collection problems. Import retains all
 520 scheduled records, including 23 invalid detections (497 usable features).

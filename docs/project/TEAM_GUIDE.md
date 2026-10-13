@@ -45,9 +45,11 @@ Extract the new Studio ZIP into a fresh folder and keep old private profiles,
 datasets and `.local` evidence outside the replacement folder unless the guide
 explicitly tells you to import them.
 
-Software verification passed 918 tests (one platform skip), Ruff, mypy and both
-startup modes; the focused Practice/Live suite passed 153 checks. Follow the
-Studio archive's matching local verification record for package checks. These
+Latest source verification on 13 October passed 933 tests (one Windows symlink
+permission skip), Ruff, mypy, both startup modes and synthetic evaluation on
+`a914f48`; see [the progress record](PROGRESS.md). The earlier extracted
+Practice/Live suite passed 153 checks on its recorded package. Follow each
+Studio archive's matching verification record; those checks do not verify a newer archive. These
 checks do not establish recognition on a participant's hand or native device
 acceptance. No additional Trello/backlog task is Done from the protocol change.
 
@@ -73,11 +75,36 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-| Member | Manual / physical work | GPT-assisted work that can continue now |
+Current as of 13 October, after the development handoff was sent. All three
+members have work available now; the later acceptance gates below still apply.
+
+| Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Development handoff sent; receive Hau Jie's diagnosis/settings and `H1-20261008`; resolve the newest contributor's unanswered independence/break facts, then review freeze before untouched TEST; later review actual demo/declaration evidence. No new recording is requested now. | Integrate reviewed PRs, verify/use corrected browser imports, maintain evidence and progress, prepare freeze/score/replay and a browser-compatible TEST route once inputs/protocol are reviewed. Keep Word logs and participant data private. |
-| Hau Jie | Send the existing private `H1-20261008` packet; review eligibility/session facts for the two complete returns before planning TEST; no further collection from the closed TRAIN-only contributor. Operate laptop B for Javier's GF-P19/GF-P23 matrix. | Audit the new development results, diagnose rejected NEUTRAL versus pose/session differences, propose bounded settings and the paired configurations, use the closed contribution only as TRAIN development after provenance review, and draft GF-P24 methods/limitations on `codex/hau-jie-profiles`. |
-| Javier | Complete remaining laptop-A trusted-app/association, failure/retry, real-launch restore/no-replay and active-capture Camera cases; coordinate laptop B and later observer sessions. Do not repeat PR #29's completed Preview focus/reconnect checks. | Consolidate per-device evidence, fix demonstrated viewer/shortcut/runbook defects, prepare GF-P25 guide/storyboard, and update summary/export handling on `codex/javier-shortcuts`. |
+| Deston | Resolve P1543's two unanswered facts with the participant and Hau Jie: exclusion from earlier starter fitting/tuning, and a break before VALIDATION. Receive H1 and Hau Jie's diagnosis/settings; review their provenance and the proposed freeze. Your development handoff is already sent; no new recording is requested now. | Review/integrate incoming PRs and verify the private packets when received. Reproduce development results, check configuration completeness and input hashes, and maintain the requirement/evidence matrix. Specify the browser-compatible TEST route for review; implement/verify it after the collection protocol is agreed, before TEST begins. |
+| Hau Jie | Send the existing private `H1-20261008` packet, with exact missing-item notes if needed. Help resolve P1543's eligibility facts. Agree the Windows build/cases with Javier and operate your own machine as laptop B; record setup assistance, offline behavior, thirty-minute Studio operation and shutdown. | Audit the handoff already sent. Diagnose rejected NEUTRAL and UNKNOWN accepted as BOOKMARK; compare bounded settings on development data and propose complete personal configurations plus the independent starter baseline. Preserve failed baselines. Draft GF-P24 methods/limitations privately; no repeated H1 search without a diagnosed reason. |
+| Javier | Agree one identified build and remaining case matrix with Hau Jie. Finish laptop-A trusted-app/association, failure/retry and restore-after-real-launch/no-replay cases. Diagnose the short P03 PREVIOUS/wrong-action issue before a fresh full Practice attempt; run active-capture Camera only after a genuine grant. Coordinate Hau Jie's laptop-B checks. | Consolidate the two-device results without adding overlapping exports; fix demonstrated viewer/shortcut/runbook defects. Draft GF-P25 guide/storyboard and prepare the later observer-study order and recording forms. Preserve accepted PR #24/#26/#28/#29 cases; rerun only checks affected by new faults or changes. |
+
+**Next returns:** Hau Jie sends H1 plus the H2 diagnosis/settings/provenance;
+Javier returns a focused remaining-case evidence PR and the attributed laptop-B
+matrix; Deston returns review findings and, when ready, the approved freeze.
+Methods and guide/storyboard drafts can arrive separately instead of holding up
+these deliveries. GPT prepares and checks evidence; people supply observed
+outcomes, participant facts and final review decisions.
+
+**Then:** after the freeze and TEST acquisition route are reviewed, Hau Jie
+coordinates untouched TEST for two eligible participants and Deston reproduces
+GF-P18. GF-P20's measured live study retains GF-P16/GF-P17 dependencies. Final
+GF-P23 release acceptance follows defect closure and affected retests; Windows
+checks can begin now. Poor scores remain valid evaluation results, not starter
+deployment approval. P69 stays closed TRAIN-only with no further collection.
+
+**Working copies:** sync reviewed `main` while preserving local changes. Hau Jie
+pushes only `codex/hau-jie-profiles`; Javier pushes only `codex/javier-shortcuts`.
+Open focused PRs and leave merging to Deston. Git users can continue from the
+identified source commit. For a fresh-install ZIP test, rebuild and verify a
+matching Studio source archive first: the obsolete Downloads Studio ZIP was
+removed on 13 October and no replacement delivery is claimed. Participant kits
+and the private data handoff serve different purposes.
 
 GPT or synthetic checks cannot claim participant consent, physical laptop behavior,
 camera recovery, real app launches, final TEST independence or marker acceptance.
