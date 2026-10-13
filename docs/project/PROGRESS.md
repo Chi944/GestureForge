@@ -10,6 +10,21 @@ handoff is Hau Jie's intake/diagnosis and proposed settings, plus the existing
 H1 audit packet. Sending the files does not establish that they have been reviewed
 or satisfy the configuration freeze and final TEST acceptance gates.
 
+**Evaluation evidence protection:** ordinary evaluation now refuses existing
+output files before reading/fitting and creates new files exclusively, preserving
+saved results, configurations and dataset manifests even if another writer creates
+the output during evaluation. Local verification keeps its synthetic result inside
+the verification report by default; a separate result needs a fresh filename.
+No recognition settings, participant data or acceptance weights changed.
+
+The 13 October local verification of `a914f48` passed Ruff, mypy, **933 tests**,
+both offscreen application startup checks and synthetic evaluation. One symbolic
+link test was skipped because this Windows host does not permit creating the link.
+The duplicate-ZIP warning comes from the intentional malformed-archive test.
+Independent review found no blockers; all 134 checked local documentation links
+resolve. The full verification output is retained locally. These checks do not
+replace real-camera, laptop-B or held-out participant evidence.
+
 **Third development return received:** the newest macOS/Safari contributor
 completed 48 TRAIN, 48 VALIDATION and eight UNKNOWN trials without reported
 collection issues. All 520 scheduled records were imported: 497 usable features
