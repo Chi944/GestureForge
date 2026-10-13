@@ -4,32 +4,44 @@ Snapshot: 13 October 2026. This measures the final-project extension, not the al
 
 ## Current work on 13 October
 
-**Second contributor's collection is closed:** the Mac return contains all 48 TRAIN
-trials, with 240 records accepted by the existing importer as usable features.
-Deston authorised use of these existing samples and no further collection from
-this person. The import remains partial: there are no VALIDATION, UNKNOWN or TEST
-records. Keep the original splits and use the samples for TRAIN-only development;
-do not relabel or split frames to manufacture independent evaluation data.
-The original ZIP, checksum, numeric import and intake notes remain private.
-Together with the earlier complete Mac return, this is one complete development
-return plus one TRAIN-only contribution, not two completed H2 inputs. Safari is
-confirmed, and clicking Start Selected Session for VALIDATION reportedly did
-nothing. Browser/macOS versions, starter independence and physical pose mapping
-remain unverified; no further participant recording or recovery is requested.
+**P1543 development return received:** a new Mac/Safari participant return was
+privately imported and validated with no reported collection issues. It contains
+48 TRAIN, 48 VALIDATION and 8 UNKNOWN development trials: 520 scheduled records,
+497 valid feature rows and 23 preserved invalid slots. The participant is
+confirmed to have used the supplied poses. Browser/macOS version, exclusion from
+earlier starter fitting/tuning and the exact break conditions are not yet
+independently evidenced. Session notes are sparse (`lighting` / placeholder-like
+text), so they are retained verbatim and not treated as meaningful operating
+condition evidence.
 
-Both default classifiers fitted the 240 TRAIN samples in memory using trial-aware
-rejection references. No predictions or accuracy scores were produced, and no
-model was saved or approved. This checks numerical compatibility only; the fit
-record stays private alongside the intake notes.
+The browser importer now prefixes imported trial IDs with the participant ID.
+This prevents P67/P69/P1543 trial-name collisions when Hau Jie pools development
+manifests for starter or freeze preparation. Corrected private imports were
+created for P67, P69 and P1543 without overwriting the earlier imports. The
+corrected imports have zero cross-participant trial-ID collisions.
+
+P1543 development scoring is useful diagnosis, not an accepted model result.
+With the current shared rejection settings (`multiplier=2.0`, `margin=1.5`),
+kNN and SVM both score macro-F1 0.382 on validation and accept 10/40 UNKNOWN
+samples as commands. The raw SVM classifier labels all 48 validation trials
+correctly before rejection, but the rejection layer rejects most NEUTRAL, NEXT
+and PREVIOUS validation samples while still allowing BOOKMARK on UNKNOWN
+samples. Hau Jie should use this evidence to tune/report development settings;
+it does not approve a starter or personal release.
+
+P69 remains closed as a TRAIN-only Mac/Safari contribution: 48 TRAIN trials and
+240 valid features, with no further collection requested. Keep original splits
+for P69 and use it only within its TRAIN-only evidence limits.
 
 The collector had a reproducible continuation gap: restoring a TRAIN-only ZIP
 left TRAIN selected, so Start could immediately report that already-finished
 section as complete. Recovery and section completion now point to the first
 unfinished section, with explicit camera-restart and condition-note guidance.
-The collector fix remains available for other participants. Hau Jie should use
-the existing TRAIN-only contribution within its evidence limits and obtain the
-missing independent evaluation coverage from another eligible participant.
-No task weight or accepted total changes.
+The collector fix remains available for other participants. Hau Jie now has two
+complete development returns to audit for GF-P17, plus P69's TRAIN-only
+contribution, but still needs the H1 private packet, provenance/exclusion review,
+selected settings and Deston's freeze decision before any untouched TEST
+collection. No task weight or accepted total changes.
 
 Verification: 27 collector checks cover recovery, automatic next-section
 selection, full 104-trial export, saved-record preservation, locked condition

@@ -4,21 +4,27 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**13 October collection decision:** Deston has closed the second contributor's
-collection: use the existing 48 TRAIN trials (240 usable samples), with no further
-recording requested. The macOS/Safari return remains a partial import because
-VALIDATION and UNKNOWN are absent. The reported symptom was that clicking Start
-Selected Session for VALIDATION did nothing; its exact cause is unverified.
+**13 October collection update:** Deston has privately imported two complete
+Mac/Safari development returns, P67 and P1543. Each has 48 TRAIN, 48 VALIDATION
+and 8 UNKNOWN trials. P1543 reported no issues and used the supplied poses.
+P69 is closed as a TRAIN-only contribution: 48 TRAIN trials / 240 valid features,
+with no further recording, recovery or TEST requested from that person.
 
-Use these samples for TRAIN-only development, preserving their original splits
-and provenance. Do not request recovery, recollection or TEST from this person.
-Before pooling them into a shared starter, audit the available pose/provenance
-records; a successful import does not establish physical pose equivalence.
-Anyone included in fitting or tuning cannot be an unseen participant for that
-model. This is one complete development return plus one TRAIN-only contribution,
-not two completed H2 inputs. The required second independently evaluated person
-must come from another eligible participant. TEST still follows Deston's reviewed
-freeze, and the existing private H1 packet remains a separate delivery.
+Use P67 and P1543 for development-setting review only after auditing their
+consent, pose/provenance notes and exclusion from earlier starter fitting/tuning.
+Use P69 only as TRAIN-only development data, preserving its original split labels.
+Do not relabel rows or split neighbouring frames to create validation, UNKNOWN
+or TEST evidence. Anyone included in fitting or tuning cannot be an unseen
+participant for that model. TEST still follows Deston's reviewed freeze, and
+the existing private H1 packet remains a separate delivery.
+
+The corrected imports prefix browser trial IDs with the participant ID so pooled
+data no longer collide on names such as `train-NEXT-01`. P1543's first
+development check is a useful defect signal: raw SVM labels all 48 validation
+trials correctly, but the current rejection layer drops most NEUTRAL/NEXT/
+PREVIOUS validation samples and accepts 10/40 UNKNOWN samples as BOOKMARK.
+Your next recognition work is to explain that trade-off and propose settings
+for freeze review, not to claim a releasable starter.
 
 **11 October:** use the [manual/GPT task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
 to separate participant and laptop work from coding-assistant preparation.
@@ -61,10 +67,11 @@ repairing or repeating the existing P01/P02/P03 development recordings.
 | H3 — operate laptop B | Follow Javier's agreed GF-P19 matrix and the [Windows guide](../WINDOWS_LAPTOP.md) on your physical laptop. Use a fresh setup, local bindings and the same identified build. Run offline core, thirty-minute Studio stability and clean shutdown checks for GF-P23. | Per-case outcomes to Javier: actual operator/device/build/package identity, help or guide deviations, failures/retries, duration, observation rate, peak memory, shutdown and private evidence references. Explicitly identify anything unmeasured or unrun. | Manual cases need no model. Gesture cases use your own profile and full current-session Practice gate. Javier consolidates; Deston accepts after the original defect gates. |
 | H4 — report preparation | Draft GF-P24 methods, data protocol, algorithm trade-offs, rejection, attribution and limitations now from the implemented code and saved evidence. Add final results after GF-P18/GF-P21. | Local Word methods/results contribution and verified reference list through the team's existing channel; measured and unmeasured results clearly separated. | Keep Word documents/data/logs out of Git. A methods draft is useful now; GF-P24 is Done only when final results and limits match the evidence. |
 
-**Next handoff:** deliver the existing private H1 packet and the H2 consent/
-independence and Windows kit-check status. PR #27 already supplies the aggregate
-H1 audit; do not open a duplicate PR or claim recordings before they exist.
-Participant preparation and H3/H4 may proceed while diagnosis is reviewed.
+**Next handoff:** deliver the existing private H1 packet, then the H2 consent/
+independence audit for P67/P1543 and proposed settings based on the corrected
+imports. PR #27 already supplies the aggregate H1 audit; do not open a duplicate
+PR or claim TEST/freeze results before they exist. Participant preparation and
+H3/H4 may proceed while diagnosis is reviewed.
 If a file, permission or participant is unavailable, report that exact missing
 item and continue the independent work. Do not ask Deston to repeat long trials
 or collect the same development data again without a diagnosed need.

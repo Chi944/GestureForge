@@ -176,6 +176,7 @@ def _convert_record(
         raise ValueError(f"record split does not match session {session_id}")
     trial_id = _strict_str(item, "trial_id")
     validate_identifier(trial_id)
+    imported_trial_id = f"{participant_id}-{trial_id}"
     label = _strict_str(item, "intended_label")
     if split in POSITIVE_SPLITS and label not in LABELS:
         raise ValueError(f"unknown intended label {label}")
@@ -217,7 +218,7 @@ def _convert_record(
         SampleRecord(
             participant_id=participant_id,
             session_id=session_id,
-            trial_id=trial_id,
+            trial_id=imported_trial_id,
             intended_label=label,
             split=split,
             sample_index=sample_index,

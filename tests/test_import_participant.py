@@ -143,6 +143,9 @@ def test_import_browser_zip_round_trips_features_and_partial_status(tmp_path):
     assert loaded.metadata["import_source"] == "browser-participant-kit"
     assert loaded.metadata["pose_set_id"] == "standard-v1"
     assert {record.provenance for record in loaded.records} == {"human"}
+    assert {record.trial_id for record in loaded.records} == {
+        f"P99-{record['trial_id']}" for record in payload["records"]
+    }
     browser = loaded.metadata["browser_collection"]
     assert browser["import_status"] == "partial"
     assert browser["complete"] is False
