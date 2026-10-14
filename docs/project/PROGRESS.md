@@ -1,102 +1,60 @@
 # GestureForge Studio progress
 
-Snapshot: 14 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 14 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current goal and handoff progress — 14 October
+## Current goal and accepted progress — 14 October
 
-**TEST kits sent:** Deston confirmed sending the assigned P67 and P1543 kits on
-14 October. Collection and return receipt are not yet confirmed. Hau Jie can
-support their first preview remotely; no replacement kit or repeated development
-session is requested. Keep both frozen configurations unchanged while awaiting
-the private TEST return ZIPs.
+**GF-P18 is accepted.** Deston received both genuine TEST ZIPs and scored them
+against the unchanged configurations frozen earlier on 14 October. Each has
+48 trials and 240 scheduled slots; P67's three invalid slots remain in scoring,
+and P1543 has none. Independent repeat fits reproduced every prediction,
+metric, count, input hash and paired difference. See the
+[results and acceptance record](GF_P18_TEST_RESULTS_2026_10_14.md).
 
-**Release and workflow reliability:** the Studio packager now stops when a
-tracked source file is missing instead of silently shipping an incomplete ZIP.
-It preserves the previous archive and checksum receipt. The workflow comparison
-now retains a genuine pre-task application fault as an unsuccessful attempt
-without requiring an invented summary export. Any recorded task time, stages,
-observations or wrong actions still require the real export.
+| Participant | Starter trial macro-F1 | Personal trial macro-F1 | Personal minus starter |
+|---|---:|---:|---:|
+| P67 | 0.768651 | 0.718261 | -0.050390 |
+| P1543 | 0.979130 | 0.397059 | -0.582072 |
 
-Both defects were reproduced before their fixes. All 40 focused packaging and
-workflow tests pass, along with repository-wide Ruff/mypy and both offscreen
-application startup checks. Independent review found no blockers. These checks
-support GF-P20/GF-P23 preparation; they do not complete the physical study or
-laptop-B acceptance. The participant kits and frozen settings are unchanged.
+**The experiment is complete; model targets were not met across both people.**
+Both personal models rejected all 12 NEXT trials. The starter performs better
+on these positive sets but falls below its 0.85 target for P67; both personal
+models fall below 0.90. No deployment starter or new LIVE grant is approved.
+The original targets, task weights and frozen settings are unchanged.
 
-**Participant-kit usability update:** P67/P1543 TEST kits now preset identity and
-session, require no typing or installation, and use **Open camera → Start 48
-trials**. Both consent boxes remain explicit. Camera selection pauses safely;
-partial returns resume without repeating completed trials. Missing optional
-conditions are recorded as not provided. Allow about ten minutes overall.
+Accepted totals are **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier 48/73
+(65.8%), team 137/223 (61.4%) — 17/29 tasks Done**. GF-P18 adds its original
+10-hour weight for a reproducible, interpreted comparison, including failure.
 
-Verification: 38 JavaScript checks, 70 focused Python pipeline tests and six
-package/privacy checks passed, plus Ruff/mypy and independent code review.
-Both extracted kits completed 48/48 trials and exported 240 scheduled slots in
-real-time Windows Edge checks using a synthetic camera and the real bundled
-detector. That long run exposed SDK background logging; an early connection
-policy now blocks it. The final exact-hash kits passed detector startup, camera
-switching, partial export/recovery and enforced connection-blocking checks.
-The SDK's own delayed logging attempt was blocked after about 62 seconds;
-recording continued from 8 to 10 trials with no outgoing HTTP or unhandled errors.
-PDF guides were rendered and inspected. Synthetic observations stay isolated
-locally and are not participant data or recognition-accuracy evidence.
-Physical Safari/Mac operation remains to be observed during participants' own
-first use; Hau Jie has no Mac and is not required to obtain one. These changes
-do not add accepted task weight: GF-P18 still needs both genuine TEST returns.
-
-**Goal:** acquire untouched same-pose TEST data for GF-P18 using the two reviewed
-frozen comparisons. **GF-P17 is accepted** against its original preparation
-criterion. Hau Jie's H1/H2 handoffs are received and verified; no resend or
-repeated development search is required.
-
-The supplied `PRIVATE_H1_SEND_TO_DESTON_v2.zip` passes all 33 member checksums.
-The nine manifest/NPZ pairs match the baseline, comparison and audit inventory:
-216 trials, 1,080 scheduled records, 1,064 valid features and 16 retained invalid
-slots. The trusted reader reproduces the full six-fold saved diagnosis; all ten
-fixed cases reconcile with original records and predictions. The 48 candidate
-summaries in each of three folds still yield zero qualifying candidates and no
-selected outer model. See the [dated receipt review](H1_SAVED_REPORT_AUDIT_2026_10_08.md#14-october-private-handoff-received-and-verified).
-
-| Step | Current status | Owner / next action |
+| Step | Current status | Next action |
 |---|---|---|
-| H1 private audit delivery and receipt verification | Complete, 14 October | Hau Jie delivered; Deston's local checks passed. No resend needed |
-| H2 development diagnosis and proposed settings | Reviewed and selected, 14 October | PR #31 merged; 17 source hashes, eight evaluator runs and all 48 bounded comparison rows verified; after-development selection rationale independently reviewed |
-| P1543 starter exclusion/break and H1 physical poses | Confirmed by user, 14 October | All four H1 right-hand mappings match the browser protocol; preserve this attributed confirmation |
-| GF-P17 configuration freeze and TEST acquisition route | Accepted, 14 October | Two private freezes pin the reviewed settings and development inputs; browser TEST route, four packages and PDF guides verified as software artifacts |
-| GF-P18 independent paired TEST evaluation | Kits sent; awaiting TEST returns | Deston confirmed sending both assigned kits on 14 October. Hau Jie supports first use without needing a Mac; Deston validates, reproduces and reviews returned scores |
+| H1 private audit / H2 development selection | Received and independently reproduced | Preserve original failed baselines and reviewed selection; no resend or repeated search |
+| GF-P17 freeze and acquisition route | Accepted | Preserve both frozen settings and input pins |
+| GF-P18 paired TEST experiment | Accepted, 14 October | Report per-person results and limitations; no repeated collection to replace poor scores |
+| GF-P21 recognition defect investigation | In Progress: development-only diagnosis completed | Hau Jie investigates NEXT separation and P1543 rejection using DEVELOPMENT inputs; preserve failed TEST and require fresh evaluation for changed models |
+| GF-P19 / GF-P23 native and release checks | Open | Javier coordinates remaining laptop-A cases and Hau Jie's laptop-B setup/offline/thirty-minute Studio checks |
+| GF-P20 physical evaluation | Open | Actual hold/negative/latency/workflow evidence after integration prerequisites; offline classifier scores cannot replace it |
 
-The [reviewed selection and acceptance record](H2_EVALUATION_SELECTION_2026_10_14.md)
-closes the original 12-hour GF-P17 preparation task. The
-[accepted completion table](#completion-measure) is now Deston 21.3%, Hau Jie
-84.0%, Javier 65.8%, team 57.0% (16/29 tasks). Deston's shared review and tooling
-contribution does not reassign the original task weight. GF-P18 remains open.
-P67's selected personal comparator still accepts 12/40 development negative
-command samples; P1543's accepts 10/40. No examined setting eliminated negative
-command acceptance. These are classifier predictions, not live actions. The
-freezes are for offline evaluation only: no actual TEST has been collected or
-scored, and no deployment starter is approved. Inputs and full results remain
-local; H1 internal-team permission does not grant public or marker redistribution.
+The development-only diagnosis found no definite label, feature or runtime
+mismatch. Poor NEXT development recognition and retained negative-command
+acceptance already existed before TEST. Their detailed counts and next
+investigation are in the results record. Physical pose/condition changes remain
+hypotheses, not established causes. GF-P21 retains its GF-P20 dependency.
 
-The final local run passed Ruff, mypy across 100 files, **952 tests**, both app
-startup modes and synthetic evaluation. **30 JavaScript checks** passed
-separately, including TEST collection, recovery and export behavior. One Windows
-symlink test was skipped; the malformed-ZIP fixture produced its expected warning.
-The first full run hit its 600-second limit after over 90% without an assertion
-failure; the final run used a longer limit and one numerical worker thread and
-completed successfully. The two typing errors from the first run were corrected.
-Independent code and acceptance reviews found no remaining blockers.
+Fresh checks: **66 importer/paired-evaluator tests passed**, with the expected
+malformed-ZIP warning. Independent real-data re-fits matched all non-timing
+outputs. Original archives, freezes and private full results remain local and
+unchanged. This evidence update changes no runtime code or already-sent kits.
+No new participant recording is requested for GF-P18; P69 remains closed
+TRAIN-only. Current TEST OS/browser/help details were not supplied in the
+numeric returns and are not inferred from earlier development reports.
 
-All four participant-specific ZIPs pass integrity/hash checks; their PDF guides
-were rendered and inspected. The extracted P67 page opens with a locked target,
-TEST-only session and 48-trial total. This was a camera-free interface check.
-This earlier camera-free check is superseded by the software checks above.
-Actual Mac camera behaviour still needs participant observation. It does not replace
-Studio laptop-B, physical recognition or final release verification.
-
-The [H2 review record](H2_DEVELOPMENT_DIAGNOSIS_2026_10_14.md#destons-receipt-and-reproduction-review--14-october)
-distinguishes the reproduced numerical findings from the user-confirmed
-participant facts and final evaluation gates. No repeated H1/H2 search or package resend is
-needed to establish this receipt.
+Earlier 14 October source verification remains version-specific: the 952-test
+suite, Ruff/mypy, both app startup checks and synthetic evaluation passed on
+the recorded source; 40 packaging/workflow checks passed for the later repair.
+Both participant kits previously passed software tests with synthetic cameras.
+Those checks do not establish native Studio acceptance. Continue the physical
+Windows work in the [team guide](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
 
 ## Current work on 13 October
 
@@ -530,17 +488,19 @@ Progress = the original estimated hours of fully completed tasks / the total ori
 
 | Owner | Completed task weight / planned | Verified completion |
 | :--- | ---: | ---: |
-| Deston | 16 / 75 | 21.3% |
+| Deston | 26 / 75 | 34.7% |
 | Hau Jie | 63 / 75 | 84.0% |
 | Javier | 48 / 73 | 65.8% |
-| Team | 127 / 223 | 57.0% |
+| Team | 137 / 223 | 61.4% |
 
-Sixteen of 29 tasks are complete. The 14 October acceptance adds GF-P17
-(experiment preparation and frozen configurations, 12 hours) to GF-P01, GF-P02,
-GF-P03, GF-P05, GF-P06, GF-P07, GF-P08, GF-P09, GF-P11, GF-P12, GF-P13, GF-P28,
-GF-P29, GF-P31 and GF-P32. Original owners, weights, requirements and dependencies
-are unchanged. GF-P17's completed preparation does not close GF-P18's real TEST
-comparison or approve a deployment starter.
+Seventeen of 29 tasks are complete. On 14 October, GF-P17's original
+12-hour preparation task and GF-P18's original 10-hour paired evaluation task
+were accepted. The [GF-P18 record](GF_P18_TEST_RESULTS_2026_10_14.md) preserves
+both failed personal targets and the failed P67 starter target. Other completed
+tasks are GF-P01, GF-P02, GF-P03, GF-P05, GF-P06, GF-P07, GF-P08, GF-P09, GF-P11,
+GF-P12, GF-P13, GF-P28, GF-P29, GF-P31 and GF-P32. Owners, weights, requirements
+and dependencies are unchanged. Evaluation completion does not approve a
+deployment model or close live/system release gates.
 
 The new decisions use the original criteria and handoffs at `223c8c3`, current software checks and attributed evidence already delivered by teammates. GF-P13 combines persistent duplicate suppression, typed no-shell dispatch and release/recovery regressions with Javier's [laptop-A Camera observations](../evidence/WINDOWS_RESULTS_2026-10-02.md). Broader two-device integrated cases remain GF-P19. GF-P28 accepts Hau Jie's [person-separated feasibility study](STARTER_EVALUATION_CHECKPOINT.md), including its unsuccessful outcome, internal-use-only permissions and first-use risks. Private P02/P03 measurements were not independently rerun; no qualifying or redistributable starter is claimed.
 
@@ -557,7 +517,8 @@ Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) and Javie
 - **GF-P16 - personal LIVE integration, 5 October:** a saved, reconciled full current-session Practice pass can now establish personal LIVE eligibility. Studio still restores paused; the user selects LIVE, starts capture explicitly and rearms with NEUTRAL. Eligibility covers only the exact authored contexts and bindings in the accepted behavior revision. Camera/model/profile/mapping/target changes expire it permanently, including change-then-revert. Normal navigation between unchanged stages and pause/resume retain eligibility. Short checks, diagnostic windows, failed/inconclusive attempts and historical/imported results cannot grant it. Standard Guest recognition still requires a qualifying, permitted starter. This software change removes a host integration blocker; it does not claim a new participant pass or completed six-stage scenario.
 - **Acceptance audit, 5 October:** compared the seven open Deston tasks with their original criteria in `223c8c3`. No additional Deston task is Done. GF-P10 has the loading adapter and standard Guest six-action route; a qualifying permitted artifact and native first-use evidence remain; GF-P16 needs actual starter/personal scenario and recovery evidence; GF-P18 needs independent frozen paired TEST results; GF-P20 needs observed workflow results; GF-P23 needs independent Windows release/stability evidence; GF-P26/P27 require final deliverables, rehearsal and verified submission. These are separate gates: GF-P18 does not depend on GF-P20's live-negative or workflow study. Deston's software progress is meaningful, but these seven integration/evaluation/release tasks give no partial task credit until their real-input, hardware or final-deliverable criteria are accepted. Deston's original weights and accepted percentage are unchanged; the teammate acceptance decisions above are separate.
 - **5 October delegation:** Hau Jie now runs the D1 saved-report diagnosis first, then targeted own-profile physical repair only if diagnosed, plus laptop-B evidence with Javier. Native Practice and later evaluation remain separate. Javier executes camera-free Harbor, the remaining GF-P19 two-laptop Windows cases, then GF-P23 installation/offline/thirty-minute Studio evidence for Deston's review. GF-P19 is In Progress after PR #24 delivered attributed laptop-A evidence; remaining native checks are explicit. Both briefs specify ordered steps, required outputs and branch-only delivery. Deston keeps product direction, shared integration and final acceptance; teammate measurements cannot replace P01 personal evidence.
-- **GF-P18 - Deston, In Progress:** the two-phase `paired_evaluate` CLI pins development inputs and selected settings before opening positive TEST files, rebuilds TRAIN-only models, and compares identical held-out trials with UNKNOWN misses retained. Participant/split/pose/hand/provenance and input-integrity checks guard the comparison. The collector now exposes the existing positive TEST split with a separate manifest and pose ID. See [PAIRED_EVALUATION.md](PAIRED_EVALUATION.md). This completes tooling, not the real GF-P17/GF-P18 evaluation: independent participant data, selected configurations and accepted paired results remain. Final negative/live protocols belong to GF-P20. Original task weights and completion percentages are unchanged.
+- **GF-P18 - Deston, accepted 14 October:** both returned TEST sets were imported and scored against the original freezes. Independent repeated fits reproduce the paired outcomes, including UNKNOWN misses and failed targets. See [results](GF_P18_TEST_RESULTS_2026_10_14.md). No deployment approval or GF-P20 live evidence is inferred.
+- **GF-P21 - Hau Jie, In Progress:** development-only diagnosis establishes poor NEXT separation and a false-rejection/negative-acceptance trade-off before TEST, without a confirmed import/label/runtime defect. Investigate with development data; preserve these results and obtain newly untouched evaluation for any revised model. The GF-P20 dependency remains.
 
 - **GF-P07 - Hau Jie:** reviewed [PR #16](https://github.com/Chi944/GestureForge_304/pull/16) supplies timed observation-fed collection and an embeddable consent/pose/countdown widget. Review repaired delayed-frame expiry and camera release during failed-save cancellation, retaining trial evidence for retry. Deston's shared-camera adapter now attaches the widget to Studio with model-free observation capture and cancellation/save protection. [PR #20](https://github.com/Chi944/GestureForge_304/pull/20) adds partial P02 recording evidence. PR #22's supplied physical follow-up closes the invalid-feedback/partial-slot Stop gap: retained invalid and cancelled slots reload successfully. A reviewed private sampled UI montage now shows readable generated collection, visible no-hand feedback, cancelled-slot preservation, all four labels, actual profile creation/Guest/reload controls and unchanged saved files. A rejecting launcher spy measured zero launch calls. Combined with the attributed P02 physical evidence and current component/host tests, this closes GF-P07. The initial unreadable montage was rejected and replaced; this is software workflow evidence, not new participant recognition or full Practice performance.
 - **GF-P28 - Hau Jie:** [PR #13](https://github.com/Chi944/GestureForge_304/pull/13) is merged with the participant-separated evaluator and [checkpoint](STARTER_EVALUATION_CHECKPOINT.md). Independent code and architecture review accepted the code after clarifying private input/output evidence. Integration checks passed 346 tests with one platform-specific skip, lint, types, both GUI startup checks and synthetic evaluation. Hau Jie reports P01 checksum validation and completed P02/P03 collection; their measurements were not rerun here without those private inputs. The baseline has poor NEUTRAL recognition and UNKNOWN rejection, so neither model is ready for release. GF-P28 is Done against its original feasibility criteria: training excludes the validation person and internal-use-only permission and first-use risks are recorded. The supplied failed feasibility outcome is accepted; no final-package/public redistribution grant, qualifying starter or independent final evaluation is claimed.

@@ -164,6 +164,12 @@ Negative sample predictions are not measured live false actions. The shared
 starter investigation found no qualifying model. Freezing the two comparisons
 makes their later evaluation reproducible; it does not approve deployment.
 
+The [14 October paired TEST evaluation](docs/project/GF_P18_TEST_RESULTS_2026_10_14.md)
+is complete for two held-out participants. Starter/personal trial macro-F1 is
+**0.769/0.718 for P67** and **0.979/0.397 for P1543**. Both personal models
+rejected every NEXT trial. These failed targets remain visible; the starter is
+not approved for general use and personal LIVE still requires its readiness gate.
+
 See [pilot evidence](docs/evidence/RESULTS.md), [H2 selection and limitations](docs/project/H2_EVALUATION_SELECTION_2026_10_14.md)
 and the [paired evaluation protocol](docs/project/PAIRED_EVALUATION.md). Physical
 camera, workflow, false-action and stability tests are tracked separately from

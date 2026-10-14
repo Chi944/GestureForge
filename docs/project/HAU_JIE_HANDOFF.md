@@ -4,42 +4,51 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**Immediate manual / GPT split, updated 14 October:**
+**Immediate manual / GPT split, updated 14 October after TEST scoring:**
 
-Deston confirmed that both assigned TEST kits have been sent. Support first use
-if needed and await the private returns; no replacement or development recollection
-is requested. This confirms sending, not collection or participant results.
+Both P67/P1543 TEST returns are received, audited and independently scored twice
+against their unchanged freezes. **GF-P18 is accepted** for the original paired
+experiment criterion. See [the TEST results](GF_P18_TEST_RESULTS_2026_10_14.md).
+P67 trial macro-F1 is 0.769 starter / 0.718 personal; P1543 is 0.979 / 0.397.
+Both personal models reject all 12 NEXT trials. P67's starter result misses 0.85
+and both personal results miss 0.90, so no deployment model is qualified.
 
-- **Manual:** coordinate one fresh 48-trial TEST session each for P67 and P1543
-  using their simplified, preset kits. You do not need access to a Mac: guide
-  each participant's own first preview and record the actual browser and any
-  issue. They unzip, open the page, tick both permissions, **Open camera**, then
-  **Start 48 trials**. Setup notes are optional. Keep separate equipment checks
-  isolated from participant data. Preserve all attempted and
-  invalid slots; return the recorder ZIPs privately. Agree a build and case list
-  with Javier, then operate your Windows laptop as laptop B for native,
-  fresh-install, offline and stability checks.
-- **With GPT:** use the independently reviewed
-  [selection record](H2_EVALUATION_SELECTION_2026_10_14.md) and confirmed
-  provenance in the private methods/limitations draft. Preserve failed baselines
-  and negative-command findings. Help audit TEST return completeness without
-  tuning on results. No repeated rationale or H1/H2 search is requested.
-- **Return next:** record participant-reported device outcomes and send laptop-B
-  observations to Javier; send each untouched TEST ZIP to Deston after the kit
-  handoff and actual collection.
-  No H1/H2 resend or further P1543/H1 eligibility confirmation is needed.
-- **Boundary:** GF-P17 preparation is accepted after verified private freezes
-  and automated checks. The new TEST route's physical camera/pause/recovery
-  check on a real Mac is still unrun; use guided participant first-use and report
-  it honestly. Do not repeat development
-  collection without a diagnosed gap, and never request more data from P69.
+- **Manual:** agree an identified build and remaining case matrix with Javier,
+  then operate your Windows laptop as laptop B for native, fresh-install,
+  offline, thirty-minute Studio and shutdown checks. Use your own profile and
+  a genuine current-session Practice pass for gesture cases; manual cases need
+  no model. No more TEST recording is requested from P67/P1543, and P69 remains
+  closed TRAIN-only.
+- **With GPT:** continue GF-P21 from Deston's reproduced DEVELOPMENT diagnosis.
+  The frozen distance thresholds match the earlier development models; no definite
+  importer, label or runtime mismatch has been established. P67 already rejected
+  nine of twelve development NEXT trials, chiefly through margin rejection;
+  P1543 development NEXT was chiefly distance-rejected and NEUTRAL margin-rejected.
+  Review the detailed counts in the results record and propose a bounded remedy
+  using development inputs only. Do not repeat the unchanged searches or use TEST
+  observations to tune thresholds, select models or optimise configurations.
+  Keep original failed results/freezes and document any diagnosed cause. Add
+  the actual frozen comparison and limits to your private GF-P24 methods/results
+  contribution. GF-P21 is In Progress; it is not Done before its original
+  GF-P20 dependency.
+- **Return next:** a focused development-only diagnosis/defect PR, private
+  methods/results contribution, and laptop-B observations to Javier. No unchanged
+  H1/H2 resend or participant recollection is needed.
+- **Boundary:** the TEST sets are now consumed. Any later model change needs a
+  new predeclared independent evaluation; do not rerun collection to improve
+  these scores. Numeric returns do not establish current OS/browser, assistance
+  or physical camera-recovery experience. Preserve those evidence limits.
+
+Current accepted progress is Deston 26/75 (34.7%), you 63/75 (84.0%), Javier
+48/73 (65.8%), and team 137/223 (61.4%): 17/29 tasks Done. Accepting the
+comparison does not grant a deployment starter, Practice readiness or LIVE use.
 
 Use `codex/hau-jie-profiles` for code and sanitized evidence; leave PRs unmerged
 for Deston. Full data/results and Word contributions remain private. See the
 [shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work) for the order
 of deliveries and the current Studio source/package distinction.
 
-**14 October H2 review complete:** [PR #31](https://github.com/Chi944/GestureForge_304/pull/31)
+**Earlier 14 October H2 review checkpoint (before TEST returns):** [PR #31](https://github.com/Chi944/GestureForge_304/pull/31)
 is merged. Deston checked 17 original source-file hashes and independently
 reproduced eight evaluator runs and all 48 bounded candidate rows. P67's proposed
 kNN settings (2.5 / 1.75) give development macro-F1 0.790 with 12/40 negative
@@ -53,9 +62,10 @@ are verified. Full verification passed 952 Python tests, 30 Node checks, lint,
 types, both startup modes and synthetic evaluation, with one Windows symlink
 skip and the expected duplicate-ZIP test warning. **GF-P17 is accepted:** your
 accepted total is 63/75 (84.0%); team acceptance is 127/223 (57.0%), 16/29 tasks.
-GF-P18 still needs both real untouched TEST returns and reproduced comparison
-results. Record the participants' actual Mac camera/recovery experience; Windows
-automation does not replace that evidence. Follow the current instructions above.
+At that checkpoint GF-P18 still needed actual TEST returns. Those have since
+been received and scored; the current instructions and accepted totals above
+supersede that waiting step. Windows automation does not establish native Mac
+camera/recovery behavior.
 
 **14 October provenance confirmation:** Deston confirmed P1543 was excluded
 from earlier starter fitting/tuning and took an actual break before VALIDATION.
@@ -145,27 +155,27 @@ TEST is excluded until Deston freezes the development packet. This preparation
 does not replace the verified H1 multi-person starter audit packet or earn H2
 completion before actual participant data and freeze review exist.
 
-Work through H1–H4 below, returning each useful delivery separately. This order
-supersedes the older recording instructions later in this brief. GF-P17/GF-P18
-still need two eligible independent evaluation participants; establish whether
-the received complete returns cover that need before recruiting anyone else.
+Work through the remaining H3/H4 deliveries and GF-P21 diagnosis separately.
+H1/H2 are retained below as completed evidence boundaries. The current guidance
+supersedes older recording instructions; no new participant recruitment is
+requested for the completed GF-P17/GF-P18 comparison.
 
 | Priority | Work you execute | Return to Deston | Completion boundary |
 |---|---|---|---|
 | H1 — private audit handoff | The aggregate D1 audit is merged in PR #27. The prepared `H1-20261008` packet was received and verified on 14 October; do not repeat the audit or 48-setting search. | Permitted numeric manifests/sidecars, matching baseline/comparison and all-six-fold/fixed-case reports, hashes, session/source details and permission scope are now fixed internal evidence. | Complete as a handoff substep only. The aggregate audit does not approve a deployment starter or public/marker redistribution. |
-| H2 — independent evaluation inputs | GF-P17 is accepted after the reviewed selection, provenance and verified private freezes. Keep evaluation contributors excluded from starter fitting **and tuning**. Coordinate P67/P1543's fresh 48-trial TEST sessions using the preset kits and guided first preview; Hau Jie does not need a Mac. | Each recorder's untouched TEST return ZIP, any provided condition notes and actual assistance/failure notes, privately to Deston. Retain every scheduled invalid/rejected slot and partial attempt; no unchanged H1/H2 resend is needed. | GF-P18 remains open until Deston reproduces and accepts the actual paired results. Poor scores remain valid results; they do not approve a standard starter for deployment. Do not tune on TEST. |
+| H2 — independent evaluation inputs | GF-P17 and GF-P18 are accepted after verified preparation and independently reproduced scoring of both actual TEST returns. Each has 48 trials / 240 slots, retaining P67's three invalid samples. | Preserve the frozen inputs and failed comparison; no further participant TEST session, repeated collection or unchanged packet resend is requested. | Experiment completion does not qualify deployment. The two TEST sets are consumed and must not guide threshold tuning, model selection or configuration optimisation. |
 | H3 — operate laptop B | Follow Javier's agreed GF-P19 matrix and the [Windows guide](../WINDOWS_LAPTOP.md) on your physical laptop. Use a fresh setup, local bindings and the same identified build. Run offline core, thirty-minute Studio stability and clean shutdown checks for GF-P23. | Per-case outcomes to Javier: actual operator/device/build/package identity, help or guide deviations, failures/retries, duration, observation rate, peak memory, shutdown and private evidence references. Explicitly identify anything unmeasured or unrun. | Manual cases need no model. Gesture cases use your own profile and full current-session Practice gate. Javier consolidates; Deston accepts after the original defect gates. |
-| H4 — report preparation | Draft GF-P24 methods, data protocol, algorithm trade-offs, rejection, attribution and limitations now from the implemented code and saved evidence. Add final results after GF-P18/GF-P21. | Local Word methods/results contribution and verified reference list through the team's existing channel; measured and unmeasured results clearly separated. | Keep Word documents/data/logs out of Git. A methods draft is useful now; GF-P24 is Done only when final results and limits match the evidence. |
+| H4 — report preparation | Draft GF-P24 methods, data protocol, algorithm trade-offs, rejection, attribution and limitations now from the implemented code and saved evidence. Include the scored GF-P18 results now; reconcile later defect findings after GF-P21. | Local Word methods/results contribution and verified reference list through the team's existing channel; measured and unmeasured results clearly separated. | Keep Word documents/data/logs out of Git. A methods draft is useful now; GF-P24 is Done only when final results and limits match the evidence. |
 
-**Next handoff:** deliver the extracted-kit physical-check record and laptop-B
-observations, then each fresh TEST return. PR #27 and the verified
-H1 packet already supply the H1 audit; merged PR #31 and the reproduced private
-H2 packet already supply the current H2 diagnosis.
-Do not open a duplicate diagnosis PR or claim recordings before they exist.
-H3/H4 can proceed while the coordinator check and real TEST collection run.
-If a file, permission or participant is unavailable, report that exact missing
-item and continue the independent work. Do not ask Deston to repeat long trials
-or collect the same development data again without a diagnosed need.
+**Next handoff:** return the GF-P21 development-only diagnosis and private
+GF-P24 methods/results contribution; send actual laptop-B outcomes to Javier.
+PR #27 and the verified private H1 packet already supply the starter audit;
+PR #31 and the reproduced H2 packet supply the development diagnosis. GF-P18's
+actual frozen TEST results are now accepted, including the failed targets.
+Do not repeat completed audits or ask participants to improve their TEST scores.
+If a file or device is unavailable, state the exact gap and continue independent
+work. No new collection is justified without a diagnosed development need and
+a separate evaluation plan.
 
 **8 October first private handoff to Deston:** provide the existing complete
 multi-person consented numeric manifests and NPZ sidecars, or the exact missing
@@ -183,19 +193,19 @@ the release contract, not permission to relabel existing recordings silently.
 
 Copy this next private message to Deston:
 
-> H1 is verified and H2 has been independently reproduced; PR #31 is merged.
-> GF-P17 is accepted after the reviewed selection, provenance and verified
-> private freezes. Deston has sent the P67/P1543 TEST kits. I will support their
-> own first camera preview remotely, record actual issues/help and coordinate
-> fresh 48-trial TEST sessions and private untouched returns. I will
-> preserve failed baselines, invalid slots and negative-command findings without
-> tuning on TEST. In parallel I will operate laptop B for Javier's agreed native
-> cases and prepare the methods contribution. No H1/H2 resend is needed.
+> GF-P18's actual frozen TEST comparison is accepted, with failed targets retained.
+> I will continue from the reproduced DEVELOPMENT rejection diagnosis and
+> preserve the original settings/results. I will not tune or select on TEST or
+> request repeat TEST collection. In parallel I will operate laptop B for Javier's
+> agreed native/offline/stability cases and add the scored outcomes and limits to
+> the private methods/results contribution. GF-P21's final acceptance still needs
+> its original GF-P20 dependency. No unchanged H1/H2 resend is needed.
 
 For H2, follow the existing freeze-and-score commands in
 [PAIRED_EVALUATION.md](PAIRED_EVALUATION.md). Preserve the freeze file and hashes
-before TEST exists. A qualifying deployment starter is a separate GF-P10 gate;
-it is not a prerequisite for reporting an honest failed GF-P18 comparison.
+as the historical pre-TEST record. Both TEST comparisons are now complete;
+keep the frozen files unchanged. A qualifying deployment starter is a separate
+GF-P10 gate, not a prerequisite for reporting an honest failed comparison.
 Do not identify existing development contributors as unseen participants. The
 existing audit packet supports the D1 decision now; a deployable GF-P10 release
 candidate later requires qualifying person-separated independent results and
@@ -481,4 +491,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, PARTICIPANT_KITS.md, PAIRED_EVALUATION.md and H2_EVALUATION_SELECTION_2026_10_14.md. GF-P17 is accepted after H1 verification, H2 reproduction, PR #31 merge, reviewed selection/provenance and verified private freezes. Do not resend unchanged packets or repeat completed audits/searches. Check an extracted frozen kit's camera permission, trial, pause and recovery on the intended device/browser before participant distribution; keep coordinator checks separate from participant data. Then coordinate one fresh 48-trial TEST session each for P67/P1543 and send every untouched recorder return ZIP privately, retaining invalid slots, partial attempts, actual conditions and assistance notes. Never relabel development data as TEST or tune on TEST; both participants stay excluded from starter fitting/tuning. No candidate is deployment-approved. Do not request further data from P69. Operate laptop B for Javier's agreed native matrix and GF-P23 fresh-install/offline/thirty-minute checks. Draft GF-P24 methods using the selection record and failed development results; send Word files privately. Reuse existing tools, repair only evidenced defects in owned modules, and keep data, full exports, Word reports and logs local. Push focused PRs only from your branch; leave merging, integration and acceptance to Deston. Preserve original task owners, weights and Done criteria.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, PAIRED_EVALUATION.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P17 and GF-P18 are accepted: both actual TEST returns were independently scored twice against unchanged freezes, including invalid slots and failed targets. No starter is deployment-approved; both personal models reject every NEXT trial. Continue GF-P21 from the reproduced DEVELOPMENT rejection diagnosis in the results record. No definite importer/label/runtime defect is established. Propose a bounded development-only remedy and repair only evidenced defects in owned modules; do not repeat unchanged searches. Do not tune thresholds, select models or optimise configurations on TEST; preserve all frozen baselines and do not request repeat TEST collection from P67/P1543 or further data from P69. GF-P21 still retains its original GF-P20 dependency. Operate laptop B for Javier's agreed native matrix and fresh-install/offline/thirty-minute checks. Add the actual comparison and limitations to the private GF-P24 methods/results contribution. Keep data, full exports, Word reports and logs local. Push focused PRs only from your branch and leave merging, integration and acceptance to Deston. Preserve original task owners, weights and Done criteria.

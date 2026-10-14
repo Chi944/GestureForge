@@ -10,8 +10,10 @@ The workflow comparison tool now retains a pre-task application fault without
 requiring a fabricated summary export. Use `status: fault` and an empty summary
 list only when no task time, stages, observations or wrong actions were recorded;
 otherwise retain the actual exports. See [the observer format](WORKFLOW_COMPARISON.md).
-Both participant TEST kits have been sent; your Windows checks can continue
-independently while their returns are pending.
+Both actual participant TEST returns are now scored and GF-P18 is accepted;
+your Windows checks remain independent of that offline comparison. See the
+[paired TEST results](GF_P18_TEST_RESULTS_2026_10_14.md). Both personal models
+miss their target and reject all NEXT trials; no deployment starter is qualified.
 
 - **Manual:** agree an identified Studio build and remaining-case matrix with
   Hau Jie. Finish your laptop-A trusted-app/association, failure/retry and
@@ -33,20 +35,22 @@ Word files stay private. See the [shared task split](TEAM_GUIDE.md#current-manua
 for current build/package instructions. Use a matching Studio commit/hash receipt;
 the participant browser kits are separate and do not need replacing.
 
-**14 October current priority:** H1 is verified and H2's eight evaluator runs and
-48 bounded candidate rows have been independently reproduced; PR #31 is merged.
-Deston's [selection record](H2_EVALUATION_SELECTION_2026_10_14.md), private freezes
-and full TEST-route checks are verified. GF-P17 preparation is accepted; team
-acceptance is now 127/223 (57.0%), 16/29 tasks. Your total remains 48/73 (65.8%).
-No final TEST or deployment approval is recorded. Continue J1/J2 while Hau Jie
-completes the new extracted-kit physical camera/pause/recovery check before
-distributing kits and coordinating P67/P1543's TEST sessions. These steps do not
-verify native Studio, Windows shortcuts, a current Practice grant or laptop B.
-Coordinate laptop B on Hau Jie's Windows computer, preserve the accepted
-laptop-A cases, and draft J4's guide/storyboard. J3's measured gesture study still
-retains its original integration/readiness gates despite the frozen inputs now
-being available. No participant needs
-to repeat collection to support these independent Windows checks.
+**14 October current priority:** GF-P17 and GF-P18 are accepted after verified
+freezes and independently reproduced scoring of both actual TEST returns.
+Team acceptance is now 137/223 (61.4%), 17/29 tasks; Deston is 26/75 (34.7%),
+Hau Jie 63/75 (84.0%), and you remain 48/73 (65.8%). The original model targets
+are unmet overall: P67 starter / personal macro-F1 is 0.769 / 0.718; P1543 is
+0.979 / 0.397. These results do not grant deployment or LIVE readiness.
+
+Continue J1/J2 and the short P03 PREVIOUS diagnostic before a new 22-window
+Practice attempt. Coordinate laptop B on Hau Jie's Windows computer, preserve
+accepted laptop-A cases, and draft J4's guide/storyboard with the actual limits.
+Hau Jie can investigate recognition using DEVELOPMENT inputs while supplying
+laptop-B observations. J3's physical study retains its original integration and
+readiness gates. No further participant TEST session is requested; the consumed
+TEST sets must not guide model tuning or selection. Current OS/browser/help are
+not established by the numeric returns, and no native Studio, Windows shortcut,
+current Practice grant or laptop-B acceptance follows from offline scoring.
 
 **11 October:** use the [manual/GPT task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
 to separate native device checks from coding-assistant preparation.
@@ -303,4 +307,4 @@ pipeline diagnostic does not prove either. Do not build a second capture logger.
 
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/javier-shortcuts`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md and WORKFLOW_COMPARISON.md. Follow J1–J4: preserve PR #24, PR #26, PR #28 and PR #29 as completed bounded evidence; complete only the remaining laptop-A target-association and active-capture Camera/focus recovery cases. Coordinate Hau Jie operating laptop B for the two-device matrix and GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. Prepare and coordinate Deston's GF-P20 observer records, study order, holds/negatives/latency and disjoint exports using frozen inputs from Hau Jie. Retain failed/unavailable conditions; never bypass Practice or relabel manual fallback as gesture success. Draft GF-P25 guide/storyboard now. Keep private data, paths, full exports, videos, Word reports and logs local. Fix only evidenced defects in your owned modules and send shared-shell reproductions to Deston. Push focused PRs only from your branch and leave them unmerged; Deston keeps integration, interpretation and acceptance. Do not change original task ownership, weights or Done status.
+> Work only on `codex/javier-shortcuts`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, WORKFLOW_COMPARISON.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P18 is accepted for the frozen comparison, not deployment or LIVE approval; no additional P67/P1543 TEST collection is requested. Follow J1–J4: preserve PR #24, PR #26, PR #28 and PR #29 as completed bounded evidence; complete the remaining laptop-A target-association, failure/retry, historical real-launch restore/no-replay and active-capture Camera handoff cases. Diagnose the short P03 PREVIOUS/wrong-action issue before a fresh 22-window Practice attempt; active-capture Camera requires a genuine current-session pass. Coordinate Hau Jie operating laptop B for the two-device matrix and GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. Prepare and coordinate Deston's GF-P20 observer records, study order, holds/negatives/latency and disjoint exports using frozen inputs from Hau Jie. Retain failed/unavailable conditions; never bypass Practice or relabel manual fallback as gesture success. Draft GF-P25 guide/storyboard now. Keep private data, paths, full exports, videos, Word reports and logs local. Fix only evidenced defects in your owned modules and send shared-shell reproductions to Deston. Push focused PRs only from your branch and leave them unmerged; Deston keeps integration, interpretation and acceptance. Do not change original task ownership, weights or Done status.

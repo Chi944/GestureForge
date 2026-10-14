@@ -1,16 +1,28 @@
 # Frozen starter versus personal recognition evaluation
 
 GF-P18 compares both recognisers on the same positive TEST trials. GF-P17's
-development review and two configuration freezes were accepted on 14 October.
-The remaining work is real held-out collection, paired scoring and interpretation.
-Software tests do not satisfy the participant criterion or enable LIVE gestures.
+configuration freezes and GF-P18's actual paired evaluation were accepted on
+14 October. See [results, failed targets and acceptance](GF_P18_TEST_RESULTS_2026_10_14.md).
+Software tests alone do not satisfy participant criteria or enable LIVE gestures.
 
 ## Current GF-P18 next steps
 
-**14 October:** Deston confirmed sending the assigned P67/P1543 TEST kits.
-Neither participant's TEST return has been received, opened or scored by the
-coordinator. Do not repeat TRAIN, VALIDATION, the H1/H2 search or the freeze.
-P69 remains closed TRAIN-only and is not involved in this task.
+**Complete, 14 October:** both P67/P1543 returns have been received, validated,
+scored and independently reproduced against the unchanged freezes. Each contains
+48 trials and 240 slots; three invalid P67 slots are retained. Starter/personal
+macro-F1: P67 0.768651/0.718261; P1543 0.979130/0.397059. Both personal models
+miss the 0.90 target; starter misses 0.85 for P67. No deployment approval follows.
+
+Do not repeat these sessions to improve results or tune using their TEST data.
+Hau Jie now investigates development-only recognition defects (GF-P21) and
+reports these findings (GF-P24). Javier continues native/laptop-B work; Deston
+reviews fixes and later physical studies. P69 remains closed TRAIN-only.
+
+## Completed collection route (reference)
+
+The following instructions describe the route used for these returns. They are
+not a request for another P67/P1543 TEST recording. New experiments require their
+own reviewed freeze and fresh held-out data.
 
 1. **Check the device route.** Hau Jie has no Mac. The coordinator verifies the
    extracted software locally and records that this does not prove Safari camera
@@ -57,18 +69,14 @@ The current simplified kits and guides are under `.local/participant-test-easy-2
 in one folder per participant. Their reviewed frozen comparisons are under
 `experiments/local/paired-20261014/`. Do not edit or send those frozen files.
 
-**Deston with GPT, after receiving both returns:** validate identity, consent,
-acquisition notes, frozen tickets, coverage and chronology; import each against
-its matching freeze; reproduce starter/personal scores on identical observations;
-review each person's macro-F1, per-class scores, UNKNOWN-inclusive confusion,
-paired differences and timings. Preserve poor results without tuning on TEST.
-Hau Jie supports provenance/methods; Javier continues the separate device and
-workflow checks. Full data and reports remain private.
+**Completed coordinator review:** identity/permissions, frozen tickets, planned
+coverage, separation and chronology metadata were checked. Both classifiers were
+scored on identical observations and independently reproduced; per-class metrics,
+UNKNOWN-inclusive confusion, differences, timings and limitations are recorded.
+Original ZIPs and full reports remain private.
 
-Acceptance requires both genuine complete TEST returns and reviewed reproducible
-results. Failing a recognition target is still a reportable evaluation outcome,
-not permission to deploy. GF-P18 adds its original 10-hour weight only after
-acceptance: Deston **21.3% → 34.7%**, team **57.0% → 61.4%**. It remains open now.
+GF-P18 adds its original 10-hour weight: Deston **34.7%**, team **61.4%**.
+Failing a target remains a reportable outcome, not permission to deploy.
 
 ## Responsibilities and prerequisites
 

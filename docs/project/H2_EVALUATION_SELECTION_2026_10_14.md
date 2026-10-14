@@ -6,6 +6,11 @@ predeclared before development, that a deployment model qualified, or that LIVE
 gestures are approved. The [reproduction review](H2_DEVELOPMENT_DIAGNOSIS_2026_10_14.md)
 preserves the unsuccessful baselines and bounded comparisons.
 
+**Later on 14 October:** both frozen comparisons were scored on the returned
+TEST sets. See the separate [GF-P18 results record](GF_P18_TEST_RESULTS_2026_10_14.md).
+The selection rationale below remains the original pre-TEST decision; its
+settings and unsuccessful development evidence have not been changed.
+
 ## Selected comparison
 
 Retain Hau Jie's proposed personal settings for the paired offline experiment.
