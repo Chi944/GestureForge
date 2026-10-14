@@ -200,12 +200,14 @@ slots; never delete difficult trials to improve scores. Follow the [current GF-P
 From the configured Windows environment:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/verification-new-run.json
+.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200
 ```
 
 This runs lint, type checks, tests, both GUI startup checks and synthetic
-evaluation. Choose a new output filename for each retained run. To check the
-browser collector, developers with Node.js can also run:
+evaluation. It prints the path to a new timestamped report under ignored
+`experiments/local/`; historical reports are preserved. If supplying `--output`
+or `--synthetic-output`, choose new filenames: existing files are refused.
+To check the browser collector, developers with Node.js can also run:
 
 ```text
 node --test tests/participant_collector.test.mjs

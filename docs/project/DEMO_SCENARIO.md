@@ -40,7 +40,7 @@ Javier executes this walkthrough after the software checkpoint is reviewed and s
 2. In **Quick Actions**, create the four required targets above using their exact opaque IDs. Save each target. Local target edits pause Studio and preserve the active runbook stage. **Use Quick Actions** explicitly switches to standalone slots; it is unnecessary for this runbook walkthrough.
 3. Return to **Runbook**. Perform stages 1–4 using their labelled action buttons and **Continue**. Observe each opened application/resource yourself; use **I completed this stage's task** only after the requested task succeeds. A launch request alone is not completion. No camera restart is needed for manual buttons.
 4. At **discussion**, bookmark once. Move only the disposable recovery reference aside and request it. Confirm a useful failure and an increased **Failed** count. Restore/rebind that test file, verify the context still says `discussion`, then explicitly retry once. Repairing or returning to Studio must not open it automatically. In a personal gesture run, rebinding/editing the target expires its LIVE grant; record manual fallback or a new full Practice pass separately before further gesture use.
-5. Export the current results from **Session summary** before **Save session...** and **Restore session...**. Reload must preserve the discussion stage and bookmark, return Live mode to paused Preview and replay no launch. Verify that a typed action simulates, then explicitly select Live and Apply and pause again before continuing real manual actions. Restoration archives the previous results locally and starts a new summary; keep both segments for the walkthrough record.
+5. Export the current results from **Session summary** before **Save session...** and **Restore session...**. Reload must preserve the discussion stage and bookmark, return Live mode to paused Preview and replay no launch. For this development walkthrough only, verify that a typed action simulates, then explicitly select Live and Apply and pause again before continuing real manual actions. Restoration archives the previous results locally and starts a new summary; keep both segments for the walkthrough record. The simulation probe stays in these exports and disqualifies them as successful measured-study conditions; do not reuse this walkthrough as participant-study evidence.
 6. Continue to **finish**, review the results, acknowledge actual completion and select **Finish**. Export the final segment. Record the source commit, Windows version, device, actual failures/retries and observed outcomes under ignored `experiments/local/`. Do not label this manual run as gesture or participant-study success.
 
 `tests/test_app_dispatch.py` also runs the six-stage Guest/manual flow with a fake launcher and disposable files, including repair, context attribution, save/reload and no replay. That regression checks software integration; it does not prove that an external application appeared or a person completed its task.
@@ -55,6 +55,25 @@ Recruit at least two consenting participants who did not contribute to starter t
 4. Run the six-stage task with the prescribed safe missing-reference failure. Start the task timer on the participant's first task instruction; stop after Finish and summary review. Count help, retries, wrong actions and actual acknowledgements. Save/reload and focus-loss recovery are part of the task.
 5. If recognition/readiness fails, record failure and elapsed time. Allow manual completion for usability, but report it as fallback rather than gesture success. Stop an individual condition after 15 minutes, participant withdrawal, or unrecoverable fault; report incomplete tasks instead of discarding them.
 6. Ask each participant to rate comfort and usefulness from 1 (poor) to 5 (good), then give one limitation and one improvement. Report individual values and small-sample limits, without significance or commercial-demand claims.
+
+**Keep preparation separate from the measured task.** Practice and familiarisation
+can add simulated outcomes to the current Session summary; exporting alone does
+not clear it. After setup/readiness finishes, export those preparation results,
+then use **Restart deck** before the first task instruction. This archives the
+previous summary, starts a fresh one and returns Harbor to its first stage.
+Confirm the summary is empty and the appropriate current-session readiness is
+still valid before starting the measured condition; a reset cannot grant readiness.
+Keep preparation exports alongside the study as separate evidence, outside that
+condition's task `summary_segments`.
+
+**Measured reload differs from the development simulation probe.** During the
+timed task, export before restoring, observe the restored stage/bookmark, paused
+Preview and absence of automatic replay, then explicitly select **Live** and
+**Apply and pause** before the next real action. For gestures, retain valid
+current-session readiness, then Start and show fresh NEUTRAL. Do not request the
+development-only simulated action. Keep both task segments. If any simulation
+does occur after the task starts, preserve it and report the execution mismatch;
+do not remove rows, discard a segment or reset the summary to manufacture success.
 
 ## Measures and success criteria
 

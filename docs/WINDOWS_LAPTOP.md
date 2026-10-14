@@ -78,7 +78,7 @@ From PowerShell in the extracted folder, run the software and native-model check
 .\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/laptop-verification.json --synthetic-output experiments/local/laptop-synthetic.json
 ```
 
-The model check runs real MediaPipe inference on a blank generated image without opening a webcam. The command above saves this laptop's checks under ignored `experiments/local/`, preserving the published historical records. Use a distinct filename for each date/device/run. `--timeout 1200` permits twenty minutes per check; a timeout is recorded as a failure with available output while later checks continue. The default is ten minutes per check. Synthetic evaluation is software evidence only.
+The model check runs real MediaPipe inference on a blank generated image without opening a webcam. The command above saves this laptop's checks under ignored `experiments/local/`, preserving the published historical records. Both output filenames must be new for each run; existing files are refused before checks start. Omit both output options to save a fresh timestamped verification report with the synthetic results inside it; the command prints its location. `--timeout 1200` permits twenty minutes per check; a timeout is recorded as a failure with available output while later checks continue. The default is ten minutes per check. Synthetic evaluation is software evidence only.
 
 ## 4. Choose this laptop's webcam
 
@@ -111,7 +111,7 @@ Record eight trials per label in TRAIN and again in a separate VALIDATION sessio
 
 Multiplier 2 is the original P01 prototype setting, not an accuracy guarantee for another enrolment. Inspect the new validation results before relying on control; reject poor enrolment and improve its development data. Preserve the original assignment evidence separately. PREVIOUS and BOOKMARK remain recognition preview only.
 
-Evaluation output files, including an optional verification `--synthetic-output`,
+Evaluation output files and verification `--output` / `--synthetic-output` files
 must use a new filename. An existing file is refused rather than replaced.
 Omitting `--synthetic-output` keeps those software results in the verification report.
 

@@ -4,7 +4,7 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Next delivery — assigned 7 October
 
-**Immediate manual / GPT split, updated 14 October:**
+**Immediate manual / GPT split, updated 15 October:**
 
 The workflow comparison tool now retains a pre-task application fault without
 requiring a fabricated summary export. Use `status: fault` and an empty summary
@@ -25,6 +25,13 @@ miss their target and reject all NEXT trials; no deployment starter is qualified
   guide, demo storyboard and later observer-study records.
 - **Return next:** a focused GF-P19 remaining-case evidence PR plus the laptop-B
   observations Hau Jie supplies. Return guide/storyboard drafts separately.
+- **Study preparation:** export Practice/familiarisation results and use
+  **Restart deck** before task timing. During measured restore, observe paused
+  Preview/no replay, then explicitly return to Live with appropriate readiness.
+  Do not perform the development-only simulation probe in a measured task;
+  any such attempt remains a mismatch. Follow [the updated procedure](WORKFLOW_COMPARISON.md).
+- **Verification:** `python scripts/verify.py --timeout 1200` now saves and
+  prints a fresh local report path. Both optional output filenames must be new.
 - **Later:** measured gesture study needs frozen recognition inputs and the
   integration gates; final release evidence needs defect closure and affected
   retests. Do not repeat accepted unchanged PR #24/#26/#28/#29 cases.

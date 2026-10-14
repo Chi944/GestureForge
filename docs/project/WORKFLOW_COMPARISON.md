@@ -24,6 +24,21 @@ not observe the participant, certify recognition or enable LIVE gestures.
    prove any of these. Record errors, retries, help, and optional comfort/usefulness
    ratings. Keep the observer's notes and limitations beside the data.
 
+Before task timing begins, export setup, Practice and familiarisation results,
+then use **Restart deck** to archive them and start an empty task summary at
+Harbor's first stage. Exporting by itself does not clear the summary. Confirm
+the appropriate current-session readiness remains valid; restarting cannot grant
+readiness. Preserve preparation exports separately, outside the task record's
+`summary_segments`.
+
+During the measured save/reload, observe paused Preview and no automatic replay,
+then explicitly select **Live** and **Apply and pause** before the next real
+action. Gesture use still needs valid current-session readiness, Start and fresh
+NEUTRAL. The development walkthrough's deliberate simulated-action probe is not
+part of this measured task. Retain both task segments unchanged. Any simulated
+outcome after the task begins remains an execution mismatch and prevents
+condition success; do not filter it out or restart the summary to hide it.
+
 Put input records and summary exports under ignored `experiments/local/`, for
 example `experiments/local/workflow-study/`. Keep the inputs unchanged after
 review. Never commit participant records or private target paths.

@@ -67,10 +67,61 @@ def test_default_verification_captures_synthetic_stdout(tmp_path, monkeypatch):
         return {"command": " ".join(command), "returncode": 0, "stdout": "synthetic-result"}
 
     monkeypatch.setattr(verify, "_run_check", run)
+    historical = tmp_path / "docs/evidence/verification.json"
+    historical.parent.mkdir(parents=True)
+    historical.write_text("preserve the earlier snapshot", encoding="utf-8")
     assert verify.main([]) == 0
     assert calls[-1] == ["-m", "gestureforge.evaluate", "--config", "experiments/prototype.json"]
-    report = json.loads((tmp_path / "docs/evidence/verification.json").read_text())
+    reports = list((tmp_path / "experiments/local").glob("verification-*.json"))
+    assert len(reports) == 1
+    report = json.loads(reports[0].read_text(encoding="utf-8"))
     assert report["checks"][-1]["stdout"] == "synthetic-result"
+    assert historical.read_text(encoding="utf-8") == "preserve the earlier snapshot"
+
+
+def test_existing_verification_output_refused_before_checks(tmp_path, monkeypatch):
+    target = tmp_path / "manifest.json"
+    original = '{"feature_file":"private.npz","records":[]}'
+    target.write_text(original, encoding="utf-8")
+    monkeypatch.setattr(verify, "_run_check", lambda *_args: pytest.fail("checks must not run"))
+
+    with pytest.raises(SystemExit) as exc:
+        verify.main(["--output", str(target)])
+
+    assert exc.value.code == 2
+    assert target.read_text(encoding="utf-8") == original
+
+
+def test_verification_output_created_during_checks_is_preserved(tmp_path, monkeypatch):
+    target = tmp_path / "verification.json"
+    original = "another process completed its report"
+    monkeypatch.setattr(verify.importlib.metadata, "version", lambda _name: "test")
+
+    def run(command, _environment, _timeout):
+        target.write_text(original, encoding="utf-8")
+        return {"command": " ".join(command), "returncode": 0}
+
+    monkeypatch.setattr(verify, "_run_check", run)
+    with pytest.raises(SystemExit) as exc:
+        verify.main(["--output", str(target)])
+
+    assert exc.value.code == 2
+    assert target.read_text(encoding="utf-8") == original
+
+
+def test_dangling_verification_output_symlink_refused_before_checks(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    target = tmp_path / "dangling.json"
+    real_is_symlink = Path.is_symlink
+    monkeypatch.setattr(Path, "is_symlink", lambda path: path == target or real_is_symlink(path))
+    monkeypatch.setattr(verify, "_run_check", lambda *_args: pytest.fail("checks must not run"))
+
+    with pytest.raises(SystemExit) as exc:
+        verify.main(["--output", str(target)])
+
+    assert exc.value.code == 2
+    assert not target.exists()
 
 
 @pytest.mark.parametrize("existing", [False, True])

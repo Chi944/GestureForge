@@ -1,6 +1,38 @@
 # GestureForge Studio progress
 
-Snapshot: 14 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 15 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Current software preparation — 15 October
+
+Deston's verification command now refuses existing output files before running
+checks and uses exclusive creation to prevent an overwrite if another process
+creates the file during the run. Default reports get fresh timestamps under
+ignored `experiments/local/`; historical evidence and participant data remain
+unchanged. Four regression cases reproduced the old failures before repair.
+
+The GF-P20 guides now distinguish preparation from a measured task. Export
+Practice/familiarisation results and use **Restart deck** before task timing;
+exporting alone does not reset the summary. During measured restore, observe
+paused Preview/no replay and explicitly return to Live with valid readiness.
+Keep the development-only simulation probe out of the task. Any simulated
+action within a timed attempt still counts as a mismatch; scoring rules are
+unchanged. See [the measured procedure](WORKFLOW_COMPARISON.md).
+
+These changes support GF-P20/GF-P23 but do not replace their physical checks.
+Accepted progress remains **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
+48/73 (65.8%), team 137/223 (61.4%) — 17/29 tasks Done**. The remaining work
+and owners are in the [current task table](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
+No qualifying deployment starter or new LIVE grant is claimed.
+
+Fresh Windows software verification passed **966 tests, one skipped**, Ruff,
+mypy, both offscreen startup modes and synthetic evaluation. The duplicate-ZIP
+warning is from the malformed-archive regression. Independent review found no
+blocking issues and passed 18 focused verifier/reset/restore/grant checks;
+all 143 checked local links resolve. The full local report is
+`experiments/local/verification-20261014T185004765362Z.json` (UTC filename,
+15 October in Singapore). Its companion source receipt records base commit
+`b0450ae` and the exact changed code hashes. No fresh camera, native Mac,
+laptop-B or measured workflow result is claimed by these software checks.
 
 ## Current goal and accepted progress — 14 October
 

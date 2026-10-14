@@ -83,7 +83,14 @@ The assignment only executes tests for implemented prototype parts. The final pr
 | Agile board | Read the private Trello board linked in `docs/AGILE.md` | Verified board URL, `docs/backlog.csv` snapshot and `docs/sprint_events.jsonl` |
 | Source package | `python scripts/package_release.py` | ZIP manifest JSON and note that it is source only |
 
-The latest software verification summary is stored in `docs/evidence/verification.json`. Consolidated human, package and limitation evidence is stored in `docs/evidence/RESULTS.md`. Use those files instead of manually copying counts into the final submission.
+`docs/evidence/verification.json` is a historical software verification snapshot.
+New `scripts/verify.py` runs save timestamped reports under ignored
+`experiments/local/verification-*.json` and print their location. Retain the
+tested source identity with each report; do not replace historical evidence.
+Consolidated earlier human, package and limitation evidence remains in
+`docs/evidence/RESULTS.md`; current Studio status is in
+[the project progress record](project/PROGRESS.md). Use the evidence for the
+specific build being reported rather than copying an old test count.
 
 ## Final Project Integration Checks
 

@@ -56,16 +56,23 @@ def _run_check(command: list[str], environment: dict[str, str], timeout: float) 
 
 def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=ROOT / "docs/evidence/verification.json")
+    parser.add_argument("--output", type=Path,
+                        help="New JSON file; defaults to a timestamped report in experiments/local.")
     parser.add_argument("--synthetic-output", type=Path,
                         help="Optional new JSON file; otherwise synthetic results stay in the verification report.")
     parser.add_argument("--timeout", type=_positive_finite_seconds, default=600.0,
                         help="Per-command timeout in seconds.")
     args = parser.parse_args(argv)
+    output = args.output or (
+        ROOT / "experiments/local" /
+        f"verification-{datetime.now(timezone.utc):%Y%m%dT%H%M%S%fZ}.json"
+    )
+    if output.exists() or output.is_symlink():
+        parser.error("verification output already exists; choose a new output filename")
     if args.synthetic_output is not None:
         if args.synthetic_output.exists() or args.synthetic_output.is_symlink():
             parser.error("synthetic output already exists; choose a new output filename")
-        if args.synthetic_output.resolve() == args.output.resolve():
+        if args.synthetic_output.resolve() == output.resolve():
             parser.error("synthetic and verification outputs must use different filenames")
     synthetic_command = ["-m", "gestureforge.evaluate", "--config", "experiments/prototype.json"]
     if args.synthetic_output is not None:
@@ -93,9 +100,13 @@ def main(argv: list[str] | None = None):
               "checks": results,
               "limitations": ["Synthetic evaluation is software evidence only.",
                                "This script does not verify live participant performance or a second computer; see docs/evidence/RESULTS.md."]}
-    output = args.output
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    try:
+        with output.open("x", encoding="utf-8") as handle:
+            handle.write(json.dumps(report, indent=2) + "\n")
+    except FileExistsError:
+        parser.error("verification output already exists; choose a new output filename")
+    print(f"Verification report: {output}", flush=True)
     return int(any(result["returncode"] for result in results))
 
 

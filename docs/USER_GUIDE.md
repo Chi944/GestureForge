@@ -420,7 +420,13 @@ Run the automated tests:
 python -m pytest
 ```
 
-The current software verification summary is recorded in `docs\evidence\verification.json`. Consolidated measured results and limitations are recorded in `docs\evidence\RESULTS.md`. Re-run tests before packaging each release and refresh those evidence files when results change.
+`docs/evidence/verification.json` preserves a historical software snapshot.
+Before packaging a release, run `python scripts/verify.py --timeout 1200` in the
+configured environment. It prints a fresh timestamped report path under ignored
+`experiments/local/`; keep the report with its tested source identity.
+Earlier measured results and limitations remain in `docs/evidence/RESULTS.md`;
+current Studio evidence is linked from [the project progress record](project/PROGRESS.md).
+Preserve historical records when adding a new result.
 
 ## Assignment Demo Script
 

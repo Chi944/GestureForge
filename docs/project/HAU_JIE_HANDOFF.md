@@ -4,7 +4,7 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**Immediate manual / GPT split, updated 14 October after TEST scoring:**
+**Immediate manual / GPT split, updated 15 October after TEST scoring:**
 
 Both P67/P1543 TEST returns are received, audited and independently scored twice
 against their unchanged freezes. **GF-P18 is accepted** for the original paired
@@ -34,6 +34,10 @@ and both personal results miss 0.90, so no deployment model is qualified.
 - **Return next:** a focused development-only diagnosis/defect PR, private
   methods/results contribution, and laptop-B observations to Javier. No unchanged
   H1/H2 resend or participant recollection is needed.
+- **Verification:** use `python scripts/verify.py --timeout 1200` from your
+  configured environment for a fresh timestamped local report. If supplying
+  either output option, use a new filename; existing files are now refused.
+  Keep the tested build identity with laptop-B results and share them with Javier.
 - **Boundary:** the TEST sets are now consumed. Any later model change needs a
   new predeclared independent evaluation; do not rerun collection to improve
   these scores. Numeric returns do not establish current OS/browser, assistance

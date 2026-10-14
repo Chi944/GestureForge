@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-Updated 14 October 2026 · Project deadline 7 November 2026
+Updated 15 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -95,7 +95,8 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 14 October, after independently reproduced frozen TEST scoring. All three
+Current as of 15 October, after independently reproduced frozen TEST scoring and
+verification/reporting repairs. All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
@@ -109,6 +110,17 @@ private methods/results updates, and supplies laptop-B observations to Javier.
 Javier returns a focused remaining-case evidence PR and attributed laptop-B
 matrix; guide/storyboard drafts can arrive separately. GPT prepares and checks
 evidence; people supply observed device outcomes and final review decisions.
+
+**Use the repaired verification command:** `python scripts/verify.py --timeout 1200`
+now writes and prints a fresh timestamped report under ignored `experiments/local/`.
+Both optional output filenames must be new; existing reports or data cannot be
+replaced by a verification run. Keep each result with its tested source version.
+
+**Before a measured workflow:** export preparation/Practice results, then
+**Restart deck** to begin an empty task summary before timing starts. Confirm
+the appropriate readiness remains valid. Follow [the measured reload procedure](WORKFLOW_COMPARISON.md)
+instead of the development walkthrough's simulation probe. Keep all task
+segments and failed attempts; these instructions do not relax the scoring rules.
 
 **Then:** GF-P20's measured live study retains its GF-P16 integration gate;
 accepted GF-P17/GF-P18 do not grant deployment or live readiness. GF-P21 is In

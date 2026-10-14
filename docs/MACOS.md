@@ -115,9 +115,10 @@ the recorded Windows and submitted assignment evidence. The verification script 
 offscreen software checks; it does not prove camera or live performance. Share the
 Mac report with the team after checking it contains no private participant details.
 
-Use a new filename for `--synthetic-output` on each run; existing files are
-refused before checks start. Omit that option to keep synthetic results inside
-the verification report instead of a separate file.
+Use new filenames for both `--output` and `--synthetic-output` on each run;
+existing files are refused before checks start. Omit both options to save a
+fresh timestamped report under ignored `experiments/local/`, with synthetic
+results inside it. The command prints the saved report's location.
 
 Then run the app normally and confirm:
 
