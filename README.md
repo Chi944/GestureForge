@@ -34,10 +34,14 @@ Two complete Mac development returns and one closed TRAIN-only contribution
 are now imported privately. The latest Safari return completed all 104 trials
 without reported collection issues. Its baseline classifiers still scored only
 0.382 validation macro-F1, so collection success does not mean recognition is
-ready for deployment. See the [current progress and next tasks](docs/project/PROGRESS.md)
-and [team guide](docs/project/TEAM_GUIDE.md). Private samples and full reports
-remain excluded from this repository; final TEST and native release checks are
-still outstanding.
+ready for deployment. Hau Jie's private H1 starter audit packet has now been
+received and verified as an internal team handoff: hashes, saved reports and
+trial inventories reconcile, but no qualifying starter or public/marker
+redistribution permission is approved from that packet. See the
+[current progress and next tasks](docs/project/PROGRESS.md) and
+[team guide](docs/project/TEAM_GUIDE.md). Private samples and full reports
+remain excluded from this repository; H2 settings, final TEST and native release
+checks are still outstanding.
 
 Javier's [12 October camera/focus checks](docs/evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
 are reviewed and merged. They cover Preview focus pause/reconnect, a simulated
@@ -70,8 +74,9 @@ Pending ZIP reads cannot restore a cleared draft or overwrite a newer import.
 Stale success/error callbacks leave the current data, consent and messages alone.
 
 The [team guide](docs/project/TEAM_GUIDE.md) separates manual checks from work a
-coding assistant can do. [Hau Jie](docs/project/HAU_JIE_HANDOFF.md) supplies the
-existing private H1 packet, coordinates new participants and operates laptop B.
+coding assistant can do. [Hau Jie](docs/project/HAU_JIE_HANDOFF.md) now moves
+from the verified private H1 packet to H2 diagnosis/settings, participant
+eligibility facts and laptop-B operation.
 [Javier](docs/project/JAVIER_HANDOFF.md) completes remaining laptop-A recovery
 checks and consolidates the two-device installation/offline/stability evidence.
 Deston owns integration, analysis and acceptance. Both teammates push only their

@@ -5,6 +5,37 @@ Audit base/source: `9c438137cf4374151e184045bfa231c75f6d1976`.
 This is descriptive reconciliation of existing private evidence, not a new fit,
 parameter search, collection, final independent evaluation or release approval.
 
+## 14 October: private handoff received and verified
+
+Deston received `PRIVATE_H1_SEND_TO_DESTON_v2.zip` from Hau Jie. The original
+archive is 387,438 bytes, SHA256
+`3ede6e525cd72fe48d5de887d335c1f9fefd55fc3a53cf9440c548312f7c1003`.
+Local receipt checks on `626e5ec` validated CRCs, safe member paths and all 33
+file checksums before extracting 3,042,396 bytes into ignored local storage.
+No supplied script was executed.
+
+The existing dataset loader validated all nine manifest/NPZ pairs; their hashes
+and counts match both result reports and the audit inventory. All 216 trials
+and 1,080 scheduled slots remain present: 1,064 valid features and 16 invalid
+slots. The existing diagnosis reader reproduces the full saved six-fold content,
+and the ten fixed cases match the original collection records and saved
+predictions. Each fold's 48 candidate summaries retains the declared grid,
+person separation and qualification decision; none qualifies, and no outer
+model was selected. The baseline summaries match the original fixed report.
+
+This independently verifies receipt and saved-report consistency, **not a
+refit or repeated parameter search**. The historical fitting commit remains
+unidentified; recording conditions were not independently observed. Permission
+notes support internal team use only and do not establish a new marker, public
+package or GitHub distribution grant. The private receipt record is kept with
+the extracted packet outside Git.
+
+H1's private handoff is complete. The [current goal and progress table](PROGRESS.md#current-goal-and-handoff-progress--14-october)
+now directs H2 diagnosis, eligible participant provenance and reviewed settings
+before freeze and untouched TEST. The older H2 recruitment notes inside the
+packet are historical; use the current team briefs. GF-P17/GF-P18 and accepted
+task weights remain unchanged. The original 8 October audit follows below.
+
 ## Inputs and integrity
 
 The private regenerated baseline, saved diagnosis and bounded comparison were
