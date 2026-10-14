@@ -29,11 +29,12 @@ settings under the explicit after-development policy in the independently
 reviewed [selection record](H2_EVALUATION_SELECTION_2026_10_14.md). Both private
 freezes, their input/settings pins and four participant-specific ZIP hashes are
 verified. **GF-P17 is accepted as experiment preparation.** GF-P18 still needs
-real untouched TEST returns and paired results. Before distributing the new TEST
-kits, a coordinator must check an extracted kit on the intended device/browser:
-camera permission, a trial, pause and recovery. These physical checks have not
-been performed for the new TEST route; coordinator trial data must not enter the
-participants' TEST returns.
+real untouched TEST returns and paired results. **Deston confirmed sending both
+assigned TEST kits on 14 October.** Extracted-kit software checks passed; physical
+Safari camera behavior remains to be observed during each participant's own
+first preview. Hau Jie can guide this remotely without needing a Mac. Record
+actual browser/help/issues and preserve interrupted trials. Separate equipment
+checks must not enter participants' TEST returns; no resend is requested.
 
 GF-P12's current personal LIVE protocol is now `gf-p12-v4`: three five-second
 windows for each enrolled action pose plus NEUTRAL, followed by ten negative
@@ -93,7 +94,7 @@ members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction and acceptance. Hand off the correct preset frozen kit for each participant and guide their first camera preview if needed. | Private freezes, packaging and automated verification are complete. Import and score actual TEST returns against both frozen comparators when received; keep the evidence matrix current and review incoming PRs without repeating H1/H2 searches. |
+| Deston | Both assigned TEST kits have been sent. Retain final direction and acceptance; help with first preview if needed and receive the private returns. | Private freezes, packaging and automated verification are complete. Import and score actual TEST returns against both frozen comparators when received; keep the evidence matrix current and review incoming PRs without repeating H1/H2 searches. |
 | Hau Jie | Coordinate one fresh 48-trial TEST session each for P67/P1543 and return their ZIPs privately. No Mac needed: guide their own first preview and record actual browser/help/issues. Operate laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. | Use the reviewed selection record and confirmed provenance; preserve failed baselines and negative-command results in the private GF-P24 methods/limitations draft. Help audit TEST return completeness without tuning on results. No repeated rationale, confirmation or H1/H2 resend is requested. |
 | Javier | Agree one identified build and remaining case matrix with Hau Jie. Finish laptop-A trusted-app/association, failure/retry and restore-after-real-launch/no-replay cases. Diagnose the short P03 PREVIOUS/wrong-action issue before a fresh full Practice attempt; run active-capture Camera only after a genuine grant. Coordinate Hau Jie's laptop-B checks. | Consolidate the two-device results without adding overlapping exports; fix demonstrated viewer/shortcut/runbook defects. Draft GF-P25 guide/storyboard and prepare the later observer-study order and recording forms. Preserve accepted PR #24/#26/#28/#29 cases; rerun only checks affected by new faults or changes. |
 
@@ -115,10 +116,11 @@ deployment approval. P69 stays closed TRAIN-only with no further collection.
 **Working copies:** sync reviewed `main` while preserving local changes. Hau Jie
 pushes only `codex/hau-jie-profiles`; Javier pushes only `codex/javier-shortcuts`.
 Open focused PRs and leave merging to Deston. Git users can continue from the
-identified source commit. For a fresh-install ZIP test, rebuild and verify a
-matching Studio source archive first: the obsolete Downloads Studio ZIP was
-removed on 13 October and no replacement delivery is claimed. Participant kits
-and the private data handoff serve different purposes.
+identified source commit. For a fresh-install ZIP test, use the Studio source
+archive with its matching commit/hash receipt and extracted-source verification.
+Do not treat the older 13 October verification as proof for a newer archive.
+Participant kits and the private data handoff serve different purposes; neither
+is a Studio installation. Follow [release instructions](../../releases/README.md).
 
 GPT or synthetic checks cannot claim participant consent, physical laptop behavior,
 camera recovery, real app launches, final TEST independence or marker acceptance.

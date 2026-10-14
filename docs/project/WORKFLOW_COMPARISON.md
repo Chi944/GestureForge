@@ -71,7 +71,7 @@ executable schema; unsupported or misspelled fields are rejected.
 | `observations` | Six booleans: `budget_correct`, `contact_correct`, `discussion_bookmark`, `recovery_observed`, `paused_reload_no_replay`, `finish_reviewed` |
 | `wrong_actions`, `retries`, `help_requests` | Observer-recorded non-negative counts |
 | `comfort`, `usefulness` | Participant rating 1–5, or null when not provided |
-| `summary_segments` | Relative paths to disjoint exported summaries under the input directory; no navigation saves. May be empty for withdrawal, readiness failure or unavailable recognition before task evidence exists |
+| `summary_segments` | Relative paths to disjoint exported summaries under the input directory; no navigation saves. May be empty for withdrawal, readiness failure, a fault or unavailable recognition before task evidence exists. Faults with recorded task time, completed stages, observations or wrong actions still require an export |
 
 Use hashes of the actual frozen files, not placeholder values. These supplied
 source/model/config/data/workspace identifiers are provenance claims: the tool

@@ -63,9 +63,15 @@ def main(argv: list[str] | None = None):
 
 def _tracked_source_files(root: Path) -> list[Path]:
     files = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().split("\0")
-    files = [name for name in files if name and (root / name).is_file()]
+    files = [name for name in files if name]
     if not files:
         raise SystemExit("Stage the reviewed release files before packaging.")
+    for name in files:
+        if not (root / name).is_file():
+            raise SystemExit(
+                f"Tracked source file is missing or not a regular file: {name}. "
+                "Restore it, or stage its intended removal before packaging."
+            )
     forbidden = (".venv/", ".tools/", ".python/", ".cache/", ".local/",
                  "data/local/", "experiments/local/")
     local_documents = {"docs/submission/GestureForge_Technical_Report.docx",

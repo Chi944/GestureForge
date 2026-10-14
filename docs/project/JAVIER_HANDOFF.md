@@ -6,6 +6,13 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 **Immediate manual / GPT split, updated 14 October:**
 
+The workflow comparison tool now retains a pre-task application fault without
+requiring a fabricated summary export. Use `status: fault` and an empty summary
+list only when no task time, stages, observations or wrong actions were recorded;
+otherwise retain the actual exports. See [the observer format](WORKFLOW_COMPARISON.md).
+Both participant TEST kits have been sent; your Windows checks can continue
+independently while their returns are pending.
+
 - **Manual:** agree an identified Studio build and remaining-case matrix with
   Hau Jie. Finish your laptop-A trusted-app/association, failure/retry and
   restore-after-real-launch/no-replay checks. Diagnose the short P03 PREVIOUS
@@ -23,7 +30,8 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 You coordinate laptop B; Hau Jie installs and operates it. Push only
 `codex/javier-shortcuts` and leave PRs unmerged for Deston. Full exports/video and
 Word files stay private. See the [shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
-for current build/package instructions; no replacement Studio ZIP is claimed.
+for current build/package instructions. Use a matching Studio commit/hash receipt;
+the participant browser kits are separate and do not need replacing.
 
 **14 October current priority:** H1 is verified and H2's eight evaluator runs and
 48 bounded candidate rows have been independently reproduced; PR #31 is merged.

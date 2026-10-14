@@ -6,6 +6,10 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 **Immediate manual / GPT split, updated 14 October:**
 
+Deston confirmed that both assigned TEST kits have been sent. Support first use
+if needed and await the private returns; no replacement or development recollection
+is requested. This confirms sending, not collection or participant results.
+
 - **Manual:** coordinate one fresh 48-trial TEST session each for P67 and P1543
   using their simplified, preset kits. You do not need access to a Mac: guide
   each participant's own first preview and record the actual browser and any
@@ -181,9 +185,9 @@ Copy this next private message to Deston:
 
 > H1 is verified and H2 has been independently reproduced; PR #31 is merged.
 > GF-P17 is accepted after the reviewed selection, provenance and verified
-> private freezes. I will check the extracted kit's camera, trial, pause and
-> recovery before distribution, then coordinate P67/P1543's fresh 48-trial TEST
-> sessions and send the untouched return ZIPs privately. I will
+> private freezes. Deston has sent the P67/P1543 TEST kits. I will support their
+> own first camera preview remotely, record actual issues/help and coordinate
+> fresh 48-trial TEST sessions and private untouched returns. I will
 > preserve failed baselines, invalid slots and negative-command findings without
 > tuning on TEST. In parallel I will operate laptop B for Javier's agreed native
 > cases and prepare the methods contribution. No H1/H2 resend is needed.

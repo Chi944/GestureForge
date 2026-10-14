@@ -567,7 +567,7 @@ def _zero_segment_allowed(record: dict[str, Any]) -> bool:
         and record["wrong_actions"] == 0
     )
     return no_task_evidence and (
-        record["status"] in {"withdrawn", "readiness_failed"}
+        record["status"] in {"withdrawn", "readiness_failed", "fault"}
         or record["readiness"] == "unavailable"
     )
 

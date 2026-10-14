@@ -60,6 +60,28 @@ def test_project_and_pilot_modes_are_mutually_exclusive():
     assert exc.value.code == 2
 
 
+@pytest.mark.parametrize("missing_name", ["README.md", "gestureforge/app.py"])
+def test_project_package_refuses_missing_tracked_file_without_replacing_handoff(
+    tmp_path, monkeypatch, missing_name
+):
+    root = _source_repo(tmp_path)
+    _tracked_studio_files(root)
+    target = root / "releases" / package_release.PROJECT_ARCHIVE
+    target.parent.mkdir()
+    target.write_bytes(b"previous reviewed package")
+    receipt = target.with_suffix(".json")
+    receipt.write_bytes(b"previous checksum receipt")
+    (root / missing_name).unlink()
+    monkeypatch.setattr(package_release, "ROOT", root)
+
+    with pytest.raises(SystemExit, match="Tracked source file is missing") as exc:
+        package_release.main(["--project"])
+
+    assert missing_name in str(exc.value)
+    assert target.read_bytes() == b"previous reviewed package"
+    assert receipt.read_bytes() == b"previous checksum receipt"
+
+
 def test_source_state_keeps_dirty_unknown_when_status_fails(tmp_path, monkeypatch):
     def fake_git_output(_root: Path, *args: str) -> str | None:
         if args == ("rev-parse", "HEAD"):

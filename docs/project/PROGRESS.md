@@ -4,6 +4,25 @@ Snapshot: 14 October 2026. This measures the final-project extension, not the al
 
 ## Current goal and handoff progress — 14 October
 
+**TEST kits sent:** Deston confirmed sending the assigned P67 and P1543 kits on
+14 October. Collection and return receipt are not yet confirmed. Hau Jie can
+support their first preview remotely; no replacement kit or repeated development
+session is requested. Keep both frozen configurations unchanged while awaiting
+the private TEST return ZIPs.
+
+**Release and workflow reliability:** the Studio packager now stops when a
+tracked source file is missing instead of silently shipping an incomplete ZIP.
+It preserves the previous archive and checksum receipt. The workflow comparison
+now retains a genuine pre-task application fault as an unsuccessful attempt
+without requiring an invented summary export. Any recorded task time, stages,
+observations or wrong actions still require the real export.
+
+Both defects were reproduced before their fixes. All 40 focused packaging and
+workflow tests pass, along with repository-wide Ruff/mypy and both offscreen
+application startup checks. Independent review found no blockers. These checks
+support GF-P20/GF-P23 preparation; they do not complete the physical study or
+laptop-B acceptance. The participant kits and frozen settings are unchanged.
+
 **Participant-kit usability update:** P67/P1543 TEST kits now preset identity and
 session, require no typing or installation, and use **Open camera → Start 48
 trials**. Both consent boxes remain explicit. Camera selection pauses safely;
@@ -44,7 +63,7 @@ selected outer model. See the [dated receipt review](H1_SAVED_REPORT_AUDIT_2026_
 | H2 development diagnosis and proposed settings | Reviewed and selected, 14 October | PR #31 merged; 17 source hashes, eight evaluator runs and all 48 bounded comparison rows verified; after-development selection rationale independently reviewed |
 | P1543 starter exclusion/break and H1 physical poses | Confirmed by user, 14 October | All four H1 right-hand mappings match the browser protocol; preserve this attributed confirmation |
 | GF-P17 configuration freeze and TEST acquisition route | Accepted, 14 October | Two private freezes pin the reviewed settings and development inputs; browser TEST route, four packages and PDF guides verified as software artifacts |
-| GF-P18 independent paired TEST evaluation | Awaiting physical collection | Simplified assigned kits are ready; guide each participant's first preview. Hau Jie coordinates fresh sessions without needing a Mac; Deston reproduces and reviews scores |
+| GF-P18 independent paired TEST evaluation | Kits sent; awaiting TEST returns | Deston confirmed sending both assigned kits on 14 October. Hau Jie supports first use without needing a Mac; Deston validates, reproduces and reviews returned scores |
 
 The [reviewed selection and acceptance record](H2_EVALUATION_SELECTION_2026_10_14.md)
 closes the original 12-hour GF-P17 preparation task. The

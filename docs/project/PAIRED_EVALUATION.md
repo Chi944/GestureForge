@@ -7,9 +7,9 @@ Software tests do not satisfy the participant criterion or enable LIVE gestures.
 
 ## Current GF-P18 next steps
 
-**14 October:** no `EMAIL_THIS_*test*.zip` returns were found in the coordinator's
-Downloads or Telegram Desktop folders. Neither participant's TEST has been
-opened or scored. Do not repeat TRAIN, VALIDATION, the H1/H2 search or the freeze.
+**14 October:** Deston confirmed sending the assigned P67/P1543 TEST kits.
+Neither participant's TEST return has been received, opened or scored by the
+coordinator. Do not repeat TRAIN, VALIDATION, the H1/H2 search or the freeze.
 P69 remains closed TRAIN-only and is not involved in this task.
 
 1. **Check the device route.** Hau Jie has no Mac. The coordinator verifies the
@@ -20,8 +20,8 @@ P69 remains closed TRAIN-only and is not involved in this task.
    equipment checks isolated from participant evidence; a teammate's hand must
    never be scored as P67 or P1543. Preserve genuine attempted trials, including
    interrupted or invalid observations. See the [device check](PARTICIPANT_KITS.md).
-2. **Send the assigned kit.** P67 receives `GestureForge_P67_TEST_macOS.zip`;
-   P1543 receives `GestureForge_P1543_TEST_macOS.zip`. Windows alternatives exist
+2. **Assigned kits sent, confirmed 14 October.** P67 was sent `GestureForge_P67_TEST_macOS.zip`;
+   P1543 was sent `GestureForge_P1543_TEST_macOS.zip`. Windows alternatives exist
    for equipment checks, but do not silently change a participant's acquisition
    convention. Use the same computer/browser as development where possible;
    P1543 used Safari and P67's browser was not recorded. Record the actual browser

@@ -201,6 +201,49 @@ def test_unavailable_starter_without_model_hashes_is_retained_without_success(tm
     assert report["segment_provenance"]["segment_count"] == 0
 
 
+@pytest.mark.parametrize("condition", ["M", "S", "P"])
+def test_pre_task_fault_without_export_remains_an_unsuccessful_attempt(tmp_path, condition):
+    path = tmp_path / "observer-study.json"
+    row = record(
+        "P18", condition, 1, "unused.json", status="fault", task_seconds=None,
+        completed_stages=[], observations={key: False for key in compare_module.OBSERVATIONS},
+        segments=[],
+    )
+    study(path, [row])
+
+    report = compare(path)
+
+    totals = report["condition_totals"][condition]
+    assert totals["records"] == 1
+    assert totals["statuses"]["fault"] == 1
+    assert totals["actual_completion"] == totals["condition_success"] == 0
+    assert report["segment_provenance"]["segment_count"] == 0
+    result = report["participants"][0]["records"][0]
+    assert result["task_seconds"] is None
+    assert result["summary_segments"] == []
+    assert all(item["task_seconds_delta"] is None for item in report["paired_deltas"])
+
+
+@pytest.mark.parametrize("task_evidence", [
+    {"task_seconds": 0.0},
+    {"completed_stages": ["intro"]},
+    {"observations": {key: key == "budget_correct" for key in compare_module.OBSERVATIONS}},
+    {"wrong_actions": 1},
+])
+def test_fault_with_task_evidence_still_requires_summary_export(tmp_path, task_evidence):
+    path = tmp_path / "observer-study.json"
+    row = record(
+        "P18", "M", 1, "unused.json", status="fault", task_seconds=None,
+        completed_stages=[], observations={key: False for key in compare_module.OBSERVATIONS},
+        segments=[],
+    )
+    row.update(task_evidence)
+    study(path, [row])
+
+    with pytest.raises(ValueError, match="summary_segments must be non-empty"):
+        compare(path)
+
+
 def test_timeout_over_900_seconds_preserves_completion_but_not_success(tmp_path):
     summary(tmp_path / "m.json", "P16", "M", "rev-m16", event_id="m16")
     path = tmp_path / "observer-study.json"
