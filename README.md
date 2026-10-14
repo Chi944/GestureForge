@@ -2,388 +2,246 @@
 
 # GestureForge
 
-### Personal gesture recognition for deliberate card navigation and demo control
+### Personal gesture controls for training, demonstrations and desktop workflows
 
-**ICT304 Assignment 1 submitted** Â· **Final project in progress** Â· Python 3.11
+**Local processing** · **Personal profiles** · **Deliberate activation** · Python 3.11
 
-[Run the app](#run-the-prototype) Â· [Project build](#project-build) Â· [Results](docs/evidence/RESULTS.md) Â· [Trello board](https://trello.com/b/wDb978u6/gestureforge-assignment-and-project)
+[Quick start](#quick-start) · [Using Studio](#using-studio) · [Recognition evidence](#recognition-evidence) · [User guide](docs/USER_GUIDE.md) · [Trello](https://trello.com/b/wDb978u6)
 
 </div>
 
-![GestureForge assignment interface](docs/images/prototype.png)
+GestureForge Studio turns personally enrolled hand poses into deliberate actions:
+navigate a card deck, bookmark a useful card, move through a demonstration runbook
+or request a configured Windows shortcut. A neutral pose arms control; holding an
+action pose triggers it once, then neutral is required again.
 
-GestureForge recognises four personally enrolled static hand poses using webcam landmarks and compares **kNN with RBF SVM**. A hold-and-rearm controller turns a deliberate NEXT pose into one card advance. Processing stays on the computer; normal use does not record camera images or video.
+Webcam processing and classifier training run locally. Normal use does not save
+photos or video. Numeric collection and evaluation recording require explicit
+consent. **GestureForge controls its own viewer; it is not connected to PowerPoint.**
 
-The assignment controls its own supplied ten-card deck. **It is not connected to PowerPoint.**
+> **Current status:** Studio is under active development. Manual controls and
+> personal enrolment are available. No approved shared starter model is bundled;
+> personal Live gestures require the current session's full Practice pass.
+> Held-out recognition and remaining device checks are still in progress.
 
-| Gesture | Assignment behaviour |
+![Earlier GestureForge card-viewer interface](docs/images/prototype.png)
+
+*The earlier card-viewer interface above shows the foundation of Studio. See the
+[user guide](docs/USER_GUIDE.md) for the current Studio tabs and controls.*
+
+## What you can do
+
+| Capability | Current behaviour |
 | :--- | :--- |
-| NEUTRAL | Arms control after a stable hold and rearms between commands |
-| NEXT | Advances one card per continuous hold |
-| PREVIOUS / BOOKMARK | Recognition preview only; no viewer action |
-| Unrecognised pose | No command; brief transitions preserve readiness, persistent rejection requires NEUTRAL |
-| Invalid or lost hand | No command; show NEUTRAL again |
+| Personal profiles | Create, load, rename and delete local profiles; return to Guest/manual mode without deleting samples |
+| Guided enrolment | Record three action poses plus NEUTRAL with timed trials and invalid-sample feedback |
+| Practice | Rehearse in simulation and inspect per-pose outcomes before enabling personal Live gestures |
+| Decks and bookmarks | Load validated JSON decks; navigate, bookmark and explicitly save/restore progress |
+| Workspaces and runbooks | Organise a demonstration into stages with visible gesture-to-action mappings |
+| Quick Actions | Configure a local target library and three gesture slots; simulate requests or explicitly enable Windows launches |
+| Session review | Inspect simulated/manual actions, launch requests, failures and stage acknowledgements |
+| Reproducible evaluation | Compare kNN and RBF SVM; freeze inputs/settings before comparing starter and personal models on the same TEST observations |
 
-## Project build
+Preview and Rehearsal simulate action requests. **Live is an explicit choice**;
+loading a profile, restoring a session or changing a mapping never starts camera
+control automatically. A launch request is recorded separately from successful
+task completion.
 
-The final project is now scoped as **GestureForge Studio** for corporate training and product demonstrations. It extends the submitted assignment with personal profiles, three mapped gesture actions, Quick Actions for local resources, a validated demo deck/runbook, session review and full evaluation. Contextual AI assistance was removed from scope; the AI subsystem remains personal kNN/SVM gesture recognition.
-
-Current project foundation on `main`:
-
-Two complete Mac development returns and one closed TRAIN-only contribution
-are now imported privately. The latest Safari return completed all 104 trials
-without reported collection issues. Its baseline classifiers still scored only
-0.382 validation macro-F1, so collection success does not mean recognition is
-ready for deployment. Hau Jie's private H1 starter audit packet has now been
-received and verified as an internal team handoff: hashes, saved reports and
-trial inventories reconcile, but no qualifying starter or public/marker
-redistribution permission is approved from that packet. See the
-[current progress and next tasks](docs/project/PROGRESS.md) and
-[team guide](docs/project/TEAM_GUIDE.md). Private samples and full reports
-remain excluded from this repository. Hau Jie's [H2 development diagnosis](docs/project/H2_DEVELOPMENT_DIAGNOSIS_2026_10_14.md)
-has also been reviewed and merged: eight evaluator runs and all 48 bounded
-comparison rows reproduced. Its candidate settings still accept negative command
-samples. The [reviewed evaluation selection](docs/project/H2_EVALUATION_SELECTION_2026_10_14.md)
-is now pinned in two private frozen comparisons. Final TEST and native release
-checks remain open; an experimental freeze does not approve LIVE use.
-
-Javier's [12 October camera/focus checks](docs/evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
-are reviewed and merged. They cover Preview focus pause/reconnect, a simulated
-Camera request and a native Camera launch after capture was already off.
-Active-capture handoff and laptop-B acceptance remain separate.
-
-Quick Actions now refreshes availability after **Test selected target**: a
-restored file enables its bound button, and a newly missing file disables it.
-The refresh preserves mappings and readiness; requests still use the dispatcher.
-
-The [participant collection kits](docs/project/PARTICIPANT_KITS.md) prepare
-offline Windows/macOS browser recording without Python. Each local ZIP contains
-a PDF guide and downloads a clearly named return-data ZIP. The default kits
-collect development poses. A separate coordinator-built TEST kit requires a
-reviewed frozen configuration and locks its 48 trials to one participant and
-comparison. Extracted-file camera checks on the intended operating system/browser
-remain required before distribution. Allow about 5-6 minutes for TRAIN,
-5-6 minutes for VALIDATION and one minute for UNKNOWN: 15-20 minutes plus a break
-including setup and export. Keep the recorder tab visible. They do not replace the Studio app.
-
-The 12 October kit repair lets TRAIN start with its own condition notes; enter
-VALIDATION notes after the break. Missing setup fields receive focus, and the
-trial instructions/countdown now appear above the camera. After Pause, use
-**Start Camera**, then **Start Selected Session** to resume. Send the rebuilt
-kits and updated three-page PDF guides; retain any existing return-data ZIPs.
-
-Partial return ZIP recovery preserves UNKNOWN-session condition notes even when
-UNKNOWN was recorded before VALIDATION; previously that ordering could lock an
-empty field and block continuing or re-exporting the recording.
-
-Pending ZIP reads cannot restore a cleared draft or overwrite a newer import.
-Stale success/error callbacks leave the current data, consent and messages alone.
-
-The [team guide](docs/project/TEAM_GUIDE.md) separates manual checks from work a
-coding assistant can do. [Hau Jie](docs/project/HAU_JIE_HANDOFF.md) now moves
-from the verified H1/H2 handoffs to coordinating fresh participant TEST after
-the frozen-kit device check, plus laptop-B operation and methods writing.
-[Javier](docs/project/JAVIER_HANDOFF.md) completes remaining laptop-A recovery
-checks and consolidates the two-device installation/offline/stability evidence.
-Deston owns integration, analysis and acceptance. Both teammates push only their
-own branches and leave PRs for review; completed audits/retests are not repeated.
-
-Javier's [9 October Windows restore retest](docs/evidence/GF_P19_HARBOR_RESTORE_LAPTOP_A_2026-10-09.md)
-records both restore operations returning to paused Preview and requiring
-explicit Live reactivation. It was camera-free on laptop A; remaining native
-recovery, laptop-B and participant-kit checks are still assigned in the briefs.
-
-The [paired evaluation tool](docs/project/PAIRED_EVALUATION.md) freezes development
-inputs/settings, then compares starter and personal recognisers on identical
-held-out positive TEST trials. The native collector supports separate TEST
-manifests with a declared pose ID. The separate browser TEST route binds exports
-and recovery to the frozen comparison; import requires the matching freeze and
-scoring refuses incomplete trial coverage. Development returns remain development
-data. Real independent-participant results and live false-action testing remain
-outstanding.
-
-Practice recovers from a late camera frame while waiting for **Begin**: it keeps
-the completed windows, leaves capture running and asks for a fresh NEUTRAL hold.
-The five-second measurement and 200 ms timing checks remain unchanged. See the
-[Practice guide](docs/USER_GUIDE.md) for recovery and saved-result instructions.
-
-A late frame during measurement now makes that window **inconclusive** while
-the same Practice session continues. Earlier results are retained. No late
-frame can trigger an action, and an inconclusive window prevents a full pass.
-
-Practice now waits up to two seconds for a fresh frame after **Begin**, and a
-30-second setup timeout offers **Retry setup** for the same prompt without
-ending the session. Setup retries are saved separately from scored windows.
-The compact Practice controls keep the next action visible; **Review negative
-cues** opens the editable instructions in a separate dialog. The current
-personal LIVE gate is protocol `gf-p12-v4`: twenty-two five-second windows, not
-the older fifty-window v1-v3 rehearsal. Historical v1-v3 results remain
-historical evidence and cannot be reused as a v4 LIVE grant.
-
-A [capture stability diagnostic](docs/USER_GUIDE.md#capture-stability-diagnostic)
-now checks the existing camera pipeline, optional classifier, frame timing,
-memory and shutdown without asking for a pose sequence. It stores one compact
-local JSON report, with no images or per-frame recording. This prepares the
-release tests; it does not establish a full Studio or recognition pass.
-
-| Area | Status |
-| :--- | :--- |
-| Shared routing contract | Version-1 design frozen and independently reviewed: Try Now, optional Personalise, one action per slot and explicit context activation; implemented routing preserves stale-event and hold/rearm protection |
-| Custom gesture vocabulary | PR #10 merged: schema-2 collection, kNN/SVM training and evaluation support three custom action IDs plus NEUTRAL; legacy datasets remain supported |
-| Standard gesture integration | Approved-release loader and separate six-action readiness gate implemented; camera/model/binding changes invalidate eligibility. No qualifying redistributable starter is supplied; personal profiles and manual controls remain available |
-| Starter feasibility | Hau Jie's [three-person baseline](docs/project/STARTER_EVALUATION_CHECKPOINT.md) and supplied [bounded comparison](docs/project/GF_P11_BOUNDED_COMPARISON.md) identify no qualifying starter; PR #19 was reviewed and repaired without changing those supplied private results |
-| Saved profiles | PR #17's selector is attached in Studio's **Profiles** tab: create/load/rename/delete, background reconstruction and non-destructive Guest/manual switching use the reviewed PR #14 persistence; [selector handoff](docs/project/PROFILE_SELECTOR_HANDOFF.md). Loading stays paused and does not pass readiness; standard gestures remain unavailable |
-| Guided enrolment | Studio's Enrolment tab collects numeric samples through the shared camera, with consent, timed trials, invalid-sample feedback and save retry; GF-P07 is accepted from attributed P02 collection evidence plus a reviewed generated UI workflow; later participant evaluation remains ([handoff](docs/project/ENROLMENT_INTERFACE_PROPOSAL.md)) |
-| Team handoff | Published in `docs/project/TEAM_GUIDE.md`, `HAU_JIE_HANDOFF.md` and `JAVIER_HANDOFF.md` |
-| Demo scenario | Authored in `docs/project/DEMO_SCENARIO.md` with `assets/corporate_demo_deck.json` and `assets/corporate_reference.txt` |
-| Studio modes | Preview/Rehearsal simulate typed actions; explicitly selected LIVE enables manual actions without a model. Personal LIVE gestures require a current full-Practice grant plus explicit Apply/Start/NEUTRAL |
-| Manual card browser | In explicit LIVE mode, Previous, Next and Bookmark act on the deck without a dataset; bookmark review/removal remain available |
-| Deck loading and progress | Load validated JSON decks; explicitly save/restore position and bookmarks for the matching deck; control stays paused and failed loads preserve the active deck |
-| In-app dataset selection | Load or switch an existing personal manifest without restarting; training runs in the background and camera control stays paused |
-| Camera selection and recovery | Select a device index in Studio, apply while paused, then explicitly restart after the previous capture worker releases |
-| Personal readiness checks | The preliminary six-activation check remains separate from **Practice**: protocol `gf-p12-v4` uses twenty-two five-second windows through the shared capture/controller/dispatcher and saves local per-trial results. Only a saved, reconciled full Practice pass in the current app session can grant temporary personal LIVE eligibility; the short check cannot. The Repair pose flow can create a reviewed replacement TRAIN candidate, but actual participant outcomes remain separate |
-| Practice review | Session summary shows the latest saved rehearsal, per-pose and coverage counts, and exact event reconciliation. Historical results remain identifiable after summary/profile changes; the complete trial export stays local |
-| Windows launch probe | GF-P05 accepted from PR #18's supplied [laptop-A observations and repair rerun](docs/evidence/WINDOWS_RESULTS_2026-10-02.md): visible targets, Camera release/reacquisition and recorded failure/recovery; integrated both-laptop checks remain under GF-P19 |
-| Persistent control bar | Studio keeps prediction, rejection/rearm guidance, Start/Pause, controller state, hold progress and active context/gesture meanings visible while setup and deck content scroll |
-| Evaluation recording | Opt-in Studio recording of controller-consumed labels/timestamps; local per-session files, annotation required before scoring |
-| Controller replay | Offline annotated-trace comparison of the actual protected controller against a naive per-frame baseline; simulation only, with reproducible counts and latency |
-| Workflow comparison | Offline comparison of observer-recorded manual/starter/personal runs and hashed session exports; failed/fallback conditions remain visible, with individual paired comparisons and explicit evidence limits ([guide](docs/project/WORKFLOW_COMPARISON.md)) |
-| Workspace/runbook in Studio | Load validated workspaces, edit stages, use Runbook Previous/Continue/Finish/action buttons, and save/restore navigation state while camera control stays paused |
-| Quick Actions in Studio | Private twelve-target library and three gesture slots; target buttons/tests simulate in Preview/Rehearsal and request real Windows launches in explicit LIVE mode; no deck/runbook required |
-| Session summary | Studio records simulations, manual action outcomes, real launch requests/failures and explicit stage completion acknowledgements; a launch request is not task completion |
-| Full Studio workflow | Personal LIVE has a full-Practice gate; standard gestures remain unavailable, and real Practice/native acceptance remains outstanding. The private participant baseline is not a distributable starter |
-
-Team branches must stay separate: Hau Jie works on `codex/hau-jie-profiles`, Javier works on `codex/javier-shortcuts`, and Deston reviews and merges approved PRs into `main`.
-
-To inspect the reusable components in their separate developer harness without a webcam or dataset, run `.\.venv\Scripts\python.exe -m gestureforge.javier_preview` (add `--quick-only` for an empty Quick Actions workspace). This developer harness is separate from the Studio shell and never opens applications. See the [component guide](docs/COMPONENT_GUIDE.md) and [integration review](docs/project/JAVIER_DELIVERY_REVIEW.md).
-
-```powershell
-.\run.cmd --studio
-# Preview with your own existing local dataset and camera index:
-.\run.cmd --studio --dataset data/local/pilot/manifest.json --multiplier 2 --margin 1.5 --camera 1
-```
-
-Without a dataset, the manual viewer opens. In Studio, click **Load personal dataset...** and choose your collected `manifest.json`. Loading pauses control and trains locally in the background using the launch settings (`--algorithm`, `--multiplier`, `--margin`). A successful switch keeps a compatible active stage mapped, leaves empty or mismatched stages manual-only, and otherwise keeps the startup deck's default Preview mappings; check the mappings, wait for any previous camera thread to stop, then start explicitly and show NEUTRAL. Failed loads retain the previous selection in a paused state. Numeric gesture data stays local; synthetic fixtures cannot enable camera simulation.
-
-Choose an existing personal TRAIN manifest for gesture loading. If the selected JSON is a workspace or deck, the loader directs you to **Load workspace...** or **Load deck...**. A dataset with no valid TRAIN samples has a separate error; a validation/negative-only manifest cannot train the model. Selecting the wrong file does not require rerecording gestures.
-
-Studio starts in Preview. Restoring a session or deck progress returns LIVE mode to paused Preview; explicitly choose Live and Apply and pause again before real manual actions. Typed action buttons simulate in Preview/Rehearsal. In **Studio action mode**, select **Live** and click **Apply and pause** to use manual deck/stage actions and request validated Windows shortcuts; no recogniser or readiness pass is needed for manual actions. Previous-stage navigation, bookmark review/removal, restart and restore remain explicit navigation operations; stage transitions stay paused. macOS keeps the manual viewer available but reports external launches unsupported. Personal gesture control in LIVE requires a current full-Practice grant, explicit LIVE selection and Apply, then Start and fresh NEUTRAL. The short six-activation check never grants that eligibility; no pass starts real actions automatically.
-
-**Delegated acceptance:** after the software fixes and checks, Javier executes the [six-stage Harbor manual walkthrough](docs/project/DEMO_SCENARIO.md#manual-walkthrough-available-now) and Windows recovery/offline checks. Hau Jie checks existing personal data/profile compatibility and focused recognition before full Practice; Deston reviews and integrates their evidence. Harbor needs no webcam or new samples. Target repairs preserve the current stage; failed target tests appear in session results without private paths, and retry is explicit. To transfer this development build, use the [separate Studio source ZIP command](releases/README.md#studio-development-handoff), which preserves the assignment archives.
-
-**Finding manual mode:** click **Open Setup**. **Studio action mode** and **Apply and pause** are at the top of Setup, before dataset, camera and readiness controls. If the panel is scrolled, return to its top. Disabled gesture-readiness controls do not block manual mode.
-
-To collect new data, select the camera index, open **Enrolment**, enter a participant ID, hand, pose descriptions and conditions, and confirm numeric-data consent. Click **Request collection**, wait for the preview, then **Begin trial** for each prompted pose. No existing model is needed. Each session saves beneath ignored `data/local/enrolment/`; no photos or video are saved. TRAIN and VALIDATION use separate session folders. Pause, leaving the tab or losing focus stops collection; a failed write retains the trial for **Retry save**. A completed TRAIN manifest can be explicitly loaded with **Load personal dataset...**. Collection never installs a model or enables gesture actions automatically. See the [collection steps](docs/USER_GUIDE.md#collect-in-studio).
-
-Open **Profiles** to create a personal profile from an existing numeric manifest, load a saved profile, rename it or confirm deletion. Creation requires explicit internal-use permission. Creation/loading runs in the background and stays paused in Preview; **Request Preview start** requires the matching selected model, released camera and a fresh NEUTRAL hold. Competing setup operations are blocked while busy. **Use Guest (manual only)** unloads the recogniser without deleting saved profiles or source data. Standard gestures remain unavailable, and loading never establishes readiness. See the [profile handoff](docs/project/PROFILE_SELECTOR_HANDOFF.md).
-
-Use **Repair pose** only after a diagnostic identifies one label that needs targeted repair in your own saved profile. The tab uses the installed saved personal profile as its source; Guest/manual mode and ad-hoc manifests cannot be repaired directly. Collect 2-12 trials for the chosen label through the shared observation-only capture, review the counts, then save a separate TRAIN candidate that preserves the other classes plus original-dataset and reviewed-collection hash checks. The candidate opens in **Profiles** for explicit permission and **Create and load personal profile**; loading stays paused in Preview and expires readiness. Roll back by loading the original saved profile. See the [repair handoff](docs/project/SELECTED_POSE_REPAIR_HANDOFF.md).
-
-An existing saved profile can also launch with `.\run.cmd --studio --profile-id YOUR_PROFILE_ID --camera 1`. The private store defaults to `.local/profiles`; `--profile-store PATH` selects the store for both startup and the Profiles tab. Use the JSON filename without `.json` as the ID. Its saved classifier settings are authoritative, so do not also pass dataset/algorithm/multiplier/margin arguments. A successful load shows the profile name and stays paused with readiness unverified.
-
-Open **Practice** with your personal recogniser loaded to run the measured rehearsal. Review the ten editable negative/transition cues, select **Save local numeric rehearsal outcomes for this profile**, then **Start personal practice**. Use **Prepare next trial**, wait for capture and the requested NEUTRAL arming, then **Begin five-second window**. Protocol `gf-p12-v4` has three windows for each enrolled action pose and NEUTRAL, followed by ten negative windows: twenty-two windows total. Actions simulate through the existing dispatcher; no external resource opens. Results save beneath ignored `.local/studio/practice/`. Stop, focus loss or leaving the tab ends the attempt and restores the previous context paused after saving. See [Practice steps and save recovery](docs/USER_GUIDE.md#personal-practice).
-
-The camera stays fixed while the right workflow pane scrolls. Use **Setup** for camera, mapping, readiness and file controls; **Open Practice** reveals the trial and consent controls directly. After starting Practice, choose the full 22-window rehearsal or **Test only [pose]** for one five-second diagnostic. Stay NEUTRAL through **Begin**, then follow the timed cue. The camera deliberately switches off after each window; **Prepare next trial** reopens it. A diagnostic records its actual outcome without assessing other poses or granting personal LIVE eligibility. New results include frame-gap timing for incomplete capture; completing a command alone does not establish full capture coverage. No recommendation changes a model or enables LIVE gestures.
-
-A genuine full Practice pass in the current app session can grant **personal LIVE eligibility** only after all 22 windows are covered, all three trials for every pose including NEUTRAL are correct, there are no wrong or repeated activations, and all ten negative windows are correct. The result must be saved, its simulated events reconciled with the session summary, and the previous context restored paused. The grant exists only in memory and covers the current profile/model/hand/camera/behavior revision and exact authored workspace, stage and Quick Actions maps. Behavior, mapping, target or camera edits expire it even if changed back; restarting Studio, Guest and model reload clear it. Cosmetic renames, ordinary pause and selecting an existing configured stage or Quick Actions context retain eligibility, but every resume needs explicit Start and fresh NEUTRAL. Short checks, diagnostics and historical/imported JSON, including old v1-v3 fifty-window files, cannot grant it. See [personal LIVE activation](docs/USER_GUIDE.md#personal-live-after-practice).
-
-Use **Camera index** and **Use camera and pause** in Setup to select another webcam without restarting the application (usually 0 or 1). Changing the applied camera expires any personal LIVE grant. To continue simulation, select Preview or Rehearsal and click **Apply and pause**; LIVE camera Start requires a new qualifying full Practice pass. With a personal recogniser loaded and the old camera released, click Start and show NEUTRAL. A failed or disconnected camera clears its old preview and shows recovery guidance; manual controls stay available. The on-screen hint shows the platform-native shortcuts for loading a dataset and starting capture (**Ctrl+O/Ctrl+Enter** on Windows); **Esc** pauses. Setup contains the training indicator; camera changes are disabled during that job.
-
-Studio pauses capture on focus loss; resume explicitly. Select rehearsal at launch with `--studio-mode rehearsal`. Use the Studio mode and mapping controls, then apply the change explicitly. Draft edits do not change active control. Applying stops capture and requires explicit Start and a new NEUTRAL hold before gesture control resumes. Editing action meanings expires the personal LIVE grant even if the previous values are restored. These ad-hoc mappings are temporary and are not saved; Quick Actions target/slot settings are saved separately on this computer. Stage changes never launch a target automatically. Default launch without `--studio` preserves assignment behaviour.
-
-After an action, **LATCHED** means another action is blocked until the recogniser accepts a steady NEUTRAL hold. Studio now keeps the current prediction and rejection explanation visible beside the controls; the bar waits at zero until accepted NEUTRAL starts rearming. See [rearming diagnostics](docs/USER_GUIDE.md#studio-stays-latched-with-an-open-palm) if an open palm does not reach READY. The reported intermittent recognition issue still needs a recorded reproduction; the feedback fix does not establish improved recognition accuracy.
-
-Use **Quick Actions** to create or edit a local target, choose its slot, then click **Use Quick Actions**. It works without loading a deck/runbook. Target edits pause and clear active gesture bindings; gesture simulation requires explicit Start plus NEUTRAL after activation. Slot buttons and **Test selected target** follow the current mode: simulated in Preview/Rehearsal, real Windows launch requests in explicit LIVE. Camera launch waits for capture release; return and resume are manual. The private target library and slots reload from `.local/studio/quick-actions-targets.json`; they are not included in workspace/session exports. See the [user guide](docs/USER_GUIDE.md#final-project-preview) for the steps.
-
-Use **Manual browse / bookmarks** beside the Card tab. Its Previous, Next and Bookmark actions change the deck in explicit LIVE mode and simulate in Preview/Rehearsal. Double-click a bookmark, or select it and press Enter, to revisit its card. Select a bookmark before removing it. Both tabs share the same deck.
-
-The **Setup** tab includes **Load deck...**, **Save progress...**, **Restore progress...**, **Load workspace...**, **Save session...** and **Restore session...**. **Load deck...** accepts the supplied `assets/corporate_demo_deck.json` or your own validated deck JSON. **Save progress...** writes the current position and bookmarks, with an ignored local folder suggested. **Restore progress...** restores them only for the matching loaded deck and stays paused. Load the same deck first after reopening the app; the progress file does not contain the deck itself. Restart deck keeps the current deck, returns to its first card and clears bookmarks in memory.
-
-Choose the Harbor workspace that matches the loaded gesture IDs: `assets/harbor_standard_workspace.json` uses **NEXT / PREVIOUS / BOOKMARK** for the standard starter and legacy personal profiles; `assets/harbor_workspace.json` uses **G1 / G2 / G3**. Both contain the same six-stage task. Gesture IDs identify poses; the stage shows the action currently assigned to each pose. Other custom vocabularies need explicitly authored bindings. Loading a workspace never renames gestures or grants LIVE eligibility. The standard starter itself remains unavailable until a qualifying release is approved.
-
-Use **Load workspace...** for a validated workspace JSON such as `assets/harbor_workspace.json`. A custom deck load creates a manual deck workspace and detaches any previous runbook. The **Runbook** tab exposes manual Previous, Continue/Finish and stage action buttons. Typed actions simulate in Preview/Rehearsal; explicit LIVE permits manual stage actions, including validated Windows launch requests. **Save session...** writes the current workspace, runbook stage/finished state and deck position/bookmarks. Before **Restore session...**, load the same workspace first; restore validates that match, restores paused and does not auto-detect a workspace from the session file. If a stage uses gesture IDs outside the loaded vocabulary, Studio keeps that stage manual-only; loading a compatible model reapplies the current stage bindings. Loading or restoring never replays a launch or enables live gestures.
-
-Use **Edit runbook** to create, save, delete or reorder authored stages; accepted edits reset the current workspace/runbook while preserving deck review state when the deck is unchanged. Use **Session summary** to refresh counts and **Export session results** to write a local JSON measurement archive. Counts cover Studio manual card/runbook/Quick Actions outcomes plus simulated and eligible LIVE gesture outcomes/rejections; zero trial counts mean no measured trials were recorded in that summary. Before deck/workspace replacement, session restore, restart or close would leave a non-empty summary behind, Studio archives it under ignored `.local/studio`; if archiving fails, the change or close is blocked and counts stay visible. Successful restore/restart starts a fresh review summary. Summary exports are separate from **Save session...** / **Restore session...**, which save runbook navigation state explicitly; position is not autosaved.
-
-[Approved plan](docs/project/PROJECT_PLAN.md) Â· [Progress](docs/project/PROGRESS.md) Â· [Team guide](docs/project/TEAM_GUIDE.md) Â· [Hau Jie brief](docs/project/HAU_JIE_HANDOFF.md) Â· [Javier brief](docs/project/JAVIER_HANDOFF.md) Â· [Scenario and evaluation protocol](docs/project/DEMO_SCENARIO.md)
-
-Studio also accepts personal schema-2 datasets collected with `python -m gestureforge.collect --vocabulary PATH` (see the [vocabulary format and collection handoff](docs/project/HAU_JIE_GF_P03_REVIEW.md)). The dataset's three action IDs appear in the mapping controls, initially mapped in order to Next, Previous and Bookmark simulations. Only enrolled IDs can be mapped. Custom datasets require `--studio`; the assignment viewer retains its legacy labels. Studio binds predictions to a model revision derived from the training data and settings. These software checks do not establish recognition quality for new poses or users.
-
-Verify the project without overwriting historical assignment evidence:
-
-```powershell
-.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/project-verification.json --synthetic-output experiments/local/project-software-check.json
-```
-
-[Current project checks](docs/project/verification.json) record software evidence. They do not establish live-camera performance or completion of remaining features.
-
-For the controller evaluation, use `scripts/replay_controller.py --trace PATH --output PATH` with the environment's Python. The [evaluation guide](docs/project/DEMO_SCENARIO.md#controller-replay-tool-gf-p20-preparation) defines the trace/annotation format and scoring. In Studio, opt into **Record evaluation trace** before Start, then Pause to save a local unannotated trace. The guide explains independent annotation before scoring. Existing command-only logs cannot replace full prediction traces. This tool prepares the final evaluation; real participant collection and workflow comparisons remain outstanding.
-
-## Run the prototype
-
-Initial installation needs internet. Clone the repository or extract a fresh source ZIP; create the Python environment on the computer that will run the app. On Windows, use the [runtime-path recovery instructions](docs/WINDOWS_LAPTOP.md#2-install-python-and-dependencies) if MediaPipe reports an inaccessible non-ASCII path; do not copy `.venv` between computers.
+## Quick start
 
 ### Windows
 
-Use **64-bit Python 3.11 on an Intel/AMD laptop**.
-
-Extract the source ZIP or clone this repository, then open PowerShell in its folder:
+Use Windows 10/11 on an Intel/AMD computer with **64-bit Python 3.11**. Clone this
+repository or extract the source ZIP, then open PowerShell in its folder:
 
 ```powershell
 .\setup.cmd
-.\run.cmd
+.\run.cmd --studio
 ```
 
-This opens the keyboard-only viewer. **A connected webcam does not enable Start camera control until a personal dataset is loaded.** Use the Next card button or Right arrow to try the deck without a camera.
-
-For the enrolled P01 user on the development computer:
-
-```powershell
-.\.venv\Scripts\python.exe scripts/check_environment.py --camera --camera-index 1
-.\run.cmd --dataset data/local/pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 1
-```
+Setup installs the pinned dependencies and prepares the hand-landmark asset.
+Start in Guest/manual mode to explore Studio without a webcam or dataset.
+See the [Windows guide](docs/WINDOWS_LAPTOP.md) for setup and troubleshooting.
 
 ### Apple Silicon Mac
 
-Use **macOS 13+ and native Python 3.11 (`arm64`)**. Open Terminal in the project folder:
+The setup target is **macOS 13+ with native arm64 Python 3.11**:
 
 ```bash
 python3.11 scripts/setup_macos.py
-bash run.sh
+bash run.sh --studio
 ```
 
-Setup installs the pinned dependencies, verifies the hand model and briefly opens both GUI modes to check startup. Run `bash run.sh --studio` for the project preview. Do not copy a Windows `.venv` or run Python through Rosetta. See the [Mac guide](docs/MACOS.md) for Python installation, camera permissions and personal gesture collection.
+Use a fresh Mac environment rather than copying a Windows `.venv`. Allow camera
+access for the launching application when requested. The Mac path supports the
+viewer and personal recognition workflow; **external application shortcuts are
+Windows-specific**. Intel Macs are outside this setup path.
 
-After collecting your own dataset in `data/local/mac-pilot`, check the camera and launch gesture control:
+Dependency resolution has been checked for Apple Silicon. Full native Mac
+installation, webcam operation and smoothness still need device verification;
+successful browser data collection on macOS does not establish native Studio
+compatibility. See the [Mac guide](docs/MACOS.md).
 
-```bash
-.venv/bin/python scripts/check_environment.py --camera --camera-index 0
-bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 0
-```
+### Minimal card viewer
 
-Allow camera access for the launching application when macOS asks. Without a personal dataset, the viewer opens with keyboard/mouse controls and camera control stays disabled.
+Run `.\run.cmd` on Windows or `bash run.sh` on Mac without `--studio` to open the
+smaller viewer. It uses a fixed deck and executes NEXT only; PREVIOUS and BOOKMARK
+are recognition previews in that mode. Studio provides the wider workflow above.
 
-All 41 pinned packages resolved for Apple Silicon/Python 3.11 in the [refreshed 1 October check](docs/project/macos-compatibility.json). Studio uses native keyboard shortcut labels; desktop shortcut launches are Windows-specific, while the Mac target covers the manual viewer, personal classifier and gesture simulation. Unsupported external launches report a reason. The [current project checks](docs/project/verification.json) record the Windows test, lint, type-checking, GUI-smoke and synthetic-evaluation results. **Actual Mac installation, live camera operation and smoothness still need confirmation on a Mac**; dependency resolution alone does not verify those behaviours. Intel Macs are outside this setup path.
+## Using Studio
 
-### Use gesture control
+1. **Explore manually.** Open Setup. Select Live under **Studio action mode**,
+   then choose **Apply and pause** for real manual deck actions. Stay in Preview
+   to simulate requests. A personal model is not required for manual controls.
+2. **Choose your workspace.** Load a validated deck or use the supplied
+   [Harbor demonstration](docs/project/DEMO_SCENARIO.md). Quick Actions can also
+   be used independently of a deck or runbook.
+3. **Enrol or load your own profile.** Use Enrolment to collect numeric samples,
+   or Profiles to create/load a profile from an existing TRAIN manifest. A deck
+   or workspace JSON is not a gesture dataset. Loading remains paused.
+4. **Check the camera.** In Setup, choose **Camera index** and **Use camera and
+   pause**. Index 0 is often the built-in camera; try 1 for another connected
+   device. Close other applications using that camera.
+5. **Rehearse.** Open Practice, review the negative-pose cues and consent, then
+   start the full 22-window protocol. Follow **Prepare next trial** and **Begin
+   five-second window**. The camera intentionally releases between windows.
+6. **Activate deliberately.** After a saved, reconciled full Practice pass in
+   this app session, explicitly choose Live, apply, start capture and show
+   NEUTRAL until READY. Hold the desired pose once, then return to NEUTRAL.
+   **Esc** or **Pause / camera off** stops gesture control.
 
-Camera indices can change. Close other camera applications and select the index that works on your computer. The source repository excludes P01's private samples; use the authorised private marker ZIP to reproduce P01, or follow the [collection instructions](docs/DATA_COLLECTION.md) to enrol your own hand in a separate folder. Never overwrite the retained P01 dataset.
+A diagnostic or short readiness check does not grant personal Live eligibility.
+Changing the model, camera, gesture meanings or target configuration expires the
+grant. Restarting Studio also clears it. Focus loss pauses capture; resume
+explicitly. See [Practice and Live instructions](docs/USER_GUIDE.md#personal-practice).
 
-1. Click **Start camera control** and show the enrolled NEUTRAL pose until READY.
-2. Hold the enrolled NEXT pose until the card changes. Continuing to hold must not advance again.
-3. Return to NEUTRAL before the next command.
-4. Press **Esc** or **Pause / camera off** to stop gesture control. Manual controls remain available.
+A bookmark marks the current card for later review; repeating the action keeps
+one bookmark and does not advance the card. Use **Manual browse / bookmarks** to
+revisit or remove it, and save deck progress to retain it across sessions.
 
-For P01, NEUTRAL was an open palm and NEXT was a fist. Another person's gestures must match their own collection. Keep the whole enrolled hand visible, still and similarly oriented to the training samples.
+If Studio remains LATCHED, inspect the prediction and rejection explanation:
+rearming needs an **accepted, steady NEUTRAL** pose. An open palm can still be
+rejected by a personal classifier. See the [rearming guide](docs/USER_GUIDE.md#studio-stays-latched-with-an-open-palm).
 
-[Full user guide](docs/USER_GUIDE.md) Â· [Second Windows laptop setup](docs/WINDOWS_LAPTOP.md) Â· [Apple Silicon Mac setup](docs/MACOS.md)
-
-## How it works
+## How recognition works
 
 ```mermaid
 flowchart LR
-    A[Webcam] --> B[MediaPipe landmarks]
+    A[Webcam] --> B[MediaPipe hand landmarks]
     B --> C[60 normalised features]
     C --> D[kNN or RBF SVM]
-    D --> E[Rejection]
-    E --> F[Neutral arm and hold]
-    F --> G[Fixed card viewer]
+    D --> E[Distance and ambiguity rejection]
+    E --> F[Neutral arm and hold controller]
+    F --> G[Mode and context checks]
+    G --> H[Viewer or configured action]
 ```
 
-MediaPipe supplies 21 hand landmarks. The project's work is the feature pipeline, personal classifier fitting and comparison, rejection calibration, controller and application integration. Wrist-relative world landmarks are scaled by wrist-to-middle-knuckle distance. The scaler is fitted only to TRAIN data. Entire trials remain within one recording split.
+MediaPipe provides pretrained hand tracking. GestureForge implements the
+wrist-relative feature pipeline, personal classifiers, rejection, comparison and
+application integration. Feature scaling is fitted on TRAIN only; frames from one
+trial remain in one split. Profiles rebuild small models from numeric arrays and
+JSON rather than loading executable pickle files.
 
-Camera inference runs outside the UI thread with one latest-result mailbox. No hand, multiple hands, the wrong hand, invalid features and rejected predictions cannot dispatch a command. A held gesture fires once, and neutral is required before another action. The model is rebuilt from numeric arrays and JSON rather than loaded from executable pickle files.
+Camera inference runs outside the UI thread with a latest-result mailbox.
+Missing/multiple/wrong hands, invalid features and rejected predictions cannot
+dispatch an action. The controller checks timing and generations and requires
+neutral rearming between holds. An unfamiliar pose should display **Unrecognised**;
+PREVIOUS and BOOKMARK are not fallback labels, although misclassification remains
+possible.
 
-## Results and limits
+## Recognition evidence
 
-The recommended live setting is **prototype-v3**, multiplier **2.0**, ambiguity margin **1.5**. The comparison below uses the same saved P01 development sessions:
+The figures below are **development validation**, not untouched TEST performance
+or a claim that arbitrary new users can control Studio immediately.
 
-| Setting | kNN / SVM trial macro-F1 | Correct trials | Unfamiliar samples accepted as command labels |
-| :--- | ---: | ---: | ---: |
-| Historical distance-only v2 | 0.9686 / 0.9686 | 31 / 32 | 25 / 40 |
-| Recommended v3 with ambiguity rejection | 0.9667 / 0.9667 | 30 / 32 | 5 / 40 |
+| Personal comparison | Trial macro-F1 | Unfamiliar samples accepted as commands | Interpretation |
+| :--- | ---: | ---: | :--- |
+| P01 pilot, v3 kNN / SVM | 0.967 / 0.967 | 5/40 | One-person pilot; movement, orientation and framing remain limitations |
+| P67 selected kNN | 0.790 | 12/40 | Frozen for a paired offline experiment; below the 0.90 personal target |
+| P1543 selected SVM | 0.667 | 10/40 | Frozen for the same experiment; below target |
 
-The improved model rejects 25/40 unfamiliar samples as UNKNOWN; 5 are still accepted as BOOKMARK and 10 as NEUTRAL. Two genuine trials become UNKNOWN (one NEXT, one NEUTRAL), and no validation trial is assigned to the wrong known class. This is an observed trade-off, not a perfect unknown detector. The user confirmed two NEUTRAL-to-NEXT transitions each advanced once after the controller correction. Broader live evaluation remains pending.
+Negative sample predictions are not measured live false actions. The shared
+starter investigation found no qualifying model. Freezing the two comparisons
+makes their later evaluation reproducible; it does not approve deployment.
 
-One consenting participant supplied 160 training and 160 validation samples in separate sessions, plus 40 unfamiliar-pose samples. These are **development-validation results**, not untouched test results or performance on unenrolled people. Timing and per-class results are in the [consolidated evidence](docs/evidence/RESULTS.md).
+See [pilot evidence](docs/evidence/RESULTS.md), [H2 selection and limitations](docs/project/H2_EVALUATION_SELECTION_2026_10_14.md)
+and the [paired evaluation protocol](docs/project/PAIRED_EVALUATION.md). Physical
+camera, workflow, false-action and stability tests are tracked separately from
+classifier accuracy and automated software checks.
 
-Unfamiliar gestures should display **Unrecognised**. PREVIOUS and BOOKMARK are not fallback labels. However, a classifier can mistake an unfamiliar pose for a known pose: the historical model accepted 25/40 negative samples as BOOKMARK and 10/40 as NEUTRAL. Zero NEXT predictions in those samples does not prove zero live false actions. The v3 comparison above records the improvement separately from this historical baseline.
+## Participant collection
 
-P01 confirmed two held NEXT gestures each advanced once after neutral rearming. P02 reported successful assisted ZIP use on another laptop, NEXT traversal from card 1 to 10, and one action during a five-second hold. On 29 September the user also confirmed that second-laptop offline operation and camera pause/restart checks passed. These are user-reported results; the exact release/environment and an unaided guide-only installation remain undocumented. Orientation, movement, framing and distance remain limitations.
+The [browser collection kits](docs/project/PARTICIPANT_KITS.md) require a webcam
+and an existing browser, with no Python or coding tools. Each ZIP bundles the
+recorder and PDF instructions. Participants export and return the generated
+`EMAIL_THIS_...zip`; they do not send the application folder. Nothing is uploaded
+automatically.
+
+- **Development kits:** TRAIN, separate VALIDATION and UNKNOWN; approximately
+  15–20 minutes plus a break, setup and saving.
+- **Frozen TEST kits:** one assigned participant, 48 new trials; approximately
+  5–6 minutes plus setup and saving. Old development recordings cannot be reused.
+
+These are collection tools, not the Studio application. The new TEST route needs
+physical camera, pause/recovery and export verification on intended devices before
+distribution. Preserve partial attempts and invalid slots; never delete difficult
+trials to improve scores. Follow the [current GF-P18 steps](docs/project/PAIRED_EVALUATION.md#current-gf-p18-next-steps).
 
 ## Verify and reproduce
 
+From the configured Windows environment:
+
 ```powershell
-# Automated tests, lint, type checks, GUI smoke and synthetic software checks
-.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/project-verification.json --synthetic-output experiments/local/project-software-check.json
-
-# Reproduce the recommended v3 comparison from the private P01 package
-.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot-rejection.json --output experiments/local/reproduced-pilot-v3.json
-
-# Historical v2 comparison remains reproducible
-.\.venv\Scripts\python.exe -m gestureforge.evaluate --config experiments/pilot.json --output experiments/local/reproduced-pilot.json
+.\.venv\Scripts\python.exe scripts/verify.py --timeout 1200 --output experiments/local/verification-new-run.json
 ```
 
-CI runs locally with `scripts/verify.py`; release scripts produce the transferable ZIPs. GitHub Actions is disabled while hosted usage is unavailable, and the workflow is retained for manual use only. No deployment service is required for this desktop app.
-
-Evaluation refuses to overwrite an existing output, including a configuration or
-dataset selected by mistake. Use a new result filename for each reproduction.
-Without `--synthetic-output`, local verification keeps synthetic results inside
-its verification report. If that optional path is supplied, it must be new and
-different from the verification report path; conflicts stop before checks run.
-
-`--timeout` is a positive, finite limit in seconds **per check** (default 600).
-The example allows 1,200 seconds on slower laptops. A timed-out check stays
-failed with its partial output in the report; the remaining checks still run
-and the overall command exits unsuccessfully. Save each device/run under a
-distinct local output filename when retaining evidence. These local output
-paths keep the published historical verification records intact.
-
-[Recorded software checks](docs/evidence/verification.json) distinguish automated verification from live hardware evidence. Synthetic fixtures test the software; they are not human recognition results.
-
-## Submission map
-
-| What the marker needs | Location |
-| :--- | :--- |
-| Problem, requirements, lifecycle, architecture, technique investigation and results | Local `GestureForge_TechnicalReport_Updated.docx`, submitted separately |
-| Requirement to test mapping and planned full-system evaluation | [Test plan](docs/TEST_PLAN.md) |
-| Measured pilot and qualitative hardware/laptop evidence | [Results](docs/evidence/RESULTS.md) |
-| Installation, operation and data protocol | [User guide](docs/USER_GUIDE.md), [Windows guide](docs/WINDOWS_LAPTOP.md), [collection protocol](docs/DATA_COLLECTION.md) |
-| AI assistance declaration and recorded prompts | Local `submission/Prompt_Log.docx`, submitted separately |
-| Decisions, alternatives, risks and scope boundaries | Local `submission/Decision_Log.docx`, submitted separately |
-| Agile tools and progress | [Agile record](docs/AGILE.md), [backlog snapshot](docs/backlog.csv) |
-| Tools record and required declaration | [Tools and coordination](docs/CONTRIBUTIONS.md); local `groupDeclarationSheet.docx`, submitted separately |
-| Dependencies, sources and reproducibility | [Licences and references](LICENSES.md), [requirements.lock](requirements.lock), [model manifest](assets/model_manifest.json) |
-
-The technical report, `Prompt_Log.docx`, `Decision_Log.docx` and completed declaration are private deliverables maintained outside this repository in the assignment's `submission/` folder. They are excluded from GitHub and both code ZIPs. Submit the reviewed Word deliverables and completed declaration alongside the code.
-
-**Before submission:** confirm same-tutorial/team registration, review the AI disclosure and separate local logs, and verify the exact upload package. Page 1 of the course brief asks for prompts in the report; this assignment keeps them in a separate Word log at the user's request, and acceptance of that arrangement has not been confirmed. Keep personal details and authorised participant data in the private LMS submission, then download and verify the uploaded files.
-
-In explicit LIVE mode, Studio's manual Bookmark control marks the current card for later review, with bookmarks saved and restored with deck progress. Repeating it keeps one bookmark and does not advance the card. Preview/Rehearsal simulate the request. An eligible personal Studio gesture can perform BOOKMARK after explicit LIVE activation; the assignment entry point displays recognition only.
-
-## Assignment and project boundary
-
-| Assignment due 3 October 2026 | Project extension due 7 November 2026 |
-| :--- | :--- |
-| Command-line personal collection | In-app enrolment and practice |
-| Four labels with NEXT execution | PREVIOUS and BOOKMARK execution |
-| Fixed supplied deck | Validated custom JSON decks |
-| Local numeric dataset and configuration | Multiple profile creation, reload and deletion |
-| Preliminary comparison and controller tests | Saved deck state and bookmarks; held-out two-profile and full-system evaluation |
-
-Dynamic gestures, sign-language translation, two-handed commands, direct PowerPoint control, arbitrary OS scripting, background control, cloud accounts, mobile apps and an installer are outside the committed scope. The expanded project includes bounded user-configured desktop shortcuts; these are planned separately from the submitted assignment.
-
-## Repository layout
+This runs lint, type checks, tests, both GUI startup checks and synthetic
+evaluation. Choose a new output filename for each retained run. To check the
+browser collector, developers with Node.js can also run:
 
 ```text
-gestureforge/       Application and AI subsystem
-tests/              Automated regression checks
-assets/             Supplied deck and model provenance
-experiments/        Reproducible configurations
-scripts/            Setup, verification and packaging
-docs/               Guides, traceability and evidence
+node --test tests/participant_collector.test.mjs
 ```
 
-Private data, environments, generated ZIPs and local working archives are ignored by Git. Redundant drafts, older PDFs and internal checklists are retained locally rather than included in the graded source. See [release instructions](releases/README.md) for the source and authorised private marker packages.
+The verified 14 October build passed **952 Python tests and 30 browser-logic
+checks**, plus lint, type checks, both startup checks and synthetic evaluation.
+One unsupported Windows symlink fixture was skipped. These checks do not replace
+real-device or participant evidence. Evaluation refuses existing output paths to
+preserve recorded results.
 
-Team identities and agreed contributions are recorded in the separate local report and declaration. Codex assisted planning, code, tests, documentation and troubleshooting; the team remains responsible for understanding and checking the submitted work. MediaPipe, OpenCV, PySide6, NumPy and scikit-learn are credited in the licence record.
+Verification runs locally. The GitHub Actions workflow is manual-only while
+hosted usage is unavailable. This desktop application needs no deployment service.
+
+## Documentation and development
+
+| Topic | Guide |
+| :--- | :--- |
+| Installation and operation | [User guide](docs/USER_GUIDE.md), [Windows](docs/WINDOWS_LAPTOP.md), [macOS](docs/MACOS.md) |
+| Data and evaluation | [Collection protocol](docs/DATA_COLLECTION.md), [participant kits](docs/project/PARTICIPANT_KITS.md), [paired evaluation](docs/project/PAIRED_EVALUATION.md) |
+| Design and verification | [Shared contracts](docs/project/CONTRACTS.md), [test plan](docs/TEST_PLAN.md), [workflow comparison](docs/project/WORKFLOW_COMPARISON.md) |
+| Team coordination | [Team guide](docs/project/TEAM_GUIDE.md), [accepted progress](docs/project/PROGRESS.md), [agile record](docs/AGILE.md) |
+| Packaging | [Release instructions](releases/README.md) |
+| Attribution | [Dependencies and references](LICENSES.md), [pinned dependencies](requirements.lock), [model provenance](assets/model_manifest.json) |
+
+Hau Jie owns profiles/recognition; Javier owns viewer/workspaces/shortcuts; Deston
+owns integration, design and acceptance. Teammates push their own branches and
+open reviewed pull requests; `main` holds integrated work.
+
+```text
+gestureforge/       Desktop application and recognition pipeline
+participant/        Browser data collector
+tests/              Regression checks
+assets/             Decks, workspaces and model provenance
+experiments/        Reproducible configurations
+scripts/            Setup, verification and packaging
+docs/               Guides, contracts and evidence
+```
+
+Private samples, full reports, Word deliverables, environments and generated ZIPs
+stay outside version control. Codex assisted development and documentation; the
+team reviews and verifies its output. MediaPipe, OpenCV, PySide6, NumPy and
+scikit-learn are credited in the dependency record.
+
+Dynamic gestures, sign-language translation, two-handed commands, arbitrary OS
+scripting, background control and direct PowerPoint integration are outside the
+current scope.

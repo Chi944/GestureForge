@@ -1,9 +1,73 @@
 # Frozen starter versus personal recognition evaluation
 
-GF-P18 now has an offline tool for comparing both recognisers on the same
-positive TEST trials. It prepares Deston's evaluation work while Hau Jie supplies
-GF-P17's consented data and selected configurations. Software tests do not satisfy
-the participant evaluation criterion or enable LIVE gestures.
+GF-P18 compares both recognisers on the same positive TEST trials. GF-P17's
+development review and two configuration freezes were accepted on 14 October.
+The remaining work is real held-out collection, paired scoring and interpretation.
+Software tests do not satisfy the participant criterion or enable LIVE gestures.
+
+## Current GF-P18 next steps
+
+**14 October:** no `EMAIL_THIS_*test*.zip` returns were found in the coordinator's
+Downloads or Telegram Desktop folders. Neither participant's TEST has been
+opened or scored. Do not repeat TRAIN, VALIDATION, the H1/H2 search or the freeze.
+P69 remains closed TRAIN-only and is not involved in this task.
+
+1. **Verify the device route.** Before participant distribution, the coordinator
+   checks an extracted kit on the intended OS/browser: camera permission and
+   correct view, Right-hand detection, first trial, pause/reload/partial recovery,
+   an offline trial, export and import. Record the kit hash, OS/browser versions
+   and observed outcome. Keep equipment-check attempts isolated from participant
+   evidence; a teammate's hand must never be scored as P67 or P1543. Do not clear
+   a participant's real draft or replace their interrupted attempts with a
+   clean-looking recording. See the [device check](PARTICIPANT_KITS.md).
+2. **Send the assigned kit.** P67 receives `GestureForge_P67_TEST_macOS.zip`;
+   P1543 receives `GestureForge_P1543_TEST_macOS.zip`. Windows alternatives exist
+   for equipment checks, but do not silently change a participant's acquisition
+   convention. Use the same computer/browser as development where possible;
+   P1543 used Safari and P67's browser was not recorded. Record the actual browser
+   rather than guessing. Each ZIP already contains `READ_FIRST.pdf`.
+3. **Participant setup.** Save and unzip the kit, open `START_HERE.html` from
+   the extracted folder, check the locked pseudonym, read and agree to consent,
+   and enter actual TEST conditions: lighting, background, seated/standing and
+   approximate hand-to-camera distance. Do not recover old development data.
+4. **Record one new TEST session.** Click **Start Camera**, allow camera access,
+   wait for **Right hand detected**, then **Start Selected Session**. Use the
+   right hand: open palm = NEUTRAL; fist = NEXT; thumb up = PREVIOUS; index and
+   middle fingers = BOOKMARK. Follow the on-screen order through **48/48 trials**
+   (12 per pose; 240 scheduled slots). Allow about **5–6 minutes plus setup and
+   saving**, based on the programmed timing: three seconds to prepare, two to
+   hold and one to relax. Keep the tab visible and the computer awake.
+5. **Preserve interruptions.** Pause and export a backup if necessary. Reopen
+   the same extracted kit and recover the newest partial return with **Recover
+   from a previous return ZIP**. Then use **Start Camera** and **Start Selected
+   Session** to continue. Keep interrupted/invalid slots; do not clear the draft,
+   delete mistakes, repeat completed trials or change settings to improve results.
+6. **Return the downloaded data ZIP.** At 48/48 choose **Export Return ZIP**.
+   Send the file below privately to Deston, not the program folder. Include the
+   actual OS/browser and any help or interruption. If collection cannot finish,
+   send the partial ZIP and explanation; preserve it for diagnosis/recovery.
+
+| Participant | Complete return | Interrupted return |
+|---|---|---|
+| P67 | `EMAIL_THIS_P67_test.zip` | `EMAIL_THIS_P67_PARTIAL_test.zip` |
+| P1543 | `EMAIL_THIS_P1543_test.zip` | `EMAIL_THIS_P1543_PARTIAL_test.zip` |
+
+The local prepared kits and guides are under `.local/participant-test-20261014/`,
+in one folder per participant. Their reviewed frozen comparisons are under
+`experiments/local/paired-20261014/`. Do not edit or send those frozen files.
+
+**Deston with GPT, after receiving both returns:** validate identity, consent,
+acquisition notes, frozen tickets, coverage and chronology; import each against
+its matching freeze; reproduce starter/personal scores on identical observations;
+review each person's macro-F1, per-class scores, UNKNOWN-inclusive confusion,
+paired differences and timings. Preserve poor results without tuning on TEST.
+Hau Jie supports provenance/methods; Javier continues the separate device and
+workflow checks. Full data and reports remain private.
+
+Acceptance requires both genuine complete TEST returns and reviewed reproducible
+results. Failing a recognition target is still a reportable evaluation outcome,
+not permission to deploy. GF-P18 adds its original 10-hour weight only after
+acceptance: Deston **21.3% → 34.7%**, team **57.0% → 61.4%**. It remains open now.
 
 ## Responsibilities and prerequisites
 
