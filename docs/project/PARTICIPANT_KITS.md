@@ -6,7 +6,9 @@ Deston prepares two local ZIPs: `GestureForge_Participant_Windows.zip` and
 tools, not packaged Studio installations. Participants need an existing browser
 and webcam, with permission to use the camera. No Python, terminal, account or
 separate model installation is required. All runtime/model bytes are embedded;
-there are no CDN requests or automatic data uploads.
+there are no CDN downloads or automatic data uploads. An early browser
+connection policy blocks HTTPS background logging from the bundled SDK while
+allowing its embedded blob/data resources.
 
 ## Before distributing
 
@@ -35,10 +37,13 @@ to participants: it contains private development references. The generated kit
 contains only a small ticket binding the intended participant, configuration,
 Right hand, standard pose set and TEST protocol.
 
-This kit records **TEST only: 48 trials, 240 scheduled samples**, about 5-6 minutes
-plus setup and saving. Read its dedicated PDF, confirm the displayed participant
-code, agree to the consent notice, enter actual TEST condition notes, then start
-the camera and selected session. The same four physical poses and sampling
+This kit records **TEST only: 48 trials, 240 scheduled samples**, about 6-8 minutes
+recording; allow about 10 minutes overall. Unzip and open `START_HERE.html`, check the preset participant,
+tick both consent boxes, click **Open camera** and allow access. Check the preview
+and Right-hand feedback, then click **Start 48 trials** on the same button.
+There is no installation or required typing. Optional setup notes are preserved;
+empty notes are recorded as **Not provided by participant.**, not invented.
+The same four physical poses and sampling
 convention apply. No TRAIN, VALIDATION or UNKNOWN sections are recorded in this
 kit. A saved TEST draft cannot replace a development draft or another freeze's
 recording.
@@ -50,8 +55,15 @@ unfavourable observations. The coordinator imports with the matching `--frozen`
 file. Partial imports are retained, but a complete final score requires all 48
 prescribed trials. Do not use a development ZIP as TEST.
 
-Run the extracted-file checks above on the intended Windows/macOS browser before
-distribution. Automated import/package checks establish software behaviour;
+The simplified TEST kit hides advanced camera choice and partial-ZIP recovery
+until needed. Selecting another camera pauses the preview; click **Open camera**
+to use it. After a pause, the primary button becomes **Resume … trials** once
+the camera is open. No completed trials are repeated.
+
+Run the extracted-file checks above on the intended Windows/macOS browser where
+available. Hau Jie has no Mac; guide each participant's own first camera preview
+and record any device issues rather than claiming teammate Mac validation.
+Automated import/package checks establish software behaviour;
 camera permissions, recording conditions and honest untouched TEST chronology
 remain physical/operator checks. Keep acquisition changes documented before
 freeze; neither the ticket nor shared model hash proves browser/native

@@ -4,6 +4,27 @@ Snapshot: 14 October 2026. This measures the final-project extension, not the al
 
 ## Current goal and handoff progress — 14 October
 
+**Participant-kit usability update:** P67/P1543 TEST kits now preset identity and
+session, require no typing or installation, and use **Open camera → Start 48
+trials**. Both consent boxes remain explicit. Camera selection pauses safely;
+partial returns resume without repeating completed trials. Missing optional
+conditions are recorded as not provided. Allow about ten minutes overall.
+
+Verification: 38 JavaScript checks, 70 focused Python pipeline tests and six
+package/privacy checks passed, plus Ruff/mypy and independent code review.
+Both extracted kits completed 48/48 trials and exported 240 scheduled slots in
+real-time Windows Edge checks using a synthetic camera and the real bundled
+detector. That long run exposed SDK background logging; an early connection
+policy now blocks it. The final exact-hash kits passed detector startup, camera
+switching, partial export/recovery and enforced connection-blocking checks.
+The SDK's own delayed logging attempt was blocked after about 62 seconds;
+recording continued from 8 to 10 trials with no outgoing HTTP or unhandled errors.
+PDF guides were rendered and inspected. Synthetic observations stay isolated
+locally and are not participant data or recognition-accuracy evidence.
+Physical Safari/Mac operation remains to be observed during participants' own
+first use; Hau Jie has no Mac and is not required to obtain one. These changes
+do not add accepted task weight: GF-P18 still needs both genuine TEST returns.
+
 **Goal:** acquire untouched same-pose TEST data for GF-P18 using the two reviewed
 frozen comparisons. **GF-P17 is accepted** against its original preparation
 criterion. Hau Jie's H1/H2 handoffs are received and verified; no resend or
@@ -23,7 +44,7 @@ selected outer model. See the [dated receipt review](H1_SAVED_REPORT_AUDIT_2026_
 | H2 development diagnosis and proposed settings | Reviewed and selected, 14 October | PR #31 merged; 17 source hashes, eight evaluator runs and all 48 bounded comparison rows verified; after-development selection rationale independently reviewed |
 | P1543 starter exclusion/break and H1 physical poses | Confirmed by user, 14 October | All four H1 right-hand mappings match the browser protocol; preserve this attributed confirmation |
 | GF-P17 configuration freeze and TEST acquisition route | Accepted, 14 October | Two private freezes pin the reviewed settings and development inputs; browser TEST route, four packages and PDF guides verified as software artifacts |
-| GF-P18 independent paired TEST evaluation | Awaiting physical collection | Coordinator checks the extracted TEST kit on the intended device before distribution; Hau Jie coordinates fresh sessions, Deston reproduces and reviews scores |
+| GF-P18 independent paired TEST evaluation | Awaiting physical collection | Simplified assigned kits are ready; guide each participant's first preview. Hau Jie coordinates fresh sessions without needing a Mac; Deston reproduces and reviews scores |
 
 The [reviewed selection and acceptance record](H2_EVALUATION_SELECTION_2026_10_14.md)
 closes the original 12-hour GF-P17 preparation task. The
@@ -49,8 +70,8 @@ Independent code and acceptance reviews found no remaining blockers.
 All four participant-specific ZIPs pass integrity/hash checks; their PDF guides
 were rendered and inspected. The extracted P67 page opens with a locked target,
 TEST-only session and 48-trial total. This was a camera-free interface check.
-The new route still needs extracted-file camera, pause/recovery and export checks
-on the intended devices before participant distribution. It does not replace
+This earlier camera-free check is superseded by the software checks above.
+Actual Mac camera behaviour still needs participant observation. It does not replace
 Studio laptop-B, physical recognition or final release verification.
 
 The [H2 review record](H2_DEVELOPMENT_DIAGNOSIS_2026_10_14.md#destons-receipt-and-reproduction-review--14-october)

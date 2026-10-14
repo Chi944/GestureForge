@@ -282,7 +282,9 @@ function remainingTrialCount(participantId, records, split = null, ticket = null
 
 function resumeMessage(state, nextSplit, prefix) {
   if (!nextSplit) return `All ${makeTrialPlan(state.testTicket).length} trials are complete. Export the return ZIP.`;
-  const action = state.cameraReady ? "Start Selected Session" : "Start Camera and Start Selected Session";
+  const action = state.testTicket
+    ? state.cameraReady ? `Resume ${remainingTrialCount(state.participantId, state.records, "test", state.testTicket)} trials` : "Open camera, check your preview, then resume the trials"
+    : state.cameraReady ? "Start Selected Session" : "Start Camera and Start Selected Session";
   const section = splitLabel(nextSplit);
   const sectionRemaining = remainingTrialCount(state.participantId, state.records, nextSplit, state.testTicket);
   const totalRemaining = remainingTrialCount(state.participantId, state.records, null, state.testTicket);
@@ -524,17 +526,19 @@ async function boot() {
     state.participantId = testTicket.target_participant;
   }
   restoreDraft(el, state);
-  await listCameras(el);
   el.startCamera.onclick = () => startCamera(el, state);
   el.startCollection.onclick = () => startCollection(el, state);
+  if (el.quickStart) el.quickStart.onclick = () => quickStart(el, state);
   el.pause.onclick = () => pause(el, state, "Paused.");
   el.exportZip.onclick = () => exportZip(el, state);
   el.clearDraft.onclick = () => clearDraft(el, state);
   el.importZip.onchange = () => importZip(el, state);
+  el.cameraSelect.onchange = () => changeCamera(el, state);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pause(el, state, "Paused because the tab was hidden.");
   });
   renderProgress(el, state);
+  void listCameras(el, state);
 }
 
 function ids() {
@@ -542,25 +546,60 @@ function ids() {
   for (const id of [
     "participantId", "trainConditions", "validationConditions", "numericConsent",
     "accessConsent", "cameraSelect", "sessionSelect", "startCamera", "startCollection", "pause", "exportZip", "clearDraft", "importZip",
-    "preview", "video", "cameraStatus", "collectionStatus", "instruction", "detail", "progress", "progressText",
+    "preview", "video", "cameraStatus", "collectionStatus", "instruction", "detail", "progress", "progressText", "quickStart",
   ]) out[id] = document.getElementById(id);
   return out;
 }
 
-async function listCameras(el) {
+async function listCameras(el, state) {
+  const generation = state.generation;
   const devices = await navigator.mediaDevices?.enumerateDevices?.().catch(() => []) ?? [];
+  if (state.generation !== generation) return;
   const cameras = devices.filter((device) => device.kind === "videoinput");
+  if (!cameras.length) return;
+  const selected = state.stream?.getVideoTracks?.()[0]?.getSettings?.().deviceId || el.cameraSelect.value;
   el.cameraSelect.innerHTML = "";
+  const automatic = document.createElement("option");
+  automatic.value = "";
+  automatic.textContent = "Default camera";
+  el.cameraSelect.append(automatic);
   cameras.forEach((camera, index) => {
     const option = document.createElement("option");
     option.value = camera.deviceId;
     option.textContent = camera.label || `Camera ${index + 1}`;
     el.cameraSelect.append(option);
   });
+  el.cameraSelect.value = cameras.some(camera => camera.deviceId === selected) ? selected : "";
+}
+
+export function changeCamera(el, state) {
+  if (state.testTicket) pause(el, state, "Camera selection changed.");
+}
+
+export function renderQuickStart(el, state) {
+  if (!el.quickStart || !state.testTicket) return;
+  const remaining = remainingTrialCount(state.testTicket.target_participant, state.records, "test", state.testTicket);
+  el.quickStart.disabled = !remaining || Boolean(state.cameraStarting || state.collecting || state.importing);
+  el.quickStart.textContent = !remaining ? "All 48 trials complete"
+    : state.cameraStarting ? "Opening camera..."
+    : state.collecting ? "Recording..."
+    : state.importing ? "Recovering recording..."
+    : !state.cameraReady ? "Open camera"
+    : remaining === 48 ? "Start 48 trials" : `Resume ${remaining} trials`;
+}
+
+export async function quickStart(el, state) {
+  if (!state.testTicket || state.cameraStarting || state.collecting || state.importing ||
+      !remainingTrialCount(state.testTicket.target_participant, state.records, "test", state.testTicket)) return;
+  if (state.cameraReady) await startCollection(el, state);
+  else await startCamera(el, state);
 }
 
 export async function startCamera(el, state) {
-  if (state.cameraStarting || state.collecting) return;
+  if (state.cameraStarting || state.collecting || state.importing) return;
+  if (state.testTicket && (!el.numericConsent.checked || !el.accessConsent.checked)) {
+    return fail(el, "Tick both consent boxes before opening the camera.", el.numericConsent.checked ? el.accessConsent : el.numericConsent);
+  }
   const generation = state.generation + 1;
   state.generation = generation;
   state.cameraStarting = true;
@@ -568,6 +607,7 @@ export async function startCamera(el, state) {
   state.latest = null;
   el.startCollection.disabled = true;
   el.startCamera.disabled = true;
+  renderQuickStart(el, state);
   try {
     stopCamera(state);
     if (!navigator.mediaDevices?.getUserMedia) throw new Error("This browser does not expose camera access from this page.");
@@ -598,7 +638,12 @@ export async function startCamera(el, state) {
     el.startCollection.disabled = false;
     el.pause.disabled = false;
     el.cameraStatus.textContent = "Camera ready. Keep your right hand in view when prompted.";
+    if (state.testTicket) {
+      el.instruction.textContent = "Check your camera preview";
+      el.detail.textContent = "Keep your whole right hand visible. Click the blue button to start or resume the trials when ready.";
+    }
     requestAnimationFrame(() => cameraLoop(el, state, generation));
+    void listCameras(el, state);
   } catch (error) {
     stopCamera(state);
     state.cameraReady = false;
@@ -606,6 +651,7 @@ export async function startCamera(el, state) {
   } finally {
     state.cameraStarting = false;
     el.startCamera.disabled = false;
+    renderQuickStart(el, state);
   }
 }
 
@@ -675,7 +721,7 @@ function observationFromResult(result, frameId, capturedAt) {
 }
 
 export async function startCollection(el, state) {
-  if (state.collecting) return;
+  if (state.collecting || state.cameraStarting || state.importing) return;
   if (!validateForm(el, state)) return;
   const split = el.sessionSelect.value;
   const done = completedTrialIds(state.records);
@@ -709,6 +755,7 @@ export async function startCollection(el, state) {
   el.exportZip.disabled = false;
   el.importZip.disabled = false;
   el.clearDraft.disabled = false;
+  renderQuickStart(el, state);
   if (!state.paused && state.generation === generation) {
     const next = selectResumeSplit(el, state);
     el.instruction.textContent = "Session complete";
@@ -725,7 +772,7 @@ function validateForm(el, state) {
     return fail(el, "Use the participant and TEST session assigned by this kit.", el.participantId);
   }
   if (!validateParticipantId(state.participantId)) return fail(el, "Enter a pseudonym such as P04 using letters, digits, hyphen or underscore.", el.participantId);
-  if ((split === "train" || split === "test") && !state.trainConditions) {
+  if (split === "train" && !state.trainConditions) {
     return fail(el, `Enter ${split.toUpperCase()} session condition notes before starting this section.`, el.trainConditions);
   }
   if (split !== "train" && split !== "test" && !state.validationConditions) {
@@ -734,7 +781,11 @@ function validateForm(el, state) {
   if (!el.numericConsent.checked || !el.accessConsent.checked) {
     return fail(el, "Tick both consent boxes before collecting.", el.numericConsent.checked ? el.accessConsent : el.numericConsent);
   }
-  if (!state.cameraReady) return fail(el, "Start the camera first.", el.startCamera);
+  if (!state.cameraReady) return fail(el, state.testTicket ? "Open the camera first." : "Start the camera first.", el.quickStart ?? el.startCamera);
+  if (state.testTicket && !state.trainConditions) {
+    state.trainConditions = "Not provided by participant.";
+    el.trainConditions.value = state.trainConditions;
+  }
   state.consentRecordedAt ||= new Date().toISOString();
   return true;
 }
@@ -789,11 +840,15 @@ function pause(el, state, message) {
   state.generation += 1;
   state.paused = true;
   el.instruction.textContent = "Paused";
-  el.detail.textContent = `${message} To resume, click Start Camera, wait for the detector, then Start Selected Session.`;
+  el.detail.textContent = state.testTicket
+    ? `${message} To resume, click Open camera, check your preview, then start or resume the remaining trials.`
+    : `${message} To resume, click Start Camera, wait for the detector, then Start Selected Session.`;
   stopCamera(state);
   state.cameraReady = false;
+  state.importing = false;
   el.pause.disabled = true;
   el.startCollection.disabled = true;
+  renderQuickStart(el, state);
 }
 
 function renderProgress(el, state) {
@@ -802,6 +857,7 @@ function renderProgress(el, state) {
   el.progress.value = complete / total;
   el.progressText.textContent = `${complete} / ${total} trials complete`;
   lockSettings(el, state);
+  renderQuickStart(el, state);
 }
 
 function lockSettings(el, state) {
@@ -887,6 +943,8 @@ export async function importZip(el, state) {
   if (state.stream) pause(el, state, "Paused before importing a backup ZIP.");
   const generation = state.generation + 1;
   state.generation = generation;
+  state.importing = generation;
+  renderQuickStart(el, state);
   try {
     if (file.size > 10 * 1024 * 1024) throw new Error("Return ZIP is larger than 10 MB.");
     const buffer = await file.arrayBuffer();
@@ -917,6 +975,8 @@ export async function importZip(el, state) {
     el.detail.textContent = `Could not import ZIP: ${error.message}`;
   } finally {
     if (state.generation === generation) el.importZip.value = "";
+    if (state.importing === generation) state.importing = false;
+    renderQuickStart(el, state);
   }
 }
 
@@ -930,6 +990,7 @@ export function clearDraft(el, state) {
     return fail(el, "Browser storage is unavailable. Keep your return ZIP, then close this page to discard the in-memory recording.");
   }
   state.generation += 1;
+  state.importing = false;
   state.records = [];
   state.sessionStartedAt = {};
   state.consentRecordedAt = "";
@@ -948,7 +1009,7 @@ export function clearDraft(el, state) {
 export function validateFormForExport(el, state) {
   if (state.collecting || state.cameraStarting) return fail(el, "Pause and wait for the current trial to finish before exporting.");
   state.participantId = el.participantId.value.trim();
-  state.trainConditions = el.trainConditions.value.trim();
+  state.trainConditions = el.trainConditions.value.trim() || (state.testTicket ? "Not provided by participant." : "");
   state.validationConditions = el.validationConditions.value.trim();
   if (!validateParticipantId(state.participantId)) return fail(el, "Enter a valid pseudonym before exporting.");
   if (state.testTicket && state.participantId !== state.testTicket.target_participant) return fail(el, "Participant does not match this frozen TEST kit.");

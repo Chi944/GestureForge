@@ -21,6 +21,9 @@ import {
   stampRecords,
   startCamera,
   startCollection,
+  quickStart,
+  renderQuickStart,
+  changeCamera,
   validateParticipantId,
   validateCollection,
   draftStorageKey,
@@ -33,6 +36,246 @@ const testTicket = {
   target_participant: "P04", config_fingerprint: "a".repeat(64), frozen_integrity_sha256: "b".repeat(64),
   pose_set_id: "standard-v1", hand: "Right",
 };
+
+test("TEST quick start requires both consents before opening the camera and waits for a second click to record", async () => {
+  const el = { ...fakeCollectionElements({ split: "test", trainConditions: "", validationConditions: "" }), ...fakeCameraElements(), quickStart: {} };
+  const state = { ...fakeCollectionState(), testTicket, cameraReady: false, createLandmarker: async () => ({}) };
+  const navigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const animationDescriptor = Object.getOwnPropertyDescriptor(globalThis, "requestAnimationFrame");
+  let requests = 0;
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { mediaDevices: {
+    getUserMedia: async () => { requests += 1; return fakeStream("test"); },
+  } } });
+  globalThis.requestAnimationFrame = () => {};
+  try {
+    renderQuickStart(el, state);
+    assert.equal(el.quickStart.textContent, "Open camera");
+    for (const missing of ["numericConsent", "accessConsent"]) {
+      el[missing].checked = false;
+      await quickStart(el, state);
+      await startCamera(el, state);
+      assert.equal(requests, 0);
+      assert.match(el.detail.textContent, /both consent/);
+      el[missing].checked = true;
+    }
+    await quickStart(el, state);
+    assert.equal(requests, 1);
+    assert.equal(state.cameraReady, true);
+    assert.equal(el.quickStart.textContent, "Start 48 trials");
+    assert.equal(state.collecting, false);
+    assert.equal(state.records.length, 0);
+    assert.deepEqual(state.sessionStartedAt, {});
+    el.accessConsent.checked = false;
+    await quickStart(el, state);
+    assert.equal(state.records.length, 0);
+    assert.deepEqual(state.sessionStartedAt, {});
+    assert.match(el.detail.textContent, /both consent/);
+  } finally {
+    restoreGlobalProperty("navigator", navigatorDescriptor);
+    restoreGlobalProperty("requestAnimationFrame", animationDescriptor);
+  }
+});
+
+test("TEST quick start records optional notes honestly in drafts and exported ZIPs, then disables completion", async () => {
+  const el = { ...fakeCollectionElements({ split: "test", trainConditions: "", validationConditions: "" }), quickStart: {} };
+  const state = { ...fakeCollectionState(), testTicket };
+  const storageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  const saved = new Map();
+  globalThis.localStorage = { setItem: (key, value) => saved.set(key, value), getItem: key => saved.get(key) };
+  const restoreClock = installCollectionClock(10000);
+  const restoreBrowser = installExportBrowser();
+  try {
+    restoreClock.bind(state);
+    const collecting = quickStart(el, state);
+    assert.equal(el.quickStart.textContent, "Recording...");
+    assert.equal(el.quickStart.disabled, true);
+    await quickStart(el, state);
+    await collecting;
+    assert.equal(state.records.length, 240);
+    assert.equal(state.trainConditions, "Not provided by participant.");
+    assert.equal(JSON.parse(saved.get(draftStorageKey(testTicket))).trainConditions, "Not provided by participant.");
+    assert.equal(el.quickStart.textContent, "All 48 trials complete");
+    assert.equal(el.quickStart.disabled, true);
+    await quickStart(el, state);
+    assert.equal(state.records.length, 240);
+    exportZip(el, state);
+    const exported = await restoreBrowser.exportedZip();
+    assert.equal(readOwnCollectionZip(exported.bytes, testTicket).sessions[0].conditions, "Not provided by participant.");
+    const restored = { ...fakeCollectionState(), testTicket };
+    restoreDraft(el, restored);
+    assert.equal(restored.trainConditions, "Not provided by participant.");
+    assert.equal(el.quickStart.disabled, true);
+  } finally {
+    restoreClock(); restoreBrowser(); restoreGlobalProperty("localStorage", storageDescriptor);
+  }
+  const development = fakeCollectionElements({ trainConditions: "" });
+  const developmentState = fakeCollectionState();
+  await startCollection(development, developmentState);
+  assert.equal(developmentState.records.length, 0);
+  assert.match(development.detail.textContent, /TRAIN session condition notes/);
+});
+
+test("TEST primary resumes recovery, blocks while importing, and recovers after failed import or clear", async () => {
+  const records = stampRecords(new SampleScheduler(makeTrialPlan(testTicket)[0], 0).finalize(), "P04", testTicket);
+  const collection = makeCollection({ participantId: "P04", testTicket, trainConditions: "Actual room notes", records,
+    recordedAt: "2026-10-14T00:00:00Z", sessionStartedAt: { test: "2026-10-14T00:00:01Z" } });
+  const zip = makeStoredZip({ "collection.json": JSON.stringify(collection) });
+  const pending = deferred();
+  const el = { ...fakeImportElements(zip, () => pending.promise), quickStart: {} };
+  const state = { ...fakeCollectionState(), testTicket, cameraReady: false };
+  const storageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  const confirmDescriptor = Object.getOwnPropertyDescriptor(globalThis, "confirm");
+  globalThis.localStorage = { setItem() {}, removeItem() {} };
+  globalThis.confirm = () => true;
+  try {
+    const importing = importZip(el, state);
+    assert.equal(el.quickStart.disabled, true);
+    assert.equal(el.quickStart.textContent, "Recovering recording...");
+    await quickStart(el, state);
+    assert.equal(state.generation, 1);
+    pending.resolve(zip.buffer);
+    await importing;
+    assert.equal(state.trainConditions, "Actual room notes");
+    assert.equal(el.quickStart.textContent, "Open camera");
+    assert.equal(el.quickStart.disabled, false);
+    state.cameraReady = true;
+    renderQuickStart(el, state);
+    assert.equal(el.quickStart.textContent, "Resume 47 trials");
+    el.importZip.files = [{ size: 1, arrayBuffer: async () => new Uint8Array([0]).buffer }];
+    await importZip(el, state);
+    assert.equal(el.quickStart.disabled, false);
+    assert.equal(state.records.length, 5);
+    state.cameraReady = false;
+    const staleImport = deferred();
+    el.importZip.files = [{ size: zip.byteLength, arrayBuffer: () => staleImport.promise }];
+    const importingAgain = importZip(el, state);
+    assert.equal(el.quickStart.disabled, true);
+    clearDraft(el, state);
+    staleImport.resolve(zip.buffer);
+    await importingAgain;
+    assert.equal(state.records.length, 0);
+    assert.equal(el.quickStart.disabled, false);
+    assert.equal(el.quickStart.textContent, "Open camera");
+    assert.equal(el.numericConsent.checked, false);
+    assert.equal(el.accessConsent.checked, false);
+  } finally {
+    restoreGlobalProperty("localStorage", storageDescriptor);
+    restoreGlobalProperty("confirm", confirmDescriptor);
+  }
+});
+
+test("TEST camera failure restores the primary retry action without starting a trial", async () => {
+  const el = { ...fakeCollectionElements({ split: "test" }), ...fakeCameraElements(), quickStart: {} };
+  const state = { ...fakeCollectionState(), testTicket, cameraReady: false };
+  const navigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { mediaDevices: {
+    getUserMedia: async () => { throw new Error("permission denied"); },
+  } } });
+  try {
+    await quickStart(el, state);
+    assert.equal(el.quickStart.textContent, "Open camera");
+    assert.equal(el.quickStart.disabled, false);
+    assert.equal(state.cameraReady, false);
+    assert.equal(state.records.length, 0);
+    assert.match(el.cameraStatus.textContent, /permission denied/);
+  } finally { restoreGlobalProperty("navigator", navigatorDescriptor); }
+});
+
+test("controls bind before camera enumeration resolves and late enumeration cannot alter an active choice", async () => {
+  const elements = { ...fakeCollectionElements({ split: "test" }), ...fakeCameraElements(), quickStart: {} };
+  const gate = deferred();
+  elements.cameraSelect.value = "chosen-camera";
+  elements.cameraSelect.innerHTML = "existing camera options";
+  elements.testTicket = { textContent: JSON.stringify(testTicket) };
+  const documentDescriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
+  const navigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const animationDescriptor = Object.getOwnPropertyDescriptor(globalThis, "requestAnimationFrame");
+  globalThis.document = {
+    getElementById: id => elements[id] ?? null,
+    addEventListener() {},
+    createElement() { throw new Error("late enumeration must not rewrite options"); },
+  };
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { mediaDevices: {
+    enumerateDevices: () => gate.promise,
+    getUserMedia: async () => { throw new Error("test camera unavailable"); },
+  } } });
+  globalThis.requestAnimationFrame = () => {};
+  try {
+    await import(`../participant/collector.mjs?boot-regression=${Date.now()}`);
+    assert.equal(typeof elements.quickStart.onclick, "function");
+    assert.equal(typeof elements.importZip.onchange, "function");
+    assert.equal(typeof elements.cameraSelect.onchange, "function");
+    await elements.quickStart.onclick();
+    gate.resolve([{ kind: "videoinput", deviceId: "late-camera", label: "Late camera" }]);
+    await Promise.resolve();
+    assert.equal(elements.cameraSelect.value, "chosen-camera");
+    assert.equal(elements.cameraSelect.innerHTML, "existing camera options");
+  } finally {
+    restoreGlobalProperty("document", documentDescriptor);
+    restoreGlobalProperty("navigator", navigatorDescriptor);
+    restoreGlobalProperty("requestAnimationFrame", animationDescriptor);
+  }
+});
+
+test("TEST refreshes cameras after permission and changing selection pauses before opening the chosen camera", async () => {
+  const el = { ...fakeCollectionElements({ split: "test" }), ...fakeCameraElements(), quickStart: {} };
+  const options = [];
+  el.cameraSelect.append = option => options.push(option);
+  Object.defineProperty(el.cameraSelect, "innerHTML", { set() { options.length = 0; } });
+  const state = { ...fakeCollectionState(), testTicket, cameraReady: false, createLandmarker: async () => ({}) };
+  const navigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const documentDescriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
+  const animationDescriptor = Object.getOwnPropertyDescriptor(globalThis, "requestAnimationFrame");
+  const enumerations = [deferred(), deferred()];
+  const calls = [];
+  let enumerationCount = 0;
+  let stopped = 0;
+  globalThis.document = { createElement: () => ({ value: "", textContent: "" }) };
+  globalThis.requestAnimationFrame = () => {};
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { mediaDevices: {
+    enumerateDevices: () => enumerations[enumerationCount++].promise,
+    getUserMedia: async constraints => {
+      calls.push(constraints);
+      const stream = fakeStream("selected");
+      stream.tracks[0].stop = () => { stopped += 1; };
+      stream.tracks[0].getSettings = () => ({ deviceId: constraints.video.deviceId?.exact ?? "built-in" });
+      return stream;
+    },
+  } } });
+  try {
+    await quickStart(el, state);
+    assert.equal(state.cameraReady, true);
+    assert.equal(el.quickStart.textContent, "Start 48 trials");
+    assert.equal(enumerationCount, 1);
+    enumerations[0].resolve([
+      { kind: "videoinput", deviceId: "usb", label: "USB webcam" },
+      { kind: "videoinput", deviceId: "built-in", label: "Built-in webcam" },
+    ]);
+    await until(() => options.length > 0);
+    assert.equal(el.cameraSelect.value, "built-in");
+    assert.equal(options.some(option => option.value === "usb"), true);
+    el.cameraSelect.value = "usb";
+    changeCamera(el, state);
+    assert.equal(state.cameraReady, false);
+    assert.equal(stopped, 1);
+    assert.equal(el.quickStart.textContent, "Open camera");
+    assert.equal(state.records.length, 0);
+    await quickStart(el, state);
+    assert.deepEqual(calls[1].video.deviceId, { exact: "usb" });
+    assert.equal(state.cameraReady, true);
+    assert.equal(enumerationCount, 2);
+    el.cameraSelect.value = "built-in";
+    changeCamera(el, state);
+    enumerations[1].resolve([{ kind: "videoinput", deviceId: "usb", label: "USB webcam" }]);
+    await Promise.resolve(); await Promise.resolve();
+    assert.equal(el.cameraSelect.value, "built-in");
+    assert.equal(el.quickStart.textContent, "Open camera");
+  } finally {
+    restoreGlobalProperty("navigator", navigatorDescriptor);
+    restoreGlobalProperty("document", documentDescriptor);
+    restoreGlobalProperty("requestAnimationFrame", animationDescriptor);
+  }
+});
 
 test("frozen TEST uses 48 positive trials and isolates every freeze from development", () => {
   const plan = makeTrialPlan(testTicket);
@@ -741,6 +984,9 @@ test("camera startup cancellation cannot enable collection", async (t) => {
     await t.test(`paused during ${phase}`, async () => {
       await runCancelledStartup(phase);
     });
+    await t.test(`TEST paused during ${phase}`, async () => {
+      await runCancelledStartup(phase, testTicket);
+    });
   }
 });
 
@@ -754,7 +1000,7 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-async function runCancelledStartup(phase) {
+async function runCancelledStartup(phase, ticket = null) {
   const navigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
   const animationFrameDescriptor = Object.getOwnPropertyDescriptor(globalThis, "requestAnimationFrame");
   const mediaCalls = [];
@@ -764,7 +1010,10 @@ async function runCancelledStartup(phase) {
   const modelEntered = deferred();
   const streams = [fakeStream("first"), fakeStream("second")];
   const el = fakeCameraElements({ play: playGate ? () => playGate.promise : async () => {} });
+  if (ticket) Object.assign(el, { numericConsent: { checked: true }, accessConsent: { checked: true }, quickStart: {} });
   const state = {
+    testTicket: ticket,
+    records: [],
     generation: 0,
     cameraStarting: false,
     collecting: false,
@@ -790,6 +1039,11 @@ async function runCancelledStartup(phase) {
 
   try {
     const starting = startCamera(el, state);
+    if (ticket) {
+      assert.equal(el.quickStart.disabled, true);
+      assert.equal(el.quickStart.textContent, "Opening camera...");
+      await quickStart(el, state);
+    }
     if (playGate) {
       await until(() => mediaCalls[0]?.tracks[0].onended);
       mediaCalls[0].tracks[0].onended();
@@ -809,7 +1063,12 @@ async function runCancelledStartup(phase) {
     assert.equal(el.startCollection.disabled, true);
     assert.equal(el.pause.disabled, true);
     assert.equal(frameCallbacks.length, 0);
-    assert.match(el.detail.textContent, /Start Camera.*Start Selected Session/);
+    if (ticket) {
+      assert.match(el.detail.textContent, /Open camera/);
+      assert.doesNotMatch(el.detail.textContent, /Start Selected Session|Start Camera/);
+      assert.equal(el.quickStart.disabled, false);
+      assert.equal(el.quickStart.textContent, "Open camera");
+    } else assert.match(el.detail.textContent, /Start Camera.*Start Selected Session/);
 
     await startCamera(el, state);
     modelGate.resolve({ detectForVideo: () => ({}) });
@@ -819,6 +1078,7 @@ async function runCancelledStartup(phase) {
     assert.equal(el.startCollection.disabled, false);
     assert.equal(el.pause.disabled, false);
     assert.equal(frameCallbacks.length, 1);
+    if (ticket) assert.equal(el.quickStart.textContent, "Start 48 trials");
 
     state.collecting = true;
     await startCamera(el, state);

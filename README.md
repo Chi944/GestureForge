@@ -180,12 +180,14 @@ automatically.
 - **Development kits:** TRAIN, separate VALIDATION and UNKNOWN; approximately
   15–20 minutes plus a break, setup and saving.
 - **Frozen TEST kits:** one assigned participant, 48 new trials; approximately
-  5–6 minutes plus setup and saving. Old development recordings cannot be reused.
+  6–8 minutes recording; allow about 10 minutes overall. Participant/session are preset: unzip, open
+  the page, tick consent, **Open camera**, then **Start 48 trials**. No required
+  typing. Old development recordings cannot be reused.
 
-These are collection tools, not the Studio application. The new TEST route needs
-physical camera, pause/recovery and export verification on intended devices before
-distribution. Preserve partial attempts and invalid slots; never delete difficult
-trials to improve scores. Follow the [current GF-P18 steps](docs/project/PAIRED_EVALUATION.md#current-gf-p18-next-steps).
+These are collection tools, not the Studio application. Each participant checks
+their actual camera preview before starting; software checks do not establish
+physical compatibility with every browser. Preserve partial attempts and invalid
+slots; never delete difficult trials to improve scores. Follow the [current GF-P18 steps](docs/project/PAIRED_EVALUATION.md#current-gf-p18-next-steps).
 
 ## Verify and reproduce
 

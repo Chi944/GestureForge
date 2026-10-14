@@ -127,18 +127,41 @@ def test_frozen_test_html_embeds_only_public_ticket_and_locks_visible_form(tmp_p
     assert participant["attrs"]["value"] == "P02"
     assert "readonly" in participant["attrs"]
     assert parser.label_for("trainConditions")["text"].strip() == (
-        "TEST conditions - fill in before TEST"
+        "Optional setup notes"
     )
     assert not any(element["attrs"].get("for") == "validationConditions" for element in parser.elements)
     assert "hidden" in parser.by_id("validationConditions")["attrs"]
     assert parser.by_id("progressText")["text"].strip() == "0 / 48 trials complete"
     assert [(option["attrs"]["value"], option["text"].strip()) for option in parser.options()] == [
-        ("test", "TEST - 48 trials, about 5-6 minutes")
+        ("test", "TEST - 48 trials, about 6-8 minutes")
     ]
     assert "15-20 minutes" not in html
     assert "UNKNOWN - 8 trials" not in html
     assert "Unknown trials" not in html
     assert "Record only the shown TEST poses" in html
+    assert parser.by_id("quickStart")["text"].strip() == "Open camera"
+    assert "hidden" in parser.by_id("startCamera")["attrs"]
+    assert "hidden" in parser.by_id("startCollection")["attrs"]
+    assert "hidden" in parser.by_id("sessionSelect")["attrs"]
+    assert "Not provided by participant." in html
+    assert "Nothing to install" in html
+    for consent in ("numericConsent", "accessConsent"):
+        assert "checked" not in parser.by_id(consent)["attrs"]
+
+
+@pytest.mark.parametrize("frozen", [None, "frozen.json"])
+def test_embedded_kit_blocks_network_connections_before_any_script(tmp_path, monkeypatch, frozen):
+    model = _real_collector_root(tmp_path, monkeypatch)
+    monkeypatch.setattr(package, "browser_test_ticket", lambda path: _ticket())
+    html = package.assemble_html(tmp_path, model, frozen)
+    parser = ElementParser()
+    parser.feed(html)
+    policy = next(element for element in parser.elements if (
+        element["tag"] == "meta"
+        and element["attrs"].get("http-equiv") == "Content-Security-Policy"
+    ))
+    assert policy["attrs"]["content"] == "connect-src blob: data:"
+    assert html.index('http-equiv="Content-Security-Policy"') < html.index("<script")
 
 
 def test_frozen_test_guide_copy_is_test_only(tmp_path, monkeypatch):
@@ -204,12 +227,15 @@ def test_frozen_test_guide_copy_is_test_only(tmp_path, monkeypatch):
     text = "\n".join(captured)
     assert "P02" in text
     assert "one fresh 48-trial TEST session" in text
-    assert "5-6 minutes" in text
+    assert "10 minutes including setup and saving" in text
     assert "EMAIL_THIS_P02_test.zip" in text
     assert "EMAIL_THIS_P02_PARTIAL_test.zip" in text
     assert "same TEST kit" in text
     assert "Do not import old development data" in text
-    assert "Start Camera" in text and "Start Selected Session" in text
+    assert "Open camera" in text and "Start 48 trials" in text
+    assert "optional" in text
+    assert "Not provided by participant." in text
+    assert "Nothing to install" in text
     assert "chronology evidence" not in text
     assert "manual Windows and macOS webcam checks" not in text
     assert all(label in text for label in ("NEUTRAL", "NEXT", "PREVIOUS", "BOOKMARK"))

@@ -45,10 +45,29 @@ def _ticket_script(ticket: dict[str, object]) -> str:
 
 def _apply_frozen_test_html(html: str, ticket: dict[str, object]) -> str:
     target = str(ticket["target_participant"])
+    html = _replace_once(html, "<body>", '<body class="testKit">', "body")
+    html = _replace_once(
+        html, "</style>",
+        """    .testKit [hidden] { display: none !important; }
+    .testKit #quickStart { width: 100%; font-size: 20px; font-weight: 700; min-height: 56px; }
+    .testKit summary { cursor: pointer; color: #31516f; padding: 10px 0; }
+    .testKit #participantId { background: #edf2f7; }
+    .testKit .checks label { line-height: 1.45; }
+  </style>""", "style end",
+    )
+    html = _replace_once(
+        html, "<title>GestureForge Participant Collector</title>",
+        f"<title>GestureForge | {target} gesture check</title>", "page title",
+    )
+    html = _replace_once(
+        html, "<h1>GestureForge Participant Collector</h1>",
+        f"<h1>Your gesture check: {target}</h1>", "main heading",
+    )
     html = _replace_once(
         html,
         '<p class="muted">Collects numeric hand landmarks only. It does not save photos, video or audio.</p>',
         '<p class="muted">Fresh TEST session for the assigned participant only. '
+        'Nothing to install. Allow about 10 minutes including setup, 48 trials. '
         'It collects numeric hand landmarks only and does not save photos, video or audio.</p>',
         "top collector intro",
     )
@@ -64,8 +83,11 @@ def _apply_frozen_test_html(html: str, ticket: dict[str, object]) -> str:
         html,
         '<label for="trainConditions">TRAIN conditions - fill in before TRAIN</label>\n'
         '        <textarea id="trainConditions" placeholder="Lighting, background, seated/standing, approximate hand distance."></textarea>',
-        '<label for="trainConditions">TEST conditions - fill in before TEST</label>\n'
-        '        <textarea id="trainConditions" placeholder="Lighting, background, seated/standing, approximate hand distance."></textarea>',
+        '<details><summary>Optional: describe your setup</summary>\n'
+        '        <label for="trainConditions">Optional setup notes</label>\n'
+        '        <textarea id="trainConditions" placeholder="Lighting, background, seated/standing, approximate hand distance."></textarea>\n'
+        '        <p class="muted">You can start without typing. Empty notes are saved as '
+        '&quot;Not provided by participant.&quot; No conditions are guessed.</p></details>',
         "TRAIN conditions field",
     )
     html = _replace_once(
@@ -77,18 +99,63 @@ def _apply_frozen_test_html(html: str, ticket: dict[str, object]) -> str:
     )
     html = _replace_once(html, '<p id="progressText">0 / 104 trials complete</p>',
                          '<p id="progressText">0 / 48 trials complete</p>', "progress total")
+    html = _replace_once(html, "<h2>Participant Details</h2>",
+                         "<h2>Read and tick both permissions to begin</h2>", "details title")
+    html = _replace_once(html, "<h2>Camera And Collection</h2>",
+                         "<h2>Open camera, check your hand, then start</h2>", "camera title")
+    html = _replace_once(html, 'id="instruction">Setup required</div>',
+                         'id="instruction">Your session is ready</div>', "initial instruction")
+    html = _replace_once(
+        html, 'id="detail" class="muted">Start the camera and complete the details above.</div>',
+        'id="detail" class="muted">Tick both permissions above, then click Open camera. '
+        'Your ID and session are already selected.</div>', "initial detail",
+    )
+    html = _replace_once(
+        html, '<label for="cameraSelect">Camera</label>\n        <select id="cameraSelect"></select>',
+        '<details><summary>Change camera (only if needed)</summary>'
+        '<p class="muted">Choose another camera, then click Open camera to check its view.</p>'
+        '<label for="cameraSelect">Camera</label><select id="cameraSelect"></select></details>',
+        "camera choice",
+    )
+    html = _replace_once(
+        html, '<label for="sessionSelect">Session to collect</label>\n'
+        '        <select id="sessionSelect">',
+        '<p><strong>48 trials. Your right hand. One session.</strong></p>\n'
+        '        <select id="sessionSelect" hidden>', "session choice",
+    )
+    html = _replace_once(
+        html, '<button id="startCamera">Start Camera</button>\n'
+        '          <button id="startCollection" disabled>Start Selected Session</button>',
+        '<button id="quickStart">Open camera</button>\n'
+        '          <button id="startCamera" hidden>Start Camera</button>\n'
+        '          <button id="startCollection" hidden disabled>Start Selected Session</button>',
+        "primary start button",
+    )
+    html = _replace_once(
+        html, '<button id="clearDraft" class="danger">Clear Local Draft</button>',
+        '<button id="clearDraft" class="danger" hidden>Clear Local Draft</button>',
+        "draft clearing control",
+    )
+    html = _replace_once(
+        html, '<label for="importZip">Recover from a previous return ZIP</label>\n'
+        '        <input id="importZip" type="file" accept=".zip,application/zip">',
+        '<details><summary>Resume from a saved partial ZIP</summary>'
+        '<label for="importZip">Recover from a previous return ZIP</label>\n'
+        '        <input id="importZip" type="file" accept=".zip,application/zip"></details>',
+        "recovery control",
+    )
     html = _replace_once(
         html,
         '<option value="train">TRAIN - 48 trials, about 5-6 minutes</option>\n'
         '          <option value="validation">VALIDATION - 48 trials, about 5-6 minutes</option>\n'
         '          <option value="validation_negative">UNKNOWN - 8 trials, about 1 minute</option>',
-        '<option value="test">TEST - 48 trials, about 5-6 minutes</option>',
+        '<option value="test">TEST - 48 trials, about 6-8 minutes</option>',
         "session options",
     )
     html = _replace_once(
         html,
         "Allow 15-20 minutes plus a break for all three sections, including setup and saving. Each trial: 3 seconds to get ready, 2 seconds to hold, then 1 second to relax. Keep this tab visible; use Pause before leaving it.",
-        "Allow 5-6 minutes for the TEST session, plus setup and saving. Each trial: 3 seconds to get ready, 2 seconds to hold, then 1 second to relax. Keep this tab visible; use Pause before leaving it.",
+        "Allow about 10 minutes including setup and saving; recording usually takes 6-8 minutes. Each trial: 3 seconds to get ready, 2 seconds to hold, then 1 second to relax. Keep this tab visible; use Pause before leaving it.",
         "session timing text",
     )
     html = _replace_once(
@@ -157,11 +224,11 @@ def write_guide(path: Path, platform: str, frozen: Path | None = None) -> None:
         p(f"TEST recording guide | {platform}", "Heading1")
         p(f"This kit is assigned to pseudonym <b>{target}</b>. Use it for one fresh "
           "48-trial TEST session only. A webcam, your right hand and an existing browser "
-          "are enough; nothing is uploaded automatically.", "Lead")
+          "are enough. <b>Nothing to install.</b> Nothing is uploaded automatically.", "Lead")
         p("Read the consent text in the recorder and tick the permission boxes only if you agree. "
-          "Record today's TEST conditions before starting: lighting, background, sitting or "
-          "standing, and approximate hand-to-camera distance. Do not import old development data "
-          "or repeat earlier TRAIN/VALIDATION recordings.")
+          "Your ID and session are already selected. Setup notes are optional; blank notes "
+          "are recorded as <b>Not provided by participant.</b> Do not import old development "
+          "data or repeat earlier TRAIN/VALIDATION recordings.")
         step("1  Save, unzip and open", (
             "Save the Windows ZIP from the email. In Downloads, right-click the ZIP, choose "
             "<b>Extract All</b>, then <b>Extract</b>. Open the new folder and double-click "
@@ -170,10 +237,12 @@ def write_guide(path: Path, platform: str, frozen: Path | None = None) -> None:
             "Save the macOS ZIP from the email. In Finder, open Downloads and double-click the ZIP. "
             "Open the folder that appears and double-click <b>START_HERE.html</b>."
         ) + " Keep this same extracted kit for backup or resume. Do not run from inside the ZIP.")
-        step("2  Check the camera, then start TEST",
-             "Click <b>Start Camera</b> and allow camera access. Keep your entire right hand visible, "
-             "palm towards the camera, with light on your hand. The preview is mirrored. Check for "
-             "<b>Right hand detected</b>, then click <b>Start Selected Session</b>.")
+        step("2  Tick permissions, open camera, start",
+             "Tick both permission boxes. Click the large <b>Open camera</b> button and allow "
+             "camera access. Keep your entire right hand visible with light on it. The preview "
+             "is mirrored. Check for <b>Right hand detected</b>, then click the same button, "
+             "now labelled <b>Start 48 trials</b>. Camera choice is automatic; use "
+             "<b>Change camera</b> only if the view is wrong, then click <b>Open camera</b> again.")
         rows = [[Paragraph("On screen", styles["BodyText"]), Paragraph("Use your RIGHT hand", styles["BodyText"])]]
         for label, pose in [
             ("NEUTRAL", "Open palm towards the camera; fingers extended."),
@@ -191,19 +260,21 @@ def write_guide(path: Path, platform: str, frozen: Path | None = None) -> None:
             ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
         ]))
         content += [table, Spacer(1, 12)]
-        p("Plan about <b>5-6 minutes</b> once the detector is ready. Each trial gives 3 seconds "
+        p("Allow about <b>10 minutes including setup and saving</b>; recording usually takes "
+          "6-8 minutes. Each trial gives 3 seconds "
           "to prepare, about 2 seconds to hold the pose, then 1 second to relax. Complete "
           "<b>48 / 48 trials</b> if possible.")
         p("Keep the computer awake and keep this tab visible. If you click <b>Pause</b> or switch "
-          "tabs and the camera stops, click <b>Start Camera</b>, wait for <b>Right hand detected</b>, "
-          "then click <b>Start Selected Session</b> to continue.")
+          "tabs and the camera stops, click <b>Open camera</b>, wait for <b>Right hand detected</b>, "
+          "then click <b>Resume ... trials</b> to continue. Completed trials stay saved.")
         step("3  Save and return the ZIP",
              f"Click <b>Export Return ZIP</b> at the end, or after pausing if interrupted. Send "
              f"<b>EMAIL_THIS_{target}_test.zip</b>. If the file is marked "
              f"<b>EMAIL_THIS_{target}_PARTIAL_test.zip</b>, keep it and report the interruption "
              "instead of deleting trials or repeating the session.")
         p("To resume, open <b>START_HERE.html</b> from this same TEST kit and recover the newest "
-          "PARTIAL return ZIP. Do not unzip the return ZIP, clear the draft, delete mistakes, "
+          "PARTIAL return ZIP under <b>Resume from a saved partial ZIP</b>. "
+          "Do not unzip the return ZIP, clear the draft, delete mistakes, "
           "or start again unless the team asks.")
 
         def test_footer(canvas, doc):

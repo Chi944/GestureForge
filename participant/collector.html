@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Bundled runtime uses blobs; block SDK background logging and other network connections. -->
+  <meta http-equiv="Content-Security-Policy" content="connect-src blob: data:">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GestureForge Participant Collector</title>
   <style>
