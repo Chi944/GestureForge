@@ -8,9 +8,15 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import subprocess
+import sys
 from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from gestureforge.paired_evaluate import browser_test_ticket  # noqa: E402
+
 ASSETS = {
     "sdk": ("vision_bundle.mjs", "9d5fc9ef74b22329cf9aa88dc543956d192b8c254210b187271614713eb5b10c"),
     "loader": ("vision_wasm_nosimd_internal.js", "510fc70a170eb8b46767a7abab2af89a7a8341fa5b3ebfb8a5de41a79b7fa9df"),
@@ -26,11 +32,84 @@ def verified_bytes(path: Path, expected: str) -> bytes:
     return data
 
 
-def assemble_html(assets: Path, model: Path) -> str:
+def _replace_once(text: str, old: str, new: str, label: str) -> str:
+    if text.count(old) != 1:
+        raise ValueError(f"Expected one {label}")
+    return text.replace(old, new)
+
+
+def _ticket_script(ticket: dict[str, object]) -> str:
+    payload = json.dumps(ticket, separators=(",", ":"), sort_keys=True).replace("<", "\\u003c")
+    return f'<script type="application/json" id="testTicket">{payload}</script>'
+
+
+def _apply_frozen_test_html(html: str, ticket: dict[str, object]) -> str:
+    target = str(ticket["target_participant"])
+    html = _replace_once(
+        html,
+        '<p class="muted">Collects numeric hand landmarks only. It does not save photos, video or audio.</p>',
+        '<p class="muted">Fresh TEST session for the assigned participant only. '
+        'It collects numeric hand landmarks only and does not save photos, video or audio.</p>',
+        "top collector intro",
+    )
+    html = _replace_once(
+        html,
+        '<label for="participantId">Pseudonym</label>\n'
+        '        <input id="participantId" placeholder="Example: P04" autocomplete="off">',
+        '<label for="participantId">TEST target pseudonym</label>\n'
+        f'        <input id="participantId" value="{target}" readonly autocomplete="off">',
+        "participant pseudonym field",
+    )
+    html = _replace_once(
+        html,
+        '<label for="trainConditions">TRAIN conditions - fill in before TRAIN</label>\n'
+        '        <textarea id="trainConditions" placeholder="Lighting, background, seated/standing, approximate hand distance."></textarea>',
+        '<label for="trainConditions">TEST conditions - fill in before TEST</label>\n'
+        '        <textarea id="trainConditions" placeholder="Lighting, background, seated/standing, approximate hand distance."></textarea>',
+        "TRAIN conditions field",
+    )
+    html = _replace_once(
+        html,
+        '<label for="validationConditions">VALIDATION conditions - fill in after your break</label>\n'
+        '        <textarea id="validationConditions" placeholder="Record any changed lighting, camera or background conditions."></textarea>',
+        '        <textarea id="validationConditions" hidden></textarea>',
+        "VALIDATION conditions field",
+    )
+    html = _replace_once(html, '<p id="progressText">0 / 104 trials complete</p>',
+                         '<p id="progressText">0 / 48 trials complete</p>', "progress total")
+    html = _replace_once(
+        html,
+        '<option value="train">TRAIN - 48 trials, about 5-6 minutes</option>\n'
+        '          <option value="validation">VALIDATION - 48 trials, about 5-6 minutes</option>\n'
+        '          <option value="validation_negative">UNKNOWN - 8 trials, about 1 minute</option>',
+        '<option value="test">TEST - 48 trials, about 5-6 minutes</option>',
+        "session options",
+    )
+    html = _replace_once(
+        html,
+        "Allow 15-20 minutes plus a break for all three sections, including setup and saving. Each trial: 3 seconds to get ready, 2 seconds to hold, then 1 second to relax. Keep this tab visible; use Pause before leaving it.",
+        "Allow 5-6 minutes for the TEST session, plus setup and saving. Each trial: 3 seconds to get ready, 2 seconds to hold, then 1 second to relax. Keep this tab visible; use Pause before leaving it.",
+        "session timing text",
+    )
+    html = _replace_once(
+        html,
+        '<p><strong>Unknown trials</strong></p>\n'
+        '        <p class="muted">Follow the shown prompt and avoid the enrolled poses.</p>',
+        '<p><strong>TEST session</strong></p>\n'
+        '        <p class="muted">Record only the shown TEST poses for this assigned kit.</p>',
+        "unknown trial instructions",
+    )
+    entrypoint = '<script type="module" src="collector.mjs"></script>'
+    return _replace_once(html, entrypoint, f"{_ticket_script(ticket)}\n{entrypoint}", "collector entrypoint")
+
+
+def assemble_html(assets: Path, model: Path, frozen: Path | None = None) -> str:
     html = (ROOT / "participant/collector.html").read_text(encoding="utf-8")
     module = (ROOT / "participant/collector.mjs").read_text(encoding="utf-8")
     if "</script" in module.lower():
         raise ValueError("Module contains an inline script terminator")
+    if frozen is not None:
+        html = _apply_frozen_test_html(html, browser_test_ticket(frozen))
     entrypoint = '<script type="module" src="collector.mjs"></script>'
     if html.count(entrypoint) != 1:
         raise ValueError("Expected one collector entrypoint")
@@ -46,7 +125,7 @@ def assemble_html(assets: Path, model: Path) -> str:
     return html.replace("__MODEL_BASE64__", base64.b64encode(verified_bytes(model, MODEL_SHA)).decode())
 
 
-def write_guide(path: Path, platform: str) -> None:
+def write_guide(path: Path, platform: str, frozen: Path | None = None) -> None:
     from reportlab.lib import colors
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
     from reportlab.lib.units import inch
@@ -70,6 +149,74 @@ def write_guide(path: Path, platform: str) -> None:
     def step(title: str, text: str) -> None:
         p(title, "Heading2")
         p(text)
+
+    test_ticket = browser_test_ticket(frozen) if frozen is not None else None
+    if test_ticket is not None:
+        target = str(test_ticket["target_participant"])
+        p("GestureForge", "Title")
+        p(f"TEST recording guide | {platform}", "Heading1")
+        p(f"This kit is assigned to pseudonym <b>{target}</b>. Use it for one fresh "
+          "48-trial TEST session only. A webcam, your right hand and an existing browser "
+          "are enough; nothing is uploaded automatically.", "Lead")
+        p("Read the consent text in the recorder and tick the permission boxes only if you agree. "
+          "Record today's TEST conditions before starting: lighting, background, sitting or "
+          "standing, and approximate hand-to-camera distance. Do not import old development data "
+          "or repeat earlier TRAIN/VALIDATION recordings.")
+        step("1  Save, unzip and open", (
+            "Save the Windows ZIP from the email. In Downloads, right-click the ZIP, choose "
+            "<b>Extract All</b>, then <b>Extract</b>. Open the new folder and double-click "
+            "<b>START_HERE.html</b>."
+            if platform == "Windows" else
+            "Save the macOS ZIP from the email. In Finder, open Downloads and double-click the ZIP. "
+            "Open the folder that appears and double-click <b>START_HERE.html</b>."
+        ) + " Keep this same extracted kit for backup or resume. Do not run from inside the ZIP.")
+        step("2  Check the camera, then start TEST",
+             "Click <b>Start Camera</b> and allow camera access. Keep your entire right hand visible, "
+             "palm towards the camera, with light on your hand. The preview is mirrored. Check for "
+             "<b>Right hand detected</b>, then click <b>Start Selected Session</b>.")
+        rows = [[Paragraph("On screen", styles["BodyText"]), Paragraph("Use your RIGHT hand", styles["BodyText"])]]
+        for label, pose in [
+            ("NEUTRAL", "Open palm towards the camera; fingers extended."),
+            ("NEXT", "Closed fist towards the camera."),
+            ("PREVIOUS", "Thumb pointing up; other fingers folded."),
+            ("BOOKMARK", "Index and middle fingers extended; other fingers folded."),
+        ]:
+            rows.append([Paragraph(f"<b>{label}</b>", styles["BodyText"]), Paragraph(pose, styles["BodyText"])])
+        table = Table(rows, colWidths=[1.15 * inch, 5.25 * inch], hAlign="LEFT")
+        table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#dceef2")),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f5f8fa"), colors.white]),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 9), ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+            ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        content += [table, Spacer(1, 12)]
+        p("Plan about <b>5-6 minutes</b> once the detector is ready. Each trial gives 3 seconds "
+          "to prepare, about 2 seconds to hold the pose, then 1 second to relax. Complete "
+          "<b>48 / 48 trials</b> if possible.")
+        p("Keep the computer awake and keep this tab visible. If you click <b>Pause</b> or switch "
+          "tabs and the camera stops, click <b>Start Camera</b>, wait for <b>Right hand detected</b>, "
+          "then click <b>Start Selected Session</b> to continue.")
+        step("3  Save and return the ZIP",
+             f"Click <b>Export Return ZIP</b> at the end, or after pausing if interrupted. Send "
+             f"<b>EMAIL_THIS_{target}_test.zip</b>. If the file is marked "
+             f"<b>EMAIL_THIS_{target}_PARTIAL_test.zip</b>, keep it and report the interruption "
+             "instead of deleting trials or repeating the session.")
+        p("To resume, open <b>START_HERE.html</b> from this same TEST kit and recover the newest "
+          "PARTIAL return ZIP. Do not unzip the return ZIP, clear the draft, delete mistakes, "
+          "or start again unless the team asks.")
+
+        def test_footer(canvas, doc):
+            canvas.setFont("Helvetica", 8)
+            canvas.setFillColor(colors.HexColor("#506070"))
+            canvas.drawString(42, 24, f"GestureForge | TEST collection | {target}")
+            canvas.drawRightString(553, 24, str(doc.page))
+
+        SimpleDocTemplate(str(path), pagesize=(595, 842), leftMargin=42, rightMargin=42,
+                          topMargin=36, bottomMargin=42, title=f"GestureForge {platform} TEST guide",
+                          author="GestureForge team").build(
+                              content, onFirstPage=test_footer, onLaterPages=test_footer)
+        return
 
     p("GestureForge", "Title")
     p(f"Participant recording guide | {platform}", "Heading1")
@@ -207,9 +354,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--assets", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
+    parser.add_argument("--frozen", type=Path, help="Frozen paired TEST config for locked TEST kits")
     parser.add_argument("--output", type=Path, default=ROOT / ".local/participant-deliverables")
     args = parser.parse_args()
-    html = assemble_html(args.assets, args.model)
+    test_ticket = browser_test_ticket(args.frozen) if args.frozen is not None else None
+    html = assemble_html(args.assets, args.model, args.frozen)
     args.output.mkdir(parents=True, exist_ok=True)
     notices = (ROOT / "participant/THIRD_PARTY_NOTICES.txt").read_bytes()
     packages: list[dict[str, str | int]] = []
@@ -219,12 +368,18 @@ def main() -> None:
         "collector_sha256": sha256(html.encode()).hexdigest(),
         "runtime": "MediaPipe Tasks Vision Web 1.1.0, bundled non-SIMD WASM",
         "model_sha256": MODEL_SHA,
+        "collection_mode": "test" if test_ticket else "development",
         "device_validation": "Windows/macOS extracted-file camera checks not yet recorded",
         "packages": packages}
+    if test_ticket:
+        report["test_ticket"] = test_ticket
     for platform in ("Windows", "macOS"):
         guide = args.output / f"READ_FIRST_{platform}.pdf"
-        write_guide(guide, platform)
-        target = args.output / f"GestureForge_Participant_{platform}.zip"
+        write_guide(guide, platform, args.frozen)
+        target = (
+            args.output / f"GestureForge_{test_ticket['target_participant']}_TEST_{platform}.zip"
+            if test_ticket else args.output / f"GestureForge_Participant_{platform}.zip"
+        )
         with ZipFile(target, "w", compression=ZIP_DEFLATED, compresslevel=9) as archive:
             archive.writestr("START_HERE.html", html)
             archive.write(guide, "READ_FIRST.pdf")

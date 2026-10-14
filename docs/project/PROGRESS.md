@@ -4,10 +4,10 @@ Snapshot: 14 October 2026. This measures the final-project extension, not the al
 
 ## Current goal and handoff progress — 14 October
 
-**Goal:** turn the received development evidence into reviewed H2 recognition
-settings and a GF-P17 freeze, then acquire untouched same-pose TEST data for
-GF-P18. Hau Jie's H1 private audit handoff is now **received and verified**;
-he does not need to resend it or repeat the earlier parameter search.
+**Goal:** acquire untouched same-pose TEST data for GF-P18 using the two reviewed
+frozen comparisons. **GF-P17 is accepted** against its original preparation
+criterion. Hau Jie's H1/H2 handoffs are received and verified; no resend or
+repeated development search is required.
 
 The supplied `PRIVATE_H1_SEND_TO_DESTON_v2.zip` passes all 33 member checksums.
 The nine manifest/NPZ pairs match the baseline, comparison and audit inventory:
@@ -20,19 +20,43 @@ selected outer model. See the [dated receipt review](H1_SAVED_REPORT_AUDIT_2026_
 | Step | Current status | Owner / next action |
 |---|---|---|
 | H1 private audit delivery and receipt verification | Complete, 14 October | Hau Jie delivered; Deston's local checks passed. No resend needed |
-| H2 development diagnosis and proposed settings | In progress | Hau Jie audits the already-sent development handoff and returns settings, provenance and limitations |
-| Newest contributor's starter exclusion and session break | Unconfirmed | Deston and Hau Jie establish the two outstanding facts before treating this contributor as eligible |
-| GF-P17 configuration freeze and TEST acquisition route | Not complete | Deston reviews H2 inputs, settings, permission scope and the proposed route before TEST |
-| GF-P18 independent paired TEST evaluation | Not started | Hau Jie coordinates eligible participants after freeze; Deston reproduces and reviews scores |
+| H2 development diagnosis and proposed settings | Reviewed and selected, 14 October | PR #31 merged; 17 source hashes, eight evaluator runs and all 48 bounded comparison rows verified; after-development selection rationale independently reviewed |
+| P1543 starter exclusion/break and H1 physical poses | Confirmed by user, 14 October | All four H1 right-hand mappings match the browser protocol; preserve this attributed confirmation |
+| GF-P17 configuration freeze and TEST acquisition route | Accepted, 14 October | Two private freezes pin the reviewed settings and development inputs; browser TEST route, four packages and PDF guides verified as software artifacts |
+| GF-P18 independent paired TEST evaluation | Awaiting physical collection | Coordinator checks the extracted TEST kit on the intended device before distribution; Hau Jie coordinates fresh sessions, Deston reproduces and reviews scores |
 
-This closes the **H1 handoff substep**, not a whole weighted task. GF-P17 and
-GF-P18 remain In Progress; the [accepted completion table](#completion-measure)
-remains Deston 21.3%, Hau Jie 68.0%, Javier 65.8%, team 51.6% (15/29 tasks).
-The archive is a historical development snapshot, not new TEST data. No model
-was refitted, search rerun or deployment starter approved. Inputs and full
-results remain local under the supplied internal-team scope; receipt does not
-grant GitHub, public-package or marker redistribution permission. The archive's
-older H2 recruitment notes are superseded by the current development returns.
+The [reviewed selection and acceptance record](H2_EVALUATION_SELECTION_2026_10_14.md)
+closes the original 12-hour GF-P17 preparation task. The
+[accepted completion table](#completion-measure) is now Deston 21.3%, Hau Jie
+84.0%, Javier 65.8%, team 57.0% (16/29 tasks). Deston's shared review and tooling
+contribution does not reassign the original task weight. GF-P18 remains open.
+P67's selected personal comparator still accepts 12/40 development negative
+command samples; P1543's accepts 10/40. No examined setting eliminated negative
+command acceptance. These are classifier predictions, not live actions. The
+freezes are for offline evaluation only: no actual TEST has been collected or
+scored, and no deployment starter is approved. Inputs and full results remain
+local; H1 internal-team permission does not grant public or marker redistribution.
+
+The final local run passed Ruff, mypy across 100 files, **952 tests**, both app
+startup modes and synthetic evaluation. **30 JavaScript checks** passed
+separately, including TEST collection, recovery and export behavior. One Windows
+symlink test was skipped; the malformed-ZIP fixture produced its expected warning.
+The first full run hit its 600-second limit after over 90% without an assertion
+failure; the final run used a longer limit and one numerical worker thread and
+completed successfully. The two typing errors from the first run were corrected.
+Independent code and acceptance reviews found no remaining blockers.
+
+All four participant-specific ZIPs pass integrity/hash checks; their PDF guides
+were rendered and inspected. The extracted P67 page opens with a locked target,
+TEST-only session and 48-trial total. This was a camera-free interface check.
+The new route still needs extracted-file camera, pause/recovery and export checks
+on the intended devices before participant distribution. It does not replace
+Studio laptop-B, physical recognition or final release verification.
+
+The [H2 review record](H2_DEVELOPMENT_DIAGNOSIS_2026_10_14.md#destons-receipt-and-reproduction-review--14-october)
+distinguishes the reproduced numerical findings from the user-confirmed
+participant facts and final evaluation gates. No repeated H1/H2 search or package resend is
+needed to establish this receipt.
 
 ## Current work on 13 October
 
@@ -467,11 +491,16 @@ Progress = the original estimated hours of fully completed tasks / the total ori
 | Owner | Completed task weight / planned | Verified completion |
 | :--- | ---: | ---: |
 | Deston | 16 / 75 | 21.3% |
-| Hau Jie | 51 / 75 | 68.0% |
+| Hau Jie | 63 / 75 | 84.0% |
 | Javier | 48 / 73 | 65.8% |
-| Team | 115 / 223 | 51.6% |
+| Team | 127 / 223 | 57.0% |
 
-Fifteen of 29 tasks are complete. The current acceptance adds GF-P12 (selected-pose repair software, 8 hours) to the earlier 5 October additions: GF-P07 (guided enrolment, 10 hours), GF-P13 (bounded dispatcher, 10 hours) and GF-P28 (starter feasibility investigation, 10 hours). The existing accepted tasks are GF-P01, GF-P02, GF-P03, GF-P05, GF-P06, GF-P08, GF-P09, GF-P11, GF-P29, GF-P31 and GF-P32. Original owners, task weights, requirements and dependency fields are unchanged.
+Sixteen of 29 tasks are complete. The 14 October acceptance adds GF-P17
+(experiment preparation and frozen configurations, 12 hours) to GF-P01, GF-P02,
+GF-P03, GF-P05, GF-P06, GF-P07, GF-P08, GF-P09, GF-P11, GF-P12, GF-P13, GF-P28,
+GF-P29, GF-P31 and GF-P32. Original owners, weights, requirements and dependencies
+are unchanged. GF-P17's completed preparation does not close GF-P18's real TEST
+comparison or approve a deployment starter.
 
 The new decisions use the original criteria and handoffs at `223c8c3`, current software checks and attributed evidence already delivered by teammates. GF-P13 combines persistent duplicate suppression, typed no-shell dispatch and release/recovery regressions with Javier's [laptop-A Camera observations](../evidence/WINDOWS_RESULTS_2026-10-02.md). Broader two-device integrated cases remain GF-P19. GF-P28 accepts Hau Jie's [person-separated feasibility study](STARTER_EVALUATION_CHECKPOINT.md), including its unsuccessful outcome, internal-use-only permissions and first-use risks. Private P02/P03 measurements were not independently rerun; no qualifying or redistributable starter is claimed.
 

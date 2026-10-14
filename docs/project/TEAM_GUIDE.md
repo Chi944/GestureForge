@@ -12,23 +12,28 @@ trial inventories reconcile with the supplied private files. This closes the H1
 handoff substep only: it does not approve a deployment starter, public/marker
 redistribution, H2 settings, freeze review or final TEST.
 
-**H2 collection update:** two complete development returns and one closed
-TRAIN-only contribution have arrived. The newest macOS/Safari return has all
-104 trials / 520 scheduled records (497 valid, 23 invalid); the user reports no
-collection issues and confirms the supplied poses. Its starter independence and
-break before VALIDATION still need confirmation. Its generic condition notes
-cannot establish actual recording conditions. Do not ask for more recordings
-before reviewing the existing data.
-
-Baseline kNN and SVM (multiplier 2.0, margin 1.5) each scored 0.382 validation macro-F1 for the newest return;
-all NEUTRAL trials were rejected and 10/40 negative sample predictions were
-accepted commands. Hau Jie should diagnose these development results and propose
-bounded settings, not claim a deployment pass. Keep both complete contributors
-excluded from starter fitting/tuning if they are the intended independent
-evaluation participants. The closed contribution remains 48 TRAIN trials / 240
-usable samples with no recovery, further recording or TEST requested. Review
-pose/provenance before pooling it. GPT can prepare inputs and configurations;
-final TEST still waits for Deston's freeze and a reviewed acquisition route.
+**H2 diagnosis reviewed:** [PR #31](https://github.com/Chi944/GestureForge_304/pull/31)
+is merged. Deston's independent reproduction checked 17 original source-file
+hashes, eight evaluator runs and all 48 bounded candidate rows against Hau Jie's
+private packet. P67's proposed kNN settings (multiplier 2.5 / margin 1.75) give
+development macro-F1 0.790 with 12/40 negative sample predictions accepted as
+commands. P1543's proposed SVM settings (2.5 / 1.25) give 0.667 with 10/40.
+These are classifier samples, not live actions; neither proposal qualifies for
+deployment. No examined setting eliminates negative command predictions.
+On 14 October Deston confirmed P1543 was excluded from earlier starter fitting
+and tuning and took a break before VALIDATION. He also confirmed H1's four
+right-hand poses match the browser protocol. These are user-confirmed provenance
+facts, not observations made by the evaluator. Keep P67 and P1543 excluded from
+starter fitting/tuning for the independent comparison. Deston retains these
+settings under the explicit after-development policy in the independently
+reviewed [selection record](H2_EVALUATION_SELECTION_2026_10_14.md). Both private
+freezes, their input/settings pins and four participant-specific ZIP hashes are
+verified. **GF-P17 is accepted as experiment preparation.** GF-P18 still needs
+real untouched TEST returns and paired results. Before distributing the new TEST
+kits, a coordinator must check an extracted kit on the intended device/browser:
+camera permission, a trial, pause and recovery. These physical checks have not
+been performed for the new TEST route; coordinator trial data must not enter the
+participants' TEST returns.
 
 GF-P12's current personal LIVE protocol is now `gf-p12-v4`: three five-second
 windows for each enrolled action pose plus NEUTRAL, followed by ten negative
@@ -47,13 +52,17 @@ Extract the new Studio ZIP into a fresh folder and keep old private profiles,
 datasets and `.local` evidence outside the replacement folder unless the guide
 explicitly tells you to import them.
 
-Latest source verification on 13 October passed 933 tests (one Windows symlink
-permission skip), Ruff, mypy, both startup modes and synthetic evaluation on
-`a914f48`; see [the progress record](PROGRESS.md). The earlier extracted
+Latest source verification on 14 October passed 952 tests (one Windows symlink
+permission skip and the expected duplicate-ZIP test warning), Ruff, mypy, both
+startup modes and synthetic evaluation; 30 Node collector checks also passed.
+The receipt records working-tree changes based on `8204c6d` and exact source
+hashes, rather than claiming those changes were already in that commit; see
+[the progress record](PROGRESS.md). The earlier extracted
 Practice/Live suite passed 153 checks on its recorded package. Follow each
 Studio archive's matching verification record; those checks do not verify a newer archive. These
 checks do not establish recognition on a participant's hand or native device
-acceptance. No additional Trello/backlog task is Done from the protocol change.
+acceptance. GF-P17 acceptance also requires the verified private freezes and
+reviewed provenance/selection decision; test counts alone do not close it.
 
 Read the **Next delivery** table at the top of your individual brief first.
 It supersedes older recording priorities. Return small, reviewable deliveries
@@ -62,40 +71,43 @@ as they become available instead of waiting for your entire lane to finish.
 | Delivery | Execution | Deston's review / final gate |
 |---|---|---|
 | H1 / GF-P17 preparation | PR #27's aggregate audit is merged; Hau Jie's private H1 packet is received and verified for hashes, saved reports and inventories | H1 remains internal-team evidence only; it does not approve a deployment starter or public/marker redistribution |
-| H2 / GF-P17 → GF-P18 | Hau Jie audits the two complete development returns and the closed TRAIN-only contribution first, checks remaining eligibility facts, and prepares personal settings plus the starter baseline; untouched TEST follows the freeze | Freeze review before TEST; reproduce the paired comparison and accept results, including failed targets. This task does not depend on the GF-P20 live study or a successful deployment starter |
+| H2 / GF-P17 → GF-P18 | GF-P17 is accepted: private freezes, pins, four kit hashes, provenance and the selection policy are verified. After the coordinator's extracted-kit camera/pause/recovery check, Hau Jie coordinates P67/P1543's fresh 48-trial TEST sessions | GF-P18 requires actual untouched TEST and reproducible paired results, including failed targets. Preparation does not qualify a deployment model or depend on GF-P20/a successful deployment starter |
 | J1 / GF-P19 | PR #28's restore retest and PR #29's Preview focus/Camera-off launch checks are merged; Javier completes remaining laptop-A native target/recovery and active-capture Camera cases | Preserve PR #24/#26/#28/#29 build boundaries. Active-capture handoff needs a genuine full readiness grant; historical real-launch restore/no-replay and laptop B remain unverified |
 | H3 + J2 / GF-P19, GF-P23 | Hau Jie operates laptop B; Javier coordinates and consolidates the two-device matrix, fresh install, offline core and thirty-minute Studio/shutdown evidence | Review evidence and affected retests after GF-P21/GF-P22; no new second-device result is yet claimed |
 | J3 / GF-P20 | Javier coordinates observer records, condition order, actual hold/negative/latency sessions and disjoint exports; Hau Jie supplies frozen recognition inputs | Deston analyses/replays measurements and accepts the integrated study after GF-P16/GF-P17. Unavailable standard mode is reported, never silently replaced |
 | H4 + J4 / GF-P24, GF-P25 | Hau Jie drafts methods/limitations; Javier drafts the guide and demo storyboard now | Final results, guide-only/native release evidence and complete demo are still required before GF-P26/GF-P27 |
 
 Original task owners, weights, dependencies and acceptance criteria stay fixed.
-Delegation shifts execution, not accountability. GF-P17/GF-P24/GF-P25 are selected
-for preparation now; their final dependencies do not prevent drafting or recruitment.
+Accepted task weights are Deston 16/75 (21.3%), Hau Jie 63/75 (84.0%),
+Javier 48/73 (65.8%), and team 127/223 (57.0%): 16/29 tasks Done.
+GF-P17 is accepted; GF-P18 is not yet Done. Delegation shifts execution, not
+accountability. GF-P24/GF-P25 drafting can proceed before their final dependencies.
 Private participant data, full exports, videos and Word deliverables go through
 the team's existing private folder/archive, not Git/Trello. Do not update the private
 prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 14 October, after the H1 private handoff was verified. All three
+Current as of 14 October, after H1 verification and H2 reproduction. All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Resolve P1543's two unanswered facts with the participant and Hau Jie: exclusion from earlier starter fitting/tuning, and a break before VALIDATION. Review Hau Jie's H2 diagnosis/settings and the proposed freeze. Your development handoff is already sent; no new recording is requested now. | Review/integrate incoming PRs. Reproduce development results, check configuration completeness and input hashes, and maintain the requirement/evidence matrix. Specify the browser-compatible TEST route for review; implement/verify it after the collection protocol is agreed, before TEST begins. |
-| Hau Jie | Help resolve P1543's eligibility facts. Agree the Windows build/cases with Javier and operate your own machine as laptop B; record setup assistance, offline behavior, thirty-minute Studio operation and shutdown. | Use the verified H1 packet as fixed internal evidence. Diagnose rejected NEUTRAL and UNKNOWN accepted as BOOKMARK; compare bounded settings on development data and propose complete personal configurations plus the independent starter baseline. Preserve failed baselines. Draft GF-P24 methods/limitations privately; no repeated H1 search without a diagnosed reason. |
+| Deston | Retain final direction and acceptance. Arrange the coordinator's physical extracted-kit check before participant distribution, then hand off the correct frozen kit for each participant. | Private freezes, packaging and automated verification are complete. Import and score actual TEST returns against both frozen comparators when received; keep the evidence matrix current and review incoming PRs without repeating H1/H2 searches. |
+| Hau Jie | Check the extracted frozen kit's camera, trial, pause and recovery on the intended device/browser before distribution; keep coordinator checks separate from participant data. Then coordinate one fresh 48-trial TEST session each for P67/P1543 and return their ZIPs privately. Operate laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. | Use the reviewed selection record and confirmed provenance; preserve failed baselines and negative-command results in the private GF-P24 methods/limitations draft. Help audit TEST return completeness without tuning on results. No repeated rationale, confirmation or H1/H2 resend is requested. |
 | Javier | Agree one identified build and remaining case matrix with Hau Jie. Finish laptop-A trusted-app/association, failure/retry and restore-after-real-launch/no-replay cases. Diagnose the short P03 PREVIOUS/wrong-action issue before a fresh full Practice attempt; run active-capture Camera only after a genuine grant. Coordinate Hau Jie's laptop-B checks. | Consolidate the two-device results without adding overlapping exports; fix demonstrated viewer/shortcut/runbook defects. Draft GF-P25 guide/storyboard and prepare the later observer-study order and recording forms. Preserve accepted PR #24/#26/#28/#29 cases; rerun only checks affected by new faults or changes. |
 
-**Next returns:** Hau Jie sends the H2 diagnosis/settings/provenance;
-Javier returns a focused remaining-case evidence PR and the attributed laptop-B
-matrix; Deston returns review findings and, when ready, the approved freeze.
+**Next returns:** the coordinator records the extracted-kit physical check,
+then Hau Jie coordinates the two fresh TEST returns and sends
+laptop-B observations through Javier. Javier returns a focused remaining-case
+evidence PR and the attributed laptop-B matrix.
 Methods and guide/storyboard drafts can arrive separately instead of holding up
 these deliveries. GPT prepares and checks evidence; people supply observed
 outcomes, participant facts and final review decisions.
 
-**Then:** after the freeze and TEST acquisition route are reviewed, Hau Jie
-coordinates untouched TEST for two eligible participants and Deston reproduces
-GF-P18. GF-P20's measured live study retains GF-P16/GF-P17 dependencies. Final
+**Then:** Deston reproduces GF-P18 from both actual untouched TEST returns.
+GF-P20's measured live study retains its GF-P16 integration gate; accepted
+GF-P17 preparation does not grant deployment or live readiness. Final
 GF-P23 release acceptance follows defect closure and affected retests; Windows
 checks can begin now. Poor scores remain valid evaluation results, not starter
 deployment approval. P69 stays closed TRAIN-only with no further collection.
@@ -122,12 +134,12 @@ for hash/report/inventory consistency as internal-team evidence.
 No newer starter recording is requested until D1 diagnoses a need.
 
 Deston's next acceptance opportunity is GF-P18 (10 task-weight hours): the
-reviewable frozen packet and actual paired results would take his accepted
-total from 16/75 to 26/75 (34.7%) and the team from 115/223 to 125/223 (56.1%).
+actual paired results against the verified frozen packet would take his accepted
+total from 16/75 to 26/75 (34.7%) and the team from 127/223 to 137/223 (61.4%).
 These are conditional totals, not current completion claims.
 
 
-**5 October integration update:** GF-P10's approved-standard loader and six-action activation route are implemented with generated-fixture verification. No standard model is enabled: the recorded bounded comparison found no qualifying candidate and redistribution permission is unresolved. Personal LIVE still requires full Practice. PR #24 is merged as partial laptop-A evidence; Javier continues the missing native cases. PR #25 delivers GF-P12 selected-pose repair with Deston's shared-camera/Profile integration, explicit candidate create and rollback path; independent review accepts it against the original software criterion. Deston keeps final integration and release acceptance. See current PROGRESS.md; accepted completion is 51.6% (15/29 tasks).
+**Historical 5 October integration update:** GF-P10's approved-standard loader and six-action activation route are implemented with generated-fixture verification. No standard model is enabled: the recorded bounded comparison found no qualifying candidate and redistribution permission is unresolved. Personal LIVE still requires full Practice. PR #24 is merged as partial laptop-A evidence; Javier continues the missing native cases. PR #25 delivers GF-P12 selected-pose repair with Deston's shared-camera/Profile integration, explicit candidate create and rollback path; independent review accepts it against the original software criterion. Deston keeps final integration and release acceptance. Accepted completion at that checkpoint was 51.6% (15/29 tasks); use the current totals above and PROGRESS.md.
 
 GF-P16's standard path remains blocked wherever it depends on GF-P10. Personal
 LIVE software and manual paths may continue through their separate gates.
@@ -145,7 +157,7 @@ The kickoff pack includes the source baseline and Deston's tested routing founda
 | Member | Owns | Current next step | Reviewer |
 |---|---|---|---|
 | Deston | Product direction, shared contracts/controller/routing, `app.py`, `__main__.py`, screen design, integration, acceptance and release | GF-P12 software integration accepted; seven open integration/evaluation/release tasks still need real inputs, hardware or final deliverables, so Deston's task percentage is unchanged | Teammate review; Deston makes final release decision |
-| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | H2 independent data/freeze packet; H3 laptop-B checks; H4 methods draft, in [your brief](HAU_JIE_HANDOFF.md#next-delivery--assigned-7-october) | Deston |
+| Hau Jie | `collect.py`, `dataset.py`, `models.py`, `evaluate.py`; new profiles/enrolment/practice/starter modules and their tests | Coordinate P67/P1543's fresh TEST after the verified frozen kit handoff; H3 laptop-B checks; H4 methods draft, in [your brief](HAU_JIE_HANDOFF.md#next-delivery--assigned-7-october) | Deston |
 | Javier | `viewer.py`; new workspace/runbook/shortcut modules and widgets, session summary, guide and video draft | J1 remaining target-association, failure/retry, historical real-launch restore/no-replay and active-capture Camera handoff cases; J2 device/release evidence; J3 observer-study coordination; J4 guide/storyboard, in [your brief](JAVIER_HANDOFF.md#next-delivery--assigned-7-october) | Deston |
 
 Manual execution is delegated to Hau Jie and Javier in the priorities above;

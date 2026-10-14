@@ -22,10 +22,95 @@ import {
   startCamera,
   startCollection,
   validateParticipantId,
+  validateCollection,
+  draftStorageKey,
 } from "../participant/collector.mjs";
 
 const trial = { split: "train", label: "NEXT", trial_id: "train-NEXT-01" };
 const landmarks = Array.from({ length: 21 }, (_, i) => [i, i + 0.1, i + 0.2]);
+const testTicket = {
+  schema_version: 1, protocol: "gestureforge-browser-test-v1", paired_protocol: "gf-p18-positive-test-v1",
+  target_participant: "P04", config_fingerprint: "a".repeat(64), frozen_integrity_sha256: "b".repeat(64),
+  pose_set_id: "standard-v1", hand: "Right",
+};
+
+test("frozen TEST uses 48 positive trials and isolates every freeze from development", () => {
+  const plan = makeTrialPlan(testTicket);
+  assert.equal(plan.length, 48);
+  assert.deepEqual([...new Set(plan.map(row => row.split))], ["test"]);
+  for (const label of LABELS) assert.equal(plan.filter(row => row.label === label).length, 12);
+  assert.notEqual(draftStorageKey(), draftStorageKey(testTicket));
+  assert.notEqual(draftStorageKey(testTicket), draftStorageKey({ ...testTicket, config_fingerprint: "c".repeat(64) }));
+  assert.notEqual(draftStorageKey(testTicket), draftStorageKey({ ...testTicket, target_participant: "P05" }));
+  assert.throws(() => makeTrialPlan({ ...testTicket, hand: "Left" }), /ticket/);
+});
+
+test("TEST recovery retains invalid trials, finishes the plan, exports and restores only the same ticket", async () => {
+  const initial = stampRecords(new SampleScheduler(makeTrialPlan(testTicket)[0], 0).finalize("paused_before_sample"), "P04", testTicket);
+  const collection = makeCollection({
+    participantId: "P04", trainConditions: "bright room", validationConditions: "", testTicket,
+    recordedAt: "2026-10-14T00:00:00Z", sessionStartedAt: { test: "2026-10-14T00:00:01Z" }, records: initial,
+  });
+  const zip = makeStoredZip({ "collection.json": JSON.stringify(collection) });
+  const el = { ...fakeCollectionElements({ split: "test", validationConditions: "" }), ...fakeImportElements(zip) };
+  const state = { ...fakeCollectionState(), testTicket };
+  const storageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  const saved = new Map();
+  globalThis.localStorage = { getItem: key => saved.get(key), setItem: (key, value) => saved.set(key, value) };
+  const restoreClock = installCollectionClock(10000);
+  const restoreBrowser = installExportBrowser();
+  try {
+    await importZip(el, state);
+    assert.equal(el.sessionSelect.value, "test");
+    assert.equal(el.participantId.disabled, true);
+    assert.equal(el.trainConditions.disabled, true);
+    restoreClock.bind(state);
+    await startCollection(el, state);
+    assert.equal(state.records.length, 240);
+    assert.deepEqual(state.records.slice(0, 5), initial);
+    assert.match(el.progressText.textContent, /48 \/ 48/);
+    assert.match(el.detail.textContent, /All 48 trials/);
+    assert.equal(saved.has(draftStorageKey()), false);
+    exportZip(el, state);
+    const exported = await restoreBrowser.exportedZip();
+    assert.equal(exported.name, "EMAIL_THIS_P04_test.zip");
+    assert.equal(readOwnCollectionZip(exported.bytes, testTicket).records.length, 240);
+    assert.throws(() => readOwnCollectionZip(exported.bytes), /protocol/);
+    assert.throws(() => readOwnCollectionZip(exported.bytes, { ...testTicket, config_fingerprint: "c".repeat(64) }), /ticket/);
+    const restored = { ...fakeCollectionState(), testTicket };
+    restoreDraft(el, restored);
+    assert.deepEqual(restored.records, state.records);
+    const wrong = { ...fakeCollectionState(), testTicket: { ...testTicket, config_fingerprint: "c".repeat(64) } };
+    saved.set(draftStorageKey(wrong.testTicket), saved.get(draftStorageKey(testTicket)));
+    restoreDraft(el, wrong);
+    assert.deepEqual(wrong.records, []);
+    assert.match(el.detail.textContent, /could not be restored/);
+    saved.set(draftStorageKey(), saved.get(draftStorageKey(testTicket)));
+    const development = fakeCollectionState();
+    restoreDraft(el, development);
+    assert.deepEqual(development.records, []);
+  } finally {
+    restoreClock(); restoreBrowser(); restoreGlobalProperty("localStorage", storageDescriptor);
+  }
+});
+
+test("TEST collection rejects relabelled development, wrong participant, mixed splits and omitted slots", () => {
+  const records = stampRecords(new SampleScheduler(makeTrialPlan(testTicket)[0], 0).finalize(), "P04", testTicket);
+  const collection = makeCollection({
+    participantId: "P04", trainConditions: "notes", testTicket, recordedAt: "2026-10-14T00:00:00Z",
+    sessionStartedAt: { test: "2026-10-14T00:00:01Z" }, records,
+  });
+  assert.equal(validateCollection(collection, testTicket), collection);
+  for (const mutate of [
+    value => { value.participant_id = "P05"; },
+    value => { value.records[0].split = "train"; },
+    value => { value.records[0].trial_id = "train-NEUTRAL-01"; },
+    value => { value.records.pop(); },
+  ]) {
+    const changed = structuredClone(collection); mutate(changed);
+    assert.throws(() => validateCollection(changed, testTicket));
+  }
+});
 
 test("export requires consent and clearing a draft removes the old person's agreement", () => {
   const el = Object.fromEntries([

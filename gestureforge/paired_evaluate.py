@@ -8,6 +8,7 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path
+import re
 from time import perf_counter
 from typing import Any
 from uuid import uuid4
@@ -18,13 +19,14 @@ from .contracts import validate_identifier
 from .dataset import DatasetBundle, SampleRecord, dataset_hashes, file_sha256, load_dataset, merge_datasets
 from .evaluate import UNKNOWN, _predict_records, classification_metrics, trial_majority_predictions
 from .models import train_model
-from .vocabulary import GestureVocabulary
+from .vocabulary import GestureVocabulary, LEGACY_VOCABULARY
 
 SCHEMA_VERSION = 1
 PROTOCOL_VERSION = "gf-p18-positive-test-v1"
 MODEL_NAMES = ("starter", "personal")
 DEV_SPLITS = {"train", "validation", "validation_negative"}
 TEST_SPLIT = "test"
+BROWSER_TEST_PROTOCOL = "gestureforge-browser-test-v1"
 SETTING_KEYS = {
     "algorithm",
     "multiplier",
@@ -43,6 +45,7 @@ def freeze_config(config_path: str | Path, output_path: str | Path) -> dict[str,
     output_base = Path(output_path).resolve().parent
     config = _read_json(Path(config_path))
     target = _text(config, "target_participant")
+    validate_identifier(target)
     hand = _hand(config.get("hand"), "hand")
     pose_set = _pose_set(config)
     frozen_models: dict[str, Any] = {}
@@ -146,7 +149,7 @@ def score_frozen(
         raise ValueError("at least one TEST manifest is required")
     test_bundles = [load_dataset(path) for path in test_paths]
     for bundle, path in zip(test_bundles, test_paths, strict=True):
-        _validate_test_bundle(bundle, path, target, hand, pose_id, vocabulary)
+        _validate_test_bundle(bundle, path, target, hand, pose_id, vocabulary, frozen)
     test_bundle = merge_datasets(test_bundles)
     _require_test_coverage(test_bundle, vocabulary)
     _reject_overlap(test_bundle, "TEST", train_sessions, train_trials, train_features)
@@ -284,6 +287,7 @@ def _validate_test_bundle(
     hand: str,
     pose_set_id: str,
     vocabulary: GestureVocabulary,
+    frozen: dict[str, Any],
 ) -> None:
     _validate_dataset_pose(bundle, path, pose_set_id, development=False)
     if bundle.vocabulary != vocabulary:
@@ -299,6 +303,26 @@ def _validate_test_bundle(
         raise ValueError("UNKNOWN records are excluded from this positive TEST evaluator")
     _validate_hand(bundle, hand, "TEST")
     _reject_mixed_provenance(bundle)
+    if bundle.metadata.get("import_source") == "browser-participant-kit" or "browser_collection" in bundle.metadata:
+        browser = _mapping(bundle.metadata.get("browser_collection"), "browser_collection")
+        ticket = _browser_test_ticket(frozen)
+        found_ticket = browser.get("test_ticket")
+        if (
+            bundle.metadata.get("import_source") != "browser-participant-kit"
+            or browser.get("protocol") != BROWSER_TEST_PROTOCOL or not isinstance(found_ticket, dict)
+            or type(found_ticket.get("schema_version")) is not int or found_ticket != ticket
+        ):
+            raise ValueError("browser TEST ticket does not match the frozen configuration")
+        from .import_participant import _trial_identity_hash
+
+        session = f"{target}-test-{ticket['config_fingerprint'][:32]}"
+        expected_slots = {
+            (session, _trial_identity_hash(target, session, f"test-{label}-{index:02d}"), label, sample)
+            for label in vocabulary.labels for index in range(1, 13) for sample in range(5)
+        }
+        actual_slots = {(row.session_id, row.trial_id, row.intended_label, row.sample_index) for row in bundle.records}
+        if actual_slots != expected_slots or len(bundle.records) != 240:
+            raise ValueError("browser TEST scoring requires all 48 planned trials and 240 sample slots; partial returns may be imported for recovery")
 
 
 def _validate_dataset_pose(bundle: DatasetBundle, path: Path, pose_set_id: str, *, development: bool) -> None:
@@ -560,13 +584,67 @@ def _resolve_pinned_path(pinned: dict[str, Any], base: Path) -> Path:
 
 
 def _validate_frozen(frozen: dict[str, Any]) -> None:
-    if frozen.get("schema_version") != SCHEMA_VERSION or frozen.get("protocol_version") != PROTOCOL_VERSION:
+    if (
+        type(frozen.get("schema_version")) is not int or frozen.get("schema_version") != SCHEMA_VERSION
+        or frozen.get("protocol_version") != PROTOCOL_VERSION
+    ):
         raise ValueError("unsupported frozen paired evaluation file")
     expected = frozen.get("integrity_sha256")
     if expected != _stable_hash(_without_keys(frozen, {"integrity_sha256"})):
         raise ValueError("frozen file integrity check failed")
-    if set(frozen.get("models", {})) != set(MODEL_NAMES):
+    if frozen.get("config_fingerprint") != _stable_hash(_without_keys(frozen, {"integrity_sha256", "config_fingerprint"})):
+        raise ValueError("frozen configuration fingerprint check failed")
+    validate_identifier(_text(frozen, "target_participant"))
+    _hand(frozen.get("hand"), "hand")
+    pose = _pose_set(frozen)
+    vocabulary = GestureVocabulary.from_mapping(frozen.get("vocabulary"))
+    _require_pose_descriptions(vocabulary, pose["descriptions"])
+    if set(_mapping(frozen.get("models"), "models")) != set(MODEL_NAMES):
         raise ValueError("frozen file must define starter and personal models")
+    for name in MODEL_NAMES:
+        model = _mapping(frozen["models"][name], name)
+        settings = _mapping(model.get("settings"), f"{name}.settings")
+        if set(settings) != SETTING_KEYS:
+            raise ValueError(f"{name}.settings must contain every frozen setting")
+        _model_settings(settings, f"{name}.settings")
+        pins = model.get("manifests")
+        if not isinstance(pins, list) or not pins:
+            raise ValueError(f"{name}.manifests must contain development fingerprints")
+        for value in pins:
+            pin = _mapping(value, "manifest fingerprint")
+            _text(pin, "path")
+            for key in ("manifest_sha256", "features_sha256"):
+                if re.fullmatch(r"[0-9a-f]{64}", _text(pin, key)) is None:
+                    raise ValueError(f"invalid {key}")
+
+
+def browser_test_ticket(frozen_path: str | Path) -> dict[str, Any]:
+    """Return only the public collection binding, never development paths or data."""
+    frozen = _read_json(Path(frozen_path))
+    _validate_frozen(frozen)
+    return _browser_test_ticket(frozen)
+
+
+def _browser_test_ticket(frozen: dict[str, Any]) -> dict[str, Any]:
+    target = frozen["target_participant"]
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,23}", target) is None:
+        raise ValueError("browser TEST target must be a 1-24 character participant pseudonym")
+    if (
+        frozen["hand"] != "Right"
+        or frozen["pose_set"]["id"] != "standard-v1"
+        or GestureVocabulary.from_mapping(frozen["vocabulary"]) != LEGACY_VOCABULARY
+    ):
+        raise ValueError("browser TEST requires Right hand and the standard-v1 legacy vocabulary")
+    return {
+        "schema_version": 1,
+        "protocol": BROWSER_TEST_PROTOCOL,
+        "paired_protocol": PROTOCOL_VERSION,
+        "target_participant": target,
+        "config_fingerprint": frozen["config_fingerprint"],
+        "frozen_integrity_sha256": frozen["integrity_sha256"],
+        "pose_set_id": "standard-v1",
+        "hand": "Right",
+    }
 
 
 def _fitted_revision(frozen: dict[str, Any], name: str) -> str:

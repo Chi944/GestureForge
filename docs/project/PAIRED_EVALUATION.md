@@ -101,9 +101,35 @@ explicitly documented new experiments.
 
 ## 3. Collect and score positive TEST
 
-Follow the [collection protocol](../DATA_COLLECTION.md#split-rules), using a
-separate TEST-only manifest. Keep all scheduled slots and failed detections.
-After collection, score the frozen comparison:
+For browser participants, build a **new participant-specific TEST kit** with
+`scripts/package_participant.py --frozen experiments/local/P04-frozen.json`,
+alongside the usual verified `--assets`, `--model` and separate `--output`
+arguments. See [participant kits](PARTICIPANT_KITS.md#separate-frozen-test-kits).
+The kit carries a small collection ticket, not the frozen file's private input
+paths, training data or model settings. It supports only the Right-hand
+`standard-v1` legacy vocabulary, with the four physical poses declared above.
+
+Collect 48 new positive trials (12 per pose, five scheduled slots each). Keep the
+same browser runtime/model and physical conventions as development. Use the TEST
+guide and a fresh session after freeze; do not relabel any earlier return. Import
+the new ZIP with its matching freeze:
+
+```powershell
+.\.venv\Scripts\python.exe -m gestureforge.import_participant EMAIL_THIS_P04_test.zip --frozen experiments/local/P04-frozen.json --output data/local/P04/test/manifest.json
+```
+
+The importer retains invalid detections and partial attempts. A partial return is
+evidence to preserve and recover, not a complete final comparison. Browser TEST
+scoring requires the matching ticket and all 48 trials. Drafts and recovery are
+isolated from development and other freezes. Ticket hashes guard accidental
+mix-ups and altered metadata; they cannot prove consent, honest labels or when a
+person first recorded or inspected data.
+
+The native [collection protocol](../DATA_COLLECTION.md#split-rules) remains
+available with a separate TEST-only manifest and matching pose ID. Its acquisition
+convention must be reviewed separately; do not silently substitute native
+collection for a browser-frozen experiment. Keep every scheduled slot and failed
+detection. After collection, score the frozen comparison:
 
 ```powershell
 .\.venv\Scripts\python.exe -m gestureforge.paired_evaluate score --frozen experiments/local/P04-frozen.json --test data/local/P04/test/manifest.json --output experiments/local/P04-paired-results.json
@@ -113,8 +139,9 @@ Both models fit only TRAIN rows. Validation and negative development rows remain
 part of the frozen provenance and leakage checks. Both then receive identical TEST
 rows. Each five-slot trial needs at least three agreeing predictions; invalid,
 missing or rejected samples contribute UNKNOWN. A genuine gesture rejected as
-UNKNOWN counts as a miss, not a removed trial. Entirely absent trials cannot be
-recovered from a manifest: audit the planned twelve trials per label separately.
+UNKNOWN counts as a miss, not a removed trial. Entirely absent native trials
+cannot be recovered from a manifest: audit the planned twelve trials per label
+separately. The browser TEST route checks this prescribed coverage explicitly.
 
 ## 4. Review and report
 

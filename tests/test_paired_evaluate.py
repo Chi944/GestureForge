@@ -1,8 +1,10 @@
 import json
+import shutil
 import subprocess
 import sys
 from dataclasses import replace
 from pathlib import Path
+from zipfile import ZipFile
 
 import numpy as np
 import pytest
@@ -10,6 +12,8 @@ import pytest
 from gestureforge.contracts import LABELS
 from gestureforge.dataset import SampleRecord, load_dataset, save_dataset
 from gestureforge.paired_evaluate import freeze_config, score_frozen
+from gestureforge.paired_evaluate import browser_test_ticket, _stable_hash, _without_keys
+from gestureforge.import_participant import import_browser_zip, MODEL_SHA256, RETENTION
 
 
 POSE_DESCRIPTIONS = {
@@ -455,3 +459,170 @@ def test_exclusive_publication_failure_cleans_temp_and_preserves_competing_repor
         paired._write_json_exclusive(output, {"result": "test"})
     assert output.read_text(encoding="utf-8") == "other writer"
     assert list(tmp_path.iterdir()) == [output]
+
+
+@pytest.fixture
+def browser_test_fixture(tmp_path):
+    """Fabricated data exercise the human import route; no participant data are used."""
+    config, starter, personal, _ = paired_fixture(tmp_path)
+    for path in (starter, personal):
+        bundle = load_dataset(path)
+        save_dataset(path, [replace(row, provenance="human") for row in bundle.records],
+                     bundle.features, dict(bundle.metadata, provenance="human"))
+    frozen = tmp_path / "frozen.json"
+    freeze_config(config, frozen)
+    ticket = browser_test_ticket(frozen)
+    session = f"P02-test-{ticket['config_fingerprint'][:32]}"
+    records: list[dict[str, object]] = []
+    for label in LABELS:
+        for trial in range(1, 13):
+            for sample in range(5):
+                records.append({
+                    "session_id": session, "trial_id": f"test-{label}-{trial:02d}",
+                    "split": "test", "intended_label": label, "sample_index": sample,
+                    "timestamp": float(len(records)), "frame_id": None, "hand_count": 0,
+                    "hand": None, "landmarks": None, "validity_reason": "paused_before_sample",
+                })
+    payload = {
+        "schema_version": 1, "protocol": ticket["protocol"], "test_ticket": ticket,
+        "participant_id": "P02", "hand": "Right",
+        "source": {"runtime": "mediapipe-tasks-vision-web", "version": "1.1.0", "model_sha256": MODEL_SHA256},
+        "consent": {"numeric_data": True, "team_and_marker_access": True, "retention": RETENTION,
+                    "recorded_at": "2026-10-14T00:00:00Z"},
+        "sessions": [{"session_id": session, "split": "test", "started_at": "2026-10-14T00:00:01Z",
+                      "conditions": "software fixture"}], "records": records,
+    }
+    return frozen, payload
+
+
+def write_browser_zip(tmp_path, payload):
+    zip_path = tmp_path / "return.zip"
+    with ZipFile(zip_path, "w") as archive:
+        archive.writestr("collection.json", json.dumps(payload))
+    return zip_path
+
+
+def test_browser_partial_import_retains_invalid_slots_but_cannot_be_scored(browser_test_fixture, tmp_path):
+    frozen, payload = browser_test_fixture
+    payload["records"] = payload["records"][:5]
+    bundle = import_browser_zip(write_browser_zip(tmp_path, payload), tmp_path / "partial", frozen=frozen)
+    assert len(bundle.records) == 5 and len(bundle.features) == 0
+    assert bundle.metadata["browser_collection"]["import_status"] == "partial"
+    assert {row.validity_reason for row in bundle.records} == {"paused_before_sample"}
+    with pytest.raises(ValueError, match="48 planned trials"):
+        score_frozen(frozen, [bundle.manifest_path], tmp_path / "report.json")
+
+
+@pytest.mark.parametrize("change", ["missing-freeze", "wrong-person", "wrong-fingerprint", "wrong-integrity",
+                                    "wrong-protocol", "mixed-splits", "development-relabel", "wrong-session", "dev-with-freeze"])
+def test_browser_test_import_rejects_mismatches(browser_test_fixture, tmp_path, change):
+    frozen, payload = browser_test_fixture
+    if change == "wrong-person":
+        payload["participant_id"] = "P03"
+    elif change == "wrong-fingerprint":
+        payload["test_ticket"]["config_fingerprint"] = "0" * 64
+    elif change == "wrong-integrity":
+        payload["test_ticket"]["frozen_integrity_sha256"] = "0" * 64
+    elif change == "wrong-protocol":
+        payload["test_ticket"]["paired_protocol"] = "other"
+    elif change == "mixed-splits":
+        payload["records"][0]["split"] = "train"
+    elif change == "development-relabel":
+        payload["records"][0]["trial_id"] = "train-NEXT-01"
+    elif change == "wrong-session":
+        payload["sessions"][0]["session_id"] = "P02-test"
+    elif change == "dev-with-freeze":
+        payload["protocol"] = "gestureforge-browser-development-v1"
+        del payload["test_ticket"]
+    with pytest.raises(ValueError):
+        import_browser_zip(write_browser_zip(tmp_path, payload), tmp_path / "bad",
+                           frozen=None if change == "missing-freeze" else frozen)
+    assert not (tmp_path / "bad" / "manifest.json").exists()
+
+
+@pytest.mark.parametrize("change", ["ticket", "source", "partial", "trial-identity"])
+def test_browser_scoring_rechecks_binding_and_actual_coverage(browser_test_fixture, tmp_path, change):
+    frozen, payload = browser_test_fixture
+    bundle = import_browser_zip(write_browser_zip(tmp_path, payload), tmp_path / "imported", frozen=frozen)
+    rows = list(bundle.records)
+    metadata = bundle.metadata
+    if change == "ticket":
+        metadata["browser_collection"]["test_ticket"]["config_fingerprint"] = "0" * 64
+    elif change == "source":
+        metadata["import_source"] = "native"
+    elif change == "partial":
+        rows = rows[:-5]
+    else:
+        rows = [replace(row, trial_id="relabelled-trial") if row.trial_id == rows[0].trial_id else row for row in rows]
+    save_dataset(bundle.manifest_path, rows, bundle.features, metadata)
+    with pytest.raises(ValueError, match="browser TEST"):
+        score_frozen(frozen, [bundle.manifest_path], tmp_path / "report.json")
+
+
+def test_browser_ticket_checks_both_frozen_hashes_and_supported_contract(browser_test_fixture):
+    frozen, _ = browser_test_fixture
+    original = json.loads(frozen.read_text(encoding="utf-8"))
+    changed = dict(original, config_fingerprint="0" * 64)
+    changed["integrity_sha256"] = _stable_hash(_without_keys(changed, {"integrity_sha256"}))
+    write_json(frozen, changed)
+    with pytest.raises(ValueError, match="fingerprint"):
+        browser_test_ticket(frozen)
+    for field, value in [("target_participant", "P" * 25), ("hand", "Left"),
+                         ("pose_set", {**original["pose_set"], "id": "other"})]:
+        changed = dict(original, **{field: value})
+        changed["config_fingerprint"] = _stable_hash(_without_keys(changed, {"config_fingerprint", "integrity_sha256"}))
+        changed["integrity_sha256"] = _stable_hash(_without_keys(changed, {"integrity_sha256"}))
+        write_json(frozen, changed)
+        with pytest.raises(ValueError, match="browser TEST"):
+            browser_test_ticket(frozen)
+    changed = dict(original, pose_set={**original["pose_set"], "descriptions": {
+        label: f"Operator description for {label}" for label in LABELS
+    }})
+    changed["config_fingerprint"] = _stable_hash(_without_keys(changed, {"config_fingerprint", "integrity_sha256"}))
+    changed["integrity_sha256"] = _stable_hash(_without_keys(changed, {"integrity_sha256"}))
+    write_json(frozen, changed)
+    assert browser_test_ticket(frozen)["target_participant"] == "P02"
+
+
+def test_actual_browser_test_export_imports_and_scores_same_freeze(browser_test_fixture, tmp_path):
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is required for the browser interoperability check")
+    frozen, payload = browser_test_fixture
+    ticket_file = tmp_path / "ticket.json"
+    write_json(ticket_file, payload["test_ticket"])
+    script = tmp_path / "export.mjs"
+    collector = (Path(__file__).resolve().parents[1] / "participant" / "collector.mjs").as_uri()
+    script.write_text(f"""
+import {{ makeCollection, makeTrialPlan, makeStoredZip, stampRecords, SampleScheduler, readOwnCollectionZip }} from {json.dumps(collector)};
+import {{ readFileSync, writeFileSync }} from 'node:fs';
+const testTicket = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+const participantId = testTicket.target_participant;
+const records = makeTrialPlan(testTicket).flatMap((trial, index) => {{
+  const scheduler = new SampleScheduler(trial, index * 3);
+  if (index) for (let sample = 0; sample < 5; sample++) {{
+    const timestamp = index * 3 + 0.2 + sample * 0.4 + 0.001;
+    scheduler.due(timestamp, {{ timestamp, frame_id: index * 5 + sample, hand_count: 1, hand: 'Right',
+      landmarks: Array.from({{ length: 21 }}, (_, point) => point === 9 ? [0, 1, 0] : [point / 100, point / 50, point / 25]) }});
+  }}
+  return stampRecords(scheduler.finalize('paused_before_sample'), participantId, testTicket);
+}});
+const collection = makeCollection({{ participantId, testTicket, trainConditions: 'software fixture',
+  recordedAt: '2026-10-14T00:00:00Z', sessionStartedAt: {{ test: '2026-10-14T00:00:01Z' }}, records }});
+const zip = makeStoredZip({{ 'collection.json': JSON.stringify(collection) }});
+readOwnCollectionZip(zip, testTicket);
+writeFileSync(process.argv[3], zip);
+""", encoding="utf-8")
+    zip_path = tmp_path / "EMAIL_THIS_P02_test.zip"
+    subprocess.run([node, str(script), str(ticket_file), str(zip_path)], check=True)
+    manifest = tmp_path / "imported" / "manifest.json"
+    result = subprocess.run([sys.executable, "-m", "gestureforge.import_participant", str(zip_path),
+                             "--output", str(manifest), "--frozen", str(frozen)],
+                            check=True, capture_output=True, text=True)
+    assert "Imported 240 records (235 valid features), status=complete" in result.stdout
+    report = score_frozen(frozen, [manifest], tmp_path / "report.json")
+    assert report["frozen"]["config_fingerprint"] == payload["test_ticket"]["config_fingerprint"]
+    assert report["paired"]["same_test_record_order"] is True
+    for result in report["results"]:
+        assert result["test_trials"] == 48
+        assert result["counts"]["invalid_or_missing_scheduled_slots"] == 5

@@ -1,4 +1,5 @@
 export const PROTOCOL = "gestureforge-browser-development-v1";
+export const TEST_PROTOCOL = "gestureforge-browser-test-v1";
 export const MODEL_SHA256 = "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1";
 export const SOURCE_VERSION = "1.1.0";
 export const RETENTION = "Delete after marking and appeals finish; team and private marker access only";
@@ -23,9 +24,32 @@ export function validateParticipantId(value) {
   return ID_RE.test(value);
 }
 
-export function makeTrialPlan() {
+export function validateTestTicket(ticket) {
+  const keys = ["schema_version", "protocol", "paired_protocol", "target_participant", "config_fingerprint", "frozen_integrity_sha256", "pose_set_id", "hand"];
+  if (!ticket || typeof ticket !== "object" || Object.keys(ticket).sort().join() !== keys.sort().join() ||
+      ticket.schema_version !== 1 || ticket.protocol !== TEST_PROTOCOL ||
+      ticket.paired_protocol !== "gf-p18-positive-test-v1" || ticket.pose_set_id !== "standard-v1" ||
+      ticket.hand !== "Right" || typeof ticket.target_participant !== "string" || !validateParticipantId(ticket.target_participant) ||
+      typeof ticket.config_fingerprint !== "string" || typeof ticket.frozen_integrity_sha256 !== "string" ||
+      !/^[a-f0-9]{64}$/.test(ticket.config_fingerprint) || !/^[a-f0-9]{64}$/.test(ticket.frozen_integrity_sha256)) {
+    throw new Error("Invalid frozen TEST ticket.");
+  }
+  return ticket;
+}
+
+function ticketsMatch(found, expected) {
+  return found && Object.keys(found).length === Object.keys(expected).length &&
+    Object.keys(expected).every((key) => found[key] === expected[key]);
+}
+
+export function draftStorageKey(ticket = null) {
+  return ticket ? `${STORE_KEY}_test_${ticket.target_participant}_${ticket.config_fingerprint}_${ticket.frozen_integrity_sha256}` : STORE_KEY;
+}
+
+export function makeTrialPlan(ticket = null) {
+  if (ticket) validateTestTicket(ticket);
   const trials = [];
-  for (const split of ["train", "validation"]) {
+  for (const split of ticket ? ["test"] : ["train", "validation"]) {
     for (const label of LABELS) {
       for (let index = 1; index <= TRIALS_PER_LABEL; index += 1) {
         trials.push({
@@ -37,7 +61,7 @@ export function makeTrialPlan() {
       }
     }
   }
-  UNKNOWN_PROMPTS.forEach((prompt, index) => {
+  if (!ticket) UNKNOWN_PROMPTS.forEach((prompt, index) => {
     trials.push({
       split: "validation_negative",
       label: "UNKNOWN",
@@ -56,20 +80,21 @@ export function instructionFor(label) {
   return "Avoid the enrolled action poses.";
 }
 
-export function sessionId(participantId, split) {
-  return `${participantId}-${split}`;
+export function sessionId(participantId, split, ticket = null) {
+  return `${participantId}-${split}${ticket ? `-${ticket.config_fingerprint.slice(0, 32)}` : ""}`;
 }
 
-export function makeSessions(participantId, trainConditions, validationConditions, sessionStartedAt = {}) {
+export function makeSessions(participantId, trainConditions, validationConditions, sessionStartedAt = {}, ticket = null) {
   const conditions = {
     train: trainConditions,
     validation: validationConditions,
     validation_negative: validationConditions,
+    test: trainConditions,
   };
-  return ["train", "validation", "validation_negative"]
+  return (ticket ? ["test"] : ["train", "validation", "validation_negative"])
     .filter((split) => sessionStartedAt[split])
     .map((split) => ({
-      session_id: sessionId(participantId, split),
+      session_id: sessionId(participantId, split, ticket),
       split,
       started_at: sessionStartedAt[split],
       conditions: conditions[split],
@@ -83,10 +108,16 @@ export function makeCollection({
   recordedAt,
   sessionStartedAt,
   records = [],
+  testTicket = null,
 }) {
+  if (testTicket) {
+    validateTestTicket(testTicket);
+    if (participantId !== testTicket.target_participant) throw new Error("Participant does not match the frozen TEST ticket.");
+  }
   return {
     schema_version: 1,
-    protocol: PROTOCOL,
+    protocol: testTicket ? TEST_PROTOCOL : PROTOCOL,
+    ...(testTicket ? { test_ticket: testTicket } : {}),
     participant_id: participantId,
     hand: "Right",
     source: {
@@ -100,7 +131,7 @@ export function makeCollection({
       retention: RETENTION,
       recorded_at: recordedAt,
     },
-    sessions: makeSessions(participantId, trainConditions, validationConditions, sessionStartedAt),
+    sessions: makeSessions(participantId, trainConditions, validationConditions, sessionStartedAt, testTicket),
     records,
   };
 }
@@ -194,10 +225,10 @@ export class SampleScheduler {
   }
 }
 
-export function stampRecords(records, participantId) {
+export function stampRecords(records, participantId, ticket = null) {
   return records.map((record) => ({
     ...record,
-    session_id: sessionId(participantId, record.split),
+    session_id: sessionId(participantId, record.split, ticket),
     timestamp: Number.isFinite(record.timestamp) ? record.timestamp : 0,
   }));
 }
@@ -212,21 +243,22 @@ export function normalizeLandmarks(landmarks) {
   return rows.every(Boolean) ? rows : null;
 }
 
-export function collectionComplete(records) {
-  return completedTrialIds(records).size >= makeTrialPlan().length;
+export function collectionComplete(records, ticket = null) {
+  return completedTrialIds(records).size >= makeTrialPlan(ticket).length;
 }
 
-export function collectionFileName(participantId, records) {
-  return collectionComplete(records)
-    ? `EMAIL_THIS_${participantId}_development.zip`
-    : `EMAIL_THIS_${participantId}_PARTIAL_development.zip`;
+export function collectionFileName(participantId, records, ticket = null) {
+  const purpose = ticket ? "test" : "development";
+  return collectionComplete(records, ticket)
+    ? `EMAIL_THIS_${participantId}_${purpose}.zip`
+    : `EMAIL_THIS_${participantId}_PARTIAL_${purpose}.zip`;
 }
 
-function firstUnfinishedSplit(participantId, records) {
+function firstUnfinishedSplit(participantId, records, ticket = null) {
   const done = completedTrialIds(records);
-  return ["train", "validation", "validation_negative"].find((split) => {
-    return makeTrialPlan()
-      .some((trial) => trial.split === split && !done.has(`${sessionId(participantId, split)}/${trial.trial_id}`));
+  return (ticket ? ["test"] : ["train", "validation", "validation_negative"]).find((split) => {
+    return makeTrialPlan(ticket)
+      .some((trial) => trial.split === split && !done.has(`${sessionId(participantId, split, ticket)}/${trial.trial_id}`));
   }) ?? null;
 }
 
@@ -236,24 +268,24 @@ function splitLabel(split) {
 }
 
 function selectResumeSplit(el, state) {
-  const split = firstUnfinishedSplit(state.participantId, state.records);
+  const split = firstUnfinishedSplit(state.participantId, state.records, state.testTicket);
   if (split) el.sessionSelect.value = split;
   return split;
 }
 
-function remainingTrialCount(participantId, records, split = null) {
+function remainingTrialCount(participantId, records, split = null, ticket = null) {
   const done = completedTrialIds(records);
-  return makeTrialPlan().filter((trial) => {
-    return (!split || trial.split === split) && !done.has(`${sessionId(participantId, trial.split)}/${trial.trial_id}`);
+  return makeTrialPlan(ticket).filter((trial) => {
+    return (!split || trial.split === split) && !done.has(`${sessionId(participantId, trial.split, ticket)}/${trial.trial_id}`);
   }).length;
 }
 
 function resumeMessage(state, nextSplit, prefix) {
-  if (!nextSplit) return "All 104 trials are complete. Export the return ZIP.";
+  if (!nextSplit) return `All ${makeTrialPlan(state.testTicket).length} trials are complete. Export the return ZIP.`;
   const action = state.cameraReady ? "Start Selected Session" : "Start Camera and Start Selected Session";
   const section = splitLabel(nextSplit);
-  const sectionRemaining = remainingTrialCount(state.participantId, state.records, nextSplit);
-  const totalRemaining = remainingTrialCount(state.participantId, state.records);
+  const sectionRemaining = remainingTrialCount(state.participantId, state.records, nextSplit, state.testTicket);
+  const totalRemaining = remainingTrialCount(state.participantId, state.records, null, state.testTicket);
   if (nextSplit === "validation" && !state.sessionStartedAt.validation && !state.sessionStartedAt.validation_negative) {
     return `${prefix}. ${sectionRemaining} ${section} trials remaining (${totalRemaining} total). After a break, enter actual VALIDATION notes, then ${action}.`;
   }
@@ -314,7 +346,7 @@ export function makeStoredZip(files) {
   return concat(...locals, centralBytes, end);
 }
 
-export function readOwnCollectionZip(bytesLike) {
+export function readOwnCollectionZip(bytesLike, ticket = null) {
   const bytesIn = bytesLike instanceof Uint8Array ? bytesLike : new Uint8Array(bytesLike);
   const end = findSignature(bytesIn, 0x06054b50, Math.max(0, bytesIn.length - 66000));
   if (end < 0) throw new Error("ZIP end record was not found.");
@@ -339,12 +371,18 @@ export function readOwnCollectionZip(bytesLike) {
   const dataStart = localOffset + 30 + localNameLength + localExtraLength;
   const data = bytesIn.slice(dataStart, dataStart + size);
   if (data.length !== size || crc32(data) !== crc) throw new Error("Return ZIP checksum failed.");
-  return validateCollection(JSON.parse(new TextDecoder().decode(data)));
+  return validateCollection(JSON.parse(new TextDecoder().decode(data)), ticket);
 }
 
-export function validateCollection(value) {
+export function validateCollection(value, ticket = null) {
   if (!value || typeof value !== "object") throw new Error("collection.json must be an object.");
-  if (value.schema_version !== 1 || value.protocol !== PROTOCOL) throw new Error("Unsupported collection protocol.");
+  if (value.schema_version !== 1 || value.protocol !== (ticket ? TEST_PROTOCOL : PROTOCOL)) throw new Error("Unsupported collection protocol.");
+  if (ticket) {
+    validateTestTicket(ticket);
+    if (!ticketsMatch(value.test_ticket, ticket) || value.participant_id !== ticket.target_participant) {
+      throw new Error("Collection does not match this frozen TEST ticket.");
+    }
+  } else if (value.test_ticket !== undefined) throw new Error("Development collections cannot contain a TEST ticket.");
   if (!validateParticipantId(value.participant_id) || value.hand !== "Right") throw new Error("Invalid participant or hand.");
   if (
     value.source?.runtime !== "mediapipe-tasks-vision-web" ||
@@ -360,13 +398,13 @@ export function validateCollection(value) {
   ) {
     throw new Error("Collection consent is incomplete.");
   }
-  const splits = new Set(["train", "validation", "validation_negative"]);
-  if (!Array.isArray(value.sessions) || value.sessions.length < 1 || value.sessions.length > 3) {
+  const splits = new Set(ticket ? ["test"] : ["train", "validation", "validation_negative"]);
+  if (!Array.isArray(value.sessions) || value.sessions.length < 1 || value.sessions.length > splits.size) {
     throw new Error("Collection sessions are incomplete.");
   }
   const sessionSplits = new Set();
   for (const session of value.sessions) {
-    if (!splits.has(session.split) || session.session_id !== sessionId(value.participant_id, session.split)) {
+    if (!splits.has(session.split) || session.session_id !== sessionId(value.participant_id, session.split, ticket) || sessionSplits.has(session.split)) {
       throw new Error("Collection session identity is invalid.");
     }
     if (typeof session.conditions !== "string" || !session.conditions.trim()) throw new Error("Session conditions are missing.");
@@ -375,9 +413,13 @@ export function validateCollection(value) {
   if (!Array.isArray(value.records)) throw new Error("Collection records must be an array.");
   const slots = new Set();
   const frames = new Set();
+  const trialCounts = new Map();
+  const testPlan = ticket ? new Map(makeTrialPlan(ticket).map((trial) => [trial.trial_id, trial.label])) : null;
   let previousTimestamp = -Infinity;
   for (const record of value.records) {
-    validateRecord(record, value.participant_id, splits, sessionSplits);
+    validateRecord(record, value.participant_id, splits, sessionSplits, ticket);
+    if (testPlan && testPlan.get(record.trial_id) !== record.intended_label) throw new Error("Record does not match the frozen TEST trial plan.");
+    trialCounts.set(record.trial_id, (trialCounts.get(record.trial_id) ?? 0) + 1);
     const slot = `${record.session_id}/${record.trial_id}/${record.sample_index}`;
     if (slots.has(slot)) throw new Error("Duplicate trial sample slot.");
     slots.add(slot);
@@ -389,12 +431,15 @@ export function validateCollection(value) {
     if (record.timestamp < previousTimestamp) throw new Error("Record timestamps must be non-decreasing.");
     previousTimestamp = record.timestamp;
   }
+  if (ticket && [...trialCounts.values()].some((count) => count !== SAMPLE_OFFSETS.length)) {
+    throw new Error("TEST trials must preserve all five sample slots, including invalid slots.");
+  }
   return value;
 }
 
-function validateRecord(record, participantId, splits, sessionSplits) {
+function validateRecord(record, participantId, splits, sessionSplits, ticket = null) {
   if (!record || typeof record !== "object") throw new Error("Record must be an object.");
-  if (!splits.has(record.split) || record.session_id !== sessionId(participantId, record.split)) {
+  if (!splits.has(record.split) || record.session_id !== sessionId(participantId, record.split, ticket)) {
     throw new Error("Record split/session is invalid.");
   }
   if (!sessionSplits.has(record.split)) throw new Error("Record has no matching session.");
@@ -452,7 +497,10 @@ if (typeof document !== "undefined") {
 
 async function boot() {
   const el = ids();
+  const ticketText = document.getElementById("testTicket")?.textContent;
+  const testTicket = ticketText ? Object.freeze(validateTestTicket(JSON.parse(ticketText))) : null;
   const state = {
+    testTicket,
     records: [],
     participantId: "",
     trainConditions: "",
@@ -471,6 +519,10 @@ async function boot() {
     handLandmarker: null,
     stream: null,
   };
+  if (testTicket) {
+    el.participantId.value = testTicket.target_participant;
+    state.participantId = testTicket.target_participant;
+  }
   restoreDraft(el, state);
   await listCameras(el);
   el.startCamera.onclick = () => startCamera(el, state);
@@ -627,8 +679,8 @@ export async function startCollection(el, state) {
   if (!validateForm(el, state)) return;
   const split = el.sessionSelect.value;
   const done = completedTrialIds(state.records);
-  const plan = makeTrialPlan().filter((trial) => {
-    return trial.split === split && !done.has(`${sessionId(state.participantId, trial.split)}/${trial.trial_id}`);
+  const plan = makeTrialPlan(state.testTicket).filter((trial) => {
+    return trial.split === split && !done.has(`${sessionId(state.participantId, trial.split, state.testTicket)}/${trial.trial_id}`);
   });
   if (plan.length === 0) {
     const next = selectResumeSplit(el, state);
@@ -669,11 +721,14 @@ function validateForm(el, state) {
   state.trainConditions = el.trainConditions.value.trim();
   state.validationConditions = el.validationConditions.value.trim();
   const split = el.sessionSelect.value;
-  if (!validateParticipantId(state.participantId)) return fail(el, "Enter a pseudonym such as P04 using letters, digits, hyphen or underscore.", el.participantId);
-  if (split === "train" && !state.trainConditions) {
-    return fail(el, "Enter TRAIN session condition notes before starting this section.", el.trainConditions);
+  if (state.testTicket && (state.participantId !== state.testTicket.target_participant || split !== "test")) {
+    return fail(el, "Use the participant and TEST session assigned by this kit.", el.participantId);
   }
-  if (split !== "train" && !state.validationConditions) {
+  if (!validateParticipantId(state.participantId)) return fail(el, "Enter a pseudonym such as P04 using letters, digits, hyphen or underscore.", el.participantId);
+  if ((split === "train" || split === "test") && !state.trainConditions) {
+    return fail(el, `Enter ${split.toUpperCase()} session condition notes before starting this section.`, el.trainConditions);
+  }
+  if (split !== "train" && split !== "test" && !state.validationConditions) {
     return fail(el, "Enter VALIDATION session condition notes before starting this section.", el.validationConditions);
   }
   if (!el.numericConsent.checked || !el.accessConsent.checked) {
@@ -709,7 +764,7 @@ async function runTrial(el, state, trial, generation) {
     state.paused || state.generation !== generation ? "paused_before_sample" : "missed_slot",
     nowSeconds(),
   );
-  state.records.push(...stampRecords(records, state.participantId));
+  state.records.push(...stampRecords(records, state.participantId, state.testTicket));
   autosave(el, state);
   renderProgress(el, state);
   if (!state.paused && state.generation === generation) {
@@ -743,21 +798,22 @@ function pause(el, state, message) {
 
 function renderProgress(el, state) {
   const complete = completedTrialIds(state.records).size;
-  const total = makeTrialPlan().length;
+  const total = makeTrialPlan(state.testTicket).length;
   el.progress.value = complete / total;
   el.progressText.textContent = `${complete} / ${total} trials complete`;
   lockSettings(el, state);
 }
 
 function lockSettings(el, state) {
-  el.participantId.disabled = Object.keys(state.sessionStartedAt).length > 0 || state.records.length > 0;
-  el.trainConditions.disabled = Boolean(state.sessionStartedAt.train);
+  el.participantId.disabled = Boolean(state.testTicket) || Object.keys(state.sessionStartedAt).length > 0 || state.records.length > 0;
+  el.trainConditions.disabled = Boolean(state.sessionStartedAt.train || state.sessionStartedAt.test);
   el.validationConditions.disabled = Boolean(state.sessionStartedAt.validation || state.sessionStartedAt.validation_negative);
 }
 
 function autosave(el, state) {
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify({
+    localStorage.setItem(draftStorageKey(state.testTicket), JSON.stringify({
+      testTicket: state.testTicket ?? null,
       participantId: el.participantId.value,
       trainConditions: el.trainConditions.value,
       validationConditions: el.validationConditions.value,
@@ -772,9 +828,18 @@ function autosave(el, state) {
 
 export function restoreDraft(el, state) {
   try {
-    const raw = localStorage.getItem(STORE_KEY);
+    const raw = localStorage.getItem(draftStorageKey(state.testTicket));
     if (!raw) return;
     const draft = JSON.parse(raw);
+    if (state.testTicket) {
+      if (!ticketsMatch(draft.testTicket, state.testTicket) || draft.participantId !== state.testTicket.target_participant ||
+          Object.keys(draft.sessionStartedAt ?? {}).some((split) => split !== "test")) {
+        throw new Error("Draft does not match this frozen TEST kit.");
+      }
+      if (draft.records?.length) validateCollection(makeCollection({
+        ...draft, recordedAt: draft.consentRecordedAt,
+      }), state.testTicket);
+    } else if (draft.testTicket) throw new Error("TEST draft cannot be opened in a development kit.");
     el.participantId.value = draft.participantId || "";
     el.trainConditions.value = draft.trainConditions || "";
     el.validationConditions.value = draft.validationConditions || "";
@@ -804,12 +869,14 @@ export function exportZip(el, state) {
     recordedAt,
     sessionStartedAt: state.sessionStartedAt,
     records: state.records,
+    testTicket: state.testTicket,
   });
+  if (state.testTicket && state.records.length) validateCollection(collection, state.testTicket);
   const zip = makeStoredZip({ "collection.json": JSON.stringify(collection, null, 2) });
   const blob = new Blob([zip], { type: "application/zip" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = collectionFileName(state.participantId, state.records);
+  link.download = collectionFileName(state.participantId, state.records, state.testTicket);
   link.click();
 }
 
@@ -824,11 +891,11 @@ export async function importZip(el, state) {
     if (file.size > 10 * 1024 * 1024) throw new Error("Return ZIP is larger than 10 MB.");
     const buffer = await file.arrayBuffer();
     if (state.generation !== generation) return;
-    const collection = readOwnCollectionZip(buffer);
+    const collection = readOwnCollectionZip(buffer, state.testTicket);
     el.participantId.value = collection.participant_id;
     el.numericConsent.checked = collection.consent.numeric_data;
     el.accessConsent.checked = collection.consent.team_and_marker_access;
-    el.trainConditions.value = collection.sessions.find((row) => row.split === "train")?.conditions ?? "";
+    el.trainConditions.value = collection.sessions.find((row) => row.split === (state.testTicket ? "test" : "train"))?.conditions ?? "";
     el.validationConditions.value = (
       collection.sessions.find((row) => row.split === "validation") ??
       collection.sessions.find((row) => row.split === "validation_negative")
@@ -858,7 +925,7 @@ export function clearDraft(el, state) {
   if (state.records.length > 0 && !confirm("Only clear this after exporting a backup ZIP. Delete this local draft from this browser?")) return;
   if (state.stream) pause(el, state, "Paused before clearing the local draft.");
   try {
-    localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem(draftStorageKey(state.testTicket));
   } catch {
     return fail(el, "Browser storage is unavailable. Keep your return ZIP, then close this page to discard the in-memory recording.");
   }
@@ -869,7 +936,8 @@ export function clearDraft(el, state) {
   state.frameId = 0;
   el.numericConsent.checked = false;
   el.accessConsent.checked = false;
-  el.participantId.value = "";
+  el.participantId.value = state.testTicket?.target_participant ?? "";
+  state.participantId = el.participantId.value;
   el.trainConditions.value = "";
   el.validationConditions.value = "";
   el.importZip.value = "";
@@ -883,6 +951,7 @@ export function validateFormForExport(el, state) {
   state.trainConditions = el.trainConditions.value.trim();
   state.validationConditions = el.validationConditions.value.trim();
   if (!validateParticipantId(state.participantId)) return fail(el, "Enter a valid pseudonym before exporting.");
+  if (state.testTicket && state.participantId !== state.testTicket.target_participant) return fail(el, "Participant does not match this frozen TEST kit.");
   if (!el.numericConsent.checked || !el.accessConsent.checked) return fail(el, "Tick both consent boxes before exporting.");
   if (state.records.length > 0 && makeCollection({
     participantId: state.participantId,
@@ -891,6 +960,7 @@ export function validateFormForExport(el, state) {
     recordedAt: new Date().toISOString(),
     sessionStartedAt: state.sessionStartedAt,
     records: state.records,
+    testTicket: state.testTicket,
   }).sessions.length === 0) return fail(el, "Start at least one session before exporting collected records.");
   return true;
 }

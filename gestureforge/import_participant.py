@@ -26,6 +26,7 @@ from .dataset import (
     save_dataset,
 )
 from .features import LANDMARK_COUNT, extract_feature_result
+from .paired_evaluate import BROWSER_TEST_PROTOCOL, browser_test_ticket
 
 PROTOCOL = "gestureforge-browser-development-v1"
 RUNTIME = "mediapipe-tasks-vision-web"
@@ -42,14 +43,16 @@ EXPECTED_COUNTS = {
     VALIDATION_SPLIT: {label: 12 for label in LABELS},
     VALIDATION_NEGATIVE_SPLIT: {UNKNOWN_LABEL: 8},
 }
+TEST_EXPECTED_COUNTS = {"test": {label: 12 for label in LABELS}}
 
 
-def import_browser_zip(zip_path: str | Path, output: str | Path):
+def import_browser_zip(zip_path: str | Path, output: str | Path, *, frozen: str | Path | None = None):
     output_path = _manifest_path(output)
     if output_path.exists():
         raise ValueError(f"output already exists: {output_path}")
     payload = _load_collection(zip_path)
-    records, features, metadata = _convert_collection(payload, Path(zip_path))
+    ticket = browser_test_ticket(frozen) if frozen is not None else None
+    records, features, metadata = _convert_collection(payload, Path(zip_path), ticket)
     return save_dataset(output_path, records, np.asarray(features, dtype=np.float32).reshape(-1, 60), metadata)
 
 
@@ -77,24 +80,42 @@ def _load_collection(zip_path: str | Path) -> dict[str, Any]:
     return payload
 
 
-def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[SampleRecord], list[np.ndarray], dict[str, Any]]:
+def _convert_collection(
+    payload: dict[str, Any], zip_path: Path, ticket: dict[str, Any] | None = None,
+) -> tuple[list[SampleRecord], list[np.ndarray], dict[str, Any]]:
+    is_test = payload.get("protocol") == BROWSER_TEST_PROTOCOL
+    if is_test != (ticket is not None):
+        raise ValueError("TEST collections require --frozen; development collections must not use --frozen")
     _require_exact_keys(payload, {
         "schema_version", "protocol", "participant_id", "hand", "source", "consent", "sessions", "records",
-    }, "collection")
+    } | ({"test_ticket"} if is_test else set()), "collection")
     if type(payload["schema_version"]) is not int or payload["schema_version"] != 1:
         raise ValueError("unsupported collection schema_version")
-    if payload["protocol"] != PROTOCOL:
+    if payload["protocol"] != (BROWSER_TEST_PROTOCOL if is_test else PROTOCOL):
         raise ValueError("unsupported collection protocol")
     participant_id = _strict_str(payload, "participant_id")
     validate_identifier(participant_id)
+    expected_counts = TEST_EXPECTED_COUNTS if is_test else EXPECTED_COUNTS
+    if ticket is not None:
+        found = payload["test_ticket"]
+        if (
+            not isinstance(found, dict) or type(found.get("schema_version")) is not int
+            or found != ticket or participant_id != ticket["target_participant"]
+        ):
+            raise ValueError("browser TEST ticket or participant does not match --frozen")
     hand = _strict_str(payload, "hand")
     if hand != "Right":
         raise ValueError("participant kit currently imports Right-hand collections only")
     _validate_source(payload["source"])
     _validate_consent(payload["consent"])
-    session_splits, sessions = _validate_sessions(payload["sessions"])
-    if not isinstance(payload["records"], list) or not 1 <= len(payload["records"]) <= MAX_RECORDS:
-        raise ValueError("records must be a non-empty array with at most 520 samples")
+    session_splits, sessions = _validate_sessions(payload["sessions"], set(expected_counts))
+    if ticket is not None:
+        expected_session = f"{participant_id}-test-{ticket['config_fingerprint'][:32]}"
+        if set(session_splits) != {expected_session}:
+            raise ValueError("TEST session identity does not match the frozen ticket")
+    max_records = 240 if is_test else MAX_RECORDS
+    if not isinstance(payload["records"], list) or not 1 <= len(payload["records"]) <= max_records:
+        raise ValueError(f"records must be a non-empty array with at most {max_records} samples")
 
     records: list[SampleRecord] = []
     features: list[np.ndarray] = []
@@ -102,10 +123,14 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
     trial_identity: dict[str, tuple[str, str, str]] = {}
     session_last_timestamp: dict[str, float] = {}
     session_frames: dict[str, set[int]] = {}
-    counts: dict[str, dict[str, int]] = {split: {} for split in ALLOWED_SPLITS}
+    counts: dict[str, dict[str, int]] = {split: {} for split in expected_counts}
 
     for item in payload["records"]:
         record, feature = _convert_record(item, participant_id, hand, session_splits)
+        if is_test and record.trial_id not in {
+            f"test-{record.intended_label}-{index:02d}" for index in range(1, 13)
+        }:
+            raise ValueError("TEST trial identity must match the frozen browser plan")
         previous_timestamp = session_last_timestamp.get(record.session_id)
         if previous_timestamp is not None and record.timestamp < previous_timestamp:
             raise ValueError(f"timestamps decrease in session {record.session_id}")
@@ -135,10 +160,10 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
         counts[split][label] = counts[split].get(label, 0) + 1
         if session_splits[session_id] != split:
             raise ValueError(f"trial {trial_id} split does not match its session")
-    _validate_split_shape(counts, session_splits)
+    _validate_split_shape(counts, session_splits, expected_counts)
     trial_map = _normalised_trial_ids(participant_id, trial_identity)
     records = [replace(record, trial_id=trial_map[record.trial_id]) for record in records]
-    completeness = _completeness(counts)
+    completeness = _completeness(counts, expected_counts)
     metadata = {
         "provenance": "human",
         "chosen_hand": hand,
@@ -147,7 +172,8 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
         "source_zip": str(zip_path),
         "source_sha256": _file_sha256(zip_path),
         "browser_collection": {
-            "protocol": PROTOCOL,
+            "protocol": payload["protocol"],
+            **({"test_ticket": ticket} if ticket is not None else {}),
             "source": payload["source"],
             "consent": payload["consent"],
             "sessions": sessions,
@@ -165,7 +191,7 @@ def _convert_collection(payload: dict[str, Any], zip_path: Path) -> tuple[list[S
             },
             "complete": completeness["complete"],
             "counts": completeness["counts"],
-            "expected_counts": EXPECTED_COUNTS,
+            "expected_counts": expected_counts,
             "import_status": "complete" if completeness["complete"] else "partial",
             "feature_note": (
                 "Browser MediaPipe world landmarks were normalised with the native GestureForge "
@@ -218,7 +244,7 @@ def _convert_record(
     trial_id = _strict_str(item, "trial_id")
     validate_identifier(trial_id)
     label = _strict_str(item, "intended_label")
-    if split in POSITIVE_SPLITS and label not in LABELS:
+    if split != VALIDATION_NEGATIVE_SPLIT and label not in LABELS:
         raise ValueError(f"unknown intended label {label}")
     if split == VALIDATION_NEGATIVE_SPLIT and label != UNKNOWN_LABEL:
         raise ValueError("validation_negative records must use UNKNOWN")
@@ -279,28 +305,30 @@ def _manifest_path(path: str | Path) -> Path:
     return output_path
 
 
-def _validate_split_shape(counts: dict[str, dict[str, int]], session_splits: dict[str, str]) -> None:
+def _validate_split_shape(
+    counts: dict[str, dict[str, int]], session_splits: dict[str, str],
+    expected_counts: dict[str, dict[str, int]] = EXPECTED_COUNTS,
+) -> None:
     present_splits = {split for split, labels in counts.items() if labels}
     if TRAIN_SPLIT in present_splits and VALIDATION_SPLIT in present_splits:
         train_sessions = {session for session, split in session_splits.items() if split == TRAIN_SPLIT}
         val_sessions = {session for session, split in session_splits.items() if split == VALIDATION_SPLIT}
         if not train_sessions.isdisjoint(val_sessions) or not train_sessions or not val_sessions:
             raise ValueError("train and validation must use distinct positive sessions")
-    for split in POSITIVE_SPLITS:
-        if counts[split] and set(counts[split]) - set(LABELS):
-            raise ValueError(f"{split} contains labels outside the legacy vocabulary")
-    if counts[VALIDATION_NEGATIVE_SPLIT] and set(counts[VALIDATION_NEGATIVE_SPLIT]) != {UNKNOWN_LABEL}:
-        raise ValueError("validation_negative can contain only UNKNOWN trials")
     for split, labels in counts.items():
-        expected = EXPECTED_COUNTS[split]
+        expected = expected_counts[split]
+        if set(labels) - set(expected):
+            raise ValueError(f"{split} contains labels outside the legacy vocabulary")
         for label, count in labels.items():
             if count > expected[label]:
                 raise ValueError(f"{split} has too many {label} trials")
 
 
-def _completeness(counts: dict[str, dict[str, int]]) -> dict[str, Any]:
+def _completeness(
+    counts: dict[str, dict[str, int]], expected_counts: dict[str, dict[str, int]] = EXPECTED_COUNTS,
+) -> dict[str, Any]:
     normalised = {split: dict(sorted(labels.items())) for split, labels in sorted(counts.items()) if labels}
-    complete = all(normalised.get(split, {}) == expected for split, expected in EXPECTED_COUNTS.items())
+    complete = all(normalised.get(split, {}) == expected for split, expected in expected_counts.items())
     return {"complete": complete, "counts": normalised}
 
 
@@ -323,7 +351,9 @@ def _validate_consent(value: Any) -> None:
     _parse_iso(_strict_str(value, "recorded_at"), "consent.recorded_at")
 
 
-def _validate_sessions(value: Any) -> tuple[dict[str, str], list[dict[str, Any]]]:
+def _validate_sessions(
+    value: Any, allowed_splits: set[str] = ALLOWED_SPLITS,
+) -> tuple[dict[str, str], list[dict[str, Any]]]:
     if not isinstance(value, list) or not value:
         raise ValueError("sessions must be a non-empty array")
     session_splits: dict[str, str] = {}
@@ -337,7 +367,7 @@ def _validate_sessions(value: Any) -> tuple[dict[str, str], list[dict[str, Any]]
         if session_id in session_splits:
             raise ValueError(f"duplicate session {session_id}")
         split = _strict_str(item, "split")
-        if split not in ALLOWED_SPLITS:
+        if split not in allowed_splits:
             raise ValueError(f"unsupported session split {split}")
         _parse_iso(_strict_str(item, "started_at"), "session.started_at")
         if not _strict_str(item, "conditions").strip():
@@ -424,9 +454,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("zip_path", type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--frozen", type=Path, help="Required frozen paired config for a TEST return ZIP")
     args = parser.parse_args(argv)
     try:
-        bundle = import_browser_zip(args.zip_path, args.output)
+        bundle = import_browser_zip(args.zip_path, args.output, frozen=args.frozen)
     except (OSError, ValueError, zipfile.BadZipFile, json.JSONDecodeError) as exc:
         parser.exit(1, f"Import failed: {exc}\n")
     status = bundle.metadata["browser_collection"]["import_status"]

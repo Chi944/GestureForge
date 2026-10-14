@@ -25,6 +25,40 @@ static and generated tests do not prove this works on every machine. If camera
 or model loading is blocked, preserve the visible error. Do not bypass browser
 security or ask inexperienced participants to install a developer stack.
 
+## Separate frozen TEST kits
+
+Development remains the default kit. A coordinator can build a separate TEST kit
+only after reviewing the participant's [frozen comparison](PAIRED_EVALUATION.md).
+Use `scripts/package_participant.py --frozen <frozen.json>` with the verified
+runtime assets/model and a fresh output folder. Do not send the full frozen JSON
+to participants: it contains private development references. The generated kit
+contains only a small ticket binding the intended participant, configuration,
+Right hand, standard pose set and TEST protocol.
+
+This kit records **TEST only: 48 trials, 240 scheduled samples**, about 5-6 minutes
+plus setup and saving. Read its dedicated PDF, confirm the displayed participant
+code, agree to the consent notice, enter actual TEST condition notes, then start
+the camera and selected session. The same four physical poses and sampling
+convention apply. No TRAIN, VALIDATION or UNKNOWN sections are recorded in this
+kit. A saved TEST draft cannot replace a development draft or another freeze's
+recording.
+
+Participants return the new `EMAIL_THIS_<code>_test.zip` downloaded by the
+recorder. They do not zip the program folder. Retain any `PARTIAL` return and
+resume it in the same frozen kit; do not repeat successful trials to remove
+unfavourable observations. The coordinator imports with the matching `--frozen`
+file. Partial imports are retained, but a complete final score requires all 48
+prescribed trials. Do not use a development ZIP as TEST.
+
+Run the extracted-file checks above on the intended Windows/macOS browser before
+distribution. Automated import/package checks establish software behaviour;
+camera permissions, recording conditions and honest untouched TEST chronology
+remain physical/operator checks. Keep acquisition changes documented before
+freeze; neither the ticket nor shared model hash proves browser/native
+equivalence.
+
+## Development recovery notes
+
 Use the current rebuilt kit for recovery checks. The 9 October repair preserves
 UNKNOWN condition notes when loading a partial return ZIP before VALIDATION has
 started. Keep the original ZIP; resuming should retain recorded trials rather
@@ -107,9 +141,9 @@ Keep the recorder tab visible and use Pause before leaving it.
 Five sample slots fall at 0.2, 0.6, 1.0, 1.4 and 1.8 seconds in each hold.
 Invalid, late and interrupted slots remain in the return data. These are
 development negatives, not the live false-action evaluation. Final TEST cannot
-be recorded by this kit. Deston must first review the complete development
-packet and freeze configurations. A later separately released TEST collection
-step must preserve the same declared browser/pose protocol, source hashes and
+be recorded by the default development kit. Use the separate frozen TEST mode
+above only after reviewing the complete development packet and freezing
+configurations. Preserve the declared browser/pose protocol, source hashes and
 chronology; native/browser changes require explicit evaluation design review.
 
 Participants download one `EMAIL_THIS_*_development.zip` from the recorder and

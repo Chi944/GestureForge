@@ -4,7 +4,7 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Next delivery — assigned 7 October
 
-**Immediate manual / GPT split, updated 13 October:**
+**Immediate manual / GPT split, updated 14 October:**
 
 - **Manual:** agree an identified Studio build and remaining-case matrix with
   Hau Jie. Finish your laptop-A trusted-app/association, failure/retry and
@@ -25,13 +25,19 @@ You coordinate laptop B; Hau Jie installs and operates it. Push only
 Word files stay private. See the [shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)
 for current build/package instructions; no replacement Studio ZIP is claimed.
 
-**13 October current priority:** Deston has two complete Mac browser development
-returns plus a closed TRAIN-only contribution. This advances recognition input
-preparation; it does not verify native Studio, Windows shortcuts, a current
-Practice grant or laptop B. Continue J1/J2 while Hau Jie reviews recognition.
+**14 October current priority:** H1 is verified and H2's eight evaluator runs and
+48 bounded candidate rows have been independently reproduced; PR #31 is merged.
+Deston's [selection record](H2_EVALUATION_SELECTION_2026_10_14.md), private freezes
+and full TEST-route checks are verified. GF-P17 preparation is accepted; team
+acceptance is now 127/223 (57.0%), 16/29 tasks. Your total remains 48/73 (65.8%).
+No final TEST or deployment approval is recorded. Continue J1/J2 while Hau Jie
+completes the new extracted-kit physical camera/pause/recovery check before
+distributing kits and coordinating P67/P1543's TEST sessions. These steps do not
+verify native Studio, Windows shortcuts, a current Practice grant or laptop B.
 Coordinate laptop B on Hau Jie's Windows computer, preserve the accepted
 laptop-A cases, and draft J4's guide/storyboard. J3's measured gesture study still
-waits for frozen inputs and the original integration gates. No participant needs
+retains its original integration/readiness gates despite the frozen inputs now
+being available. No participant needs
 to repeat collection to support these independent Windows checks.
 
 **11 October:** use the [manual/GPT task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work)

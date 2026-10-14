@@ -40,8 +40,12 @@ trial inventories reconcile, but no qualifying starter or public/marker
 redistribution permission is approved from that packet. See the
 [current progress and next tasks](docs/project/PROGRESS.md) and
 [team guide](docs/project/TEAM_GUIDE.md). Private samples and full reports
-remain excluded from this repository; H2 settings, final TEST and native release
-checks are still outstanding.
+remain excluded from this repository. Hau Jie's [H2 development diagnosis](docs/project/H2_DEVELOPMENT_DIAGNOSIS_2026_10_14.md)
+has also been reviewed and merged: eight evaluator runs and all 48 bounded
+comparison rows reproduced. Its candidate settings still accept negative command
+samples. The [reviewed evaluation selection](docs/project/H2_EVALUATION_SELECTION_2026_10_14.md)
+is now pinned in two private frozen comparisons. Final TEST and native release
+checks remain open; an experimental freeze does not approve LIVE use.
 
 Javier's [12 October camera/focus checks](docs/evidence/GF_P19_CAMERA_FOCUS_LAPTOP_A_2026-10-12.md)
 are reviewed and merged. They cover Preview focus pause/reconnect, a simulated
@@ -54,9 +58,11 @@ The refresh preserves mappings and readiness; requests still use the dispatcher.
 
 The [participant collection kits](docs/project/PARTICIPANT_KITS.md) prepare
 offline Windows/macOS browser recording without Python. Each local ZIP contains
-a PDF guide and downloads a clearly named return-data ZIP. These collect
-development poses only; extracted-file camera checks on both operating systems
-remain required before broad distribution. Allow about 5-6 minutes for TRAIN,
+a PDF guide and downloads a clearly named return-data ZIP. The default kits
+collect development poses. A separate coordinator-built TEST kit requires a
+reviewed frozen configuration and locks its 48 trials to one participant and
+comparison. Extracted-file camera checks on the intended operating system/browser
+remain required before distribution. Allow about 5-6 minutes for TRAIN,
 5-6 minutes for VALIDATION and one minute for UNKNOWN: 15-20 minutes plus a break
 including setup and export. Keep the recorder tab visible. They do not replace the Studio app.
 
@@ -75,8 +81,8 @@ Stale success/error callbacks leave the current data, consent and messages alone
 
 The [team guide](docs/project/TEAM_GUIDE.md) separates manual checks from work a
 coding assistant can do. [Hau Jie](docs/project/HAU_JIE_HANDOFF.md) now moves
-from the verified private H1 packet to H2 diagnosis/settings, participant
-eligibility facts and laptop-B operation.
+from the verified H1/H2 handoffs to coordinating fresh participant TEST after
+the frozen-kit device check, plus laptop-B operation and methods writing.
 [Javier](docs/project/JAVIER_HANDOFF.md) completes remaining laptop-A recovery
 checks and consolidates the two-device installation/offline/stability evidence.
 Deston owns integration, analysis and acceptance. Both teammates push only their
@@ -90,10 +96,11 @@ recovery, laptop-B and participant-kit checks are still assigned in the briefs.
 The [paired evaluation tool](docs/project/PAIRED_EVALUATION.md) freezes development
 inputs/settings, then compares starter and personal recognisers on identical
 held-out positive TEST trials. The native collector supports separate TEST
-manifests with a declared pose ID. The browser development kits do not yet offer
-TEST collection; their later TEST route must preserve the frozen acquisition
-protocol. This prepares GF-P18; real independent-participant results and live
-false-action testing remain outstanding.
+manifests with a declared pose ID. The separate browser TEST route binds exports
+and recovery to the frozen comparison; import requires the matching freeze and
+scoring refuses incomplete trial coverage. Development returns remain development
+data. Real independent-participant results and live false-action testing remain
+outstanding.
 
 Practice recovers from a late camera frame while waiting for **Begin**: it keeps
 the completed windows, leaves capture running and asks for a fresh NEUTRAL hold.
