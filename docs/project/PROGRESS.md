@@ -1,6 +1,38 @@
 # GestureForge Studio progress
 
-Snapshot: 13 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+Snapshot: 14 October 2026. This measures the final-project extension, not the already submitted assignment or an expected grade.
+
+## Current goal and handoff progress — 14 October
+
+**Goal:** turn the received development evidence into reviewed H2 recognition
+settings and a GF-P17 freeze, then acquire untouched same-pose TEST data for
+GF-P18. Hau Jie's H1 private audit handoff is now **received and verified**;
+he does not need to resend it or repeat the earlier parameter search.
+
+The supplied `PRIVATE_H1_SEND_TO_DESTON_v2.zip` passes all 33 member checksums.
+The nine manifest/NPZ pairs match the baseline, comparison and audit inventory:
+216 trials, 1,080 scheduled records, 1,064 valid features and 16 retained invalid
+slots. The trusted reader reproduces the full six-fold saved diagnosis; all ten
+fixed cases reconcile with original records and predictions. The 48 candidate
+summaries in each of three folds still yield zero qualifying candidates and no
+selected outer model. See the [dated receipt review](H1_SAVED_REPORT_AUDIT_2026_10_08.md#14-october-private-handoff-received-and-verified).
+
+| Step | Current status | Owner / next action |
+|---|---|---|
+| H1 private audit delivery and receipt verification | Complete, 14 October | Hau Jie delivered; Deston's local checks passed. No resend needed |
+| H2 development diagnosis and proposed settings | In progress | Hau Jie audits the already-sent development handoff and returns settings, provenance and limitations |
+| Newest contributor's starter exclusion and session break | Unconfirmed | Deston and Hau Jie establish the two outstanding facts before treating this contributor as eligible |
+| GF-P17 configuration freeze and TEST acquisition route | Not complete | Deston reviews H2 inputs, settings, permission scope and the proposed route before TEST |
+| GF-P18 independent paired TEST evaluation | Not started | Hau Jie coordinates eligible participants after freeze; Deston reproduces and reviews scores |
+
+This closes the **H1 handoff substep**, not a whole weighted task. GF-P17 and
+GF-P18 remain In Progress; the [accepted completion table](#completion-measure)
+remains Deston 21.3%, Hau Jie 68.0%, Javier 65.8%, team 51.6% (15/29 tasks).
+The archive is a historical development snapshot, not new TEST data. No model
+was refitted, search rerun or deployment starter approved. Inputs and full
+results remain local under the supplied internal-team scope; receipt does not
+grant GitHub, public-package or marker redistribution permission. The archive's
+older H2 recruitment notes are superseded by the current development returns.
 
 ## Current work on 13 October
 
