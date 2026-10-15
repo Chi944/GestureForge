@@ -2,7 +2,46 @@
 
 Snapshot: 15 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current software preparation — 15 October
+## Current development diagnostic review — 15 October
+
+[PR #32](https://github.com/Chi944/GestureForge_304/pull/32) is reviewed and merged
+as `269301a`. It adds the offline
+`gestureforge.development_diagnosis` command. Independent source review found
+no blocking issues; it refuses TEST before fitting, uses production scoring,
+excludes the query's full trial from TRAIN geometry and preserves invalid slots.
+Deston's real DEVELOPMENT runs exactly reproduce the retained selected models'
+complete validation/negative metrics and input hashes. No production classifier,
+rejection setting, saved profile, freeze or TEST result is changed.
+
+P67's NEXT has 47/60 margin rejections; P1543's NEXT has 41/60 distance rejections.
+The selected P1543 SVM has 30/60 NEUTRAL margin rejections; the earlier 28/60
+statement was alternative kNN. The GF-P18 development narrative is corrected
+with an explicit note, leaving its TEST scores intact. The diagnostic has not
+established a production software defect or a physical-pose cause.
+
+Hau Jie's next delivery is the fixed offline wrist/scale versus palm-local
+comparison in [the reviewed experiment specification](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october).
+It needs no new participant recording: v1 features retain sufficient relative
+landmark geometry. It must remain separate from Studio, profile persistence and
+the consumed TEST sets; an eventual deployment change needs separate review and
+fresh evaluation. Javier continues the native-device checks with Hau Jie on
+laptop B. No manual check has been replaced by this diagnostic.
+
+Accepted totals remain **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
+48/73 (65.8%), team 137/223 (61.4%) — 17/29 tasks Done**. GF-P21's diagnosis
+substep is reviewed; the full task remains In Progress with its original GF-P20
+dependency. Current roles and returns are in the [team table](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
+
+Fresh integration verification at PR head `38e4d55` passed **972 tests, one
+skipped**, Ruff, mypy (102 source files), both offscreen startup modes and
+synthetic evaluation. The duplicate-ZIP regression produced its expected warning.
+The private report is `experiments/local/verification-20261015T083358877728Z.json`;
+its companion source receipt pins the diagnostic and test hashes. Independent
+documentation review checked 132 local links/anchors and confirmed that only
+GF-P21's evidence text changed in the task CSV, preserving statuses, weights,
+owners and dependencies. No new live camera or second-laptop result is claimed.
+
+## Earlier software preparation — 15 October
 
 Deston's verification command now refuses existing output files before running
 checks and uses exclusive creation to prevent an overwrite if another process

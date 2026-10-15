@@ -15,6 +15,14 @@ your Windows checks remain independent of that offline comparison. See the
 [paired TEST results](GF_P18_TEST_RESULTS_2026_10_14.md). Both personal models
 miss their target and reject all NEXT trials; no deployment starter is qualified.
 
+**15 October recognition update:** Hau Jie's PR #32 diagnostic is independently
+reproduced and found no demonstrated production defect in the inspected recognition
+path. His next task is an isolated
+development representation comparison; it changes no Studio model or Practice
+readiness. Continue the remaining native/manual cases with Hau Jie operating
+laptop B. Do not install experimental outputs or treat them as a shortcut around
+the current-session gate.
+
 - **Manual:** agree an identified Studio build and remaining-case matrix with
   Hau Jie. Finish your laptop-A trusted-app/association, failure/retry and
   restore-after-real-launch/no-replay checks. Diagnose the short P03 PREVIOUS

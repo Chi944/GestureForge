@@ -59,12 +59,12 @@ Extract the new Studio ZIP into a fresh folder and keep old private profiles,
 datasets and `.local` evidence outside the replacement folder unless the guide
 explicitly tells you to import them.
 
-Latest source verification on 14 October passed 952 tests (one Windows symlink
-permission skip and the expected duplicate-ZIP test warning), Ruff, mypy, both
-startup modes and synthetic evaluation; 30 Node collector checks also passed.
-The receipt records working-tree changes based on `8204c6d` and exact source
-hashes, rather than claiming those changes were already in that commit; see
-[the progress record](PROGRESS.md). The earlier extracted
+Latest source verification on 15 October at PR #32 head `38e4d55` passed
+972 tests (one skipped and the expected duplicate-ZIP test warning), Ruff,
+mypy (102 source files), both startup modes and synthetic evaluation. See
+[the progress record](PROGRESS.md) for its private verification report.
+The earlier 14 October collector run passed 30 Node checks; the collector is
+unchanged by this diagnostic. The earlier extracted
 Practice/Live suite passed 153 checks on its recorded package. Follow each
 Studio archive's matching verification record; those checks do not verify a newer archive. These
 checks do not establish recognition on a participant's hand or native device
@@ -95,17 +95,17 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 15 October, after independently reproduced frozen TEST scoring and
-verification/reporting repairs. All three
+Current as of 15 October, after independently reproduced frozen TEST scoring,
+development-diagnostic review and verification/reporting repairs. All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction, integration and acceptance. Prepare the GF-P20 physical study only after its integration/readiness gates; the TEST comparisons do not replace it. | GF-P18 is accepted. Review incoming defect PRs, preserve the frozen result record and update traceability; review development-only GF-P21 diagnosis and keep deployment blocked where qualification is unmet. |
-| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | Continue GF-P21 from the reproduced DEVELOPMENT diagnosis: propose a bounded remedy for the documented rejection trade-off using development inputs only, without tuning or selecting on TEST. Preserve the failed frozen baselines; include their actual results and limits in the private GF-P24 methods/results contribution. GF-P21 still retains its GF-P20 dependency. |
+| Deston | Retain final direction, integration and acceptance. Prepare the GF-P20 physical study only after its integration/readiness gates; the TEST comparisons do not replace it. | GF-P18 is accepted and PR #32's development diagnosis is reviewed. Review the next bounded experiment and incoming defect PRs, preserve the frozen result record and update traceability; keep deployment blocked where qualification is unmet. |
+| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | PR #32 diagnosis is independently reproduced. Implement the fixed offline wrist/scale versus palm-local experiment in the [GF-P21 next-delivery contract](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october) using existing DEVELOPMENT features only. No production model/profile/version change. Update the private GF-P24 methods/results contribution; GF-P21 retains its GF-P20 dependency. |
 | Javier | Agree one identified build and remaining case matrix with Hau Jie. Finish laptop-A trusted-app/association, failure/retry and restore-after-real-launch/no-replay cases. Diagnose the short P03 PREVIOUS/wrong-action issue before a fresh full Practice attempt; run active-capture Camera only after a genuine grant. Coordinate Hau Jie's laptop-B checks. | Consolidate the two-device results without adding overlapping exports; fix demonstrated viewer/shortcut/runbook defects. Draft GF-P25 guide/storyboard and prepare the later observer-study order and recording forms. Preserve accepted PR #24/#26/#28/#29 cases; rerun only checks affected by new faults or changes. |
 
-**Next returns:** Hau Jie sends development-only recognition diagnosis and
+**Next returns:** Hau Jie sends the bounded offline representation comparison and
 private methods/results updates, and supplies laptop-B observations to Javier.
 Javier returns a focused remaining-case evidence PR and attributed laptop-B
 matrix; guide/storyboard drafts can arrive separately. GPT prepares and checks

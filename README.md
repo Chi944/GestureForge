@@ -175,6 +175,12 @@ and the [paired evaluation protocol](docs/project/PAIRED_EVALUATION.md). Physica
 camera, workflow, false-action and stability tests are tracked separately from
 classifier accuracy and automated software checks.
 
+The [development rejection diagnostic](docs/project/GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md)
+reproduces the selected models' failures using DEVELOPMENT data only, without
+changing production recognition. It refuses TEST inputs and preserves invalid
+observations. The next isolated representation experiment uses existing data;
+it is not a new deployed model or an improvement already demonstrated.
+
 ## Participant collection
 
 The [browser collection kits](docs/project/PARTICIPANT_KITS.md) require a webcam

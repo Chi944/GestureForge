@@ -19,21 +19,19 @@ and both personal results miss 0.90, so no deployment model is qualified.
   a genuine current-session Practice pass for gesture cases; manual cases need
   no model. No more TEST recording is requested from P67/P1543, and P69 remains
   closed TRAIN-only.
-- **With GPT:** continue GF-P21 from Deston's reproduced DEVELOPMENT diagnosis.
-  The frozen distance thresholds match the earlier development models; no definite
-  importer, label or runtime mismatch has been established. P67 already rejected
-  nine of twelve development NEXT trials, chiefly through margin rejection;
-  P1543 development NEXT was chiefly distance-rejected and NEUTRAL margin-rejected.
-  Review the detailed counts in the results record and propose a bounded remedy
-  using development inputs only. Do not repeat the unchanged searches or use TEST
-  observations to tune thresholds, select models or optimise configurations.
-  Keep original failed results/freezes and document any diagnosed cause. Add
-  the actual frozen comparison and limits to your private GF-P24 methods/results
-  contribution. GF-P21 is In Progress; it is not Done before its original
-  GF-P20 dependency.
-- **Return next:** a focused development-only diagnosis/defect PR, private
-  methods/results contribution, and laptop-B observations to Javier. No unchanged
-  H1/H2 resend or participant recollection is needed.
+- **With GPT:** PR #32's fixed-model diagnosis is reviewed and independently
+  reproduced; no production defect was demonstrated. Implement the one offline
+  wrist/scale versus palm-local comparison specified in
+  [the next-delivery contract](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october).
+  Existing DEVELOPMENT features suffice; no new recording is needed for this
+  experiment. Keep its fixed settings, degenerate/invalid observations, negative
+  counts and TEST refusal. Do not change Studio, production feature versions,
+  saved profiles or frozen results. Add the reviewed diagnostic and actual
+  comparison results to your private GF-P24 contribution once available.
+- **Return next:** one focused offline representation experiment/test PR and
+  private aggregate report, methods/results contribution, and laptop-B
+  observations to Javier. Do not repeat the unchanged diagnosis/search or request
+  blanket recollection. GF-P21 remains In Progress with its GF-P20 dependency.
 - **Verification:** use `python scripts/verify.py --timeout 1200` from your
   configured environment for a fresh timestamped local report. If supplying
   either output option, use a new filename; existing files are now refused.
@@ -495,4 +493,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, PAIRED_EVALUATION.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P17 and GF-P18 are accepted: both actual TEST returns were independently scored twice against unchanged freezes, including invalid slots and failed targets. No starter is deployment-approved; both personal models reject every NEXT trial. Continue GF-P21 from the reproduced DEVELOPMENT rejection diagnosis in the results record. No definite importer/label/runtime defect is established. Propose a bounded development-only remedy and repair only evidenced defects in owned modules; do not repeat unchanged searches. Do not tune thresholds, select models or optimise configurations on TEST; preserve all frozen baselines and do not request repeat TEST collection from P67/P1543 or further data from P69. GF-P21 still retains its original GF-P20 dependency. Operate laptop B for Javier's agreed native matrix and fresh-install/offline/thirty-minute checks. Add the actual comparison and limitations to the private GF-P24 methods/results contribution. Keep data, full exports, Word reports and logs local. Push focused PRs only from your branch and leave merging, integration and acceptance to Deston. Preserve original task owners, weights and Done criteria.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, PAIRED_EVALUATION.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P17 and GF-P18 are accepted: both actual TEST returns were independently scored twice against unchanged freezes, including invalid slots and failed targets. No starter is deployment-approved; both personal models reject every NEXT trial. PR #32's DEVELOPMENT diagnosis is reviewed and reproduced. Implement exactly the isolated paired wrist/scale versus palm-local experiment under “Integration review and next delivery” in GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md. Keep its fixed settings and invalid/negative denominators; add the specified tests and private aggregate comparison. Do not change Studio, production feature versions, saved profiles or frozen models. Do not tune thresholds, select models or optimise configurations on TEST; preserve all frozen baselines and do not request repeat TEST collection from P67/P1543 or further data from P69. GF-P21 still retains its original GF-P20 dependency. Operate laptop B for Javier's agreed native matrix and fresh-install/offline/thirty-minute checks. Add the actual comparison and limitations to the private GF-P24 methods/results contribution. Keep data, full exports, Word reports and logs local. Push focused PRs only from your branch and leave merging, integration and acceptance to Deston. Preserve original task owners, weights and Done criteria.

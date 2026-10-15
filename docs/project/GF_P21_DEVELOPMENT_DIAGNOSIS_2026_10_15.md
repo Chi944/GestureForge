@@ -15,6 +15,9 @@ python -m gestureforge.development_diagnosis data/local/participant-handoff-2026
 
 Use a new output filename. Both reports were generated locally on 15 October; no frozen file or historical output was overwritten.
 
+The example paths use Hau Jie's private handoff layout. On another checkout,
+use the corresponding corrected DEVELOPMENT manifest with matching input hashes.
+
 ## Findings from development data
 
 | Observation | P67 | P1543 |
@@ -31,11 +34,11 @@ P67 NEXT's median distance/threshold ratio is 0.140 while its median competing/p
 
 The same fixed reports retain 12/40 negative command samples for P67 and 10/40 for P1543. Removing rejection is not supported by these observations. No production defect was demonstrated in the inspected normalisation, TRAIN-only scaler, grouped distance calibration or prediction rejection implementation.
 
-### Reporting discrepancy for Deston's review
+### Reporting discrepancy resolved during integration
 
-The existing GF-P18 results narrative describes 28/60 P1543 development NEUTRAL slots as margin-rejected for the selected model. The privately supplied candidate report and this rerun show **30/60 for selected SVM**; **28/60 belongs to the alternative kNN** at the same rejection settings. Their aggregate trial macro-F1 ties at 0.666667 and negative commands tie at 10/40. This is a small algorithm-attribution discrepancy; it does not change the published TEST results. Deston owns the results narrative and should reconcile that sentence with his retained SVM report. This PR does not alter his record or rerun TEST.
+The earlier GF-P18 results narrative described 28/60 P1543 development NEUTRAL slots as margin-rejected for the selected model. The privately supplied candidate report and this rerun show **30/60 for selected SVM**; **28/60 belongs to the alternative kNN** at the same rejection settings. Their aggregate trial macro-F1 ties at 0.666667 and negative commands tie at 10/40. During integration on 15 October, Deston independently verified the attribution against the retained reports and corrected the GF-P18 development narrative with a dated note. Published TEST results are unchanged; TEST was not rerun for this correction.
 
-## Bounded remedy proposed for review
+## Earlier PR proposal — superseded by the next-delivery specification below
 
 First review the existing NEXT/NEUTRAL trial coverage and intended-pose notes; preserve every difficult trial. Do not request blanket recollection. The available geometry establishes poor separation/coverage, but lacks reliable pose-orientation annotations to establish a physical cause.
 
@@ -48,3 +51,59 @@ Six focused tests compare diagnostic metrics with the production evaluator for k
 The fresh `scripts/verify.py --timeout 1200` run passed Ruff, mypy (102 source files), **972 Python tests with one Windows symlink skip**, both offscreen startup checks and synthetic evaluation. The duplicate-ZIP fixture emitted its expected warning. The private report is `experiments/local/verification-20261015T040704082558Z.json`. An earlier sandboxed attempt retained access-denial failures and the then-uncorrected test annotation; the successful run used normal Windows permissions and UTF-8 console output. No production filesystem behavior was relaxed to make tests pass.
 
 Private JSON reports and methods/results remain outside Git. The Word draft has passed structural checks but visual QA is pending because the packaged renderer cannot find LibreOffice on this Windows environment. Laptop-B native/offline/stability checks and GF-P20 physical measurements remain separate work; no camera or live pass is claimed here.
+
+## Integration review and next delivery — 15 October
+
+Deston's independent runs on the retained DEVELOPMENT manifests reproduce the
+complete selected-model validation and negative metrics and their input hashes.
+They confirm the geometry counts above, including P67 NEXT's 47 margin rejections,
+P1543 NEXT's 41 distance rejections and selected SVM NEUTRAL's 30 margin rejections.
+The GF-P18 narrative is corrected; its TEST results and both freezes are unchanged.
+Private review outputs are under `experiments/local/pr32-review-20261015/`.
+
+**Next delivery for Hau Jie: implement one offline representation comparison.**
+This fixes the experiment specification before looking at its results. It is
+development work within GF-P21, not a production feature change or a model approval.
+The existing 60 values retain landmarks 1–20 wrist-relative and divided by the
+wrist-to-middle-knuckle distance, so inserting a zero wrist reconstructs sufficient geometry. No new
+participant recording is needed for this experiment.
+
+1. Compare the unchanged wrist/scale baseline with exactly one representation,
+   `palm-local-experiment-v1`, on the supplied right-hand standard poses only.
+   Reconstruct 21 XYZ points from the v1 feature vector with wrist at zero.
+   Use `y = normalise(point[9])`; project `point[5] - point[17]` perpendicular to
+   y and normalise it to form x; use `z = cross(x, y)`. Project landmarks 1–20
+   onto the x/y/z columns and flatten to 60 values. Do not add mirroring,
+   alternative axes, augmentation or a parameter search in this comparison.
+2. Compute in float64 and return finite float32 values. Refuse non-finite/wrong
+   shapes; treat a y norm or perpendicular x norm at or below `1e-6` as degenerate.
+   Keep each newly degenerate scheduled observation as invalid/UNKNOWN, including
+   validation negatives. Exclude invalid TRAIN features from fitting; retain
+   their records/counts. If calibration has fewer than two valid TRAIN trials for
+   any enrolled class, report
+   the experimental condition unavailable rather than changing the rule.
+3. Refuse any TEST-bearing input before fitting. Use the two existing corrected
+   DEVELOPMENT manifests, TRAIN-only scaling and whole-trial calibration.
+   Keep P67 kNN k=5/distance, multiplier 2.5/margin 1.75 and P1543 SVM
+   C=1/gamma=scale, multiplier 2.5/margin 1.25 fixed in both conditions.
+   Re-derive distances from each condition's TRAIN only. Do not select or tune
+   using the already consumed TEST sets.
+4. Return paired per-person/per-class scores, wrong labels, rejected/invalid
+   counts, negative-command sample counts and timing for both conditions.
+   Preserve every scheduled slot/trial. A gain in aggregate F1 must not conceal
+   worse negative acceptance or class recall. This is exploratory development
+   evidence; any later deployment claim needs a new freeze and fresh evaluation.
+5. Add focused checks for rotation invariance on a nondegenerate synthetic hand,
+   shape/finiteness, degenerate palms, unchanged inputs, TEST refusal and retained
+   invalid denominators. Keep original features, source files and reports intact;
+   write new private aggregate reports and submit a small code/test PR.
+6. Keep the transform isolated from Studio and profile/dataset persistence.
+   Do not change production `FEATURE_VERSION=1`, save transformed arrays through
+   the v1 dataset writer, or export an experimental model as a deployable v1
+   profile. Label experimental identities explicitly in reports. Orientation may
+   distinguish custom poses, so this result cannot justify changing all profiles.
+
+Hau Jie owns this next PR on `codex/hau-jie-profiles`; Deston reviews its results
+and any later contract change. Keep GF-P21 In Progress with its original GF-P20
+dependency. Laptop-B checks and the private methods/results contribution can
+continue in parallel; no physical success is inferred from this experiment.

@@ -139,8 +139,13 @@ The selected P67 development model already recognised only 2/12 NEXT trials,
 with one classified NEUTRAL and nine UNKNOWN; 47/60 NEXT sample slots were margin
 rejected. Its 12/40 negative command samples were predicted NEXT. P1543's selected
 development model recognised 4/12 NEXT, 4/12 PREVIOUS, 6/12 NEUTRAL and 12/12
-BOOKMARK trials. NEXT had 41/60 distance-rejected slots; NEUTRAL had 28/60
+BOOKMARK trials. NEXT had 41/60 distance-rejected slots; NEUTRAL had 30/60
 margin-rejected slots; 10/40 negative samples were accepted as BOOKMARK.
+
+Correction, 15 October: the selected P1543 SVM has 30/60 development NEUTRAL
+margin rejections. The previously stated 28/60 belongs to alternative kNN.
+Both the retained candidate output and the independent PR #32 diagnostic
+reproduction confirm this attribution. No TEST metric or frozen setting changes.
 
 These saved DEVELOPMENT findings establish a rejection/separation trade-off that
 predates TEST. They do not prove a software bug or identify a physical cause.
