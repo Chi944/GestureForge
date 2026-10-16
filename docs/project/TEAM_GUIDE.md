@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-Updated 15 October 2026 · Project deadline 7 November 2026
+Updated 16 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -59,9 +59,9 @@ Extract the new Studio ZIP into a fresh folder and keep old private profiles,
 datasets and `.local` evidence outside the replacement folder unless the guide
 explicitly tells you to import them.
 
-Latest source verification on 15 October at PR #32 head `38e4d55` passed
-972 tests (one skipped and the expected duplicate-ZIP test warning), Ruff,
-mypy (102 source files), both startup modes and synthetic evaluation. See
+Latest source verification on 16 October passed 991 tests (two platform skips
+and the expected duplicate-ZIP test warning), Ruff, mypy (104 source files),
+both startup modes and synthetic evaluation. See
 [the progress record](PROGRESS.md) for its private verification report.
 The earlier 14 October collector run passed 30 Node checks; the collector is
 unchanged by this diagnostic. The earlier extracted
@@ -95,19 +95,19 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 15 October, after independently reproduced frozen TEST scoring,
-development-diagnostic review and verification/reporting repairs. All three
+Current as of 16 October, after independently reproduced frozen TEST scoring,
+development-diagnostic review and the [Studio bug audit](PROGRESS.md#studio-recognition-and-package-audit--16-october). All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction, integration and acceptance. Prepare the GF-P20 physical study only after its integration/readiness gates; the TEST comparisons do not replace it. | GF-P18 is accepted and PR #32's development diagnosis is reviewed. Review the next bounded experiment and incoming defect PRs, preserve the frozen result record and update traceability; keep deployment blocked where qualification is unmet. |
+| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | Integrate verified loader/settings/rejection-feedback fixes and a fresh Studio handoff. Review Javier's trace and Hau Jie's bounded experiment, then incoming defect PRs and measured evidence; preserve frozen results. |
 | Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | PR #32 diagnosis is independently reproduced. Implement the fixed offline wrist/scale versus palm-local experiment in the [GF-P21 next-delivery contract](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october) using existing DEVELOPMENT features only. No production model/profile/version change. Update the private GF-P24 methods/results contribution; GF-P21 retains its GF-P20 dependency. |
-| Javier | Agree one identified build and remaining case matrix with Hau Jie. Finish laptop-A trusted-app/association, failure/retry and restore-after-real-launch/no-replay cases. Diagnose the short P03 PREVIOUS/wrong-action issue before a fresh full Practice attempt; run active-capture Camera only after a genuine grant. Coordinate Hau Jie's laptop-B checks. | Consolidate the two-device results without adding overlapping exports; fix demonstrated viewer/shortcut/runbook defects. Draft GF-P25 guide/storyboard and prepare the later observer-study order and recording forms. Preserve accepted PR #24/#26/#28/#29 cases; rerun only checks affected by new faults or changes. |
+| Javier | Use the new identified Studio package. Return a short same-profile PREVIOUS trace with visible rejection text, settings and intended-pose notes before a fresh full Practice attempt. Finish camera-free laptop-A target/failure/restore cases and coordinate Hau Jie's laptop B; active-capture Camera needs a genuine grant. | Analyse the trace with Hau Jie; consolidate device results without overlapping exports and fix demonstrated defects. Draft GF-P25 guide/storyboard and later study records. Preserve accepted PR #24/#26/#28/#29 cases; rerun only affected checks. |
 
 **Next returns:** Hau Jie sends the bounded offline representation comparison and
 private methods/results updates, and supplies laptop-B observations to Javier.
-Javier returns a focused remaining-case evidence PR and attributed laptop-B
+Javier first returns the short PREVIOUS diagnostic privately, then a focused remaining-case evidence PR and attributed laptop-B
 matrix; guide/storyboard drafts can arrive separately. GPT prepares and checks
 evidence; people supply observed device outcomes and final review decisions.
 
@@ -137,6 +137,14 @@ Open focused PRs and leave merging to Deston. Git users can continue from the
 identified source commit. For a fresh-install ZIP test, use the Studio source
 archive with its matching commit/hash receipt and extracted-source verification.
 Do not treat the older 13 October verification as proof for a newer archive.
+
+After setup, **run-studio.cmd** opens Studio on Windows and **run-studio.command**
+is the corresponding Mac launcher. The legacy `run.cmd`/`run.sh` defaults stay
+unchanged. New profile creation shows and retains the host's rejection settings;
+existing saved profiles retain their own settings. The audit does not establish
+that Javier's physical PREVIOUS pose is now recognised. Follow the
+[short diagnostic](../USER_GUIDE.md#studio-shows-unrecognised-for-previous-or-another-pose)
+before requesting another long trial. Participant browser kits are unchanged.
 Participant kits and the private data handoff serve different purposes; neither
 is a Studio installation. Follow [release instructions](../../releases/README.md).
 

@@ -15,13 +15,20 @@ The assignment controls its supplied ten-card deck and does not connect to Micro
 
 ### Project Studio preview
 
-Launch `.\run.cmd --studio` for the current project build. For manual control, click **Open Setup**, select **Live** in **Studio action mode** at the top of Setup, then click **Apply and pause**. These controls appear before dataset, camera and readiness settings; no dataset or webcam is needed for the manual walkthrough.
+After setup, double-click **run-studio.cmd** on Windows, or open **run-studio.command** on a supported Mac. The existing `.\run.cmd --studio` command also works. For manual control, click **Open Setup**, select **Live** in **Studio action mode** at the top of Setup, then click **Apply and pause**. These controls appear before dataset, camera and readiness settings; no dataset or webcam is needed for the manual walkthrough.
 
 For gesture simulation, use Preview or Rehearsal, click **Load personal dataset...** and select an existing personal TRAIN `manifest.json`; no restart is required. Loading pauses control and trains locally in the background. After success, check the Preview mappings. A compatible active stage keeps its authored mappings; an empty or incompatible stage stays manual-only. When Start is enabled, click **Start camera control** and hold NEUTRAL until READY. Switching datasets requires another explicit start and neutral hold. If loading fails, the previous model stays selected and paused.
 
 The loader distinguishes the wrong file type from missing training samples. A workspace or deck JSON produces guidance to use **Load workspace...** or **Load deck...**. **Dataset has no valid TRAIN samples** means the selected dataset cannot train a model, including validation/negative-only data; locate the existing personal TRAIN manifest first. Selecting the wrong JSON file does not require new gesture recordings.
 
 The dataset loader uses your launch settings, for example `.\run.cmd --studio --algorithm knn --multiplier 2 --margin 1.5 --camera 1`. It accepts one participant's numeric collection data, including custom gesture vocabularies, and rejects synthetic fixtures. Studio gesture actions simulate in Preview/Rehearsal; personal LIVE control becomes eligible only after the full Practice gate below. Manual typed action buttons also simulate in Preview/Rehearsal; explicitly selecting LIVE allows manual actions without a model or readiness pass. See the [project progress](project/PROGRESS.md) for remaining functionality.
+
+Creating a new profile inside Studio uses the same current distance multiplier and
+ambiguity margin as **Load personal dataset**; the Profiles form shows these values
+and lets you choose the classifier. Loading a saved profile restores its stored
+settings, and repair candidates retain their original settings. Existing saved
+profiles are not rewritten by an update. Valid samples must match the enrolled
+hand; invalid wrong-hand/no-hand detections remain recorded and are never fitted.
 
 Open **Profiles** to manage saved personal profiles. To create one, enter a name, browse to an existing numeric `manifest.json`, select its hand and classifier, confirm that internal-use permission has been obtained, then click **Create and load personal profile**. Fitting runs in the background. To return to a saved profile, select it and click **Load selected**. Both paths install only a valid completed model and leave control paused in Preview. A failed load keeps the previous selection with an error; a corrupt entry does not hide the other profiles. Competing load, camera and mapping controls are unavailable while creation/loading is busy.
 
@@ -169,6 +176,35 @@ readiness and human task completion; macOS external launches remain unsupported.
 Manual LIVE controls still need no profile or Practice pass. Standard starter
 gestures remain unavailable. This software gate does not establish new participant
 results, repair need, candidate quality or native-device acceptance.
+
+### Studio shows Unrecognised for PREVIOUS or another pose
+
+**Unrecognised means rejection, not a PREVIOUS or BOOKMARK action.** In the supplied
+standard mapping, PREVIOUS is thumb up. Custom profiles use their own enrolled
+poses; a workspace changes the action mapping, not the learned pose.
+
+The detail line distinguishes **Pose is ambiguous** (too similar to another
+enrolled class), **Pose does not match** (outside that class's distance limit),
+and tracking/hand problems. That reason remains visible when the controller asks
+for NEUTRAL again. The software does not infer which pose you intended.
+
+For Javier's reported failure, use a short diagnostic before another full Practice:
+
+1. Open the updated Studio package and load the **same saved profile** used for
+   the failure. Record its name/ID, hand, classifier, multiplier and margin. Do not
+   recreate it with different settings to claim the fault is fixed.
+2. Stay in **Preview**, select **Record evaluation trace** before Start, then show
+   NEUTRAL until READY, thumb up for about five seconds, and NEUTRAL again. Repeat
+   once if needed and Pause. This takes about 20–30 seconds and dispatches no real
+   actions. Note the intended pose intervals and exact visible rejection text.
+3. Send the printed saved trace path/file and the build/settings notes privately
+   to Deston and Hau Jie. Labels/timing traces contain no images or video. Use the
+   `gestureforge.trace_diagnose` command below to distinguish classifier rejection
+   from timing/rearming. If classifier analysis needs numeric TRAIN/VALIDATION
+   data, use the existing private dataset; do not include TEST or raw data in Git.
+
+No full Practice pass, new collection or threshold change is needed to diagnose
+this report. A software smoke test cannot confirm recognition on Javier's hand.
 
 ### Studio stays LATCHED with an open palm
 

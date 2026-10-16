@@ -252,6 +252,8 @@ def load_personal_model(path, algorithm="knn", multiplier=1.5, margin=1.5, *, st
     hand = bundle.metadata.get("chosen_hand", "Right")
     if hand not in ("Left", "Right"):
         raise ValueError("Dataset chosen_hand must be Left or Right")
+    if any(record.valid and record.hand != hand for record in bundle.records):
+        raise ValueError("dataset hand does not match the selected hand")
     features, labels, records = bundle.training_data()
     if not records:
         raise ValueError(
@@ -3987,16 +3989,14 @@ class Window(QMainWindow):
                 )
             self.state.setText(control.state.replace("_", " "))
             self.progress.setValue(round(control.progress * 100))
+            guidance = (
+                self.rejection_message(prediction.rejection_reason)
+                if prediction.rejection_reason else ""
+            )
             if control.state == "WAIT_NEUTRAL" and prediction.rejection_reason in {
                 "distance_rejection", "margin_rejection",
             }:
-                guidance = "Show NEUTRAL until READY, then retry."
-            else:
-                guidance = (
-                    self.rejection_message(prediction.rejection_reason)
-                    if prediction.rejection_reason
-                    else ""
-                )
+                guidance += " Show NEUTRAL until READY, then retry."
             self.detail.setText(guidance or control.last_error or
                                 "Return to neutral between commands. Esc pauses immediately.")
             if self.studio:

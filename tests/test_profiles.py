@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -28,6 +29,38 @@ def numeric_fixture(tmp_path):
                             {'chosen_hand': hand, 'warning': 'GENERATED SOFTWARE TEST ONLY'},
                             vocabulary=vocabulary if custom else None)
     return make
+
+
+def test_profile_retains_invalid_detections_without_fitting_them(numeric_fixture, tmp_path):
+    bundle = numeric_fixture()
+    invalid = tuple(replace(bundle.records[0], trial_id=f'invalid-trial-{index}',
+                            valid=False, feature_index=None, hand=hand)
+                    for index, hand in enumerate(('Left', None)))
+    bundle = save_dataset(tmp_path / 'with-invalid', (*bundle.records, *invalid),
+                          bundle.features, bundle.metadata)
+    assert bundle.manifest_path is not None
+    store = ProfileStore(tmp_path / 'profiles')
+
+    created = store.create('Invalid observations retained', bundle.manifest_path, 'Right', consent=True)
+    loaded = store.load(created.record.profile_id)
+
+    assert created.model.model_version == loaded.model.model_version
+    assert len(loaded.model.train_features_scaled) == len(bundle.valid_records('train'))
+    assert profiles.load_dataset(bundle.manifest_path).records == bundle.records
+
+
+@pytest.mark.parametrize('hand,selected_hand', [('Left', 'Right'), ('Right', 'Left')])
+def test_profile_rejects_valid_wrong_hand_before_fitting(numeric_fixture, tmp_path, monkeypatch,
+                                                       hand, selected_hand):
+    bundle = numeric_fixture(hand=hand)
+    train = Mock(side_effect=AssertionError('Wrong-hand valid rows must not reach model fitting'))
+    monkeypatch.setattr(profiles, 'train_model', train)
+
+    with pytest.raises(ValueError, match='dataset hand does not match the selected hand'):
+        ProfileStore(tmp_path / 'profiles').create(
+            'Wrong hand', bundle.manifest_path, selected_hand, consent=True)
+
+    train.assert_not_called()
 
 
 @pytest.mark.parametrize('algorithm', ['knn', 'svm'])

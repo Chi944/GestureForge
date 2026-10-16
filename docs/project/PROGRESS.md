@@ -1,6 +1,56 @@
 # GestureForge Studio progress
 
-Snapshot: 15 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 16 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Studio recognition and package audit — 16 October
+
+Deston reported that Javier sees **Unrecognised** for PREVIOUS in the latest
+Studio package. That archive's existing runtime files match the starting `5354bfd`
+checkout, so stale runtime packaging is not an established cause. No P03 failing
+trace or numeric dataset was supplied in this audit. The physical failure remains
+open; no threshold has been loosened to force acceptance.
+
+Reviewed software repairs:
+
+- Direct dataset loading rejects valid sample hands that conflict with the declared
+  hand before fitting. Both direct and saved-profile routes retain invalid wrong-hand
+  observations without fitting them; previously the profile route rejected the whole
+  dataset for those legitimate failed detections.
+- New profiles created inside Studio use the current multiplier/margin, matching
+  direct dataset loading. Previously creation silently used margin 1.0 even when
+  the active loader used 1.5. Saved profiles and repair candidates keep their
+  existing settings; the form displays the effective settings.
+- Distance/ambiguity guidance stays visible after WAIT NEUTRAL instead of being
+  replaced by a generic rearm instruction. Rejected poses still cannot act.
+- Dedicated Windows/macOS Studio launchers prevent accidentally opening the legacy
+  NEXT-only viewer. Existing launch commands remain supported; setup is required.
+
+The audit also checked persistence, schemas, duplicate suppression, shortcut
+validation and capture/restoration. Synthetic partial-trial, disk-full and busy
+profile restoration checks found the existing guards preserve data correctly;
+no speculative restore change was added. Independent patch review found no
+blocking defect. These checks are software evidence, not native-device acceptance.
+
+Fresh Windows verification passed **991 tests, two platform skips**, Ruff,
+mypy (104 source files), both startup modes and synthetic evaluation. The
+duplicate-ZIP regression produced its expected warning. The retained private
+report is `experiments/local/verification-20261016T123153226092Z.json`.
+Independent documentation review confirmed that all 29 task owners, statuses,
+weights and dependencies are unchanged. The native Windows profile form also
+rendered its settings correctly with synthetic data and no camera.
+
+**Next:** Javier returns one short same-profile PREVIOUS trace/settings record,
+using [the diagnostic procedure](../USER_GUIDE.md#studio-shows-unrecognised-for-previous-or-another-pose),
+before another full Practice attempt. Hau Jie analyses any supplied DEVELOPMENT
+inputs and continues his isolated representation experiment. Hau Jie operates
+laptop B; Javier consolidates the remaining device cases. Deston reviews the
+resulting fixes, integrated scenario and release evidence.
+
+Accepted totals remain **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
+48/73 (65.8%), team 137/223 (61.4%) — 17/29 tasks Done**. The audit closes
+verified software defects but not the full GF-P16/GF-P19/GF-P20/GF-P21/GF-P23
+acceptance gates. Frozen TEST inputs/results, task weights and dependencies
+are unchanged. The older audit sections retain their original build boundaries.
 
 ## Current development diagnostic review — 15 October
 

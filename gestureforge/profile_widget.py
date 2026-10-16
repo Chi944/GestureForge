@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from .profiles import LoadedProfile, ProfileSettings, ProfileStore
+from .models import Algorithm
 from . import starter
 from .pose_repair import RepairCandidate
 from .dataset import file_sha256
@@ -93,6 +94,9 @@ class ProfileSelectorWidget(QWidget):
         self.algorithm = QComboBox()
         self.algorithm.addItems(['knn', 'svm'])
         form.addRow('&Classifier', self.algorithm)
+        self.creation_settings = self._label('')
+        form.addRow('Rejection settings', self.creation_settings)
+        self.algorithm.currentTextChanged.connect(self._show_creation_settings)
         self.consent = QCheckBox('Dataset permission confirmed')
         self.manifest.textChanged.connect(self._manifest_changed)
         form.addRow(self.consent)
@@ -152,6 +156,8 @@ class ProfileSelectorWidget(QWidget):
                     record = self.store.read(profile_id)
                     title = f'{record.display_name} · {record.selected_hand} · {profile_id[:8]}'
                     detail = (f'{record.settings.algorithm.upper()} · '
+                              f'Distance multiplier {record.settings.multiplier}; '
+                              f'ambiguity margin {record.settings.margin} · '
                               f'Poses: {", ".join(record.vocabulary.labels)}. '
                               'Model availability is checked when you load.')
                     valid = True
@@ -176,6 +182,7 @@ class ProfileSelectorWidget(QWidget):
         self._controls()
 
     def _controls(self):
+        self._show_creation_settings()
         idle = not self.busy and not self._closed
         item = self.profiles.currentItem()
         valid = bool(item and item.data(Qt.ItemDataRole.UserRole + 1))
@@ -230,6 +237,23 @@ class ProfileSelectorWidget(QWidget):
         self._repair_candidate = None
         self.algorithm.setEnabled(True)
         self.hand.setEnabled(True)
+        self._show_creation_settings()
+
+    def _creation_settings(self) -> ProfileSettings:
+        if self._repair_candidate is not None:
+            return self._repair_candidate.settings
+        algorithm: Algorithm = 'svm' if self.algorithm.currentText() == 'svm' else 'knn'
+        if self.host is not None:
+            _, multiplier, margin = self.host.model_settings
+            return ProfileSettings(algorithm, multiplier, margin)
+        return ProfileSettings(algorithm)
+
+    def _show_creation_settings(self):
+        settings = self._creation_settings()
+        self.creation_settings.setText(
+            f'{settings.algorithm.upper()} · distance multiplier {settings.multiplier}; '
+            f'ambiguity margin {settings.margin}. '
+            'Saved profiles and repair candidates retain their own settings.')
 
     def offer_repair_candidate(self, candidate: RepairCandidate):
         """Populate review fields only. Training/loading requires the Create click."""
@@ -244,6 +268,7 @@ class ProfileSelectorWidget(QWidget):
         self.algorithm.setCurrentText(candidate.settings.algorithm)
         self.algorithm.setEnabled(False)
         self.hand.setEnabled(False)
+        self._show_creation_settings()
         self.status.setText(f'Review separate TRAIN candidate: {candidate.valid_per_label}. '
                             f'Settings retained: {candidate.settings}. '
                             f'Rollback profile: {candidate.rollback_profile_id}. '
@@ -269,8 +294,7 @@ class ProfileSelectorWidget(QWidget):
             return
         hand = self.hand.currentText()
         candidate = self._repair_candidate
-        settings = (candidate.settings if candidate else
-                    ProfileSettings('svm' if self.algorithm.currentText() == 'svm' else 'knn'))
+        settings = self._creation_settings()
         names = dict(candidate.gesture_names) if candidate else None
 
         def create():

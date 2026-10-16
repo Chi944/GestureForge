@@ -25,7 +25,7 @@ installed, use `brew install python@3.11`. Do not launch Terminal using Rosetta.
 
 ```bash
 python3.11 scripts/setup_macos.py
-bash run.sh
+bash run-studio.command
 ```
 
 Setup needs internet. It installs the existing pinned dependencies into `.venv`,
@@ -35,8 +35,9 @@ window and Studio preview. Setup reports success only if these checks pass. It d
 not open the camera or collect samples. Run setup from an ordinary graphical Mac
 Terminal session, without setting `QT_QPA_PLATFORM=offscreen`.
 If setup fails, resolve the reported error and rerun; it does not delete an existing
-environment. Use `bash run.sh` rather than double-clicking the script so errors
-remain visible. The launcher handles project folders containing spaces.
+environment. After setup, `run-studio.command` is executable and can be opened
+from Finder; use `bash run-studio.command` in Terminal to retain error output.
+The launcher handles project folders containing spaces.
 
 The initial viewer supports keyboard/mouse control. **Start camera control remains
 disabled until a personal dataset is supplied.** A connected webcam alone is not enough.
@@ -53,11 +54,12 @@ Choose **Camera index**, click **Use camera and pause**, then explicitly Start a
 the previous capture stops. The on-screen keyboard hint uses the native Qt shortcut
 names. Start/Pause and the active gesture meanings stay visible while setup scrolls.
 
-Studio currently simulates gesture actions; manual card navigation works. It does
-not yet execute desktop shortcuts on any platform. The planned local app/file/folder
-launchers and Camera handoff belong to the Windows project track. They are not a
-promise of macOS desktop automation. Personal data loading, classifier training,
-preview/rehearsal and the assignment viewer are the Mac compatibility target.
+This command is equivalent to `bash run-studio.command`. Preview/Rehearsal simulate
+gesture actions. Explicit Live permits manual viewer actions without Practice;
+personal gesture actions require the current full Practice pass. External launches are supported
+on Windows and remain unavailable on macOS. Personal data loading, classifier
+training, preview/rehearsal and the viewer are the Mac compatibility target;
+native device verification is still required.
 
 ## Camera permission and personal gestures
 

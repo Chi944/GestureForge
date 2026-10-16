@@ -58,8 +58,9 @@ def test_setup_preserves_incompatible_environment(tmp_path, monkeypatch):
     assert marker.read_bytes() == b"old environment"
 
 
-def test_shell_launcher_has_unix_line_endings():
-    launcher = Path(__file__).resolve().parent.parent / "run.sh"
+@pytest.mark.parametrize("name", ["run.sh", "run-studio.command"])
+def test_shell_launcher_has_unix_line_endings(name):
+    launcher = Path(__file__).resolve().parent.parent / name
     assert b"\r" not in launcher.read_bytes()
 
 
@@ -67,6 +68,7 @@ def test_shell_launcher_has_unix_line_endings():
 def test_setup_checks_both_gui_modes_before_reporting_success(
     tmp_path, monkeypatch, capsys, fail_studio
 ):
+    (tmp_path / "run-studio.command").write_text("#!/bin/bash\n")
     monkeypatch.setattr(setup_macos, "ROOT", tmp_path)
     monkeypatch.setattr(setup_macos, "validate_runtime", lambda: None)
     monkeypatch.setattr(setup_macos.subprocess, "check_output", lambda *a, **k: "ca.pem\n")
@@ -91,4 +93,7 @@ def test_setup_checks_both_gui_modes_before_reporting_success(
         (python, "-m", "gestureforge", "--smoke-test"),
         (python, "-m", "gestureforge", "--studio", "--smoke-test"),
     ]
-    assert ("Setup complete" in capsys.readouterr().out) is not fail_studio
+    output = capsys.readouterr().out
+    assert ("Setup complete" in output) is not fail_studio
+    if not fail_studio:
+        assert "run-studio.command" in output

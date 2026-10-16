@@ -1474,7 +1474,11 @@ def test_window_pause_blocks_pending_worker_prediction_from_moving_deck(qapp) ->
         window.close()
 
 
-def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp) -> None:
+@pytest.mark.parametrize("reason,message", [
+    ("margin_rejection", "Pose is ambiguous"),
+    ("distance_rejection", "Pose does not match"),
+])
+def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp, reason, message) -> None:
     import gestureforge.app as app_module
 
     window = Window(model=object(), feature_function=lambda observation, hand: np.zeros(60))
@@ -1493,9 +1497,9 @@ def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp) 
             window,
             4,
             100.45,
-            "BOOKMARK",
+            "PREVIOUS",
             accepted=False,
-            reason="margin_rejection",
+            reason=reason,
         )),
         *[
             (
@@ -1504,9 +1508,9 @@ def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp) 
                     window,
                     frame_id,
                     timestamp,
-                    "BOOKMARK",
+                    "PREVIOUS",
                     accepted=False,
-                    reason="margin_rejection",
+                    reason=reason,
                 ),
             )
             for frame_id, timestamp in ((5, 100.63), (6, 100.81), (7, 100.99))
@@ -1519,8 +1523,8 @@ def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp) 
 
         assert window.viewer.position == 0
         assert window.prediction.text() == "Prediction: Unrecognised"
-        assert "Pose is ambiguous" in window.detail.text()
-        assert "margin_rejection" not in window.detail.text()
+        assert message in window.detail.text()
+        assert reason not in window.detail.text()
 
         for timestamp in (100.63, 100.81, 100.99):
             current[0] = timestamp
@@ -1529,7 +1533,7 @@ def test_window_shows_rejection_guidance_without_moving_deck(monkeypatch, qapp) 
         assert window.viewer.position == 0
         assert window.controller.state == "WAIT_NEUTRAL"
         assert "Show NEUTRAL" in window.detail.text()
-        assert "Pose is ambiguous" not in window.detail.text()
+        assert message in window.detail.text()
     finally:
         window.close()
 
@@ -1643,7 +1647,8 @@ def test_main_selects_dataset_vocabulary_without_changing_assignment(studio, cus
     # Mock only the human-data gate; synthetic arrays never become participant files.
     dataset = SimpleNamespace(
         vocabulary=vocabulary, metadata={"chosen_hand": "Right"},
-        records=[SimpleNamespace(provenance="human", participant_id="MOCK_GATE_ONLY")],
+        records=[SimpleNamespace(provenance="human", participant_id="MOCK_GATE_ONLY",
+                                 valid=True, hand="Right")],
         training_data=lambda: (features, np.array([mapping[label] for label in labels]), records),
     )
     monkeypatch.setattr("gestureforge.dataset.load_dataset", lambda _: dataset)
@@ -1805,7 +1810,8 @@ def test_studio_capture_controls_and_active_legend_stay_visible_when_scrolling(q
         window.close()
 
 
-def test_studio_rearm_feedback_distinguishes_rejection_and_neutral_hold(monkeypatch, qapp):
+@pytest.mark.parametrize("command", ["NEXT", "PREVIOUS", "BOOKMARK"])
+def test_studio_rearm_feedback_distinguishes_rejection_and_neutral_hold(monkeypatch, qapp, command):
     import gestureforge.app as app_module
 
     window = Window(model=object(), studio=True)
@@ -1831,8 +1837,9 @@ def test_studio_rearm_feedback_distinguishes_rejection_and_neutral_hold(monkeypa
         for timestamp in (100.0, 100.15, 100.31):
             feed(timestamp, "NEUTRAL")
         for timestamp in (100.45, 100.60, 100.75, 100.86):
-            feed(timestamp, "NEXT")
+            feed(timestamp, command)
         assert window.routing.state == "LATCHED"
+        assert f"{command} would" in window.feedback.text()
         feed(101.00, "UNKNOWN", "margin_rejection")
         assert window.prediction.text() == "Prediction: Unrecognised"
         assert "Pose is ambiguous" in window.detail.text()

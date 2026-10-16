@@ -4,6 +4,17 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Next delivery — assigned 7 October
 
+**16 October audit update:** use the new Studio source handoff and launch
+`run-studio.cmd` after setup. The existing package runtime was not stale relative
+to the audit baseline. Rejection guidance, new-profile settings parity and dataset
+hand validation are repaired; your physical PREVIOUS failure is not yet explained.
+Saved profiles keep their settings. Follow [the short PREVIOUS trace procedure](../USER_GUIDE.md#studio-shows-unrecognised-for-previous-or-another-pose)
+with the same profile, then send its trace plus exact build/settings and intended
+pose notes privately. Do not repeat the full 22-window Practice until this is
+diagnosed. GPT can analyse the trace immediately when received. Continue the
+camera-free laptop-A cases and guide/storyboard in parallel; coordinate the
+matching package on Hau Jie's laptop B. Keep pushing your own branch only.
+
 **Immediate manual / GPT split, updated 15 October:**
 
 The workflow comparison tool now retains a pre-task application fault without

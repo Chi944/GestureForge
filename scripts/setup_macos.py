@@ -55,7 +55,9 @@ def main() -> None:
     # Exercise the native Qt window too; neither smoke mode starts a camera.
     run(str(python), "-m", "gestureforge", "--smoke-test")
     run(str(python), "-m", "gestureforge", "--studio", "--smoke-test")
-    print("Setup complete. Launch from Terminal with: bash run.sh")
+    launcher = ROOT / "run-studio.command"
+    launcher.chmod(launcher.stat().st_mode | 0o111)
+    print("Setup complete. Open run-studio.command, or use: bash run.sh --studio")
 
 
 if __name__ == "__main__":

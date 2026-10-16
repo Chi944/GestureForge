@@ -22,7 +22,8 @@ consent. **GestureForge controls its own viewer; it is not connected to PowerPoi
 > **Current status:** Studio is under active development. Manual controls and
 > personal enrolment are available. No approved shared starter model is bundled;
 > personal Live gestures require the current session's full Practice pass.
-> Held-out recognition and remaining device checks are still in progress.
+> The frozen held-out comparison is complete, with unmet recognition targets;
+> model improvement and remaining device checks are still in progress.
 
 ![Earlier GestureForge card-viewer interface](docs/images/prototype.png)
 
@@ -56,10 +57,11 @@ repository or extract the source ZIP, then open PowerShell in its folder:
 
 ```powershell
 .\setup.cmd
-.\run.cmd --studio
+.\run-studio.cmd
 ```
 
 Setup installs the pinned dependencies and prepares the hand-landmark asset.
+After setup, double-click **run-studio.cmd** to reopen Studio.
 Start in Guest/manual mode to explore Studio without a webcam or dataset.
 See the [Windows guide](docs/WINDOWS_LAPTOP.md) for setup and troubleshooting.
 
@@ -69,7 +71,7 @@ The setup target is **macOS 13+ with native arm64 Python 3.11**:
 
 ```bash
 python3.11 scripts/setup_macos.py
-bash run.sh --studio
+bash run-studio.command
 ```
 
 Use a fresh Mac environment rather than copying a Windows `.venv`. Allow camera
@@ -81,6 +83,11 @@ Dependency resolution has been checked for Apple Silicon. Full native Mac
 installation, webcam operation and smoothness still need device verification;
 successful browser data collection on macOS does not establish native Studio
 compatibility. See the [Mac guide](docs/MACOS.md).
+
+The Studio source ZIP needs this setup; it is different from the browser-only
+participant recording kits. Existing `run.cmd --studio` / `bash run.sh --studio`
+commands still work. Keep personal data and saved profiles when extracting an update
+into a separate folder.
 
 ### Minimal card viewer
 
@@ -111,6 +118,9 @@ are recognition previews in that mode. Studio provides the wider workflow above.
    **Esc** or **Pause / camera off** stops gesture control.
 
 A diagnostic or short readiness check does not grant personal Live eligibility.
+If PREVIOUS or another pose shows **Unrecognised**, read the rejection reason;
+this is not a request to repeat the full Practice protocol. See the
+[short recognition diagnostic](docs/USER_GUIDE.md#studio-shows-unrecognised-for-previous-or-another-pose).
 Changing the model, camera, gesture meanings or target configuration expires the
 grant. Restarting Studio also clears it. Focus loss pauses capture; resume
 explicitly. See [Practice and Live instructions](docs/USER_GUIDE.md#personal-practice).

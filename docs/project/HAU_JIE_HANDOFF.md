@@ -4,6 +4,17 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**16 October audit update:** reviewed hand-validation fixes now reject valid
+wrong-hand training records while retaining invalid wrong-hand detections.
+New profile creation inside Studio preserves its current multiplier/margin;
+existing profiles and repair candidates are unchanged. Javier's PREVIOUS rejection
+still needs his short same-profile trace/settings record. With GPT, diagnose that
+trace and any privately supplied DEVELOPMENT data without changing frozen TEST
+results or guessing a threshold. Continue the fixed offline representation
+comparison below. Manually operate laptop B using the new identified Studio
+source handoff (`run-studio.cmd` after setup) and return observed results to Javier.
+The audit improves software readiness but grants no new deployment/readiness pass.
+
 **Immediate manual / GPT split, updated 15 October after TEST scoring:**
 
 Both P67/P1543 TEST returns are received, audited and independently scored twice

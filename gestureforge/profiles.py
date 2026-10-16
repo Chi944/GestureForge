@@ -174,9 +174,8 @@ def _read_training(path: Path, hand: str) -> tuple[DatasetBundle, dict[str, str]
     validate_identifier(next(iter(participants)))
     if any(r.provenance != 'human' for r in bundle.records):
         raise ValueError('synthetic data cannot create a personal profile')
-    # Invalid detections may have no handedness. Valid feature rows may not.
-    if any((r.valid and r.hand != hand) or (r.hand is not None and r.hand != hand)
-           for r in bundle.records):
+    # Invalid detections retain the observed hand for diagnostics and are never fitted.
+    if any(r.valid and r.hand != hand for r in bundle.records):
         raise ValueError('dataset hand does not match the selected hand')
     if bundle.metadata.get('chosen_hand', hand) != hand:
         raise ValueError('dataset chosen_hand conflicts with selection')

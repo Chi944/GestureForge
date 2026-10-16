@@ -11,11 +11,11 @@ from PySide6.QtCore import Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from gestureforge.dataset import save_dataset
-from gestureforge.app import Window
+from gestureforge.dataset import load_dataset, save_dataset
+from gestureforge.app import Window, load_personal_model
 from gestureforge.fixtures import synthetic_dataset
 from gestureforge.profile_widget import ProfileSelectorWidget
-from gestureforge.profiles import LoadedProfile, ProfileRecord, ProfileSelection, ProfileStore
+from gestureforge.profiles import LoadedProfile, ProfileRecord, ProfileSelection, ProfileSettings, ProfileStore
 
 
 @pytest.fixture(scope='module')
@@ -306,7 +306,9 @@ def test_late_worker_cannot_install_after_hide_or_close(qt_app, local_store, mon
 
 def test_saved_load_uses_existing_shell_worker(studio, local_store, monkeypatch):
     store, source = local_store
-    candidate = store.create('Saved', source, 'Right', consent=True)
+    saved_settings = ProfileSettings('knn', 2.0, 1.25)
+    candidate = store.create('Saved', source, 'Right', consent=True, settings=saved_settings)
+    studio.model_settings = ('svm', 3.0, 1.75)
     widget = ProfileSelectorWidget(store, host=studio)
     selected: list[ProfileSelection] = []
     widget.profile_selected.connect(selected.append)
@@ -320,8 +322,74 @@ def test_saved_load_uses_existing_shell_worker(studio, local_store, monkeypatch)
     assert selected == [candidate.selection]
     assert studio.worker is None  # selection never opens a camera
     assert studio.routing.state == 'PAUSED'
+    assert widget.loaded.record.settings == saved_settings
+    assert studio.model_settings == ('knn', 2.0, 1.25)
     assert widget.guest_button.isEnabled()
     widget.close()
+
+
+@pytest.mark.parametrize('settings', [('knn', 1.5, 1.5), ('svm', 2.0, 1.25)])
+def test_profile_creation_matches_direct_dataset_rejection_settings(studio, local_store, settings):
+    store, source = local_store
+    studio.model_settings = settings
+    direct, *_ = load_personal_model(source, *settings, studio=True)
+    widget = ProfileSelectorWidget(store, host=studio)
+    widget.algorithm.setCurrentText(settings[0])
+    try:
+        created = create(widget, source)
+        assert created.record.settings == ProfileSettings(*settings)
+        assert replace(created.model.config, model_version=direct.model_version) == direct.config
+        assert created.model.thresholds == direct.thresholds
+        for feature in load_dataset(source).features:
+            assert created.model.predict(feature) == direct.predict(feature)
+        assert str(settings[1]) in widget.creation_settings.text()
+        assert str(settings[2]) in widget.creation_settings.text()
+    finally:
+        widget.close()
+
+
+def test_profile_creation_uses_selected_algorithm_and_current_host_thresholds(studio, local_store):
+    store, source = local_store
+    widget = ProfileSelectorWidget(store, host=studio)
+    studio.model_settings = ('knn', 2.0, 1.25)
+    widget.algorithm.setCurrentText('svm')
+    try:
+        assert create(widget, source).record.settings == ProfileSettings('svm', 2.0, 1.25)
+    finally:
+        widget.close()
+
+
+def test_standalone_creation_keeps_defaults(qt_app, local_store):
+    store, source = local_store
+    widget = ProfileSelectorWidget(store)
+    try:
+        assert create(widget, source).record.settings == ProfileSettings()
+    finally:
+        widget.close()
+
+
+def test_repair_creation_keeps_candidate_settings(studio, local_store):
+    from gestureforge.dataset import file_sha256
+    from gestureforge.pose_repair import RepairCandidate
+
+    store, source = local_store
+    original = store.create('Original', source, 'Right', consent=True,
+                            settings=ProfileSettings('knn', 2.0, 1.25))
+    candidate = RepairCandidate(source, file_sha256(source), 'Right', original.record.settings,
+                                original.record.gesture_names, original.record.profile_id,
+                                str(source), 'PREVIOUS', ())
+    studio.model_settings = ('svm', 3.0, 1.75)
+    widget = ProfileSelectorWidget(store, host=studio)
+    try:
+        widget.offer_repair_candidate(candidate)
+        widget.consent.setChecked(True)
+        widget.create_button.click()
+        finish(widget)
+        assert widget.loaded is not None, widget.status.text()
+        assert widget.loaded.record.settings == candidate.settings
+        assert store.read(original.record.profile_id) == original.record
+    finally:
+        widget.close()
 
 
 def test_guest_switch_preserves_profile_and_can_reload(studio, local_store):

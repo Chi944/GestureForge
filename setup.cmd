@@ -13,5 +13,5 @@ if not "%status%"=="0" (
 )
 
 echo.
-echo GestureForge setup complete. Launch with run.cmd.
+echo GestureForge setup complete. Launch Studio with run-studio.cmd.
 exit /b 0

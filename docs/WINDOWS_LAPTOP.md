@@ -10,10 +10,10 @@ setup; the participant browser collection kits are different tools.
 1. Extract the Studio ZIP into a fresh writable folder; follow the Python/setup
    instructions in section 2. Do not copy another laptop's environment or private
    profile/targets.
-2. Open PowerShell in the extracted `gestureforge` folder and run
-   `.\run.cmd --studio`. Double-clicking `run.cmd` without that option opens the
-   assignment interface. For a software launch check use
-   `.\run.cmd --studio --smoke-test`.
+2. After setup, double-click **run-studio.cmd**, or run `.\run-studio.cmd` in
+   PowerShell from the extracted `gestureforge` folder. The legacy `run.cmd`
+   without `--studio` opens the smaller NEXT-only viewer. For a software launch
+   check use `.\run-studio.cmd --smoke-test`.
 3. Use the [Studio controls](project/TEAM_GUIDE.md) and
    [Windows case procedure](evidence/WINDOWS_LAUNCH_PROCEDURE.md). Bind this
    laptop's local targets. Preview simulates; explicit Live permits manual
