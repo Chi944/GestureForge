@@ -39,6 +39,23 @@ Independent documentation review confirmed that all 29 task owners, statuses,
 weights and dependencies are unchanged. The native Windows profile form also
 rendered its settings correctly with synthetic data and no camera.
 
+The refreshed Studio ZIP pins clean source **`d200947`**, contains 191 verified
+members and has SHA256
+`4c4f4fbc0223229c50fb5a2e7abf9b1fb00057be1c95f9df443236aaaa42839a`.
+Its extracted source passed import isolation, dependency consistency, landmark
+model loading, both startup modes and 31 focused tests (one platform skip).
+Receipt: `releases/gestureforge-studio-source-verification-20261016.json`.
+The matching ZIP, receipts and `READ_FIRST.txt` are in the local Downloads folder
+`GestureForge_Studio_Handoff_20261016`. The temporary extraction was removed;
+no environment copy was created. Existing Windows dependencies and a hard-linked
+model asset were reused, so this does not establish a fresh dependency install,
+physical webcam, laptop-B or native-macOS pass. Later documentation-only commits
+do not change the archive's identified source version.
+
+The GF-P16, GF-P19, GF-P21 and GF-P23 Trello cards now carry this audit and the
+current manual/GPT split above their preserved historical evidence. No open PRs
+were returned by the final GitHub check; no additional merge was needed.
+
 **Next:** Javier returns one short same-profile PREVIOUS trace/settings record,
 using [the diagnostic procedure](../USER_GUIDE.md#studio-shows-unrecognised-for-previous-or-another-pose),
 before another full Practice attempt. Hau Jie analyses any supplied DEVELOPMENT

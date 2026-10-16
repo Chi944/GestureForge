@@ -71,6 +71,14 @@ checks do not establish recognition on a participant's hand or native device
 acceptance. GF-P17 acceptance also requires the verified private freezes and
 reviewed provenance/selection decision; test counts alone do not close it.
 
+The refreshed handoff identifies clean source **`d200947`**. Its 191 archive
+members match source, and extracted-source model loading, both startup modes
+and 31 focused tests pass (one platform skip), using the existing Windows
+dependencies. See [the progress record](PROGRESS.md#studio-recognition-and-package-audit--16-october)
+for its SHA256 and verification limits. Deston's Downloads folder
+`GestureForge_Studio_Handoff_20261016` contains the ZIP, matching receipts and
+`READ_FIRST.txt`. Later documentation-only updates do not change this ZIP's build.
+
 Read the **Next delivery** table at the top of your individual brief first.
 It supersedes older recording priorities. Return small, reviewable deliveries
 as they become available instead of waiting for your entire lane to finish.
@@ -101,7 +109,7 @@ members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | Integrate verified loader/settings/rejection-feedback fixes and a fresh Studio handoff. Review Javier's trace and Hau Jie's bounded experiment, then incoming defect PRs and measured evidence; preserve frozen results. |
+| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | Loader/settings/rejection-feedback fixes and the refreshed Studio handoff are verified and published. Next, review Javier's trace and Hau Jie's bounded experiment, then incoming defect PRs and measured evidence; preserve frozen results. |
 | Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | PR #32 diagnosis is independently reproduced. Implement the fixed offline wrist/scale versus palm-local experiment in the [GF-P21 next-delivery contract](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october) using existing DEVELOPMENT features only. No production model/profile/version change. Update the private GF-P24 methods/results contribution; GF-P21 retains its GF-P20 dependency. |
 | Javier | Use the new identified Studio package. Return a short same-profile PREVIOUS trace with visible rejection text, settings and intended-pose notes before a fresh full Practice attempt. Finish camera-free laptop-A target/failure/restore cases and coordinate Hau Jie's laptop B; active-capture Camera needs a genuine grant. | Analyse the trace with Hau Jie; consolidate device results without overlapping exports and fix demonstrated defects. Draft GF-P25 guide/storyboard and later study records. Preserve accepted PR #24/#26/#28/#29 cases; rerun only affected checks. |
 
