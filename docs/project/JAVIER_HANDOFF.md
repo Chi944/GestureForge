@@ -2,6 +2,35 @@
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
+## Send now — private P03 handoff, 19 October
+
+Javier: send the **same private ZIP to both Deston and Hau Jie**, named
+`PRIVATE_P03_PROFILE_DEVELOPMENT.zip`, containing:
+
+1. The existing saved P03 profile's settings and metadata from the installation
+   used for the supplied traces.
+2. Its numeric TRAIN/development dataset: the manifest **and every referenced
+   numeric feature file**. A manifest alone is not enough. Preserve relative
+   folder relationships and original file contents.
+3. Any existing VALIDATION or negative-gesture numeric samples for this profile.
+   If these are absent, state that in the note; do not collect replacements now.
+4. A short `READ_FIRST.txt` identifying the Studio build, which included files
+   belong to the traced profile, and any missing referenced files. Confirm its
+   saved settings: Right hand, kNN, multiplier 1.5, margin 1.0.
+
+Your coding assistant can locate the active profile and its referenced files,
+copy only those files into a temporary handoff folder, create the ZIP, and check
+that it opens and includes the references. Keep the source profile/data unchanged:
+do not recreate, retrain, repair or change settings before this handoff. If a
+reference is missing, report it instead of substituting another dataset.
+
+Use the existing private team file-sharing channel. Do not commit the ZIP/data
+or attach them to GitHub/Trello. Exclude unrelated profiles, consumed TEST data,
+the full repository, Python environment, photos and videos. The traces are
+already received; no repeat recording is requested. Hau Jie investigates the
+index-finger false NEXT using these inputs; Deston verifies and integrates any
+justified repair. Sending the files alone is not task acceptance.
+
 ## Next delivery — assigned 7 October
 
 **19 October update:** Deston's integration track completed the offline representation
@@ -13,8 +42,8 @@ four PREVIOUS Preview simulations and two additional NEXT simulations during
 your reported index-finger negative attempt. The second summary is cumulative
 six, not ten. Your saved profile is Right/kNN, multiplier 1.5 and margin 1.0.
 This is diagnostic evidence, not a Practice/Live pass or final accuracy result.
-Coordinate the existing numeric P03 development/profile inputs privately with
-Hau Jie so the false NEXT can be investigated; none have yet reached Deston.
+Send the private P03 ZIP above to both Deston and Hau Jie so the false NEXT can
+be investigated; none of those numeric inputs have yet reached Deston.
 No threshold change or new recording is requested. Continue remaining laptop-A
 cases and Hau Jie's laptop-B observations. PR #33's GF-P25 guide draft is reviewed
 with corrected Practice timing: action/negative windows wait for READY before
@@ -350,4 +379,4 @@ pipeline diagnostic does not prove either. Do not build a second capture logger.
 
 Include this branch instruction with the task prompt: **Work only on `codex/javier-shortcuts`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/javier-shortcuts`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, WORKFLOW_COMPARISON.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P18 is accepted for the frozen comparison, not deployment or LIVE approval; no additional P67/P1543 TEST collection is requested. Follow J1–J4: preserve PR #24, PR #26, PR #28 and PR #29 as completed bounded evidence; complete the remaining laptop-A target-association, failure/retry, historical real-launch restore/no-replay and active-capture Camera handoff cases. Read P03_TRACE_REVIEW_2026_10_19.md; the short traces/settings are received, so do not repeat them. Coordinate existing numeric P03 DEVELOPMENT/profile inputs privately with Hau Jie to investigate index-finger false NEXT before a fresh 22-window Practice attempt; active-capture Camera requires a genuine current-session pass. Coordinate Hau Jie operating laptop B for the two-device matrix and GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. Prepare and coordinate Deston's GF-P20 observer records, study order, holds/negatives/latency and disjoint exports using frozen inputs from Hau Jie. Retain failed/unavailable conditions; never bypass Practice or relabel manual fallback as gesture success. Preserve PR #33's reviewed GF-P25 guide draft and corrected Practice timing; continue the private video/storyboard. The guide draft does not close GF-P25. Keep private data, paths, full exports, videos, Word reports and logs local. Fix only evidenced defects in your owned modules and send shared-shell reproductions to Deston. Push focused PRs only from your branch and leave them unmerged; Deston keeps integration, interpretation and acceptance. Do not change original task ownership, weights or Done status.
+> Work only on `codex/javier-shortcuts`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, WORKFLOW_COMPARISON.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P18 is accepted for the frozen comparison, not deployment or LIVE approval; no additional P67/P1543 TEST collection is requested. Follow J1–J4: preserve PR #24, PR #26, PR #28 and PR #29 as completed bounded evidence; complete the remaining laptop-A target-association, failure/retry, historical real-launch restore/no-replay and active-capture Camera handoff cases. Read P03_TRACE_REVIEW_2026_10_19.md; the short traces/settings are received, so do not repeat them. Prepare PRIVATE_P03_PROFILE_DEVELOPMENT.zip exactly as specified in the Send now section and send it privately to both Deston and Hau Jie; preserve the existing profile/settings and include its manifest plus referenced numeric files. Investigate index-finger false NEXT before a fresh 22-window Practice attempt; active-capture Camera requires a genuine current-session pass. Coordinate Hau Jie operating laptop B for the two-device matrix and GF-P23 fresh-install/offline/thirty-minute Studio/shutdown evidence. Prepare and coordinate Deston's GF-P20 observer records, study order, holds/negatives/latency and disjoint exports using frozen inputs from Hau Jie. Retain failed/unavailable conditions; never bypass Practice or relabel manual fallback as gesture success. Preserve PR #33's reviewed GF-P25 guide draft and corrected Practice timing; continue the private video/storyboard. The guide draft does not close GF-P25. Keep private data, paths, full exports, videos, Word reports and logs local. Fix only evidenced defects in your owned modules and send shared-shell reproductions to Deston. Push focused PRs only from your branch and leave them unmerged; Deston keeps integration, interpretation and acceptance. Do not change original task ownership, weights or Done status.
