@@ -2,31 +2,48 @@
 
 Snapshot: 19 October 2026. Task weights measure accepted work, not an expected grade.
 
-## P03 diagnostic received and guide corrected — 19 October
+## Private P03 diagnosis and Studio feedback repairs — 19 October
 
-The new same-profile traces reproduce four PREVIOUS Preview activations and two
-unwanted NEXT activations in the reported index-negative check. Replay matches
-all six unique recorded outcomes; the later summary includes the earlier four.
-Neutral rearming and one-action-per-hold work in these recordings. The remaining
-recognition failure requires P03's existing numeric DEVELOPMENT/profile inputs,
-which were not included with the traces. No threshold or production behavior was
-changed. See [the reviewed evidence and next work](P03_TRACE_REVIEW_2026_10_19.md).
+The P03 private packet is received, hash-checked and kept outside Git. Production
+reconstruction matches the traced saved model exactly at Right/kNN, multiplier
+1.5 and margin 1.0. On the reused original development validation, the supplied
+PREVIOUS repair improves macro-F1 from **0.8500 to 0.9423** and PREVIOUS from
+**2/8 to 5/8 trials**. Remaining enrolled labels retain 8/8 each. Negative command
+predictions fall from 10/40 to **4/40**, all older OK-sign samples accepted as NEXT.
+The ten older index-finger samples are rejected in both models; they do not
+reproduce the recent live index-to-NEXT failure. No production recognition
+settings, TRAIN data, frozen TEST results or Practice gates changed. See the
+[review and limitations](P03_TRACE_REVIEW_2026_10_19.md).
 
-[PR #33](https://github.com/Chi944/GestureForge_304/pull/33) is reviewed and merged
-after correcting its NEUTRAL Practice instruction. It now waits for fresh capture
-and measures READY inside a NEUTRAL window, while action/negative windows still
-require READY before Begin. The guide draft advances GF-P25 to In Progress; its
-video, guide-only checks and release dependency remain open. Fresh focused checks
-passed **95 tests**; this was not another full-suite or hardware run. The same
-Studio package remains valid for the outstanding native checks.
+[PR #34](https://github.com/Chi944/GestureForge_304/pull/34) was independently
+reviewed and merged. Its laptop-A trusted-app, restore and target-save validation
+records retain runtime `d200947` attribution; private native exports were not
+independently received by the integration reviewer. These are bounded observations,
+not full GF-P19/GF-P23 acceptance.
 
-Current briefs no longer request the already supplied PREVIOUS recording. Hau Jie
-investigates the index-negative recognition failure using existing private data;
-Javier retains the same profile, continues native cases and develops the guide/demo;
-Deston integrates verified fixes and actual acceptance evidence. Accepted progress
-is **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier 48/73 (65.8%), total
-137/223 (61.4%), 17/29 tasks Done**. No full task's remaining criteria were met by
-the short traces or draft guide, so no accepted weight was added.
+Deston's integration track fixes both reported shared-shell feedback defects:
+missing-runbook session save/restore now gives an explanation before a dialog,
+and file-operation results replace the stale top LIVE notice. Four focused tests
+failed before the fix; **111 app/dispatch tests pass** afterwards, retaining
+existing-file preservation, paused Preview, summary reset and no action replay.
+Independent review found no blocking issue. Fresh full verification passes
+**1,012 tests with two platform skips**, Ruff, mypy, both startup modes and
+synthetic evaluation. The private receipt is
+`experiments/local/verification-p03-session-feedback-20261019.json`. These
+checks do not establish physical acceptance.
+
+Javier need not resend the P03 packet or repeat the successful PREVIOUS trace.
+Hau Jie reviews the fixed diagnostic and supplies laptop-B evidence; Javier
+continues the unrun laptop-A cases and guide/video work. Use updated source for
+the two feedback fixes; the 16 October ZIP does not contain them. Existing native
+evidence keeps its original build identity. GF-P22 moves to In Progress for the
+verified shared-shell work; owners, weights and full acceptance criteria stay
+unchanged. PR #33's corrected Practice guide remains reviewed and merged.
+
+Accepted progress remains **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
+48/73 (65.8%), total 137/223 (61.4%), 17/29 tasks Done**. The packet, diagnostic
+improvement and UI fixes complete useful substeps, not the remaining full-task
+gates. No new physical, laptop-B or native macOS result is claimed.
 
 ## Recognition experiment completed — 19 October
 

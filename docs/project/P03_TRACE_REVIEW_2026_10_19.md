@@ -8,7 +8,8 @@ are short development checks, not scored trials or a personal Live grant.
 
 Both traces identify the same saved profile and model. The supplied settings
 screenshot reports Right hand, kNN, distance multiplier **1.5**, ambiguity margin
-**1.0**. Settings are user-supplied evidence, not embedded trace metadata.
+**1.0**. The subsequently received private profile confirms these settings;
+they are not embedded trace metadata.
 Javier's [PR #33](https://github.com/Chi944/GestureForge_304/pull/33) identifies
 the runtime as the 16 October `d200947` Studio handoff and describes four thumb-up
 holds and an index-finger-only check. Exact physical-pose intervals were not
@@ -56,17 +57,66 @@ controller timing or install the unsuccessful palm-local experiment from this
 evidence alone. Do not repeat the supplied PREVIOUS check merely to obtain another
 successful recording.
 
-- **Hau Jie / GPT:** inspect the same saved P03 profile and existing DEVELOPMENT
-  feature data when supplied privately. Reproduce its current settings and audit
-  class separation and negative examples before predeclaring any repair. Consumed
-  TEST data remain excluded from tuning. If existing data do not contain the
-  failing index pose, explain the minimum missing evidence before requesting it.
-- **Javier:** retain the current profile/data unchanged and provide their existing
-  private numeric files if available, together with intended-pose notes. Continue
-  camera-free laptop-A recovery checks and coordinate Hau Jie's laptop-B checks.
-  A new full Practice attempt is premature while the negative action is unresolved.
+- **Hau Jie / GPT:** review the fixed-setting numeric comparison below using the
+  received DEVELOPMENT packet. Preserve the original data/settings, reproduce
+  any proposed diagnosis on development inputs and predeclare further experiments.
+  Consumed TEST data remain excluded from tuning.
+- **Javier:** the existing profile/data handoff is received; do not resend or
+  recreate it. Keep the profile unchanged. If feasible, identify the remaining
+  live index-only conditions with Hau Jie before any targeted follow-up recording.
+  The supplied traces have no live numeric features, and older index samples do
+  not reproduce that failure. Continue camera-free laptop-A recovery checks and
+  coordinate laptop B. A new full Practice attempt remains premature.
 - **Deston:** integrate demonstrated repairs and reconcile the resulting evidence;
   retain the current Live gate and original task acceptance criteria.
+
+## Private numeric packet received and reproduced — 19 October
+
+Deston received the saved profile, its repaired TRAIN dataset and the original
+DEVELOPMENT dataset. Production profile reconstruction reproduces the exact saved
+model revision with Right hand, kNN, multiplier **1.5** and margin **1.0**. The
+comparison below changes only the supplied TRAIN dataset; it does not search
+settings, change Studio or use TEST.
+
+| Fixed-setting diagnostic | Original TRAIN | Repaired TRAIN |
+|---|---:|---:|
+| TRAIN samples | 160 | 180 |
+| PREVIOUS TRAIN samples | 40 | 60 |
+| Development validation trial macro-F1 | 0.8500 | 0.9423 |
+| PREVIOUS correct validation trials | 2/8 | 5/8 |
+| NEXT / BOOKMARK / NEUTRAL correct trials | 8/8 each | 8/8 each |
+| Negative command predictions | 10/40 | 4/40 |
+| Index-finger negatives accepted as commands | 0/10 | 0/10 |
+| OK-sign negatives accepted as NEXT | 10/10 | 4/10 |
+
+All 120 non-PREVIOUS TRAIN feature rows and their record metadata are unchanged
+apart from storage indices. The repair replaces the selected 40 TRAIN samples
+with 60; no original validation or negative records were promoted into TRAIN.
+No TRAIN/held-out trial-ID overlap or exact feature-row overlap was found. All
+160 validation and 40 negative slots are valid; neither dataset contains TEST.
+This is reuse of the original development sessions after repair, **not new
+independent validation or a Live grant**.
+
+The original index-finger samples are raw BOOKMARK predictions rejected by
+distance in both models. For the repaired model their BOOKMARK distances are
+6.135–6.495 against a 3.740 threshold; NEXT distances are 7.691–9.070 against
+5.589. Thus the older numeric examples do **not** reproduce the recent live
+index-to-NEXT failure. Its live feature vectors and precise physical conditions
+remain unavailable. Do not claim that the index failure is fixed.
+
+A separate rejection limitation is reproducible: four older OK-sign samples are
+accepted as NEXT because they fall inside the repaired NEXT distance threshold.
+The existing margin 1.0 omits the optional ambiguity check. Neither observation
+establishes a safe new threshold. Replacing PREVIOUS also refits the shared TRAIN
+scaler and all class thresholds, so distances can change for other labels even
+when their input rows are unchanged; this is the existing training contract.
+
+Next: Hau Jie reviews this fixed comparison and proposes any further development
+experiment before execution. Javier need not resend this packet or repeat the
+successful PREVIOUS trace. Only a specifically justified follow-up for the
+remaining live index failure should be considered; keep full Practice and Live
+requirements unchanged. The improved development score does not close GF-P21 or
+remove its GF-P20 dependency.
 
 ## Guide repair and verification
 
