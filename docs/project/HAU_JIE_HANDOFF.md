@@ -23,17 +23,23 @@ again. Read [the results and decision](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.m
   the second summary is cumulative six, not ten. The confirmed saved profile is
   Right/kNN, multiplier 1.5, margin 1.0. Margin 1.0 disables ambiguity rejection
   by design; this does not establish that increasing it fixes the false NEXT.
-  Coordinate the existing numeric P03 DEVELOPMENT/profile inputs privately with
-  Javier, then inspect class distances and rejection against those inputs. They
-  have not yet been supplied to Deston. The traces lack features and annotated
-  pose intervals: they do not establish accuracy or a runtime defect. No repeat
-  short trace, blanket recollection or threshold change is requested. Predeclare any further experiment; do not
+  The private P03 profile/DEVELOPMENT packet is now received and its exact saved
+  model revision reproduced. Read the fixed-setting comparison in the P03 review:
+  PREVIOUS improves 2/8 → 5/8 and macro-F1 0.8500 → 0.9423 on the reused original
+  validation; negative command samples fall 10/40 → 4/40, all remaining errors
+  from older OK-sign samples. Older index samples are all rejected, so they do
+  not reproduce the recent live index failure. Coordinate private packet access
+  with Deston, not a resend or recreation from Javier. Review this diagnosis and
+  distinguish the remaining live-feature gap from the reproduced OK-sign issue.
+  No repeat short trace, blanket recollection or threshold change is requested.
+  Predeclare any further DEVELOPMENT experiment; do not
   repeat the old search, tune consumed TEST, convert profiles to the experimental
   representation or relax thresholds simply to pass Practice.
 - **Manual now:** coordinate with Javier and operate your Windows laptop as
   laptop B for the remaining native, fresh-install, offline, thirty-minute Studio
-  and clean-shutdown cases. Use the identified 16 October Studio source handoff
-  and `run-studio.cmd` after setup. This offline-only experiment needs no new ZIP.
+  and clean-shutdown cases. Use reviewed main or a source ZIP built from it and
+  `run-studio.cmd` after setup. The 16 October ZIP predates the new session/status
+  feedback fixes; record the actual build and rerun only affected checks.
   Manual cases need no recogniser; gesture cases require your own profile and a
   genuine current-session Practice pass. No new P67/P1543 TEST or P69 recording
   is requested.
@@ -494,4 +500,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md and the 19 October results in GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md. Deston's integration track has implemented and independently reproduced the fixed wrist/scale versus palm-local experiment; do not rebuild or retune it. Review its mixed class-level results, including P1543's NEUTRAL regression, and update your private GF-P24 methods/results contribution. Read P03_TRACE_REVIEW_2026_10_19.md: the short traces and saved settings are received. Coordinate the existing numeric P03 DEVELOPMENT/profile inputs privately with Javier and investigate the index-finger false NEXT. Do not repeat the trace or infer a higher-margin fix; propose any further DEVELOPMENT experiment before execution. No model is deployment-approved. Preserve the consumed TEST results, original targets, source data and profiles; do not request repeat TEST from P67/P1543 or more data from P69. GF-P21 retains its GF-P20 dependency. Operate laptop B for Javier's agreed native/fresh-install/offline/thirty-minute/shutdown checks using the identified Studio handoff. Keep full data, exports, Word reports and logs private. Return demonstrated repairs or sanitized evidence in focused PRs from your branch; leave merge and acceptance to Deston. Keep original owners, weights and Done criteria.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md and the 19 October results in GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md. Deston's integration track has implemented and independently reproduced the fixed wrist/scale versus palm-local experiment; do not rebuild or retune it. Review its mixed class-level results, including P1543's NEUTRAL regression, and update your private GF-P24 methods/results contribution. Read P03_TRACE_REVIEW_2026_10_19.md: the private profile/DEVELOPMENT packet is received and its exact model reproduced. Review the fixed-setting comparison with Deston: older index negatives are rejected, while four older OK-sign samples are accepted as NEXT after repair. The recent live index failure still lacks numeric features; do not conflate those conditions or request a duplicate packet. Do not repeat the trace or infer a higher-margin fix; propose any further DEVELOPMENT experiment before execution. No model is deployment-approved. Preserve the consumed TEST results, original targets, source data and profiles; do not request repeat TEST from P67/P1543 or more data from P69. GF-P21 retains its GF-P20 dependency. Operate laptop B for Javier's agreed native/fresh-install/offline/thirty-minute/shutdown checks using the identified Studio handoff. Keep full data, exports, Word reports and logs private. Return demonstrated repairs or sanitized evidence in focused PRs from your branch; leave merge and acceptance to Deston. Keep original owners, weights and Done criteria.

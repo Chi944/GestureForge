@@ -2969,6 +2969,7 @@ class Window(QMainWindow):
 
     def set_deck_file_status(self, message: str) -> None:
         self.feedback.setText(message)
+        self.notice.setText(message)
         if self.studio and hasattr(self, "deck_file_status"):
             self.deck_file_status.setText(message)
 
@@ -3029,6 +3030,9 @@ class Window(QMainWindow):
     def choose_save_studio_session(self):
         if not self.studio or self.model_loader is not None or self._closing:
             return
+        if self.runbook is None:
+            self.set_deck_file_status("Session not saved: load a workspace with a runbook first.")
+            return
         if not self.pause():
             self.set_deck_file_status("Session not saved: save the current evaluation trace first.")
             return
@@ -3044,6 +3048,9 @@ class Window(QMainWindow):
 
     def choose_restore_studio_session(self):
         if not self.studio or self.model_loader is not None or self._closing:
+            return
+        if self.runbook is None:
+            self.set_deck_file_status("Session not restored: load a workspace with a runbook first.")
             return
         if not self.pause():
             self.set_deck_file_status("Session not restored: save the current evaluation trace first.")
@@ -3216,7 +3223,10 @@ class Window(QMainWindow):
         return True
 
     def save_studio_session(self, path: Path) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing or self.runbook is None:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if self.runbook is None:
+            self.set_deck_file_status("Session not saved: load a workspace with a runbook first.")
             return False
         if not self.pause():
             self.set_deck_file_status("Session not saved: save the current evaluation trace first.")
@@ -3230,7 +3240,10 @@ class Window(QMainWindow):
         return True
 
     def restore_studio_session(self, path: Path) -> bool:
-        if not self.studio or self.model_loader is not None or self._closing or self.runbook is None:
+        if not self.studio or self.model_loader is not None or self._closing:
+            return False
+        if self.runbook is None:
+            self.set_deck_file_status("Session not restored: load a workspace with a runbook first.")
             return False
         if not self.pause():
             self.set_deck_file_status("Session not restored: save the current evaluation trace first.")

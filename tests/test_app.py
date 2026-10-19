@@ -446,6 +446,7 @@ def test_studio_bad_deck_or_progress_preserves_current_selection(tmp_path, qapp)
         assert window.viewer.deck.deck_id == "deck-test"
         assert window.viewer.position == 1
         assert "Progress not restored" in window.feedback.text()
+        assert window.notice.text() == window.feedback.text()
     finally:
         window.close()
 
@@ -471,12 +472,38 @@ def test_studio_restore_pauses_and_ignores_stale_worker_packet(tmp_path, qapp) -
         assert window.viewer.position == 2
 
         assert window.restore_studio_progress(progress)
+        assert window.notice.text() == f"Progress restored: {progress}"
         assert worker.interrupted
         assert window.routing.state == "PAUSED"
         assert window.manual_mode == RoutingMode.PREVIEW
         window.poll()
         assert window.viewer.position == 1
         assert "Studio simulation" not in window.feedback.text()
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("operation", ["save", "restore"])
+def test_studio_session_without_runbook_explains_and_preserves_files(operation, tmp_path, monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    window = Window(studio=True)
+    path = tmp_path / "session.json"
+    path.write_text("existing session", encoding="utf-8")
+    dialog = Mock(return_value=(str(path), ""))
+    monkeypatch.setattr(app_module.QFileDialog, "getSaveFileName", dialog)
+    monkeypatch.setattr(app_module.QFileDialog, "getOpenFileName", dialog)
+    try:
+        assert window.runbook is None
+        window.notice.setText("Old successful operation")
+        assert not getattr(window, f"{operation}_studio_session")(path)
+        message = window.feedback.text()
+        assert "Session not" in message and "workspace" in message and "runbook" in message
+        assert window.notice.text() == message
+        getattr(window, f"choose_{operation}_studio_session")()
+        dialog.assert_not_called()
+        assert path.read_text(encoding="utf-8") == "existing session"
+        assert window.worker is None
     finally:
         window.close()
 
