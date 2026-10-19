@@ -48,10 +48,10 @@ windows. This 22-window pass can unlock normal personal LIVE use for the exact
 current profile/model/hand/camera/behavior and authored context after saving,
 event reconciliation and paused restoration. It is still not final performance
 evaluation or native-device acceptance. Historical v1-v3 50-window results
-remain old evidence and cannot grant v4 LIVE eligibility. Javier's previous P03
-attempt remains failed evidence; his next check is a short PREVIOUS diagnostic
-with the correct pose and intended-pose notes, then wrong-action diagnosis before
-any fresh 22-window attempt.
+remain old evidence and cannot grant v4 LIVE eligibility. Javier's previous P03 attempt remains failed evidence. His short PREVIOUS and
+index-finger negative traces are now received and reviewed in the
+[P03 trace review](P03_TRACE_REVIEW_2026_10_19.md). Investigate the negative
+false NEXT before any fresh 22-window attempt; do not repeat the short trace.
 
 Use a fresh Studio source ZIP only for teammates who run from ZIP. Git users
 should pull/rebase from `main`; participant browser collection kits are separate.
@@ -109,16 +109,23 @@ members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | The fixed representation experiment is implemented and independently reproduced. Review Javier's same-profile trace and incoming defect PRs; integrate demonstrated fixes and score actual workflow evidence. Preserve frozen results and the remaining gates. |
-| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | Review the completed representation comparison, especially P1543's NEUTRAL regression, and incorporate all results in the private GF-P24 contribution. Diagnose Javier's trace when supplied. Do not duplicate the experiment or install its outputs; propose any next experiment before running it. GF-P21 retains its GF-P20 dependency. |
-| Javier | Use the new identified Studio package. Return a short same-profile PREVIOUS trace with visible rejection text, settings and intended-pose notes before a fresh full Practice attempt. Finish camera-free laptop-A target/failure/restore cases and coordinate Hau Jie's laptop B; active-capture Camera needs a genuine grant. | Analyse the trace with Hau Jie; consolidate device results without overlapping exports and fix demonstrated defects. Draft GF-P25 guide/storyboard and later study records. Preserve accepted PR #24/#26/#28/#29 cases; rerun only affected checks. |
+| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | The fixed representation experiment is implemented and independently reproduced. The P03 traces are reviewed; review numeric P03 development/profile inputs when supplied and incoming defect PRs, and integrate demonstrated fixes and score actual workflow evidence. Preserve frozen results and the remaining gates. |
+| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | Review the completed representation comparison, especially P1543's NEUTRAL regression, and incorporate all results in the private GF-P24 contribution. Diagnose the received P03 index-finger false NEXT using the existing numeric P03 development/profile data when privately supplied; no new recording is requested. Do not duplicate the experiment or install its outputs; propose any next experiment before running it. GF-P21 retains its GF-P20 dependency. |
+| Javier | Use the new identified Studio package. The short traces and saved settings are received. Privately coordinate the existing numeric P03 development/profile inputs with Hau Jie; investigate index-finger false NEXT before another full Practice attempt. Finish camera-free laptop-A target/failure/restore cases and coordinate Hau Jie's laptop B; active-capture Camera needs a genuine grant. | Analyse the trace with Hau Jie; consolidate device results without overlapping exports and fix demonstrated defects. PR #33's GF-P25 guide draft is reviewed with corrected Practice timing; continue the private demo/storyboard and later study records. Preserve accepted PR #24/#26/#28/#29 cases; rerun only affected checks. |
 
 **Next returns:** Hau Jie sends his review and private methods/results updates,
 and supplies laptop-B observations to Javier. The representation implementation
 was completed with GPT assistance in Deston's integration track; it is not a new
 teammate-authored submission and does not qualify a deployment model.
-Javier first returns the short PREVIOUS diagnostic privately, then a focused remaining-case evidence PR and attributed laptop-B
-matrix; guide/storyboard drafts can arrive separately. GPT prepares and checks
+Javier's short P03 traces are received: replay agrees with four PREVIOUS Preview
+simulations and two additional NEXT simulations during the reported index-finger
+negative attempt. The second summary is cumulative six, not ten. The saved
+profile is Right/kNN with multiplier 1.5 and margin 1.0; that margin disables
+ambiguity rejection by design, but a higher margin is not a demonstrated fix.
+The traces contain no feature vectors or annotated pose intervals and do not
+prove final accuracy, a runtime defect or a Practice/Live pass. Next return a
+focused remaining-case evidence PR and attributed laptop-B matrix; the reviewed
+GF-P25 guide draft does not close the video or final release requirements. GPT prepares and checks
 evidence; people supply observed device outcomes and final review decisions.
 This offline-only addition changes no Studio behavior. Keep using the identified
 16 October Studio handoff; no replacement participant or Studio ZIP is needed for
@@ -156,8 +163,9 @@ is the corresponding Mac launcher. The legacy `run.cmd`/`run.sh` defaults stay
 unchanged. New profile creation shows and retains the host's rejection settings;
 existing saved profiles retain their own settings. The audit does not establish
 that Javier's physical PREVIOUS pose is now recognised. Follow the
-[short diagnostic](../USER_GUIDE.md#studio-shows-unrecognised-for-previous-or-another-pose)
-before requesting another long trial. Participant browser kits are unchanged.
+[P03 findings](P03_TRACE_REVIEW_2026_10_19.md) before requesting another long trial.
+For Practice action and negative windows, wait for READY before Begin; for a
+NEUTRAL window, wait for capture, press Begin, then establish READY inside it. Participant browser kits are unchanged.
 Participant kits and the private data handoff serve different purposes; neither
 is a Studio installation. Follow [release instructions](../../releases/README.md).
 

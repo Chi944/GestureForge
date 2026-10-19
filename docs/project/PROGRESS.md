@@ -2,6 +2,32 @@
 
 Snapshot: 19 October 2026. Task weights measure accepted work, not an expected grade.
 
+## P03 diagnostic received and guide corrected — 19 October
+
+The new same-profile traces reproduce four PREVIOUS Preview activations and two
+unwanted NEXT activations in the reported index-negative check. Replay matches
+all six unique recorded outcomes; the later summary includes the earlier four.
+Neutral rearming and one-action-per-hold work in these recordings. The remaining
+recognition failure requires P03's existing numeric DEVELOPMENT/profile inputs,
+which were not included with the traces. No threshold or production behavior was
+changed. See [the reviewed evidence and next work](P03_TRACE_REVIEW_2026_10_19.md).
+
+[PR #33](https://github.com/Chi944/GestureForge_304/pull/33) is reviewed and merged
+after correcting its NEUTRAL Practice instruction. It now waits for fresh capture
+and measures READY inside a NEUTRAL window, while action/negative windows still
+require READY before Begin. The guide draft advances GF-P25 to In Progress; its
+video, guide-only checks and release dependency remain open. Fresh focused checks
+passed **95 tests**; this was not another full-suite or hardware run. The same
+Studio package remains valid for the outstanding native checks.
+
+Current briefs no longer request the already supplied PREVIOUS recording. Hau Jie
+investigates the index-negative recognition failure using existing private data;
+Javier retains the same profile, continues native cases and develops the guide/demo;
+Deston integrates verified fixes and actual acceptance evidence. Accepted progress
+is **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier 48/73 (65.8%), total
+137/223 (61.4%), 17/29 tasks Done**. No full task's remaining criteria were met by
+the short traces or draft guide, so no accepted weight was added.
+
 ## Recognition experiment completed — 19 October
 
 Deston's integration track completed the predeclared GF-P21 offline representation
