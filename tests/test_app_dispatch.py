@@ -422,7 +422,9 @@ def test_harbor_guest_manual_workflow_recovers_without_context_loss_or_replay(qa
         assert json.loads(payload)["counts"]["failed"] == 1
         saved = tmp_path / "session.json"
         assert window.save_studio_session(saved)
+        assert window.notice.text() == f"Session saved: {saved}"
         assert window.restore_studio_session(saved)
+        assert window.notice.text() == f"Session restored: {saved}"
         assert window.runbook.current_stage.id == "discussion"
         assert [card.id for card in window.viewer.bookmarks] == ["discussion"]
         assert window.runbook.paused and window.routing.state == "PAUSED"
