@@ -149,10 +149,13 @@ The current `gf-p12-v4` full rehearsal has **22 five-second windows**: three eac
 for NEXT/PREVIOUS/BOOKMARK/NEUTRAL and ten negatives. Use the enrolled vocabulary
 if its action labels differ. Choose the full rehearsal in **Practice**.
 
-For each prompt, click **Prepare next trial**, hold NEUTRAL until READY, and keep
-NEUTRAL while clicking **Begin five-second window**. Change pose only after
-**Measurement started**. Follow the negative cues exactly. Camera off between
-windows is intentional. Avoid tab/focus changes during the attempt.
+For each prompt, click **Prepare next trial** and wait for fresh camera capture.
+For an action or negative window, hold NEUTRAL until READY and keep NEUTRAL while
+clicking **Begin five-second window**. Change pose only after **Measurement
+started**, following the displayed action or negative cue. For a NEUTRAL window,
+click **Begin five-second window** after capture starts, then hold NEUTRAL during
+measurement; READY is measured inside this window, not during preparation.
+Camera off between windows is intentional. Avoid tab/focus changes during the attempt.
 
 A qualifying pass needs all three trials correct for every pose, every window
 fully covered, all ten negatives correct and zero wrong/repeated actions. A
