@@ -4,6 +4,14 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Next delivery — assigned 7 October
 
+**19 October update:** Deston's integration track completed the offline representation
+comparison. Its mixed results do not change Studio, your saved profile or Practice
+readiness. Keep the identified 16 October Studio package; no new ZIP is needed.
+Your next return is still the short same-profile PREVIOUS trace/settings/pose notes,
+followed by remaining laptop-A cases and Hau Jie's laptop-B observations. With GPT,
+analyse those actual returns and draft the guide/storyboard in parallel. See
+[the current shared split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
+
 **16 October audit update:** use the new Studio source handoff and launch
 `run-studio.cmd` after setup. The existing package runtime was not stale relative
 to the audit baseline. Rejection guidance, new-profile settings parity and dataset
@@ -26,10 +34,10 @@ your Windows checks remain independent of that offline comparison. See the
 [paired TEST results](GF_P18_TEST_RESULTS_2026_10_14.md). Both personal models
 miss their target and reject all NEXT trials; no deployment starter is qualified.
 
-**15 October recognition update:** Hau Jie's PR #32 diagnostic is independently
+**Earlier 15 October recognition checkpoint:** Hau Jie's PR #32 diagnostic is independently
 reproduced and found no demonstrated production defect in the inspected recognition
-path. His next task is an isolated
-development representation comparison; it changes no Studio model or Practice
+path. The proposed development representation comparison is now completed as
+reported in the 19 October update above; it changes no Studio model or Practice
 readiness. Continue the remaining native/manual cases with Hau Jie operating
 laptop B. Do not install experimental outputs or treat them as a shortcut around
 the current-session gate.

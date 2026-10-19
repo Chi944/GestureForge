@@ -103,7 +103,79 @@ participant recording is needed for this experiment.
    profile. Label experimental identities explicitly in reports. Orientation may
    distinguish custom poses, so this result cannot justify changing all profiles.
 
-Hau Jie owns this next PR on `codex/hau-jie-profiles`; Deston reviews its results
-and any later contract change. Keep GF-P21 In Progress with its original GF-P20
-dependency. Laptop-B checks and the private methods/results contribution can
-continue in parallel; no physical success is inferred from this experiment.
+Hau Jie owns recognition review on `codex/hau-jie-profiles`; Deston reviews any
+later contract change. The implementation assistance and results below supersede
+the request to build this experiment again. Keep GF-P21 In Progress with its
+original GF-P20 dependency. Laptop-B checks and the private methods/results
+contribution can continue in parallel.
+
+## Executed comparison and next handoff — 19 October
+
+Deston's integration track implemented the fixed experiment with GPT assistance
+in `gestureforge.representation_experiment`. Hau Jie retains recognition ownership;
+this is not attributed to a new teammate submission. No open PR or new GestureForge
+return was found in the checked repository and Downloads locations on 19 October.
+
+The command accepts only the two specified participants and right-hand standard
+poses. Settings stay P67 kNN k=5/distance, multiplier 2.5/margin 1.75; P1543 SVM
+C=1/gamma=scale, multiplier 2.5/margin 1.25. Both conditions use TRAIN-only scaling
+and whole-trial distance calibration. TEST is refused before fitting. The transform
+and its temporary arrays are isolated from Studio, profiles and dataset writers.
+No deployable model is exported and production feature version 1 is unchanged.
+
+```powershell
+python -m gestureforge.representation_experiment data/local/P67/browser-development-identity-v1-20261013/manifest.json --output experiments/local/P67-representation-new.json
+python -m gestureforge.representation_experiment data/local/P1543/browser-development-identity-v1-20261013/manifest.json --output experiments/local/P1543-representation-new.json
+```
+
+Use new private output filenames and the corrected manifests whose hashes match
+the earlier diagnosis. The actual reports are retained under
+`experiments/local/representation-review-20261019/`. Both baseline metric dictionaries
+exactly reproduce the reviewed PR #32 outputs, and the input hashes are unchanged.
+
+Independent review separately recomputed the axes and repeated both conditions,
+matching every non-timing report field. The 19 focused tests pass; full verification
+passes 1,010 tests (two platform skips), Ruff, mypy, both startup modes and synthetic
+evaluation. Source/report hashes are in the private `review-receipt.json` beside
+the two comparisons; full verification is
+`experiments/local/verification-20261019T004955135994Z.json`.
+
+| Participant / condition | Validation trial macro-F1 | NEXT correct / 12 | PREVIOUS correct / 12 | BOOKMARK correct / 12 | NEUTRAL correct / 12 | Negative command predictions / 40 |
+|---|---:|---:|---:|---:|---:|---:|
+| P67 wrist/scale | 0.789726 | 2 | 12 | 11 | 11 | 12 |
+| P67 palm-local | 0.854130 | 4 | 11 | 12 | 12 | 9 |
+| P1543 wrist/scale | 0.666667 | 4 | 4 | 12 | 6 | 10 |
+| P1543 palm-local | 0.655128 | 8 | 6 | 12 | 1 | 0 |
+
+Each condition retains 240 TRAIN slots, 240 VALIDATION slots and 40 negative slots
+per participant: 48/48/8 trials. Existing invalid counts remain P67 6/0/9 and
+P1543 11/2/10 respectively; these inputs produce no newly degenerate palm slots.
+Invalid observations remain in denominators and score UNKNOWN. Synthetic regression
+cases separately verify newly degenerate positives/negatives and an unavailable
+condition when a class has fewer than two valid TRAIN trials.
+
+The aggregate F1 gain for P67 is 0.064405, with fewer negative command predictions,
+but PREVIOUS recall loses one trial. For P1543, NEXT/PREVIOUS improve while NEUTRAL
+falls from 6/12 to 1/12 and macro-F1 falls by 0.011538. At sample level the palm-local
+condition also accepts one NEUTRAL slot as NEXT; the baseline has none. P67 retains
+five NEXT slots accepted as NEUTRAL in both conditions. The private reports preserve
+all per-class accepted/wrong/rejected/invalid counts and confusion matrices.
+
+All four fits took less than 0.05 seconds on this run. Prediction over the 280
+scheduled validation/negative slots took 0.55–2.27 seconds per condition, and each
+whole-dataset transformation took less than 0.18 seconds. These single-run offline
+timings include no camera, UI, controller hold or live latency measurement.
+
+**Decision: keep this representation experimental.** Neither person's experimental
+personal score meets 0.90. Reduced negative sample acceptance does not establish
+safe live actions, and the NEUTRAL regression is particularly relevant to arming.
+No starter is approved, no profile is converted, no threshold is relaxed, and no
+consumed TEST result is changed. A future deployment candidate requires a separate
+reviewed feature contract, new freeze and fresh independent evaluation.
+
+**Hau Jie next:** review these results and explain the class-level trade-offs in
+the private GF-P24 methods/results contribution. Do not reimplement the comparison
+or repeat the old search. Diagnose Javier's same-profile PREVIOUS trace when it
+arrives; predeclare any further model experiment before running it. Continue laptop-B
+checks with Javier. **Deston next:** integrate any demonstrated repair, review
+actual scenario/release evidence and preserve all existing acceptance gates.

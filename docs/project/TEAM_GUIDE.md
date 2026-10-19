@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-Updated 16 October 2026 · Project deadline 7 November 2026
+Updated 19 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -76,7 +76,7 @@ members match source, and extracted-source model loading, both startup modes
 and 31 focused tests pass (one platform skip), using the existing Windows
 dependencies. See [the progress record](PROGRESS.md#studio-recognition-and-package-audit--16-october)
 for its SHA256 and verification limits. Deston's Downloads folder
-`GestureForge_Studio_Handoff_20261016` contains the ZIP, matching receipts and
+`GestureForge/Studio/Current/GestureForge_Studio_Handoff_20261016` contains the ZIP, matching receipts and
 `READ_FIRST.txt`. Later documentation-only updates do not change this ZIP's build.
 
 Read the **Next delivery** table at the top of your individual brief first.
@@ -103,21 +103,26 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 16 October, after independently reproduced frozen TEST scoring,
-development-diagnostic review and the [Studio bug audit](PROGRESS.md#studio-recognition-and-package-audit--16-october). All three
+Current as of 19 October, after the [fixed representation comparison](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#executed-comparison-and-next-handoff--19-october)
+and the [Studio bug audit](PROGRESS.md#studio-recognition-and-package-audit--16-october). All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | Loader/settings/rejection-feedback fixes and the refreshed Studio handoff are verified and published. Next, review Javier's trace and Hau Jie's bounded experiment, then incoming defect PRs and measured evidence; preserve frozen results. |
-| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | PR #32 diagnosis is independently reproduced. Implement the fixed offline wrist/scale versus palm-local experiment in the [GF-P21 next-delivery contract](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october) using existing DEVELOPMENT features only. No production model/profile/version change. Update the private GF-P24 methods/results contribution; GF-P21 retains its GF-P20 dependency. |
+| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | The fixed representation experiment is implemented and independently reproduced. Review Javier's same-profile trace and incoming defect PRs; integrate demonstrated fixes and score actual workflow evidence. Preserve frozen results and the remaining gates. |
+| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | Review the completed representation comparison, especially P1543's NEUTRAL regression, and incorporate all results in the private GF-P24 contribution. Diagnose Javier's trace when supplied. Do not duplicate the experiment or install its outputs; propose any next experiment before running it. GF-P21 retains its GF-P20 dependency. |
 | Javier | Use the new identified Studio package. Return a short same-profile PREVIOUS trace with visible rejection text, settings and intended-pose notes before a fresh full Practice attempt. Finish camera-free laptop-A target/failure/restore cases and coordinate Hau Jie's laptop B; active-capture Camera needs a genuine grant. | Analyse the trace with Hau Jie; consolidate device results without overlapping exports and fix demonstrated defects. Draft GF-P25 guide/storyboard and later study records. Preserve accepted PR #24/#26/#28/#29 cases; rerun only affected checks. |
 
-**Next returns:** Hau Jie sends the bounded offline representation comparison and
-private methods/results updates, and supplies laptop-B observations to Javier.
+**Next returns:** Hau Jie sends his review and private methods/results updates,
+and supplies laptop-B observations to Javier. The representation implementation
+was completed with GPT assistance in Deston's integration track; it is not a new
+teammate-authored submission and does not qualify a deployment model.
 Javier first returns the short PREVIOUS diagnostic privately, then a focused remaining-case evidence PR and attributed laptop-B
 matrix; guide/storyboard drafts can arrive separately. GPT prepares and checks
 evidence; people supply observed device outcomes and final review decisions.
+This offline-only addition changes no Studio behavior. Keep using the identified
+16 October Studio handoff; no replacement participant or Studio ZIP is needed for
+these checks. No new package or device pass is implied by a later source commit.
 
 **Use the repaired verification command:** `python scripts/verify.py --timeout 1200`
 now writes and prints a fresh timestamped report under ignored `experiments/local/`.

@@ -4,62 +4,44 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**16 October audit update:** reviewed hand-validation fixes now reject valid
-wrong-hand training records while retaining invalid wrong-hand detections.
-New profile creation inside Studio preserves its current multiplier/margin;
-existing profiles and repair candidates are unchanged. Javier's PREVIOUS rejection
-still needs his short same-profile trace/settings record. With GPT, diagnose that
-trace and any privately supplied DEVELOPMENT data without changing frozen TEST
-results or guessing a threshold. Continue the fixed offline representation
-comparison below. Manually operate laptop B using the new identified Studio
-source handoff (`run-studio.cmd` after setup) and return observed results to Javier.
-The audit improves software readiness but grants no new deployment/readiness pass.
+**19 October update: the fixed representation experiment is complete.** Deston's
+integration track implemented it with GPT assistance and independently reproduced
+both conditions on the existing DEVELOPMENT data. You retain recognition ownership;
+this is not attributed to a new submission by you. Do not build the same comparison
+again. Read [the results and decision](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#executed-comparison-and-next-handoff--19-october).
 
-**Immediate manual / GPT split, updated 15 October after TEST scoring:**
+- **With GPT now:** review the per-class findings and add them, with the failed
+  frozen TEST results, to your private GF-P24 methods/results contribution. P67's
+  validation macro-F1 changes 0.790 → 0.854 and negative command predictions 12/40
+  → 9/40, but PREVIOUS loses one correct trial. P1543 changes 0.667 → 0.655;
+  negatives fall 10/40 → 0/40, but NEUTRAL recall falls 6/12 → 1/12 and one
+  NEUTRAL sample is accepted as NEXT. Neither experimental personal model meets
+  0.90. No new model is approved for Studio.
+- **Recognition follow-up:** diagnose Javier's same-profile PREVIOUS trace and any
+  privately supplied DEVELOPMENT inputs when received. Explain actual rejection
+  reasons before proposing a repair. Predeclare any further experiment; do not
+  repeat the old search, tune consumed TEST, convert profiles to the experimental
+  representation or relax thresholds simply to pass Practice.
+- **Manual now:** coordinate with Javier and operate your Windows laptop as
+  laptop B for the remaining native, fresh-install, offline, thirty-minute Studio
+  and clean-shutdown cases. Use the identified 16 October Studio source handoff
+  and `run-studio.cmd` after setup. This offline-only experiment needs no new ZIP.
+  Manual cases need no recogniser; gesture cases require your own profile and a
+  genuine current-session Practice pass. No new P67/P1543 TEST or P69 recording
+  is requested.
+- **Return next:** your recognition review/private Word contribution and observed
+  laptop-B results to Javier. Submit only demonstrated code fixes or sanitized
+  evidence on `codex/hau-jie-profiles`, with a focused PR left unmerged for Deston.
+- **Verification:** use `python scripts/verify.py --timeout 1200`; keep its fresh
+  ignored output with the exact source version. Existing output files are refused.
+  Saved-profile settings stay unchanged; new Studio profiles inherit the current
+  multiplier/margin as repaired on 16 October.
 
-Both P67/P1543 TEST returns are received, audited and independently scored twice
-against their unchanged freezes. **GF-P18 is accepted** for the original paired
-experiment criterion. See [the TEST results](GF_P18_TEST_RESULTS_2026_10_14.md).
-P67 trial macro-F1 is 0.769 starter / 0.718 personal; P1543 is 0.979 / 0.397.
-Both personal models reject all 12 NEXT trials. P67's starter result misses 0.85
-and both personal results miss 0.90, so no deployment model is qualified.
-
-- **Manual:** agree an identified build and remaining case matrix with Javier,
-  then operate your Windows laptop as laptop B for native, fresh-install,
-  offline, thirty-minute Studio and shutdown checks. Use your own profile and
-  a genuine current-session Practice pass for gesture cases; manual cases need
-  no model. No more TEST recording is requested from P67/P1543, and P69 remains
-  closed TRAIN-only.
-- **With GPT:** PR #32's fixed-model diagnosis is reviewed and independently
-  reproduced; no production defect was demonstrated. Implement the one offline
-  wrist/scale versus palm-local comparison specified in
-  [the next-delivery contract](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#integration-review-and-next-delivery--15-october).
-  Existing DEVELOPMENT features suffice; no new recording is needed for this
-  experiment. Keep its fixed settings, degenerate/invalid observations, negative
-  counts and TEST refusal. Do not change Studio, production feature versions,
-  saved profiles or frozen results. Add the reviewed diagnostic and actual
-  comparison results to your private GF-P24 contribution once available.
-- **Return next:** one focused offline representation experiment/test PR and
-  private aggregate report, methods/results contribution, and laptop-B
-  observations to Javier. Do not repeat the unchanged diagnosis/search or request
-  blanket recollection. GF-P21 remains In Progress with its GF-P20 dependency.
-- **Verification:** use `python scripts/verify.py --timeout 1200` from your
-  configured environment for a fresh timestamped local report. If supplying
-  either output option, use a new filename; existing files are now refused.
-  Keep the tested build identity with laptop-B results and share them with Javier.
-- **Boundary:** the TEST sets are now consumed. Any later model change needs a
-  new predeclared independent evaluation; do not rerun collection to improve
-  these scores. Numeric returns do not establish current OS/browser, assistance
-  or physical camera-recovery experience. Preserve those evidence limits.
-
-Current accepted progress is Deston 26/75 (34.7%), you 63/75 (84.0%), Javier
-48/73 (65.8%), and team 137/223 (61.4%): 17/29 tasks Done. Accepting the
-comparison does not grant a deployment starter, Practice readiness or LIVE use.
-
-Use `codex/hau-jie-profiles` for code and sanitized evidence; leave PRs unmerged
-for Deston. Full data/results and Word contributions remain private. See the
-[shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work) for the order
-of deliveries and the current Studio source/package distinction.
+GF-P21 remains In Progress with its original GF-P20 dependency. The experiment is
+reviewed development evidence, not native or deployment acceptance. Progress stays
+Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier 48/73 (65.8%), team 137/223
+(61.4%); 17/29 tasks Done. Full data/results and Word contributions remain private.
+See the [shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
 
 **Earlier 14 October H2 review checkpoint (before TEST returns):** [PR #31](https://github.com/Chi944/GestureForge_304/pull/31)
 is merged. Deston checked 17 original source-file hashes and independently
@@ -504,4 +486,4 @@ windows and stale-frame counts must be reported even when the session finishes.
 
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
-> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md, PAIRED_EVALUATION.md and GF_P18_TEST_RESULTS_2026_10_14.md. GF-P17 and GF-P18 are accepted: both actual TEST returns were independently scored twice against unchanged freezes, including invalid slots and failed targets. No starter is deployment-approved; both personal models reject every NEXT trial. PR #32's DEVELOPMENT diagnosis is reviewed and reproduced. Implement exactly the isolated paired wrist/scale versus palm-local experiment under “Integration review and next delivery” in GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md. Keep its fixed settings and invalid/negative denominators; add the specified tests and private aggregate comparison. Do not change Studio, production feature versions, saved profiles or frozen models. Do not tune thresholds, select models or optimise configurations on TEST; preserve all frozen baselines and do not request repeat TEST collection from P67/P1543 or further data from P69. GF-P21 still retains its original GF-P20 dependency. Operate laptop B for Javier's agreed native matrix and fresh-install/offline/thirty-minute checks. Add the actual comparison and limitations to the private GF-P24 methods/results contribution. Keep data, full exports, Word reports and logs local. Push focused PRs only from your branch and leave merging, integration and acceptance to Deston. Preserve original task owners, weights and Done criteria.
+> Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md and the 19 October results in GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md. Deston's integration track has implemented and independently reproduced the fixed wrist/scale versus palm-local experiment; do not rebuild or retune it. Review its mixed class-level results, including P1543's NEUTRAL regression, and update your private GF-P24 methods/results contribution. Diagnose Javier's same-profile PREVIOUS trace/settings/intended-pose notes when supplied; propose any further DEVELOPMENT experiment before execution. No model is deployment-approved. Preserve the consumed TEST results, original targets, source data and profiles; do not request repeat TEST from P67/P1543 or more data from P69. GF-P21 retains its GF-P20 dependency. Operate laptop B for Javier's agreed native/fresh-install/offline/thirty-minute/shutdown checks using the identified Studio handoff. Keep full data, exports, Word reports and logs private. Return demonstrated repairs or sanitized evidence in focused PRs from your branch; leave merge and acceptance to Deston. Keep original owners, weights and Done criteria.

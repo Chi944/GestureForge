@@ -1,6 +1,52 @@
 # GestureForge Studio progress
 
-Snapshot: 16 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 19 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Recognition experiment completed — 19 October
+
+Deston's integration track completed the predeclared GF-P21 offline representation
+comparison with GPT assistance. No new teammate PR was open at the initial check.
+The new command reuses the existing evaluator/calibration with fixed settings;
+it refuses TEST, preserves invalid observations and writes new private aggregate
+reports without changing Studio, profile persistence or production features.
+
+Fresh local verification passed **1,010 tests, two platform skips**, Ruff, mypy
+(106 source files), both startup modes and synthetic evaluation. The duplicate-ZIP
+test emitted its expected warning. The 19 new focused tests cover the fixed math,
+invalid denominators, sparse calibration, TEST refusal and output preservation.
+Private receipts: `experiments/local/verification-20261019T004955135994Z.json`
+and `experiments/local/representation-review-20261019/review-receipt.json`.
+
+An independent review recomputed the palm axes separately, repeated both fits for
+each participant and reproduced every non-timing report field. Both wrist/scale
+baselines also match the earlier reviewed PR #32 metrics exactly. Original inputs
+and their hashes are unchanged. See [the complete result and next handoff](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#executed-comparison-and-next-handoff--19-october).
+
+| Development result | P67 baseline → palm-local | P1543 baseline → palm-local |
+|---|---:|---:|
+| Trial macro-F1 | 0.789726 → 0.854130 | 0.666667 → 0.655128 |
+| Negative command predictions / 40 | 12 → 9 | 10 → 0 |
+| NEXT correct trials / 12 | 2 → 4 | 4 → 8 |
+| NEUTRAL correct trials / 12 | 11 → 12 | 6 → 1 |
+
+**Do not deploy the experimental representation.** Neither personal result reaches
+0.90; P67 loses one PREVIOUS trial and P1543's NEUTRAL recall regresses. Reduced
+negative classifier counts are not a live-action measurement. The existing Studio
+handoff remains the appropriate build for device checks; this offline addition
+does not require another ZIP or participant recording.
+
+Hau Jie now reviews and explains the completed comparison in his private methods/
+results contribution, diagnoses Javier's trace when it arrives, and operates laptop B.
+Javier returns the short same-profile PREVIOUS trace, completes remaining native
+cases and consolidates laptop-B observations. Deston integrates demonstrated fixes,
+then reviews actual scenario, study and release evidence. Briefs retain own-branch
+delivery and private-data boundaries.
+
+Accepted progress remains **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
+48/73 (65.8%), team 137/223 (61.4%) — 17/29 tasks Done**. The experiment completes
+a real GF-P21 development substep; its original GF-P20 dependency and all other
+task weights, owners and acceptance gates are unchanged. No new webcam, laptop-B,
+native-macOS, workflow-study or submission result is claimed.
 
 ## Studio recognition and package audit — 16 October
 
