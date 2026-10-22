@@ -387,6 +387,24 @@ def test_registry_missing_target_after_configuration_and_restore_without_launch(
         restored.resolve('ref')
 
 
+@pytest.mark.parametrize('slots', [('ref', None, None), (None, None, 'ref')])
+def test_registry_rejects_new_unavailable_selection_without_mutation(tmp_path: Path, slots) -> None:
+    path = tmp_path / 'reference.txt'
+    path.write_text('fixture')
+    registry = TargetRegistry()
+    registry.configure(Target('ref', 'Reference', TargetKind.FILE, str(path)))
+    registry.bind_quick((None, 'ref', None))
+    path.unlink()
+    with pytest.raises(OSError):
+        registry.bind_quick(slots)
+    assert registry.quick_slots == (None, 'ref', None)
+    with pytest.raises(ValueError, match='unbound'):
+        registry.bind_quick(('unknown', 'ref', None))
+    assert registry.quick_slots == (None, 'ref', None)
+    with pytest.raises(OSError):
+        registry.resolve('ref')
+
+
 def test_dispatch_all_real_actions_share_once_gate_even_manual() -> None:
     gate, session, os, viewer, _ = dispatcher()
     snapshot = session.snapshot

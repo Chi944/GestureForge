@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-Updated 22 October 2026 · Project deadline 7 November 2026
+Updated 23 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -28,14 +28,15 @@ is accepted solely from these deliveries. Follow the
 [marker-feedback response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md) for measurable
 requirements, real stakeholder input, reproducible results and measured value.
 
-The current retained Studio source ZIP is `releases/gestureforge-studio-source.zip`,
-source `a480e2e32ea9c3642dbaab922ae3a76ef6801ad1`, SHA256
-`840a509dd0a341ca1e206044d9fbec360b143cb82d3cdc672d1167b534103e2f`.
-It contains 197 verified members and the PR #35 session-feedback fixes. Source
-setup is still required. Hau Jie's reported archive has a different hash; retain
-its separate receipt. That retained ZIP predates the new opt-in recognition
-diagnostic; use the identified verified build containing that diagnostic when
-it is ready, rather than repeating an older labels-only trace.
+The current retained Studio source ZIP is `releases/gestureforge-studio-source.zip`.
+Its adjacent `gestureforge-studio-source.json` records the exact source commit,
+archive checksum and file count; send both files together and record that identity
+on each new check. The 23 October handoff includes opt-in recognition recording
+and analysis. Source setup is still required; it is not a standalone executable.
+Hau Jie's earlier archive has a different hash; retain its separate receipt.
+Use the current diagnostic guide for a new recording instead of an older
+labels-only trace. The [progress record](PROGRESS.md) records verified repairs;
+Javier checks only affected recovery cases plus the remaining original cases.
 Git users sync main on their own branches; existing physical evidence retains
 the build on which it was collected.
 

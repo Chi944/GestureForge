@@ -179,9 +179,12 @@ class TargetRegistry:
     def bind_quick(self, slots: tuple[str | None, str | None, str | None]) -> None:
         if len(slots) != 3:
             raise ValueError('Quick Actions requires three slots')
-        for slot in slots:
+        for index, slot in enumerate(slots):
             if slot is not None:
-                self.resolve(slot)
+                self.get(slot)
+                # Keep stale bindings removable one slot at a time.
+                if slot != self.quick_slots[index]:
+                    self.resolve(slot)
         self.quick_slots = slots
 
     def save(self, path: Path) -> None:

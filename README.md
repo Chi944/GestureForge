@@ -243,7 +243,7 @@ To check the browser collector, developers with Node.js can also run:
 node --test tests/participant_collector.test.mjs
 ```
 
-The 22 October desktop verification passed **1,076 Python tests**, with two
+The 23 October desktop verification passed **1,129 Python tests**, with two
 platform-specific skips, plus lint, type checks, both startup checks and synthetic
 evaluation. The collector's separate retained 14 October result is **30 browser-logic
 checks**; it was not rerun for this desktop-only change. These checks do not replace

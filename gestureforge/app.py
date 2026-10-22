@@ -2912,14 +2912,13 @@ class Window(QMainWindow):
             replace(old, context_id=new_context_id, mode=new_mode, bindings=new_bindings)
         grant = self._standard_live_grant or self._personal_live_grant
         previous_live_revision = grant.behavior_revision if grant is not None else ""
-        if (
+        bindings_changed = (
             bindings is not None
             and not self._practice_restoring
             and not self._readiness_switching
             and new_context_id == old.context_id
             and self._canonical_bindings(new_bindings) != self._canonical_bindings(old.bindings)
-        ):
-            self._invalidate_live_grants("active bindings changed")
+        )
         authored_bindings = None
         previous_readiness_revision = self._readiness_behavior_revision() if self.model is not None else ""
         if (
@@ -2934,6 +2933,8 @@ class Window(QMainWindow):
             }
         if not self.pause():
             return False
+        if bindings_changed:
+            self._invalidate_live_grants("active bindings changed")
         self.manual_context_id = new_context_id
         self.manual_session_id = str(uuid4())
         self.manual_mode = new_mode
@@ -3364,7 +3365,7 @@ class Window(QMainWindow):
         if self.model_loader is not None:
             raise ValueError("Wait for the dataset load to finish before changing camera")
         if index == self.camera_index:
-            return False
+            return self.pause()
         if not self.configure_studio():
             return False
         self._invalidate_readiness("camera selection changed")

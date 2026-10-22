@@ -2,7 +2,23 @@
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
-## Next work — private receipts reviewed, 22 October
+## Recovery fixes and next work — 23 October
+
+Deston's integration update repairs three software defects: multiple unavailable
+Quick Actions targets can be unbound one at a time; **Use camera and pause** now
+pauses even when the camera number is unchanged; a rejected settings change
+retains the existing readiness grant when a trace cannot be saved. A successfully
+changed binding still expires the grant, and missing targets still cannot launch.
+
+Sync reviewed main into `codex/javier-shortcuts`. On the next affected native
+check, use disposable reference files to check clearing two unavailable slots
+without deleting their library entries, and confirm same-camera Apply pauses
+capture. Do not fill a real disk to reproduce the simulated storage failure.
+These focused checks supplement GF-P22; keep the original GF-P19/GF-P20 gates.
+Use the adjacent source-package JSON for build/hash identity. The latest
+verification is in [PROGRESS.md](PROGRESS.md).
+
+### Private receipts reviewed — 22 October
 
 **Latest recognition and acceptance update:** Hau Jie's
 [P02/P03 recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) is received.

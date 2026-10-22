@@ -2,6 +2,38 @@
 
 Snapshot: 23 October 2026. Task weights measure accepted work, not an expected grade.
 
+## Studio recovery repairs — 23 October
+
+Three reproducible defects are repaired without changing recognition settings or
+acceptance gates. Quick Actions can clear multiple unavailable bindings one at a
+time while preserving the library; newly selected targets, activation and dispatch
+still require valid targets. **Use camera and pause** now stops capture even when
+the camera number is unchanged, preserving eligibility for that unchanged camera.
+A settings draft rejected because a trace cannot be saved retains its original
+configuration, trace and readiness grant. Successful binding changes still revoke
+eligibility. Regression cases cover personal and standard grants and save retry.
+
+The [user guide](../USER_GUIDE.md), [Javier brief](JAVIER_HANDOFF.md) and
+[team guide](TEAM_GUIDE.md) now explain recovery and identify the package using
+its adjacent manifest rather than an outdated archive hash. Javier verifies the
+affected native cases on his next check; no repeat participant TEST or full
+Practice is requested for these software repairs.
+
+No new PR or private evidence was available at this checkpoint. Accepted progress
+remains **151/223 (67.7%), 19/29 tasks**: Deston **34/75 (45.3%)**, Hau Jie
+**63/75 (84.0%)**, Javier **54/73 (74.0%)**. GF-P22 gains regression evidence but
+retains its original GF-P19/GF-P20 dependencies and native checks. The next
+recognition step is still the bounded consented diagnostic with intended-pose
+notes; a recording tool or a recovery fix does not establish recognition repair.
+
+Full local verification passed **1,129 tests, two platform skips**, Ruff, mypy
+(107 files), both startup checks and synthetic evaluation. The new regressions
+failed before their fixes, and independent review found no actionable issue.
+The private receipt is `.local/studio-recovery-20261023/verification.json`.
+Tests use generated state and temporary resources, not physical webcam or native
+application evidence. Browser collector code and frozen evaluation inputs are
+unchanged; their earlier results are not presented as reruns.
+
 ## Recognition trace analysis completed — 23 October
 
 The existing `gestureforge.trace_diagnose` command now validates and retains the

@@ -2427,8 +2427,9 @@ def test_camera_change_waits_for_release_and_restarts_with_fresh_identity(monkey
         replacement.start.assert_called_once()
         assert window.routing.state == "WAIT_NEUTRAL"
         active = window.routing.snapshot
-        assert not window.set_studio_camera(1)
-        assert window.routing.snapshot == active and not replacement.interrupted
+        assert window.set_studio_camera(1)
+        assert window.routing.snapshot == active and replacement.interrupted
+        assert window.routing.state == "PAUSED"
     finally:
         window.close()
 

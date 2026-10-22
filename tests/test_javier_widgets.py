@@ -156,6 +156,35 @@ def test_quick_missing_target_test_emits_validation_failure(qt_app, tmp_path: Pa
     widget.close()
 
 
+def test_quick_unbinds_multiple_unavailable_targets_sequentially(qt_app, tmp_path: Path) -> None:
+    registry = TargetRegistry()
+    for target_id in ('first', 'second'):
+        path = tmp_path / f'{target_id}.txt'
+        path.write_text('fixture')
+        registry.configure(Target(target_id, target_id, TargetKind.FILE, str(path)))
+    registry.bind_quick(('first', 'second', None))
+    state = tmp_path / 'targets.json'
+    registry.save(state)
+    for target_id in ('first', 'second'):
+        (tmp_path / f'{target_id}.txt').unlink()
+    widget = QuickActionsWidget(TargetRegistry(), state)
+    requests: list[Action] = []
+    widget.action_requested.connect(requests.append)
+    try:
+        widget.slots[0].setCurrentIndex(0)
+        assert widget.registry.quick_slots == (None, 'second', None)
+        assert not widget.launch_buttons[1].isEnabled()
+        widget.slots[1].setCurrentIndex(0)
+        assert widget.registry.quick_slots == (None, None, None)
+        restored = TargetRegistry()
+        restored.restore(state)
+        assert restored.quick_slots == (None, None, None)
+        assert len(restored.targets) == 2
+        assert requests == []
+    finally:
+        widget.close()
+
+
 def test_quick_test_refreshes_restored_bound_target_without_rebinding(qt_app, tmp_path: Path) -> None:
     path = tmp_path / 'reference.txt'
     path.write_text('fixture')
