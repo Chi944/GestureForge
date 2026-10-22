@@ -15,6 +15,14 @@ navigate a card deck, bookmark a useful card, move through a demonstration runbo
 or request a configured Windows shortcut. A neutral pose arms control; holding an
 action pose triggers it once, then neutral is required again.
 
+The problem it addresses is the repeated keyboard work during a training or
+product demonstration: finding the next resource, opening a tool, keeping the
+current step visible and recovering the demonstration's position after an
+interruption. Studio brings those steps into a reusable runbook with visible
+controls and saved progress. Gestures are an optional input method alongside
+buttons and keyboard controls. Whether they reduce effort or errors is being
+measured; a clicker remains a simpler option for slide-only navigation.
+
 Webcam processing and classifier training run locally. Normal use does not save
 photos or video. Numeric collection and evaluation recording require explicit
 consent. **GestureForge controls its own viewer; it is not connected to PowerPoint.**

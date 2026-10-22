@@ -4,26 +4,25 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**22 October — your methods/results contribution is received and reviewed.**
-Its figures and limits match the retained evidence. GF-P24 is now In Progress;
-do not draft the same completed sections again. The final reconciliation with
-GF-P21 remains. Read the [deliverable review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
+**22 October — your methods/results contribution and laptop-B packet are received.**
+Both have been reviewed; do not resend reference [10] or redraft completed
+sections. GF-P24 remains In Progress pending final GF-P21 reconciliation. See the
+[receipt review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md) and
+[marker-feedback response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md).
 
-- **Send next, privately:** the existing reference [10] folder
-  `experiments/local/laptop-B-a480e2e-20261020/`, including
-  `REVIEW_AND_CHECKS_PRIVATE.md`, source/package member verification, process
-  monitor report and separate before/after native summary exports. Include
-  existing device/build and assistance notes; omit unrelated profiles/data.
-  Deston has the Word file but not these supporting files.
-- **Manual:** coordinate only unrun or affected checks with Javier. Assisted
-  setup is received as reported evidence; guide-only installation remains a
-  separate requirement. Do not repeat successful checks because receipts have
-  not been sent. Keep the interrupted monitor separate from the later reported
-  thirty minutes; active-capture Camera is still NOT RUN.
-- **With GPT:** reconcile your existing evidence packet and remaining-case matrix;
-  preserve the first camera failure and recovery. Continue the development-only
-  recognition diagnosis and later update final methods/results. No threshold
-  relaxation, consumed-TEST tuning or blanket participant recollection.
+- **Manual:** operate laptop B for remaining guide-only installation, continuous
+  thirty-minute rate/memory monitoring and post-close camera release. Coordinate
+  unrun association/error and valid-grant active-capture Camera/focus cases with
+  Javier. Retain successful unchanged checks, the first camera failure and the
+  interrupted 791.605-second monitor; the later reported thirty minutes is separate.
+- **Problem validation:** obtain genuine feedback from a trainer or demonstration
+  presenter about keyboard interruptions, their current controls and when gestures
+  would help or hinder. Record what they actually say, with permission and minimal
+  identifying data; do not fabricate stakeholder interviews or a clicker advantage.
+- **With GPT:** update the remaining-case matrix from received receipts; continue
+  development-only recognition diagnosis and reconcile final methods/results.
+  The source-member match remains attributed because the packet omits the source
+  ZIP/member listing. No threshold relaxation, TEST tuning or blanket recollection.
 
 Keep Word/data/full exports private. Push sanitized code/evidence only to
 `codex/hau-jie-profiles`; leave PRs for Deston's review/merge.

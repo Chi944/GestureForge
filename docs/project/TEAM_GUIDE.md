@@ -6,13 +6,14 @@ Deston has authorised project implementation. Build the approved Windows corpora
 
 ## Current deliveries — 22 October
 
-Hau Jie's methods/results Word contribution and Javier's edited manual video
-are now received and reviewed. Their [review record](TEAM_DELIVERABLE_REVIEW_2026_10_22.md)
-contains source hashes, bounded findings and exact next returns. GF-P24 is now
-In Progress. Laptop-B assisted setup/native observations are reported in the
-Word contribution; its referenced logs and the video's restore exports have
-not yet arrived. Send those existing files privately before repeating checks.
-No new whole task is accepted from these two contributions alone.
+Hau Jie's methods/results Word contribution, Javier's edited manual video and
+both private supporting packets are received and reviewed. The
+[receipt review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md) records hashes, exact
+summary reconstruction, overlap and remaining limits. Do not resend reference
+[10] or the restore exports. GF-P24 remains In Progress; no remaining whole task
+is accepted solely from these deliveries. Follow the
+[marker-feedback response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md) for measurable
+requirements, real stakeholder input, reproducible results and measured value.
 
 The current retained Studio source ZIP is `releases/gestureforge-studio-source.zip`,
 source `a480e2e32ea9c3642dbaab922ae3a76ef6801ad1`, SHA256
@@ -106,8 +107,8 @@ as they become available instead of waiting for your entire lane to finish.
 |---|---|---|
 | H1 / GF-P17 preparation | PR #27's aggregate audit is merged; Hau Jie's private H1 packet is received and verified for hashes, saved reports and inventories | H1 remains internal-team evidence only; it does not approve a deployment starter or public/marker redistribution |
 | H2 / GF-P17 → GF-P18 | Both tasks are accepted: P67/P1543's actual TEST returns were audited and the same frozen comparisons reproduced independently | Retain failed targets and invalid slots in the results. No deployment model is qualified; no TEST recollection, threshold tuning or model selection on these results |
-| J1 / GF-P19 | Earlier native evidence is retained. Javier's manual video now shows bounded request/validation/post-restore views; send its existing restore exports and filmed build identity. | Remaining association/failure/retry and valid-grant active-capture Camera cases are still required. Recheck only affected session feedback on updated source. |
-| H3 + J2 / GF-P19, GF-P23 | Hau Jie's report supplies attributed laptop-B assisted setup/native checks and reported offline/endurance/closure observations; send reference [10] files for Javier's consolidation. | Guide-only setup, measured stability/release evidence and remaining device/defect gates are not closed. Keep interrupted monitor and later reported thirty minutes separate. |
+| J1 / GF-P19 | Javier's private exports now validate bounded manual request/restore observations. Historical duplicates and cumulative P03 events are not added twice; the 22 October filmed runtime remains unconfirmed. | Remaining association/failure/retry and valid-grant active-capture Camera cases are still required. Recheck only affected session feedback on updated source. |
+| H3 + J2 / GF-P19, GF-P23 | Hau Jie's reference [10] packet is received and reconciled: assisted setup, native requests/retry and paused restore. Offline/normal closure and later thirty minutes remain attributed human reports. | Guide-only setup, measured stability/release evidence and remaining device/defect gates are not closed. Keep interrupted monitor and later reported thirty minutes separate. |
 | J3 / GF-P20 | Javier coordinates observer records, condition order, actual hold/negative/latency sessions and disjoint exports; Hau Jie supplies frozen recognition inputs | Deston analyses/replays measurements and accepts the integrated study after GF-P16/GF-P17. Unavailable standard mode is reported, never silently replaced |
 | H4 + J4 / GF-P24, GF-P25 | Hau Jie's Word contribution is reviewed against current results; Javier's labelled manual video draft and earlier guide are received. | Final GF-P21 reconciliation, guide-only/native release evidence and complete gesture/scenario/recovery demo remain before GF-P26/GF-P27. Do not redraft already delivered sections. |
 
@@ -127,15 +128,18 @@ members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction and review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. No repeat participant TEST is requested. | Verify the supporting packets when received, reconcile report sections and disjoint exports, integrate demonstrated fixes and analyse actual workflow evidence. |
-| Hau Jie | Send the existing reference [10] laptop-B packet privately. Agree only remaining guide-only/native/stability/release checks with Javier; retain successful reported checks and original failures. | Reconcile receipts with the Word contribution, continue the development-only recognition investigation and update final methods/results after GF-P21. No duplicate experiment, TEST tuning or speculative threshold change. |
-| Javier | Send the video's existing before/after restore exports and exact filmed build identity; consolidate Hau Jie's laptop-B evidence. Finish unrun native cases and affected feedback checks; gesture-dependent cases need genuine readiness. | Reconcile the two-device matrix and non-overlapping exports, fix demonstrated defects and plan remaining real gesture/scenario/recovery footage. Preserve the received manual video draft and accepted unchanged checks. |
+| Deston | Review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. Retain final direction; no repeat participant TEST is requested. | Integrate marker-response and reproducibility improvements, reconcile report sections and analyse actual workflow evidence when supplied. |
+| Hau Jie | Operate laptop B for remaining guide-only setup, continuous thirty-minute rate/memory monitoring and post-close release; coordinate eligible handoff cases with Javier. Obtain genuine trainer/demo stakeholder feedback on the proposed problem. | Continue development-only recognition diagnosis and reconcile final methods/results after GF-P21. Preserve failures and distinguish the interrupted monitor from the later reported run. |
+| Javier | Finish unrun native association/error and eligible active-capture Camera/focus recovery cases; coordinate laptop B and the prescribed real workflow study. Capture exact runtime identity on new checks. | Consolidate the received two-device matrix without duplicate/cumulative event counting, fix demonstrated defects and prepare remaining gesture/scenario/recovery footage and guide. |
 
-**Next returns:** Hau Jie sends the existing private reference [10] packet;
-Javier sends existing restore exports, filmed build identity and the remaining-case
-matrix. Their Word contribution and manual video are already received. The representation implementation
-was completed with GPT assistance in Deston's integration track; it is not a new
-teammate-authored submission and does not qualify a deployment model.
+**Next returns:** only new remaining-case observations, genuine stakeholder/workflow
+records and revised final report/demo sections when their prerequisites pass.
+The Word contribution, manual video, reference [10] packet and restore exports
+are already received. Do not repeat successful unchanged cases. The manual
+workspace in the exports is not the study workspace; preserve that distinction.
+No measured clicker advantage or stakeholder interview is claimed.
+The representation implementation was completed with GPT assistance in Deston's
+integration track; it does not qualify a deployment model.
 Javier's short P03 traces are received: replay agrees with four PREVIOUS Preview
 simulations and two additional NEXT simulations during the reported index-finger
 negative attempt. The second summary is cumulative six, not ten. The saved

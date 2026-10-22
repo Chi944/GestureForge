@@ -2,28 +2,32 @@
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
-## Next return — manual video received, 22 October
+## Next work — private receipts reviewed, 22 October
 
-Your 115-second edited manual demonstration is received and reviewed. Retain it
-as a draft: its captions correctly separate request/completion, supplied stills,
-post-restore state and HTTP/HTTPS save validation. It does not yet show the final
-gesture scenario. Read the [review and remaining evidence](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
+Your edited manual video, private logs/exports and standalone restore summaries
+are received and reviewed. Do not resend them. All 27 summary exports reconstruct;
+the standalone pair matches the packet. The 22 October pair shows one manual
+request followed by a new revision with zero outcomes, not gesture acceptance.
+See the [receipt review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
 
-- **Send next, privately:** the existing before/after restore exports referenced
-  in the video, the exact source/package identity for each filmed date, and your
-  remaining-case matrix. Deston has the video but not those exports.
-- **Coordinate laptop B:** Hau Jie's methods report now includes assisted setup,
-  bounded native checks and reported offline/endurance/closure observations.
-  Obtain his existing reference [10] packet and consolidate it with laptop A.
-  Keep different builds, assistance and the interrupted monitor distinct.
-- **Manual:** verify affected session feedback on source containing PR #35,
-  then finish only outstanding native cases. The historical LIVE banner in the
-  footage is already repaired on main; identify the filmed build before claiming
-  a regression. Active-capture Camera still requires genuine current readiness.
-- **With GPT:** reconcile disjoint exports, update the case matrix and plan final
-  footage that shows the actual gesture/scenario/recovery steps. Do not recreate
-  the P03 packet, redo accepted unchanged checks or turn this edited draft into
-  a timed workflow measurement.
+- **Manual:** finish unrun native association/error cases and, only after genuine
+  current readiness, active-capture Camera handoff and focus-loss/resume. Coordinate
+  Hau Jie's guide-only laptop-B setup, continuous measured stability and post-close
+  camera release. Do not repeat unchanged passed native requests/restore checks.
+- **Build identity:** record the exact runtime on new checks. The 22 October filmed
+  runtime was not freshly captured, so its old LIVE banner does not prove PR #35
+  regressed. Verify only affected feedback on the reviewed source.
+- **Study:** coordinate genuine presenter feedback and the prescribed workflow
+  comparison with Hau Jie. The manual exports use `harbor-onboarding-standard`,
+  not the study workspace `harbor-onboarding`; do not rename evidence or loosen
+  the validator. An edited video is not an uninterrupted timed workflow trial.
+- **With GPT:** update the two-device case matrix, preserve duplicate/cumulative
+  export relationships without summing them, and prepare remaining actual
+  gesture/scenario/recovery footage. Eight historical Practice attempts contain
+  three failures and five cancellations, with no pass; no LIVE grant is inferred.
+  Apply the [marker-feedback response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md)
+  to the guide and demo: show the user problem and measured outcomes, not just
+  features. Do not claim a measured clicker advantage.
 
 Keep video/full exports private. Push sanitized code/evidence only to
 `codex/javier-shortcuts`; leave PRs for Deston's review/merge.

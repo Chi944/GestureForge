@@ -4,7 +4,7 @@ import argparse
 from datetime import datetime, timezone
 from hashlib import sha256
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import subprocess
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -29,7 +29,20 @@ def main(argv: list[str] | None = None):
         action="store_true",
         help="Create a Studio development source handoff ZIP.",
     )
+    mode.add_argument("--verify-archive", type=Path, help="Read-only check of packaged evaluation inputs.")
+    parser.add_argument("--require-config", action="append", default=[],
+                        help="Required evaluation config relative to the archived project root; repeatable.")
+    parser.add_argument("--archive-root", default="gestureforge/",
+                        help="Project directory inside the ZIP (default: gestureforge/).")
     args = parser.parse_args(argv)
+    if args.verify_archive:
+        if not args.require_config:
+            parser.error("--verify-archive requires at least one --require-config")
+        print(json.dumps(verify_archive(args.verify_archive, args.require_config, args.archive_root),
+                         indent=2))
+        return
+    if args.require_config or args.archive_root != "gestureforge/":
+        parser.error("--require-config and --archive-root require --verify-archive")
 
     files = _tracked_source_files(ROOT)
     pilot_files = _pilot_files(ROOT) if args.include_pilot else []
@@ -59,6 +72,73 @@ def main(argv: list[str] | None = None):
     }
     target.with_suffix(".json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(manifest, indent=2))
+
+
+def _archive_relative(name: object) -> PurePosixPath:
+    if (not isinstance(name, str) or not name or "\\" in name or ":" in name
+            or any(part in {"", ".", ".."} for part in name.split("/"))):
+        raise ValueError(f"Unsafe archive reference: {name!r}")
+    for part in name.split("/"):
+        if (part.endswith((".", " ")) or PureWindowsPath(part).is_reserved()
+                or any(ord(char) < 32 or char in '<>"|?*' for char in part)):
+            raise ValueError(f"Unsafe Windows archive reference: {name!r}")
+    return PurePosixPath(name)
+
+
+def verify_archive(path: Path, configs: list[str], archive_root: str) -> dict:
+    """Verify declared numeric inputs in the finished ZIP, without extracting or running it."""
+    root = _archive_relative(archive_root.rstrip("/"))
+    checked: set[str] = set()
+    with ZipFile(path) as archive:
+        names = archive.namelist()
+        if len(names) != len({name.rstrip("/").casefold() for name in names}):
+            raise ValueError("Duplicate archive entries (including Windows filename aliases)")
+        for entry in archive.infolist():
+            _archive_relative(entry.filename.rstrip("/") if entry.is_dir() else entry.filename)
+            if (entry.external_attr >> 16) & 0o170000 == 0o120000:
+                raise ValueError(f"Archive symlink is not supported: {entry.filename}")
+        damaged = archive.testzip()
+        if damaged:
+            raise ValueError(f"Archive CRC failed: {damaged}")
+
+        def read_json(name: PurePosixPath) -> dict:
+            try:
+                value = json.loads(archive.read(str(name)))
+            except KeyError as exc:
+                raise ValueError(f"Missing archive input: {name}") from exc
+            if not isinstance(value, dict):
+                raise ValueError(f"Expected JSON object: {name}")
+            return value
+
+        for config_name in configs:
+            config = read_json(root / _archive_relative(config_name))
+            # Match evaluate_config's precedence when both keys are present.
+            paths = config.get("dataset_path", config.get("dataset_paths"))
+            if "dataset_path" in config and isinstance(paths, str):
+                paths = [paths]
+            if not isinstance(paths, list) or not paths:
+                raise ValueError(f"Config must declare numeric dataset inputs: {config_name}")
+            for dataset in paths:
+                manifest_name = root / _archive_relative(dataset)
+                manifest = read_json(manifest_name)
+                feature = _archive_relative(manifest.get("feature_file"))
+                if len(feature.parts) != 1:
+                    raise ValueError(f"feature_file must be beside its manifest: {manifest_name}")
+                expected = manifest.get("feature_sha256")
+                if (not isinstance(expected, str) or len(expected) != 64
+                        or any(char not in "0123456789abcdef" for char in expected)):
+                    raise ValueError(f"Invalid feature_sha256: {manifest_name}")
+                feature_name = manifest_name.parent / feature
+                try:
+                    actual = sha256(archive.read(str(feature_name))).hexdigest()
+                except KeyError as exc:
+                    raise ValueError(f"Missing archive input: {feature_name}") from exc
+                if actual != expected:
+                    raise ValueError(f"Feature checksum mismatch: {feature_name}")
+                checked.add(str(manifest_name))
+    return {"archive": str(path), "sha256": sha256(path.read_bytes()).hexdigest(),
+            "required_configs": configs, "verified_manifests": sorted(checked),
+            "note": "Input presence, CRC and feature hashes verified; evaluation was not executed."}
 
 
 def _tracked_source_files(root: Path) -> list[Path]:

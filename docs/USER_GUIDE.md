@@ -523,6 +523,25 @@ The library holds up to twelve targets and saves its private target values and s
 
 For a complete camera-free Windows acceptance run, follow the [six-stage manual walkthrough](project/DEMO_SCENARIO.md#manual-walkthrough-available-now). A separate [Studio source ZIP](../releases/README.md#studio-development-handoff) supports teammate setup without replacing the submitted assignment archives.
 
+## Check evaluation inputs in a handoff ZIP
+
+A source ZIP excludes private participant samples. Before describing an archive
+as reproducible, check the **finished ZIP**, not just the working folder. For the
+permitted private P01 package, for example:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/package_release.py --verify-archive releases/gestureforge-assignment-private-marker.zip --require-config experiments/pilot-rejection.json
+```
+
+Repeat `--require-config` for every included evaluation you intend to reproduce.
+The default archive project folder is `gestureforge/`; use `--archive-root` if
+the ZIP has a different prefix. The command reads without extracting or changing
+the archive and rejects missing manifests/feature files, unsafe or duplicate
+entries, failed CRC and mismatched feature hashes. A pass proves input presence
+and integrity only. Extract the package, run its evaluations and compare the
+reported results separately. Include private data only with the relevant sharing
+permission; do not commit it. See the [release evidence response](project/MARKER_FEEDBACK_RESPONSE_2026_10_22.md#finished-package-check).
+
 ## Capture stability diagnostic
 
 Before another long Practice attempt, a short capture check can separate camera

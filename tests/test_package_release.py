@@ -1,4 +1,5 @@
 import json
+from hashlib import sha256
 import subprocess
 from pathlib import Path
 from zipfile import ZipFile
@@ -21,6 +22,9 @@ def test_source_package_excludes_untracked_private_data(tmp_path, monkeypatch):
     assert "gestureforge/README.md" in names
     assert "gestureforge/experiments/pilot.json" in names
     assert not any(name.startswith("gestureforge/data/local/") for name in names)
+    with pytest.raises(ValueError, match="Missing archive input"):
+        package_release.verify_archive(root / "releases" / package_release.SOURCE_ARCHIVE,
+                                       ["experiments/pilot.json"], "gestureforge/")
 
 
 def test_project_package_is_separate_studio_handoff_without_private_data(tmp_path, monkeypatch):
@@ -142,6 +146,9 @@ def test_include_pilot_private_package_adds_only_manifest_and_referenced_feature
     assert f"gestureforge/data/local/pilot/{feature_file}" in names
     assert "gestureforge/data/local/pilot/CONSENT.md" not in names
     assert sum(name.startswith("gestureforge/data/local/pilot/") for name in names) == 2
+    receipt = package_release.verify_archive(root / "releases" / package_release.PRIVATE_ARCHIVE,
+                                             ["experiments/pilot.json"], "gestureforge/")
+    assert receipt["verified_manifests"] == ["gestureforge/data/local/pilot/manifest.json"]
 
 
 def test_include_pilot_fails_before_overwriting_existing_private_archive(
@@ -238,3 +245,150 @@ def _pilot_dataset(root: Path):
 def _zip_names(path: Path) -> set[str]:
     with ZipFile(path) as archive:
         return set(archive.namelist())
+
+
+@pytest.mark.parametrize("root", ["gestureforge/", "ICT304_Assignment/gestureforge/"])
+@pytest.mark.parametrize("key,multiple", [("dataset_path", False), ("dataset_path", True),
+                                          ("dataset_paths", True)])
+def test_verify_archive_checks_inputs_without_changing_archive(tmp_path, capsys, root, key, multiple):
+    target, entries = _evaluation_archive(tmp_path, root)
+    dataset = "data/manifest.json"
+    entries[root + "experiments/evaluate.json"] = json.dumps(
+        {key: [dataset] if multiple else dataset}
+    ).encode()
+    _write_entries(target, entries)
+    before = target.read_bytes()
+
+    package_release.main(["--verify-archive", str(target), "--archive-root", root,
+                          "--require-config", "experiments/evaluate.json"])
+
+    receipt = json.loads(capsys.readouterr().out)
+    assert receipt["verified_manifests"] == [root + dataset]
+    assert receipt["sha256"] == sha256(before).hexdigest()
+    assert target.read_bytes() == before
+    assert list(tmp_path.iterdir()) == [target]
+
+
+@pytest.mark.parametrize("missing", ["experiments/evaluate.json", "data/manifest.json",
+                                    "data/features.npz"])
+def test_verify_archive_rejects_missing_required_input(tmp_path, missing):
+    target, entries = _evaluation_archive(tmp_path)
+    del entries["gestureforge/" + missing]
+    _write_entries(target, entries)
+    with pytest.raises(ValueError, match="Missing archive input"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+@pytest.mark.parametrize("checksum", [None, "bad", "g" * 64, "0" * 64])
+def test_verify_archive_rejects_invalid_or_mismatched_checksum(tmp_path, checksum):
+    target, entries = _evaluation_archive(tmp_path)
+    entries["gestureforge/data/manifest.json"] = json.dumps(
+        {"feature_file": "features.npz", "feature_sha256": checksum}
+    ).encode()
+    _write_entries(target, entries)
+    with pytest.raises(ValueError, match="feature_sha256|checksum mismatch"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+@pytest.mark.parametrize("reference", ["../outside.json", "/outside.json", "C:/outside.json",
+                                      "data\\manifest.json", "data/../manifest.json", None])
+def test_verify_archive_rejects_escaping_or_invalid_dataset_reference(tmp_path, reference):
+    target, entries = _evaluation_archive(tmp_path)
+    entries["gestureforge/experiments/evaluate.json"] = json.dumps(
+        {"dataset_paths": [reference]}
+    ).encode()
+    _write_entries(target, entries)
+    with pytest.raises(ValueError, match="Unsafe archive reference"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+def test_verify_archive_rejects_duplicate_entries(tmp_path):
+    target, _ = _evaluation_archive(tmp_path)
+    with ZipFile(target, "a") as archive, pytest.warns(UserWarning, match="Duplicate"):
+        archive.writestr("gestureforge/experiments/evaluate.json", "{}")
+    with pytest.raises(ValueError, match="Duplicate archive"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+@pytest.mark.parametrize("alias", ["gestureforge/data/FEATURES.NPZ",
+                                  "gestureforge/DATA/MANIFEST.json"])
+def test_verify_archive_rejects_case_insensitive_aliases(tmp_path, alias):
+    target, entries = _evaluation_archive(tmp_path)
+    entries[alias] = b"different bytes overwrite the checked input on Windows"
+    _write_entries(target, entries)
+    with pytest.raises(ValueError, match="Windows filename aliases"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+@pytest.mark.parametrize("name", ["features.npz.", "features.npz ", "CON", "nul.json",
+                                 "COM1.npz", "LPT9.txt", "COM\u00b9.txt", "AUX/file.txt",
+                                 "bad?.txt", "bad\x00.txt"])
+def test_verify_archive_rejects_windows_unsafe_names(tmp_path, name):
+    target, entries = _evaluation_archive(tmp_path)
+    if "\x00" in name:
+        # ZipFile truncates NUL-containing names; exercise the trust boundary directly.
+        with pytest.raises(ValueError, match="Unsafe Windows archive reference"):
+            package_release._archive_relative(name)
+        return
+    entries["gestureforge/data/" + name] = b"unsafe name"
+    _write_entries(target, entries)
+    with pytest.raises(ValueError, match="Unsafe Windows archive reference"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+def test_verify_archive_rejects_damaged_crc(tmp_path):
+    target, _ = _evaluation_archive(tmp_path)
+    target.write_bytes(target.read_bytes().replace(b"numeric sidecar bytes", b"damaged sidecar bytes"))
+    with pytest.raises(ValueError, match="Archive CRC failed"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+def test_verify_archive_uses_dataset_path_precedence(tmp_path):
+    target, entries = _evaluation_archive(tmp_path)
+    entries["gestureforge/experiments/evaluate.json"] = json.dumps(
+        {"dataset_path": "data/manifest.json", "dataset_paths": ["missing.json"]}
+    ).encode()
+    _write_entries(target, entries)
+    assert len(package_release.verify_archive(
+        target, ["experiments/evaluate.json"], "gestureforge/")["verified_manifests"]) == 1
+
+
+@pytest.mark.parametrize("feature", ["../features.npz", "nested/features.npz", None])
+def test_verify_archive_rejects_feature_reference_outside_manifest_directory(tmp_path, feature):
+    target, entries = _evaluation_archive(tmp_path)
+    manifest = json.loads(entries["gestureforge/data/manifest.json"])
+    manifest["feature_file"] = feature
+    entries["gestureforge/data/manifest.json"] = json.dumps(manifest).encode()
+    _write_entries(target, entries)
+    with pytest.raises(ValueError, match="Unsafe archive reference|beside its manifest"):
+        package_release.verify_archive(target, ["experiments/evaluate.json"], "gestureforge/")
+
+
+@pytest.mark.parametrize("args", [["--verify-archive", "file.zip"],
+                                  ["--require-config", "config.json"],
+                                  ["--project", "--verify-archive", "file.zip"]])
+def test_verify_archive_requires_explicit_configs_and_separate_mode(args):
+    with pytest.raises(SystemExit) as exc:
+        package_release.main(args)
+    assert exc.value.code == 2
+
+
+def _evaluation_archive(tmp_path, root="gestureforge/"):
+    target = tmp_path / "package.zip"
+    features = b"numeric sidecar bytes"
+    entries = {
+        root + "experiments/evaluate.json": json.dumps(
+            {"dataset_path": "data/manifest.json"}).encode(),
+        root + "data/manifest.json": json.dumps(
+            {"feature_file": "features.npz", "feature_sha256": sha256(features).hexdigest()}
+        ).encode(),
+        root + "data/features.npz": features,
+    }
+    _write_entries(target, entries)
+    return target, entries
+
+
+def _write_entries(target, entries):
+    with ZipFile(target, "w") as archive:
+        for name, data in entries.items():
+            archive.writestr(name, data)

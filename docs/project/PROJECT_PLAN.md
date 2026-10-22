@@ -1,6 +1,8 @@
 # GestureForge Studio approved project build plan
 
 Revision 4 - 30 September 2026. Submission target: 7 November 2026.
+Acceptance wording clarified on 22 October after marker feedback; scope, IDs,
+task weights and the previously frozen recognition targets remain unchanged.
 Status: user authorised local implementation and Trello kickoff on 30 September 2026. The user subsequently authorised committing and pushing all current project changes and merging reviewed PRs.
 This approval version removes contextual AI assistance at the user's request: no chat/question-answering, prompt templates, note retrieval, hosted provider, API-key setup or answer-generation evaluation. Requirements R09, R10, R17 and R18 are retired; the other IDs remain stable. Gesture recognition remains the AI subsystem. Proposed capabilities are not claims of completed implementation or achieved results. The submitted assignment remains preserved. Current implementation progress is recorded in docs/project/TEAM_BACKLOG.csv and docs/project/PROGRESS.md.
 
@@ -11,6 +13,23 @@ This approval version removes contextual AI assistance at the user's request: no
 The earlier scope made every user enrol gestures and treated most capability as isolated shortcuts. This revision adds depth through a complete presenter workflow, optional personalisation and measurable AI behaviour. Overlap with existing products is acceptable; practical value, justified design and verified execution matter more than a worldwide novelty claim.
 
 Commercial scenario: a corporate software trainer prepares a reusable product walkthrough. A colleague opens it, checks camera framing, tries the standard gestures, follows the demo stages, uses desktop shortcuts for demonstration resources, bookmarks discussion points and resumes saved procedures. After rehearsal, the trainer sees missed gestures, retries and incomplete stages. No enterprise cloud platform is required.
+
+**Problem to solve:** a trainer conducting a demonstration repeatedly returns to
+the keyboard to find reference material, open tools and recover their place after
+an interruption. The proposed product keeps the current step and its available
+actions together, lets the trainer choose a deliberate gesture or manual control,
+and restores the procedure without repeating external actions. The primary user
+is the presenter; the person preparing a reusable walkthrough is a secondary user.
+The existing viewer, features and classifiers remain the foundation of this work.
+
+**Value to test:** less interruption and fewer action/recovery errors during a
+mixed-resource demonstration. This is a product hypothesis, not established
+customer demand. A clicker is a reasonable simpler choice for card-only navigation;
+GestureForge's proposed distinction is the combination of personal input,
+authored stages, locally bound resources and safe recovery. We do not claim a new
+gesture-recognition algorithm, universal accessibility or an internet-first idea.
+Use [the workflow protocol](WORKFLOW_COMPARISON.md) to obtain genuine need evidence
+and compare the same task with manual controls before claiming an advantage.
 
 One polished supplied scenario is mandatory: a fictional software-product onboarding session with a ten-card deck, six demo stages, Calculator as a demo tool, a local TXT/PDF reference and resource-folder shortcut, an optional HTTPS help link and clear authored instructions. Camera is a separate device-handoff example. All example claims and data must be explicitly fictional or properly sourced.
 
@@ -131,6 +150,35 @@ Use native Windows opening facilities without shell-built command strings; Pytho
 | R19 | Rehearsal/session summary | Counts reproduce event trace; no false completion; no raw video/key leakage | Javier |
 | R20 | Complete supplied corporate scenario and usability comparison | Unfamiliar presenter can attempt workflow; button/starter/personalised comparisons recorded | Deston |
 | R21 | Standalone desktop shortcut library and three-slot Quick Actions | App/file/folder/HTTPS targets open through validated bindings; no deck required; missing targets and association errors visible; no duplicate launches | Javier |
+
+### Operational pass/fail rules — clarified 22 October
+
+These rules make the existing requirements checkable; they do not retroactively
+change measured targets or certify current implementation. Execute every listed
+case, retain failures, and distinguish software checks from physical observations.
+The [marker response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md) records why this
+clarification was needed. A requirement passes only when its entire evidence row
+passes on the identified release; a test file's existence is not a pass.
+
+| IDs | Observable pass rule | Verification source / remaining physical work |
+|---|---|---|
+| R01 | Create two profiles with different data; rename, reload and delete one without changing the other. Corrupt/version-incompatible load and failed save preserve the last valid data in every tested case. | `test_profiles.py`, `test_profile_widget.py`, `test_app_profiles.py`; native create/reload/delete walkthrough |
+| R02 | Complete one guided four-label enrolment through the UI, save and reload the selected hand/data. Every scheduled slot is accounted for as valid or invalid; zero real actions occur during collection. | `test_enrolment.py`, `test_app_enrolment.py`; saved consented session and observed UI path |
+| R03 | Repeat both frozen classifier evaluations from packaged inputs; non-timing outputs match. No trial spans splits, transforms use TRAIN only and every rejected/invalid genuine slot stays in the scoring denominator. Personal macro-F1 target remains ≥0.90 per profile. | `test_dataset.py`, `test_models.py`, `test_evaluate.py`, `test_paired_evaluate.py`; frozen TEST results retained even when targets fail |
+| R04 | Current personal v4 Practice requires all 22 windows to pass with zero wrong activations; a failed/cancelled attempt cannot grant Live use. Profile/model/hand/camera/behaviour changes invalidate the grant and no rehearsal dispatch reaches the OS. | `test_practice.py`, `test_app_personal_live.py`, `test_readiness.py`; genuine current-session pass before native gesture checks |
+| R05 | NEXT at last card and PREVIOUS at first card do not wrap; repeated bookmark sets remain single entries; reload returns the saved card/bookmarks exactly. | `test_viewer.py`, `test_javier_lane.py`; native navigation/reload observation |
+| R06, R12 | Supported workspace round-trip preserves semantic content. Every malformed/oversized/version/duplicate-reference case is rejected before replacement; exported packs contain no participant samples or bound local/URL targets. Rebinding is required on another machine. | `test_javier_lane.py`, `test_javier_widgets.py`; second-machine import/rebinding |
+| R07, R11 | Zero stale or duplicate dispatches after stage/context/profile/model changes, failed callbacks, pause or restore. Twenty five-second holds per profile produce zero duplicate actions; ten-minute non-command activity permits ≤1 unintended viewer action and zero external launches. Dispatch latency p95 <1 second including hold; no automatic resume/replay. | `test_controller.py`, `test_project_routing.py`, `test_app_dispatch.py`; live timing/negative/hold records and same-stream simulated replay |
+| R08, R21 | Each app/file/folder/HTTPS type opens its intended target on both Windows laptops; unavailable target, association and disallowed path/scheme cases give visible failure with no unintended dispatch. Explicit retry works. Quick Actions works without a deck; active-capture Camera launch releases capture before opening and requires explicit resume on return. | `test_quick_actions_acceptance.py`, `test_windows_probe.py`, `test_app_dispatch.py`; laptop-specific native error, focus-loss and Camera evidence |
+| R13 | Every selected mode displays its current profile/model/context and action meaning; keyboard/manual navigation remains usable when recognition is unavailable. An observer can identify the new card title and distinguish rejection, paused control and failed launch from success. | `test_app_layout.py`, `test_practice_guidance.py`; observed keyboard/readability checks at the test display settings |
+| R14 | Two identified Windows installs run; laptop B follows only the supplied guide. Core actions work offline. One continuous measured 30-minute run records observation rate and peak memory, no unhandled termination, followed by normal exit and camera reacquisition. Every subsystem has evidence and every required submission artifact is present. | `test_stability.py`, release receipts, subsystem matrix; an interrupted monitor and a separate reported run cannot be combined |
+| R15 | A permitted starter can be loaded without enrolment/account; first standard action target ≤2 minutes after camera setup, trial macro-F1 ≥0.85 for each held-out person. Missing/failed starter gives an explicit manual/personal fallback. | `test_starter.py`, `test_app_starter.py`; frozen unseen-person scores and native first-use timing. No approved starter is currently bundled. |
+| R16 | Create, edit, reorder and delete stages within the 1–12 stage limit. One gesture requests at most one configured action; failed stage stays recoverable; saved progress restores paused with no old launches. | `test_javier_lane.py`, `test_javier_widgets.py`, `test_app_dispatch.py`; authored runbook and native recovery |
+| R19 | Summary counters exactly reproduce distinct exported events; launch requests are not labelled task completion. Restore starts a new result revision without replay; overlapping snapshots are not double-counted. | `test_compare_workflows.py`, `test_javier_lane.py`; reviewed before/after exports |
+| R20 | Record every attempted manual/starter/personal condition for the same six-stage scenario. Condition success requires all six observed outcomes, valid readiness where applicable, actual condition-appropriate non-simulated events, no manual fallback, no execution mismatch and completion within the existing 900-second task limit. Report errors/help/retries, missing conditions and ratings without asserting superiority from an incomplete comparison. | `test_compare_workflows.py`, [workflow protocol](WORKFLOW_COMPARISON.md); unfamiliar-presenter observations and need interviews remain required |
+
+Test filenames above refer to `tests/`. The detailed subsystem matrix and release
+records retain actual results, platform skips, build identities and limitations.
 
 ## 6. Implementation boundaries and safety
 

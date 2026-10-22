@@ -2,35 +2,56 @@
 
 Snapshot: 22 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Methods contribution and manual demo received — 22 October
+## Marker-response build verification — 22 October
 
-Hau Jie's private Word contribution is fully read and reconciled to the frozen
-TEST, representation and P03 results. No blocking factual mismatch was found.
-**GF-P24 moves To Do → In Progress.** Javier's 115-second edited manual video is
-also received; visual checkpoints cover its ten captioned sections. It supports
-manual mode/target requests, post-restore state and HTTPS save validation, with
-explicit limits. Both originals remain private and unchanged. See the
-[source hashes, review and next returns](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
+The existing packager now verifies declared evaluation inputs inside a finished
+ZIP without extraction or execution. It checks CRC, safe names (including Windows
+aliases), required manifests/sidecars and feature hashes. The preserved submitted
+ZIP correctly fails for missing P01 input; the retained permitted private P01 ZIP
+passes both declared pilot configurations. This does not establish permission,
+dataset-schema validity or a reproduced evaluation.
 
-Laptop-B evidence is now **reported**, rather than absent: the Word contribution
-describes assisted installation/native checks on `a480e2e`, user-confirmed offline
-use, recovery and a later 30-minute run. Its interrupted 791.605-second monitor
-is a different run and cannot supply the later run's rate/memory measurements.
-The package hash differs from Deston's archive and remains separately attributed.
-Deston confirms the referenced private logs/exports have not arrived yet.
+Fresh local verification passed **1,040 tests, two platform skips**, Ruff, mypy
+(106 files), both startup modes and synthetic evaluation. The final Windows-alias
+fix was independently reviewed and separately passed **55 packaging tests** plus
+targeted Ruff/mypy; those tests overlap the full suite and are not added to its
+count. Private receipt: `experiments/local/verification-marker-response-20261022.json`.
+The local Word report (14 pages) and evidence matrix (four pages) were refreshed
+and all pages visually reviewed. The [marker response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md)
+links the explicit problem statement, measurable requirements and remaining need/
+workflow evidence. No new full task or physical result is inferred from this work.
 
-Next, Hau Jie sends the existing reference [10] packet; Javier sends the video's
-existing restore exports and filmed build identity and consolidates the remaining
-device cases. Do not repeat successful unchanged checks just to replace missing
-files. Guide-only setup, active-capture handoff and the measured gesture workflow
-remain substantive gaps. No new runtime fault is established; current main
-already repairs the historical LIVE-banner feedback shown in the footage.
+## Private device receipts and marker feedback reviewed — 22 October
+
+The previously requested laptop-B packet, Javier's logs/exports and standalone
+restore summaries have arrived and passed archive/hash checks. All 27 Javier
+summaries reconstruct with exact counters; the laptop-B before/after summaries
+also validate. See the [receipt review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md)
+for hashes, overlap and limits. Do not resend these files or repeat unchanged
+successful checks. Hau Jie's methods contribution remains reviewed and GF-P24
+In Progress; Javier's edited manual video remains a draft.
+
+Laptop B now has reviewed receipts for assisted installation, native target
+requests, missing-file retry and paused restore. The interrupted monitor covers
+791.605 seconds, not thirty minutes, and records no observation rate. The later
+thirty-minute run remains a separate human report. The source-member match is
+reported, since the source ZIP/member listing is not enclosed. Guide-only setup,
+continuous measured stability/release, association errors and valid-grant active
+Camera handoff/focus recovery remain open. Javier's eight historical Practice
+attempts contain no pass. Neither the manual exports nor a summary reset proves
+a completed gesture workflow or external task completion.
+
+The [marker-feedback response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md) applies the
+83/100 feedback to the current product: explicit problem and measurable
+requirements, genuine stakeholder elicitation, reproducible private results and
+measured value against manual controls. A clicker advantage is not established.
+Gather real stakeholder/workflow evidence; preserve failed recognition targets
+and the original acceptance criteria.
 
 Accepted work remains **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
-48/73 (65.8%), total 137/223 (61.4%), 17/29 tasks Done**. These delivered substeps
-do not finish a remaining full task. Task weights, owners and dependencies,
-production recognition, frozen TEST, prompt/decision logs and Studio packages
-are unchanged. Current next work is in the [team guide](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
+48/73 (65.8%), total 137/223 (61.4%), 17/29 tasks Done**. The receipt gaps are
+closed, but no remaining whole task meets every criterion. Current next work is
+in the [team guide](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
 
 ## Private P03 diagnosis and Studio feedback repairs — 19 October
 

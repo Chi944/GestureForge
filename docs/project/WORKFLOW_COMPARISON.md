@@ -5,6 +5,34 @@ comparison. Follow the participant procedure in [DEMO_SCENARIO.md](DEMO_SCENARIO
 The tool combines an observer's record with exported Studio summaries. It does
 not observe the participant, certify recognition or enable LIVE gestures.
 
+## Establish the user problem before measuring the solution
+
+Obtain brief, consented accounts from people who have actually delivered training
+or product demonstrations. Hau Jie and Javier can each arrange one conversation;
+Deston reviews the resulting needs against R07/R13/R16/R20/R21. This is a small
+elicitation exercise, not a representative market survey. Do not count the team's
+fictional Harbor scenario or camera-data participants as customer interviews.
+
+Ask for a recent example before showing Studio: what resources did the presenter
+switch between, when did they return to the keyboard, what went wrong after an
+interruption, and what do they already use (keyboard, clicker or other controls)?
+Then show the manual and gesture workflow and ask where either would help or make
+the task harder, what would stop adoption, and which recovery behaviour matters.
+Accept an answer that no new input method is needed.
+
+Keep a private dated note containing consent, pseudonym, relevant experience,
+existing workflow, the participant's actual account, priority and proposed
+requirement link. Separate direct quotations, paraphrases and the team's
+interpretation. Record any resulting requirement decision without fabricating
+approval. These notes are a separate qualitative sidecar; do not add unsupported
+fields to the study JSON schema below.
+
+The existing M condition is Studio's buttons/keyboard baseline. It is not a
+measured clicker comparison. A slide-only clicker is a credible simpler
+alternative; this study tests the wider resource/recovery workflow. Compare task
+time, errors, help and usefulness only on the recorded conditions; include setup
+and readiness cost separately. Report no benefit if the evidence shows none.
+
 ## Collect the record
 
 1. Before the study, freeze the source commit, workspace, recognition data and
