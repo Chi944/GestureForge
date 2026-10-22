@@ -1,6 +1,32 @@
 # GestureForge Studio progress
 
-Snapshot: 22 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 23 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Recognition trace analysis completed — 23 October
+
+The existing `gestureforge.trace_diagnose` command now validates and retains the
+opted-in numeric decision evidence. Previously it silently ignored that extension.
+It checks schema, mode, settings, optional camera/hand context and frame alignment,
+then places each decision beside its reconstructed controller state. Older
+label-only traces still work; analysis cannot recover measurements they did not
+record. Invalid diagnostic records fail explicitly. The original input is preserved.
+
+The [user guide](../USER_GUIDE.md#recognition-decision-diagnostic) and
+[Hau Jie brief](HAU_JIE_HANDOFF.md) connect recording to this existing command.
+No classifier, controller, readiness gate, TEST result or task criterion changed.
+Accepted progress remains **151/223 (67.7%), 19/29 tasks**: Deston 34/75,
+Hau Jie 63/75 and Javier 54/73. No new PR or private evidence arrived at this
+checkpoint. The next acceptance steps remain the bounded physical recognition
+diagnostic, outstanding native recovery cases, then the actual scenario and
+workflow evaluation. A diagnostic implementation is not a recognition repair.
+
+Verification passed **1,122 tests, two platform skips**, full Ruff, mypy (106
+files), both startup checks and synthetic evaluation. Independent review passed
+all 48 reader tests, including an actual 18,000-frame CLI output write. These
+overlap the full-suite count. Both existing private traces still reproduce the
+same seven simulated events and counters, with input bytes preserved. Receipts
+remain local under `.local/diagnostic-reader-20261023/`. No physical trial or
+new-machine installation is claimed by these checks.
 
 ## Current acceptance correction and recognition review — 22 October
 

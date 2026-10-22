@@ -229,6 +229,14 @@ To inspect a saved trace with the current controller, run from the repository ro
 
 Replace the example path with your saved trace. This writes a separate diagnostic JSON under ignored `experiments/local/controller-diagnostics/`; the input trace is preserved. It reconstructs controller states from recorded labels, acceptance and timing using the current controller policy. It does not infer the physical pose or observed UI state, and it does not score accuracy or readiness. Compare the output with separately recorded intended-pose/display notes and the code revision before proposing a fix.
 
+For traces recorded with **Record recognition diagnostics**, the same command
+also validates the recorded settings, camera/hand context and decision records
+against their corresponding frame IDs. Its output retains those numeric
+decisions for comparison with the reconstructed controller states. A missing or
+misaligned diagnostic record is an error; it is not silently treated as a
+label-only trace. Older label-only traces remain supported. Distances and ratios
+are model measurements, not confidence percentages or proof of the intended pose.
+
 ### Collect in Studio
 
 1. Launch `.\run.cmd --studio`. Choose **Camera index**, then **Use camera and pause** before opening the **Enrolment** tab. A trained model is not required for collection.
@@ -562,6 +570,12 @@ pose. It does not repair recognition, score Practice or qualify a model for LIVE
    `experiments/local/controller-traces/`. Privately send that file and the intended-pose notes
    to Deston/Hau Jie. Preserve errors and interruptions. Untick diagnostics
    before returning to ordinary LIVE use.
+
+Deston/Hau Jie can analyse that file with the existing
+[`gestureforge.trace_diagnose` command](#studio-stays-latched-with-an-open-palm) above, alongside the
+separate intended-pose notes. Keep both the original trace and diagnosis private.
+An older trace without numeric decisions cannot supply the missing measurements;
+rerunning analysis does not recreate them.
 
 The trace adds numeric nearest-class distance, threshold, competing distance and
 ratio, together with model/session identity, settings, chosen hand and camera

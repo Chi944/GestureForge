@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from dataclasses import replace
 import hashlib
 from pathlib import Path
 from uuid import uuid4
@@ -11,7 +12,7 @@ from .contracts import Action, ActionType, Prediction, RoutingMode, RoutingSnaps
 from .controller import (
     Controller, NEUTRAL_HOLD_SECONDS, MAX_FRAME_GAP_SECONDS, MAX_PREDICTION_AGE_SECONDS,
 )
-from .storage import atomic_write_json, read_json
+from .storage import atomic_write_json, fields, read_json, version
 from .traces import EvaluationTrace
 
 
@@ -34,7 +35,27 @@ def diagnose_trace(path: Path) -> dict:
         raise ValueError('trace identity/bindings are incomplete') from exc
     if not isinstance(frames, list) or not 1 <= len(frames) <= 18000:
         raise ValueError('trace must contain 1–18000 recorded frames')
-    validator = EvaluationTrace(snapshot)
+    recognition = None
+    recognition_frames = None
+    capture = {}
+    if 'recognition_diagnostics' in data:
+        recognition = fields(data['recognition_diagnostics'],
+                             {'schema_version', 'mode', 'config', 'frames'}, {'capture'})
+        version(recognition['schema_version'])
+        if recognition['mode'] not in (RoutingMode.PREVIEW.value, RoutingMode.REHEARSAL.value):
+            raise ValueError('recognition diagnostics require Preview or Rehearsal')
+        snapshot = replace(snapshot, mode=RoutingMode(recognition['mode']))
+        fields(recognition['config'], {'algorithm', 'multiplier', 'margin'})
+        if 'capture' in recognition:
+            capture = fields(recognition['capture'], {'camera_index', 'chosen_hand'})
+            if capture['camera_index'] is None or capture['chosen_hand'] is None:
+                raise ValueError('invalid recognition capture context')
+        recognition_frames = recognition['frames']
+        if not isinstance(recognition_frames, list) or len(recognition_frames) != len(frames):
+            raise ValueError('recognition diagnostic frames must align with recorded frames')
+    validator = EvaluationTrace(snapshot,
+                                recognition_config=recognition['config'] if recognition else None,
+                                **capture)
     controller = Controller(snapshot.session_id, snapshot.profile_id,
                             executable_gesture_ids=frozenset(dict(bindings)),
                             model_version=snapshot.model_version)
@@ -43,7 +64,7 @@ def diagnose_trace(path: Path) -> dict:
     counts: Counter[str] = Counter()
     previous: float | None = None
     start: float | None = None
-    for frame in frames:
+    for index, frame in enumerate(frames):
         try:
             prediction = Prediction(snapshot.session_id, snapshot.profile_id, frame['frame_id'],
                                     frame['timestamp'], frame['label'], frame['accepted'],
@@ -51,7 +72,15 @@ def diagnose_trace(path: Path) -> dict:
             received = frame['received_at']
         except (TypeError, KeyError) as exc:
             raise ValueError('each frame requires recorded label, acceptance and receipt timing') from exc
-        validator.append(prediction, received)
+        decision = None
+        if recognition_frames is not None:
+            diagnostic = fields(recognition_frames[index], {'frame_id', 'decision'})
+            if type(diagnostic['frame_id']) is not int or diagnostic['frame_id'] != prediction.frame_id:
+                raise ValueError('recognition diagnostic frame IDs must match recorded frames in order')
+            decision = diagnostic['decision']
+            if decision is not None and not isinstance(decision, dict):
+                raise ValueError('recognition diagnostic decision must be an object or null')
+        validator.append(prediction, received, decision)
         if start is None:
             start = received
         before = controller.state
@@ -67,6 +96,8 @@ def diagnose_trace(path: Path) -> dict:
             'controller_reason': controller.last_error, 'prediction_age': age,
             'gap': gap, 'would_emit': event.command if event else None,
         }
+        if recognition_frames is not None:
+            row['recognition_decision'] = decision
         rows.append(row)
         if prediction.label == 'NEUTRAL':
             counts['accepted_neutral' if prediction.accepted else 'rejected_neutral'] += 1
@@ -88,6 +119,8 @@ def diagnose_trace(path: Path) -> dict:
         'scope': 'Current-controller reconstruction; no physical pose or observed UI state inferred.',
         'limits': 'Compare code revision and separately recorded intended-pose/display notes. No accuracy or readiness score.',
         'counts': dict(counts), 'frames': rows,
+        **({'recognition_diagnostics': {key: value for key, value in recognition.items()
+                                       if key != 'frames'}} if recognition is not None else {}),
     }
 
 

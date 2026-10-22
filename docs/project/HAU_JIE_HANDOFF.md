@@ -4,6 +4,18 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**23 October — use the existing analyser for the new numeric trace.** Recording
+support is published at `065bc86`; sync current main into your own branch before
+the diagnostic. After the bounded recording below, run
+`python -m gestureforge.trace_diagnose PATH_TO_TRACE`
+in the configured project environment, or send the trace privately to Deston to
+run it. The updated reader checks diagnostic configuration and frame alignment,
+and preserves decision distances beside the controller reconstruction. Include
+the separately recorded intended-pose/timing notes; predictions cannot supply
+those annotations. Do not replace the existing profile or tune settings merely
+because a numeric trace is now available. The old label-only return remains
+valid evidence, but lacks the decision measurements needed for this next step.
+
 **Latest 22 October update — recognition packet received; no resend needed.**
 Read the [P02/P03 recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md).
 The packet's 17 members and 16 listed hashes verify. The latest 1,086-frame,
