@@ -1,10 +1,29 @@
 # GestureForge Studio team implementation guide
 
-Updated 19 October 2026 · Project deadline 7 November 2026
+Updated 22 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
-## Current deliveries — 14 October
+## Current deliveries — 22 October
+
+Hau Jie's methods/results Word contribution and Javier's edited manual video
+are now received and reviewed. Their [review record](TEAM_DELIVERABLE_REVIEW_2026_10_22.md)
+contains source hashes, bounded findings and exact next returns. GF-P24 is now
+In Progress. Laptop-B assisted setup/native observations are reported in the
+Word contribution; its referenced logs and the video's restore exports have
+not yet arrived. Send those existing files privately before repeating checks.
+No new whole task is accepted from these two contributions alone.
+
+The current retained Studio source ZIP is `releases/gestureforge-studio-source.zip`,
+source `a480e2e32ea9c3642dbaab922ae3a76ef6801ad1`, SHA256
+`840a509dd0a341ca1e206044d9fbec360b143cb82d3cdc672d1167b534103e2f`.
+It contains 197 verified members and the PR #35 session-feedback fixes. Source
+setup is still required. Hau Jie's reported archive has a different hash; retain
+its separate receipt. This documentation update requires no replacement package.
+Git users sync main on their own branches; existing physical evidence retains
+the build on which it was collected.
+
+### Retained experiment and package history
 
 Deston has received and verified Hau Jie's private H1 starter audit packet as
 an internal team handoff. The packet's hashes, saved reports, fixed cases and
@@ -87,10 +106,10 @@ as they become available instead of waiting for your entire lane to finish.
 |---|---|---|
 | H1 / GF-P17 preparation | PR #27's aggregate audit is merged; Hau Jie's private H1 packet is received and verified for hashes, saved reports and inventories | H1 remains internal-team evidence only; it does not approve a deployment starter or public/marker redistribution |
 | H2 / GF-P17 → GF-P18 | Both tasks are accepted: P67/P1543's actual TEST returns were audited and the same frozen comparisons reproduced independently | Retain failed targets and invalid slots in the results. No deployment model is qualified; no TEST recollection, threshold tuning or model selection on these results |
-| J1 / GF-P19 | PR #28/#29 checks and PR #34's attributed trusted Notepad, historical-launch restore/no-replay and target-save validation are merged. Javier completes remaining association/failure/retry and active-capture Camera cases; check affected session feedback on updated source. | Preserve PR #24/#26/#28/#29/#34 build boundaries. PR #34 is bounded evidence, not all native/recovery acceptance. Active-capture handoff needs a genuine full readiness grant; laptop B remains unverified. |
-| H3 + J2 / GF-P19, GF-P23 | Hau Jie operates laptop B; Javier coordinates and consolidates the two-device matrix, fresh install, offline core and thirty-minute Studio/shutdown evidence | Review evidence and affected retests after GF-P21/GF-P22; no new second-device result is yet claimed |
+| J1 / GF-P19 | Earlier native evidence is retained. Javier's manual video now shows bounded request/validation/post-restore views; send its existing restore exports and filmed build identity. | Remaining association/failure/retry and valid-grant active-capture Camera cases are still required. Recheck only affected session feedback on updated source. |
+| H3 + J2 / GF-P19, GF-P23 | Hau Jie's report supplies attributed laptop-B assisted setup/native checks and reported offline/endurance/closure observations; send reference [10] files for Javier's consolidation. | Guide-only setup, measured stability/release evidence and remaining device/defect gates are not closed. Keep interrupted monitor and later reported thirty minutes separate. |
 | J3 / GF-P20 | Javier coordinates observer records, condition order, actual hold/negative/latency sessions and disjoint exports; Hau Jie supplies frozen recognition inputs | Deston analyses/replays measurements and accepts the integrated study after GF-P16/GF-P17. Unavailable standard mode is reported, never silently replaced |
-| H4 + J4 / GF-P24, GF-P25 | Hau Jie drafts methods/limitations; Javier drafts the guide and demo storyboard now | Final results, guide-only/native release evidence and complete demo are still required before GF-P26/GF-P27 |
+| H4 + J4 / GF-P24, GF-P25 | Hau Jie's Word contribution is reviewed against current results; Javier's labelled manual video draft and earlier guide are received. | Final GF-P21 reconciliation, guide-only/native release evidence and complete gesture/scenario/recovery demo remain before GF-P26/GF-P27. Do not redraft already delivered sections. |
 
 Original task owners, weights, dependencies and acceptance criteria stay fixed.
 Accepted task weights are Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%),
@@ -103,18 +122,18 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 19 October, after the [fixed representation comparison](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md#executed-comparison-and-next-handoff--19-october)
-and the [Studio bug audit](PROGRESS.md#studio-recognition-and-package-audit--16-october). All three
+Current as of 22 October, after the [team deliverable review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md). All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Retain final direction, integration and acceptance. Review the integrated scenario and release evidence when its gates pass; the TEST comparisons do not replace the GF-P20 physical study. | The fixed representation experiment is implemented and independently reproduced. The P03 traces and private profile/development packet are reviewed; the saved model revision and fixed-setting comparison are reproduced. Review incoming defect PRs, integrate demonstrated fixes and score actual workflow evidence. Preserve frozen results and the remaining gates. |
-| Hau Jie | Operate your Windows laptop as laptop B for Javier's agreed native, fresh-install, offline, thirty-minute Studio and shutdown cases. No further P67/P1543 TEST or P69 recording is requested. | Review the completed representation comparison, especially P1543's NEUTRAL regression, and incorporate all results in the private GF-P24 contribution. Review the received P03 fixed-setting comparison: older index negatives do not reproduce the live failure, while four older OK-sign samples remain accepted as NEXT. Coordinate private access with Deston; specify missing live evidence before proposing targeted follow-up. Do not duplicate the experiment or install its outputs; propose any next experiment before running it. GF-P21 retains its GF-P20 dependency. |
-| Javier | Use the new identified Studio package. The private P03 profile/data packet is received; do not resend or recreate it. Clarify remaining live index-only conditions with Hau Jie if feasible before a targeted follow-up is specified; preserve Practice requirements. Finish camera-free laptop-A target/failure/restore cases and coordinate Hau Jie's laptop B; active-capture Camera needs a genuine grant. | Analyse the trace with Hau Jie; consolidate device results without overlapping exports and fix demonstrated defects. PR #33's GF-P25 guide draft is reviewed with corrected Practice timing; continue the private demo/storyboard and later study records. Preserve accepted PR #24/#26/#28/#29 cases; rerun only affected checks. |
+| Deston | Retain final direction and review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. No repeat participant TEST is requested. | Verify the supporting packets when received, reconcile report sections and disjoint exports, integrate demonstrated fixes and analyse actual workflow evidence. |
+| Hau Jie | Send the existing reference [10] laptop-B packet privately. Agree only remaining guide-only/native/stability/release checks with Javier; retain successful reported checks and original failures. | Reconcile receipts with the Word contribution, continue the development-only recognition investigation and update final methods/results after GF-P21. No duplicate experiment, TEST tuning or speculative threshold change. |
+| Javier | Send the video's existing before/after restore exports and exact filmed build identity; consolidate Hau Jie's laptop-B evidence. Finish unrun native cases and affected feedback checks; gesture-dependent cases need genuine readiness. | Reconcile the two-device matrix and non-overlapping exports, fix demonstrated defects and plan remaining real gesture/scenario/recovery footage. Preserve the received manual video draft and accepted unchanged checks. |
 
-**Next returns:** Hau Jie sends his review and private methods/results updates,
-and supplies laptop-B observations to Javier. The representation implementation
+**Next returns:** Hau Jie sends the existing private reference [10] packet;
+Javier sends existing restore exports, filmed build identity and the remaining-case
+matrix. Their Word contribution and manual video are already received. The representation implementation
 was completed with GPT assistance in Deston's integration track; it is not a new
 teammate-authored submission and does not qualify a deployment model.
 Javier's short P03 traces are received: replay agrees with four PREVIOUS Preview

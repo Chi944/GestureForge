@@ -1,6 +1,36 @@
 # GestureForge Studio progress
 
-Snapshot: 19 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 22 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Methods contribution and manual demo received — 22 October
+
+Hau Jie's private Word contribution is fully read and reconciled to the frozen
+TEST, representation and P03 results. No blocking factual mismatch was found.
+**GF-P24 moves To Do → In Progress.** Javier's 115-second edited manual video is
+also received; visual checkpoints cover its ten captioned sections. It supports
+manual mode/target requests, post-restore state and HTTPS save validation, with
+explicit limits. Both originals remain private and unchanged. See the
+[source hashes, review and next returns](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
+
+Laptop-B evidence is now **reported**, rather than absent: the Word contribution
+describes assisted installation/native checks on `a480e2e`, user-confirmed offline
+use, recovery and a later 30-minute run. Its interrupted 791.605-second monitor
+is a different run and cannot supply the later run's rate/memory measurements.
+The package hash differs from Deston's archive and remains separately attributed.
+Deston confirms the referenced private logs/exports have not arrived yet.
+
+Next, Hau Jie sends the existing reference [10] packet; Javier sends the video's
+existing restore exports and filmed build identity and consolidates the remaining
+device cases. Do not repeat successful unchanged checks just to replace missing
+files. Guide-only setup, active-capture handoff and the measured gesture workflow
+remain substantive gaps. No new runtime fault is established; current main
+already repairs the historical LIVE-banner feedback shown in the footage.
+
+Accepted work remains **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier
+48/73 (65.8%), total 137/223 (61.4%), 17/29 tasks Done**. These delivered substeps
+do not finish a remaining full task. Task weights, owners and dependencies,
+production recognition, frozen TEST, prompt/decision logs and Studio packages
+are unchanged. Current next work is in the [team guide](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
 
 ## Private P03 diagnosis and Studio feedback repairs — 19 October
 

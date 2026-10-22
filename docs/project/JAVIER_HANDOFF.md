@@ -2,6 +2,33 @@
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
+## Next return — manual video received, 22 October
+
+Your 115-second edited manual demonstration is received and reviewed. Retain it
+as a draft: its captions correctly separate request/completion, supplied stills,
+post-restore state and HTTP/HTTPS save validation. It does not yet show the final
+gesture scenario. Read the [review and remaining evidence](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
+
+- **Send next, privately:** the existing before/after restore exports referenced
+  in the video, the exact source/package identity for each filmed date, and your
+  remaining-case matrix. Deston has the video but not those exports.
+- **Coordinate laptop B:** Hau Jie's methods report now includes assisted setup,
+  bounded native checks and reported offline/endurance/closure observations.
+  Obtain his existing reference [10] packet and consolidate it with laptop A.
+  Keep different builds, assistance and the interrupted monitor distinct.
+- **Manual:** verify affected session feedback on source containing PR #35,
+  then finish only outstanding native cases. The historical LIVE banner in the
+  footage is already repaired on main; identify the filmed build before claiming
+  a regression. Active-capture Camera still requires genuine current readiness.
+- **With GPT:** reconcile disjoint exports, update the case matrix and plan final
+  footage that shows the actual gesture/scenario/recovery steps. Do not recreate
+  the P03 packet, redo accepted unchanged checks or turn this edited draft into
+  a timed workflow measurement.
+
+Keep video/full exports private. Push sanitized code/evidence only to
+`codex/javier-shortcuts`; leave PRs for Deston's review/merge.
+The dated instructions below are historical where this update supersedes them.
+
 ## Private P03 handoff received — 19 October
 
 Deston has received and verified `PRIVATE_P03_PROFILE_DEVELOPMENT.zip`. The saved

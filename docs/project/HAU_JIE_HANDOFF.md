@@ -4,6 +4,31 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**22 October — your methods/results contribution is received and reviewed.**
+Its figures and limits match the retained evidence. GF-P24 is now In Progress;
+do not draft the same completed sections again. The final reconciliation with
+GF-P21 remains. Read the [deliverable review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
+
+- **Send next, privately:** the existing reference [10] folder
+  `experiments/local/laptop-B-a480e2e-20261020/`, including
+  `REVIEW_AND_CHECKS_PRIVATE.md`, source/package member verification, process
+  monitor report and separate before/after native summary exports. Include
+  existing device/build and assistance notes; omit unrelated profiles/data.
+  Deston has the Word file but not these supporting files.
+- **Manual:** coordinate only unrun or affected checks with Javier. Assisted
+  setup is received as reported evidence; guide-only installation remains a
+  separate requirement. Do not repeat successful checks because receipts have
+  not been sent. Keep the interrupted monitor separate from the later reported
+  thirty minutes; active-capture Camera is still NOT RUN.
+- **With GPT:** reconcile your existing evidence packet and remaining-case matrix;
+  preserve the first camera failure and recovery. Continue the development-only
+  recognition diagnosis and later update final methods/results. No threshold
+  relaxation, consumed-TEST tuning or blanket participant recollection.
+
+Keep Word/data/full exports private. Push sanitized code/evidence only to
+`codex/hau-jie-profiles`; leave PRs for Deston's review/merge.
+The dated instructions below are historical where this update supersedes them.
+
 **19 October update: the fixed representation experiment is complete.** Deston's
 integration track implemented it with GPT assistance and independently reproduced
 both conditions on the existing DEVELOPMENT data. You retain recognition ownership;
