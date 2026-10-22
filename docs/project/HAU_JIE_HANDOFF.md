@@ -4,6 +4,35 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**Latest 22 October update — recognition packet received; no resend needed.**
+Read the [P02/P03 recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md).
+The packet's 17 members and 16 listed hashes verify. The latest 1,086-frame,
+40.578-second trace gives three PREVIOUS and one NEXT Preview simulations during
+your reported index-only attempt; 253 accepted NEUTRAL frames and no stale/gap
+failure are present. Replay matches the log. Do not change the controller or
+thresholds on this evidence.
+
+- **Next bounded manual diagnostic:** once Deston's opt-in decision-geometry
+  recording passes software checks and you consent to recording it, reproduce
+  the index-only pose briefly in Preview/rehearsal with the exact existing profile
+  and settings. Return its private diagnostic and intended-pose notes. This is
+  not another full Practice run or another labels-only trace. Recording stays off
+  by default and contains no hand features, photos or video.
+  Follow the [exact Studio steps](../USER_GUIDE.md#recognition-decision-diagnostic);
+  keep this to one roughly 30–45 second ordinary Preview capture, then Pause to
+  save the private trace and send it with your intended-pose/timing notes.
+- **With GPT:** inspect those decision distances/geometry before proposing a
+  predeclared development-only repair. P03's fixed comparison reproduces macro-F1
+  0.8500 → 0.9423, PREVIOUS 2/8 → 5/8 and negative command samples 10/40 → 4/40
+  on existing data. P02's reported 0.936508 remains attributed because its numeric
+  inputs are absent; do not describe it as independently reproduced.
+- **Acceptance:** GF-P10/GF-P34 now satisfy their original software criteria
+  (236 tests pass, one skip). This corrects later added conditions, not the
+  original requirements. Deployment qualification/R15, actual scenario/GF-P16
+  and GF-P21's physical/dependency evidence remain open. Current totals:
+  Deston 34/75 (45.3%), Hau Jie 63/75 (84.0%), Javier 54/73 (74.0%),
+  team 151/223 (67.7%), 19/29 tasks Done.
+
 **22 October — your methods/results contribution and laptop-B packet are received.**
 Both have been reviewed; do not resend reference [10] or redraft completed
 sections. GF-P24 remains In Progress pending final GF-P21 reconciliation. See the
@@ -76,7 +105,7 @@ again. Read [the results and decision](GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.m
   multiplier/margin as repaired on 16 October.
 
 GF-P21 remains In Progress with its original GF-P20 dependency. The experiment is
-reviewed development evidence, not native or deployment acceptance. Progress stays
+reviewed development evidence, not native or deployment acceptance. At that historical checkpoint progress was
 Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier 48/73 (65.8%), team 137/223
 (61.4%); 17/29 tasks Done. Full data/results and Word contributions remain private.
 See the [shared task split](TEAM_GUIDE.md#current-manual-and-gpt-ready-work).
@@ -238,10 +267,10 @@ For H2, follow the existing freeze-and-score commands in
 [PAIRED_EVALUATION.md](PAIRED_EVALUATION.md). Preserve the freeze file and hashes
 as the historical pre-TEST record. Both TEST comparisons are now complete;
 keep the frozen files unchanged. A qualifying deployment starter is a separate
-GF-P10 gate, not a prerequisite for reporting an honest failed comparison.
+R15 deployment gate, not a prerequisite for reporting an honest failed comparison.
 Do not identify existing development contributors as unseen participants. The
-existing audit packet supports the D1 decision now; a deployable GF-P10 release
-candidate later requires qualifying person-separated independent results and
+existing audit packet supports the D1 decision now; a deployable starter release
+candidate still requires qualifying person-separated independent results and
 explicit permission to distribute the bundle. Internal access for review is not
 redistribution approval.
 
@@ -255,7 +284,7 @@ delegated execution does not change the original task weights or Done status.
 **Starter integration update, 5 October:** Deston implemented the approved-release loader and separate standard six-action LIVE gate. No candidate is enabled: the recorded 48-setting comparison found none qualifying. Diagnose the existing starter through the saved private D1 audit; use selected-pose repair only for a diagnosed own-profile need. H2's new independent evaluation and H3/H4 can proceed separately. A later deployment release needs the exact frozen TRAIN manifest/sidecar, all estimator settings, expected rebuilt revision, person-separated evidence and distribution permission for review. See CONTRACTS.md. Keep existing private inputs private.
 
 GF-P16's standard-gesture path remains blocked wherever it depends on a
-qualifying GF-P10 starter. Personal LIVE software and manual workflows can
+qualifying deployment starter (R15); GF-P10 software is accepted. Personal LIVE software and manual workflows can
 continue under their separate Practice, explicit LIVE and native-evidence gates.
 
 ## Laptop B assignment confirmed 5 October

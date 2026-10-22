@@ -38,6 +38,7 @@ class PredictionResult:
     reason: str = ""
     distance: float | None = None
     threshold: float | None = None
+    diagnostics: dict[str, float | None] | None = None
 
     def as_tuple(self) -> tuple[str, bool, str]:
         return (self.label, self.accepted, self.reason)
@@ -71,7 +72,7 @@ class PrototypeGestureModel:
         result = self.predict_one(feature)
         return result.as_tuple()
 
-    def predict_one(self, feature: np.ndarray) -> PredictionResult:
+    def predict_one(self, feature: np.ndarray, *, diagnostics: bool = False) -> PredictionResult:
         row = _coerce_feature_row(feature)
         scaled = self.scaler.transform(row.reshape(1, -1))
         label = str(self.estimator.predict(scaled)[0])
@@ -80,6 +81,18 @@ class PrototypeGestureModel:
             return PredictionResult(label=label, accepted=False, reason="no_training_examples")
         distance = float(np.min(np.linalg.norm(class_rows - scaled, axis=1)))
         threshold = float(self.thresholds.get(label, np.inf))
+        other_distance = None
+        if diagnostics or (not distance > threshold and self.config.margin > 1.0):
+            other_rows = self.train_features_scaled[self.train_labels != label]
+            if len(other_rows):
+                other_distance = float(np.min(np.linalg.norm(other_rows - scaled, axis=1)))
+        ratio = None if other_distance is None else other_distance / max(distance, 1e-12)
+        detail = None
+        if diagnostics:
+            detail = {name: value if value is not None and np.isfinite(value) else None
+                      for name, value in {"distance": distance, "threshold": threshold,
+                                          "competitor_distance": other_distance,
+                                          "competitor_ratio": ratio}.items()}
         if distance > threshold:
             return PredictionResult(
                 label=label,
@@ -87,19 +100,20 @@ class PrototypeGestureModel:
                 reason="distance_rejection",
                 distance=distance,
                 threshold=threshold,
+                diagnostics=detail,
             )
         if self.config.margin > 1.0:
-            other_rows = self.train_features_scaled[self.train_labels != label]
-            other_distance = float(np.min(np.linalg.norm(other_rows - scaled, axis=1)))
-            if other_distance / max(distance, 1e-12) < self.config.margin:
+            if ratio is not None and ratio < self.config.margin:
                 return PredictionResult(
                     label=label,
                     accepted=False,
                     reason="margin_rejection",
                     distance=distance,
                     threshold=threshold,
+                    diagnostics=detail,
                 )
-        return PredictionResult(label=label, accepted=True, distance=distance, threshold=threshold)
+        return PredictionResult(label=label, accepted=True, distance=distance, threshold=threshold,
+                                diagnostics=detail)
 
     def to_config(self) -> dict[str, object]:
         return {

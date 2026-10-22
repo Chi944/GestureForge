@@ -6,6 +6,19 @@ Deston has authorised project implementation. Build the approved Windows corpora
 
 ## Current deliveries — 22 October
 
+**Latest recognition receipt and acceptance correction:** Hau Jie's
+[P02/P03 recognition packet](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) is received
+and reviewed; do not resend it. Its latest trace reproduces three PREVIOUS and
+one NEXT Preview simulations during the reported index-only attempt. Controller
+replay matches; this is not a controller defect or a safe threshold-fix result.
+The missing evidence is the recognition decision geometry for that live pose.
+
+GF-P10 and GF-P34 are now accepted against their original software criteria,
+verified independently by 236 passing tests and one platform skip. This corrects
+later notes that added deployment/performance conditions to those tasks; it does
+not lower requirements. R15 deployment qualification and GF-P16's actual scenario
+remain unmet, and no starter or new personal model is approved for LIVE.
+
 Hau Jie's methods/results Word contribution, Javier's edited manual video and
 both private supporting packets are received and reviewed. The
 [receipt review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md) records hashes, exact
@@ -20,7 +33,9 @@ source `a480e2e32ea9c3642dbaab922ae3a76ef6801ad1`, SHA256
 `840a509dd0a341ca1e206044d9fbec360b143cb82d3cdc672d1167b534103e2f`.
 It contains 197 verified members and the PR #35 session-feedback fixes. Source
 setup is still required. Hau Jie's reported archive has a different hash; retain
-its separate receipt. This documentation update requires no replacement package.
+its separate receipt. That retained ZIP predates the new opt-in recognition
+diagnostic; use the identified verified build containing that diagnostic when
+it is ready, rather than repeating an older labels-only trace.
 Git users sync main on their own branches; existing physical evidence retains
 the build on which it was collected.
 
@@ -113,8 +128,8 @@ as they become available instead of waiting for your entire lane to finish.
 | H4 + J4 / GF-P24, GF-P25 | Hau Jie's Word contribution is reviewed against current results; Javier's labelled manual video draft and earlier guide are received. | Final GF-P21 reconciliation, guide-only/native release evidence and complete gesture/scenario/recovery demo remain before GF-P26/GF-P27. Do not redraft already delivered sections. |
 
 Original task owners, weights, dependencies and acceptance criteria stay fixed.
-Accepted task weights are Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%),
-Javier 48/73 (65.8%), and team 137/223 (61.4%): 17/29 tasks Done.
+Accepted task weights are Deston 34/75 (45.3%), Hau Jie 63/75 (84.0%),
+Javier 54/73 (74.0%), and team 151/223 (67.7%): 19/29 tasks Done.
 GF-P17 and GF-P18 are accepted against their original criteria. Delegation shifts execution, not
 accountability. GF-P24/GF-P25 drafting can proceed before their final dependencies.
 Private participant data, full exports, videos and Word deliverables go through
@@ -123,13 +138,13 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 22 October, after the [team deliverable review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md). All three
+Current as of 22 October, after the [recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) and original-criteria acceptance audit. All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
 | Deston | Review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. Retain final direction; no repeat participant TEST is requested. | Integrate marker-response and reproducibility improvements, reconcile report sections and analyse actual workflow evidence when supplied. |
-| Hau Jie | Operate laptop B for remaining guide-only setup, continuous thirty-minute rate/memory monitoring and post-close release; coordinate eligible handoff cases with Javier. Obtain genuine trainer/demo stakeholder feedback on the proposed problem. | Continue development-only recognition diagnosis and reconcile final methods/results after GF-P21. Preserve failures and distinguish the interrupted monitor from the later reported run. |
+| Hau Jie | After the diagnostic software passes and recording consent, perform one bounded Preview/rehearsal decision-geometry diagnostic with unchanged profile settings; do not repeat full Practice or the old labels-only trace. Continue laptop-B remaining checks and genuine presenter feedback. | Inspect the new private diagnostic against intended-pose notes, predeclare any development-only repair experiment, and reconcile methods/results after GF-P21. Preserve failed TEST and separate interrupted versus later reported stability runs. |
 | Javier | Finish unrun native association/error and eligible active-capture Camera/focus recovery cases; coordinate laptop B and the prescribed real workflow study. Capture exact runtime identity on new checks. | Consolidate the received two-device matrix without duplicate/cumulative event counting, fix demonstrated defects and prepare remaining gesture/scenario/recovery footage and guide. |
 
 **Next returns:** only new remaining-case observations, genuine stakeholder/workflow
@@ -215,14 +230,15 @@ for hash/report/inventory consistency as internal-team evidence.
 No newer starter recording is requested until D1 diagnoses a need.
 
 GF-P18's original 10 task-weight hours are now accepted for the reproducible
-paired experiment, including its failed targets. Current accepted totals are
-26/75 for Deston and 137/223 for the team; model performance and physical LIVE
-acceptance remain separate gates.
+paired experiment, including its failed targets. At that historical checkpoint totals were
+26/75 for Deston and 137/223 for the team; use the current totals above. Model
+performance and physical LIVE acceptance remain separate gates.
 
 
 **Historical 5 October integration update:** GF-P10's approved-standard loader and six-action activation route are implemented with generated-fixture verification. No standard model is enabled: the recorded bounded comparison found no qualifying candidate and redistribution permission is unresolved. Personal LIVE still requires full Practice. PR #24 is merged as partial laptop-A evidence; Javier continues the missing native cases. PR #25 delivers GF-P12 selected-pose repair with Deston's shared-camera/Profile integration, explicit candidate create and rollback path; independent review accepts it against the original software criterion. Deston keeps final integration and release acceptance. Accepted completion at that checkpoint was 51.6% (15/29 tasks); use the current totals above and PROGRESS.md.
 
-GF-P16's standard path remains blocked wherever it depends on GF-P10. Personal
+GF-P16's standard path still needs a qualifying deployment starter under R15,
+even though GF-P10's original software criterion is accepted. Personal
 LIVE software and manual paths may continue through their separate gates.
 
 **Device assignment, 5 October:** laptop A is Javier's Windows laptop and laptop B is Hau Jie's Windows laptop. Hau Jie operates laptop B; Javier coordinates and consolidates GF-P19 evidence; Deston reviews GF-P23 and final integration. Both use the same identified Studio build. No laptop-B test is yet recorded. Original task ownership and weights remain unchanged.
@@ -256,7 +272,7 @@ attributed to P01. Delegation does not change original task owners, weights or
 Done status; GF-P23 acceptance and final integration/release review remain with
 Deston. The priority sequence in the briefs supersedes older repeat-run advice.
 
-PR #10's vocabulary work, PR #13's evaluator and PR #14's reviewed [profile persistence component](PROFILE_PERSISTENCE_HANDOFF.md) are integrated. Hau Jie's [starter checkpoint](STARTER_EVALUATION_CHECKPOINT.md) reports the three-person collection and baseline comparison; neither classifier is ready for release. Preserve the baseline and private inputs, and request targeted repair collection only for a diagnosed defect. PR #16's [guided enrolment component](ENROLMENT_INTERFACE_PROPOSAL.md) is attached to the shared camera; GF-P07 is accepted from reviewed generated UI workflow evidence combined with attributed P02 physical observations. PR #17's [selector](PROFILE_SELECTOR_HANDOFF.md) is attached in Profiles with Guest/manual fallback. Its [diagnostic slice](STARTER_FAILURE_ANALYSIS.md) is accepted. PR #19's [bounded comparison](GF_P11_BOUNDED_COMPARISON.md) was reviewed and repaired for reproducibility and evidence consistency; its supplied no-qualifying result is unchanged and has not been independently rerun. PR #20's local camera pilot is partial personal-pilot evidence only: 2/8 accepted NEUTRAL validation trials and kNN/SVM macro-F1 0.7209 remain attributed to Hau Jie's private pilot, not a new independent evaluation. Existing model/rejection thresholds and neutral hold/rearm policy are not relaxed from that result. PR #25 completes GF-P12's selected-pose repair software: the Repair pose tab uses Deston's shared observation-only camera path, starts from the installed saved personal profile, routes the candidate through Profiles for explicit create/load, preserves rollback to the original profile and expires readiness. Independent review accepts GF-P12 against that original software criterion using the integrated generated workflow and eight host tests. Explicit LIVE still permits manual actions through one persistent dispatcher; personal LIVE gestures require the saved, reconciled full Practice gate and explicit activation; native acceptance remains separate. The six-activation check is preliminary only. A new Hau Jie observation reports open palm sometimes remains LATCHED and movement can recover it, but the supplied screenshot does not show Prediction; do not claim the root cause resolved. Deston's reviewed feedback fix keeps prediction/rejection/rearm guidance in the fixed footer and clears stale errors on fresh accepted packets; accepted NEUTRAL rearming passes software regression checks. The physical intermittent report still needs Hau Jie's trace and intended-pose notes. Javier's [4 October checkpoint](JAVIER_OCT4_CHECKPOINT.md) preserves the historical Linux run. GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md). PR #29 adds bounded laptop-A GF-P19 evidence for isolated Preview focus pause/reconnect, Camera Preview simulation, native Camera after capture was already off and later Preview reacquisition. PR #34 adds attributed trusted Notepad requests, historical-launch restore/no-replay and target-save validation on its identified build. Neither closes the remaining active-capture native Camera, failure/retry, missing-association, laptop-B or GF-P23 criteria; the latest session-feedback repairs still need affected native checks. Teammates should sync main and reuse Deston's attachment: Hau Jie uses the verified private H1 packet as fixed internal evidence, then targeted own-profile physical repair only if diagnosed, while Javier preserves accepted GF-P13 dispatcher evidence and records GF-P19's remaining Windows cases; GF-P34 still depends on the GF-P10 standard entry integration. Use [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv) for accepted task status and remaining evidence.
+PR #10's vocabulary work, PR #13's evaluator and PR #14's reviewed [profile persistence component](PROFILE_PERSISTENCE_HANDOFF.md) are integrated. Hau Jie's [starter checkpoint](STARTER_EVALUATION_CHECKPOINT.md) reports the three-person collection and baseline comparison; neither classifier is ready for release. Preserve the baseline and private inputs, and request targeted repair collection only for a diagnosed defect. PR #16's [guided enrolment component](ENROLMENT_INTERFACE_PROPOSAL.md) is attached to the shared camera; GF-P07 is accepted from reviewed generated UI workflow evidence combined with attributed P02 physical observations. PR #17's [selector](PROFILE_SELECTOR_HANDOFF.md) is attached in Profiles with Guest/manual fallback. Its [diagnostic slice](STARTER_FAILURE_ANALYSIS.md) is accepted. PR #19's [bounded comparison](GF_P11_BOUNDED_COMPARISON.md) was reviewed and repaired for reproducibility and evidence consistency; its supplied no-qualifying result is unchanged and has not been independently rerun. PR #20's local camera pilot is partial personal-pilot evidence only: 2/8 accepted NEUTRAL validation trials and kNN/SVM macro-F1 0.7209 remain attributed to Hau Jie's private pilot, not a new independent evaluation. Existing model/rejection thresholds and neutral hold/rearm policy are not relaxed from that result. PR #25 completes GF-P12's selected-pose repair software: the Repair pose tab uses Deston's shared observation-only camera path, starts from the installed saved personal profile, routes the candidate through Profiles for explicit create/load, preserves rollback to the original profile and expires readiness. Independent review accepts GF-P12 against that original software criterion using the integrated generated workflow and eight host tests. Explicit LIVE still permits manual actions through one persistent dispatcher; personal LIVE gestures require the saved, reconciled full Practice gate and explicit activation; native acceptance remains separate. The six-activation check is preliminary only. A new Hau Jie observation reports open palm sometimes remains LATCHED and movement can recover it, but the supplied screenshot does not show Prediction; do not claim the root cause resolved. Deston's reviewed feedback fix keeps prediction/rejection/rearm guidance in the fixed footer and clears stale errors on fresh accepted packets; accepted NEUTRAL rearming passes software regression checks. The physical intermittent report still needs Hau Jie's trace and intended-pose notes. Javier's [4 October checkpoint](JAVIER_OCT4_CHECKPOINT.md) preserves the historical Linux run. GF-P05 is accepted from PR #18's supplied [laptop-A observations and repair rerun](../evidence/WINDOWS_RESULTS_2026-10-02.md). PR #29 adds bounded laptop-A GF-P19 evidence for isolated Preview focus pause/reconnect, Camera Preview simulation, native Camera after capture was already off and later Preview reacquisition. PR #34 adds attributed trusted Notepad requests, historical-launch restore/no-replay and target-save validation on its identified build. Neither closes the remaining active-capture native Camera, failure/retry, missing-association, laptop-B or GF-P23 criteria; the latest session-feedback repairs still need affected native checks. Teammates should sync main and reuse Deston's attachment: Hau Jie uses the verified private H1 packet as fixed internal evidence, then targeted own-profile physical repair only if diagnosed, while Javier preserves accepted GF-P13 dispatcher evidence and records GF-P19's remaining Windows cases; GF-P10/GF-P34 software integration is now accepted against the original criteria; deployment and native gates remain separate. Use [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv) for accepted task status and remaining evidence.
 
 Do not rewrite another owner's files to make a demo work. Put a required shared-interface change on the relevant Trello card for Deston to resolve. Own your module's tests and explanations; Deston's final checks do not replace them. Use AI tools to implement and investigate, then read and understand the generated code and report actual assistance.
 

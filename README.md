@@ -221,6 +221,12 @@ slots; never delete difficult trials to improve scores. Follow the [current GF-P
 
 ## Verify and reproduce
 
+For an unexplained recognition decision, Studio has an optional
+[numeric diagnostic](docs/USER_GUIDE.md#recognition-decision-diagnostic) in
+Preview/Rehearsal. It stays off by default and saves no images or hand features.
+This supports development investigation; it does not establish recognition
+accuracy or enable LIVE control.
+
 From the configured Windows environment:
 
 ```powershell
@@ -237,9 +243,10 @@ To check the browser collector, developers with Node.js can also run:
 node --test tests/participant_collector.test.mjs
 ```
 
-The verified 14 October build passed **952 Python tests and 30 browser-logic
-checks**, plus lint, type checks, both startup checks and synthetic evaluation.
-One unsupported Windows symlink fixture was skipped. These checks do not replace
+The 22 October desktop verification passed **1,076 Python tests**, with two
+platform-specific skips, plus lint, type checks, both startup checks and synthetic
+evaluation. The collector's separate retained 14 October result is **30 browser-logic
+checks**; it was not rerun for this desktop-only change. These checks do not replace
 real-device or participant evidence. Evaluation refuses existing output paths to
 preserve recorded results.
 

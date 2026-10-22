@@ -179,3 +179,41 @@ def test_training_rejects_misaligned_trial_ids():
     features, labels, _ = bundle.training_data()
     with pytest.raises(ValueError, match="groups must have one trial ID per sample"):
         train_model(features, labels, groups=["one-id"])
+
+@pytest.mark.parametrize("algorithm", ["knn", "svm"])
+@pytest.mark.parametrize("margin", [1.0, 1.5])
+def test_opt_in_diagnostics_preserve_decisions_and_revision(algorithm, margin):
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    features, labels, _ = bundle.training_data()
+    model = train_model(features, labels, algorithm=algorithm, margin=margin)
+    revision = model.model_version
+    for feature in (features[0], features[0] + 100):
+        plain = model.predict_one(feature)
+        detail = model.predict_one(feature, diagnostics=True)
+        assert plain.as_tuple() == detail.as_tuple()
+        assert plain.distance == detail.distance and plain.threshold == detail.threshold
+        assert plain.diagnostics is None
+        assert detail.diagnostics is not None
+        assert set(detail.diagnostics) == {"distance", "threshold", "competitor_distance", "competitor_ratio"}
+        assert all(value is None or np.isfinite(value) for value in detail.diagnostics.values())
+    assert model.model_version == revision
+
+def test_diagnostic_nulls_and_default_avoid_extra_competitor_work(monkeypatch):
+    import gestureforge.models as models_module
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    features, labels, _ = bundle.training_data()
+    model = train_model(features, labels, margin=1.0)
+    original = models_module.np.linalg.norm
+    calls = []
+    def norm(*args, **kwargs):
+        calls.append(True)
+        return original(*args, **kwargs)
+    monkeypatch.setattr(models_module.np.linalg, "norm", norm)
+    model.predict_one(features[0])
+    assert len(calls) == 1
+    calls.clear()
+    model.thresholds[str(labels[0])] = float("inf")
+    diagnostic = model.predict_one(features[0], diagnostics=True)
+    assert len(calls) == 2
+    assert diagnostic.diagnostics is not None
+    assert diagnostic.diagnostics["threshold"] is None

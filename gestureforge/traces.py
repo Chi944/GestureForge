@@ -9,7 +9,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
-from .contracts import Prediction, RoutingSnapshot
+from .contracts import Prediction, RoutingMode, RoutingSnapshot
 
 SCHEMA_VERSION = 1
 
@@ -17,9 +17,28 @@ SCHEMA_VERSION = 1
 class EvaluationTrace:
     """Bounded label/timing recorder; never stores frames, landmarks or features."""
 
-    def __init__(self, snapshot: RoutingSnapshot, *, max_frames: int = 18000) -> None:
+    def __init__(self, snapshot: RoutingSnapshot, *, max_frames: int = 18000,
+                 recognition_config: dict[str, Any] | None = None,
+                 camera_index: int | None = None, chosen_hand: str | None = None) -> None:
         if not isinstance(max_frames, int) or isinstance(max_frames, bool) or max_frames <= 0:
             raise ValueError("max_frames must be positive")
+        self._recognition: dict[str, Any] | None = None
+        if recognition_config is not None:
+            if snapshot.mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
+                raise ValueError("recognition diagnostics require Preview or Rehearsal")
+            if set(recognition_config) != {"algorithm", "multiplier", "margin"}:
+                raise ValueError("invalid recognition configuration fields")
+            if recognition_config["algorithm"] not in ("knn", "svm") or any(
+                not _finite(recognition_config[key]) for key in ("multiplier", "margin")
+            ) or recognition_config["multiplier"] <= 0 or recognition_config["margin"] < 1:
+                raise ValueError("invalid recognition configuration values")
+            self._recognition = {"schema_version": 1, "config": dict(recognition_config),
+                                 "mode": snapshot.mode.value, "frames": []}
+            if camera_index is not None or chosen_hand is not None:
+                if (not isinstance(camera_index, int) or isinstance(camera_index, bool)
+                        or camera_index < 0 or chosen_hand not in ("Right", "Left")):
+                    raise ValueError("invalid recognition capture context")
+                self._recognition["capture"] = {"camera_index": camera_index, "chosen_hand": chosen_hand}
         self._snapshot = snapshot
         self._max_frames = max_frames
         self._frames: list[dict[str, Any]] = []
@@ -31,7 +50,8 @@ class EvaluationTrace:
     def frame_count(self) -> int:
         return len(self._frames)
 
-    def append(self, prediction: Prediction, received_at: float) -> None:
+    def append(self, prediction: Prediction, received_at: float,
+               diagnostics: dict[str, float | None] | None = None) -> None:
         if prediction.session_id != self._snapshot.session_id:
             raise ValueError("prediction session does not match trace session")
         if prediction.profile_id != self._snapshot.profile_id:
@@ -72,6 +92,17 @@ class EvaluationTrace:
         }
         if prediction.rejection_reason:
             row["rejection_reason"] = prediction.rejection_reason
+        if diagnostics is not None:
+            if self._recognition is None:
+                raise ValueError("recognition diagnostics were not enabled")
+            if set(diagnostics) != {"distance", "threshold", "competitor_distance", "competitor_ratio"}:
+                raise ValueError("invalid recognition diagnostic fields")
+            if any(value is not None and (not _finite(value) or value < 0)
+                   for value in diagnostics.values()):
+                raise ValueError("recognition diagnostics must be finite nonnegative values or null")
+        if self._recognition is not None:
+            self._recognition["frames"].append({"frame_id": prediction.frame_id,
+                                                "decision": None if diagnostics is None else dict(diagnostics)})
         self._frames.append(row)
         self._previous_frame = prediction.frame_id
         self._previous_timestamp = prediction.timestamp
@@ -93,9 +124,11 @@ class EvaluationTrace:
             "frames": self._frames,
             "expected_holds": [],
             "annotation_complete": False,
+            **({"recognition_diagnostics": self._recognition} if self._recognition is not None else {}),
             "metadata": {
                 "source": "GestureForge Studio UI/controller-consumed predictions",
-                "contents": "labels, acceptance state and monotonic timing",
+                "contents": "labels, acceptance state and monotonic timing"
+                + ("; opted-in numeric decision diagnostics" if self._recognition is not None else ""),
             },
         })
 

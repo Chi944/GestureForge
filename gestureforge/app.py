@@ -289,7 +289,7 @@ class CaptureWorker(Thread):
 
     def __init__(
         self, model, feature_function, chosen_hand, camera_index, asset, session, profile, *,
-        observation_only=False,
+        observation_only=False, recognition_diagnostics=False,
     ):
         # No Qt objects live in this thread. A broken native camera driver must
         # not prevent process exit; normal shutdown still releases its handles.
@@ -303,6 +303,7 @@ class CaptureWorker(Thread):
         self.session = session
         self.profile = profile
         self.observation_only = observation_only
+        self.recognition_diagnostics = recognition_diagnostics
         self._lock = Lock()
         self._latest = None
         self.error = ""
@@ -334,11 +335,17 @@ class CaptureWorker(Thread):
                         with self._lock:
                             self._latest = (frame, observation)
                         continue
+                    diagnostics = None
                     try:
                         if self.feature_function is None:
                             raise ValueError("Feature extractor unavailable")
                         features = self.feature_function(observation, self.chosen_hand)
-                        label, accepted, reason = self.model.predict(features)
+                        if self.recognition_diagnostics:
+                            result = self.model.predict_one(features, diagnostics=True)
+                            label, accepted, reason = result.as_tuple()
+                            diagnostics = result.diagnostics
+                        else:
+                            label, accepted, reason = self.model.predict(features)
                     except ValueError as exc:
                         label, accepted, reason = "UNKNOWN", False, str(exc)
                     prediction = Prediction(
@@ -347,7 +354,8 @@ class CaptureWorker(Thread):
                         model_version=getattr(self.model, "model_version", "unversioned"),
                     )
                     with self._lock:
-                        self._latest = (frame, prediction)
+                        self._latest = ((frame, prediction, diagnostics) if self.recognition_diagnostics
+                                        else (frame, prediction))
         except Exception as exc:
             self.error = f"{type(exc).__name__}: {exc}"
 
@@ -546,6 +554,12 @@ class Window(QMainWindow):
                 "Intended gestures must be annotated separately before scoring."
             )
             setup_layout.addWidget(self.record_trace)
+            self.record_diagnostics = QCheckBox("Record recognition diagnostics (Preview/Rehearsal only)")
+            self.record_diagnostics.setToolTip(
+                "Separate opt-in: saves numeric decision distances with labels/timing, up to 18,000 inputs. "
+                "No images, landmarks or features. Pause to save privately; development diagnosis only."
+            )
+            setup_layout.addWidget(self.record_diagnostics)
             self.trace_status = QLabel("Trace recording off; no evaluation samples are being saved.")
             self.trace_status.setWordWrap(True)
             self.trace_status.setObjectName("muted")
@@ -1932,6 +1946,7 @@ class Window(QMainWindow):
         self.start_button.setEnabled(False)
         self.practice_widget.prepare_button.setEnabled(False)
         self.record_trace.setEnabled(False)
+        self.record_diagnostics.setEnabled(False)
         self.state.setText("Opening camera for practice - show NEUTRAL")
         self.preview.setText(f"Opening camera {self.camera_index} for practice...")
         self.prediction.setText("Practice: awaiting camera")
@@ -2106,6 +2121,7 @@ class Window(QMainWindow):
         saved = self.finish_evaluation_trace()
         if self.studio:
             self.record_trace.setEnabled(self.worker is None and self.evaluation_trace is None)
+            self.record_diagnostics.setEnabled(self.worker is None and self.evaluation_trace is None)
             self.preview.clear()
             self.preview.setText("Camera stopping..." if self.worker else "Camera off")
             if not self._enrolment_tab_selected():
@@ -2523,6 +2539,7 @@ class Window(QMainWindow):
         self.worker = None
         self.received_first_frame = False
         self.record_trace.setEnabled(self.evaluation_trace is None)
+        self.record_diagnostics.setEnabled(self.evaluation_trace is None)
         self.preview.clear()
         self.preview.setText("Camera off\n\nManual request released capture")
         self.start_button.setEnabled(self._can_start_studio_camera())
@@ -3784,6 +3801,17 @@ class Window(QMainWindow):
             ))
         ):
             return
+        diagnostic_config = None
+        if self.studio and self.record_diagnostics.isChecked():
+            from .models import PrototypeGestureModel
+            if self.routing is None or self.routing.snapshot.mode not in (RoutingMode.PREVIEW, RoutingMode.REHEARSAL):
+                self.trace_status.setText("Recognition diagnostics require Preview or Rehearsal; untick before Live.")
+                return
+            if not isinstance(self.model, PrototypeGestureModel):
+                self.trace_status.setText("Recognition diagnostics require a personal prototype recogniser.")
+                return
+            diagnostic_config = {"algorithm": self.model.config.algorithm,
+                                 "multiplier": self.model.config.multiplier, "margin": self.model.config.margin}
         if not self.finish_evaluation_trace():
             return
         if self.routing is not None:
@@ -3792,8 +3820,12 @@ class Window(QMainWindow):
             session = snapshot.session_id
             profile = snapshot.profile_id
             self.record_trace.setEnabled(False)
-            if self.record_trace.isChecked():
-                self.evaluation_trace = EvaluationTrace(snapshot)
+            self.record_diagnostics.setEnabled(False)
+            if self.record_trace.isChecked() or diagnostic_config is not None:
+                self.evaluation_trace = EvaluationTrace(
+                    snapshot, recognition_config=diagnostic_config,
+                    camera_index=self.camera_index, chosen_hand=self.chosen_hand,
+                )
                 self.trace_path = self.trace_folder / f"trace-{uuid4()}.json"
                 self.trace_status.setText("Recording controller inputs locally; Pause to save for annotation.")
         else:
@@ -3804,6 +3836,8 @@ class Window(QMainWindow):
         self.received_first_frame = False
         self.worker = CaptureWorker(self.model, self.feature_function, self.chosen_hand,
                                     self.camera_index, self.asset, session, profile)
+        if diagnostic_config is not None:
+            self.worker.recognition_diagnostics = True
         self.worker.start()
         self.start_button.setEnabled(False)
         self.state.setText("Opening camera • show your enrolled neutral pose")
@@ -3971,7 +4005,7 @@ class Window(QMainWindow):
             ) != (snapshot.session_id, snapshot.profile_id, snapshot.model_version):
                 packet = None
         if packet is not None:
-            frame, prediction = packet
+            frame, prediction = packet[:2]
             self.last_result_at = time.monotonic()
             self.received_first_frame = True
             self._display_capture_frame(frame)
@@ -3982,7 +4016,10 @@ class Window(QMainWindow):
             processed_at = time.monotonic()
             if self.evaluation_trace is not None:
                 try:
-                    self.evaluation_trace.append(prediction, processed_at)
+                    if len(packet) == 3:
+                        self.evaluation_trace.append(prediction, processed_at, packet[2])
+                    else:
+                        self.evaluation_trace.append(prediction, processed_at)
                     self.trace_status.setText(
                         f"Recording {self.evaluation_trace.frame_count} inputs | "
                         f"Capture time {prediction.timestamp:.3f} s | Pause to save for annotation."
@@ -4103,6 +4140,7 @@ class Window(QMainWindow):
             self.state.setText(error or "Paused • camera released")
             if self.studio:
                 self.record_trace.setEnabled(self.evaluation_trace is None)
+                self.record_diagnostics.setEnabled(self.evaluation_trace is None)
                 self.preview.clear()
                 self.preview.setText("Camera off\n\nStart explicitly to reconnect")
                 if error:

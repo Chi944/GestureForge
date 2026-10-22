@@ -542,6 +542,35 @@ and integrity only. Extract the package, run its evaluations and compare the
 reported results separately. Include private data only with the relevant sharing
 permission; do not commit it. See the [release evidence response](project/MARKER_FEEDBACK_RESPONSE_2026_10_22.md#finished-package-check).
 
+## Recognition decision diagnostic
+
+Use this only for a short development check of an unexplained accepted or rejected
+pose. It does not repair recognition, score Practice or qualify a model for LIVE.
+
+1. Open the updated Studio build and load your own existing personal profile.
+   Keep its model and rejection settings unchanged for the first comparison.
+2. In **Setup**, select **Preview** or **Rehearsal**, then **Apply and pause**.
+   Tick **Record recognition diagnostics (Preview/Rehearsal only)**. This is
+   separate consent, off by default; it also saves labels/timing even if the
+   ordinary evaluation-trace checkbox is unticked.
+3. Click **Start camera control**. For the current P02 investigation, spend about
+   30–45 seconds showing an enrolled comparison pose, NEUTRAL, then the reported
+   index-only pose with the same direction changes. Keep separate notes of the
+   intended pose and displayed capture times; never infer intention from labels.
+   Use ordinary camera capture, not **Begin** in scored personal Practice.
+4. Click **Pause / camera off**. Setup shows the saved `trace-…json` path under
+   `experiments/local/controller-traces/`. Privately send that file and the intended-pose notes
+   to Deston/Hau Jie. Preserve errors and interruptions. Untick diagnostics
+   before returning to ordinary LIVE use.
+
+The trace adds numeric nearest-class distance, threshold, competing distance and
+ratio, together with model/session identity, settings, chosen hand and camera
+index. It saves no photos, video, landmarks, features or training examples. The
+existing limit is 18,000 consumed inputs, not a timed session; Pause ends a short
+check. Changing mode pauses and saves capture. Diagnostics cannot run in LIVE,
+change a classifier decision or grant readiness. See the
+[review and next steps](project/P02_P03_RECOGNITION_REVIEW_2026_10_22.md).
+
 ## Capture stability diagnostic
 
 Before another long Practice attempt, a short capture check can separate camera

@@ -4,6 +4,26 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Next work — private receipts reviewed, 22 October
 
+**Latest recognition and acceptance update:** Hau Jie's
+[P02/P03 recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) is received.
+Its latest index-only trace reproduces three PREVIOUS and one NEXT Preview
+simulations, with controller replay matching. Keep your profile/settings;
+no safe threshold fix or new full Practice attempt is justified yet. Hau Jie
+owns the next bounded opt-in decision-geometry diagnostic after software checks
+and consent; you do not need to repeat the old labels-only trace or resend P03.
+
+GF-P34 and its GF-P10 software dependency are now accepted against their original
+criteria, independently verified by 236 passing tests and one platform skip.
+Later-added deployment conditions are retained under R15/GF-P16, not imposed
+retroactively on these software tasks. Your accepted total is **54/73 (74.0%)**;
+Deston is 34/75 (45.3%), Hau Jie 63/75 (84.0%), and team 151/223 (67.7%),
+19/29 tasks Done. No starter is approved for deployment by this correction.
+
+Continue the camera-free native association/failure/recovery checks now; do not
+wait for recognition repair to finish those cases. Keep active-capture gesture
+handoff behind genuine readiness, coordinate laptop B, and return only new
+remaining-case observations with exact build identity.
+
 Your edited manual video, private logs/exports and standalone restore summaries
 are received and reviewed. Do not resend them. All 27 summary exports reconstruct;
 the standalone pair matches the packet. The 22 October pair shows one manual
@@ -273,9 +293,9 @@ integration and final acceptance; follow these priorities.
 dispatcher, no-shell and camera-recovery criteria. The review combines current
 software checks with your attributed laptop-A Camera observations; it does not
 claim another physical run. Preserve that evidence instead of repeating GF-P13.
-GF-P34 still has the original GF-P10 integration dependency. Its standalone
-software checks can proceed before a qualifying standard starter exists, but
-they cannot close that dependency. The two-laptop integrated cases below remain
+This historical checkpoint treated GF-P34 as waiting for GF-P10. The
+22 October audit above now accepts both original software criteria; deployment
+qualification remains a separate gate. The two-laptop integrated cases below remain
 GF-P19, and independent installation/stability remains GF-P23.
 
 1. **Preserve completed camera-free Harbor evidence.** Your laptop-A walkthrough
@@ -347,7 +367,7 @@ Bounded update, 3 October: you do not need to wait for a full starter recogniser
 
 Do not recollect P03 unless Hau Jie asks for a repair sample. The merged [PR #13 checkpoint](STARTER_EVALUATION_CHECKPOINT.md) reports P02/P03 collection and validation, with poor recognition/rejection results. Those measurements are supplied by Hau Jie; integration review independently checked the evaluator software. Preserve the accepted GF-P05 report and private probe JSON. Javier's old P03 Practice attempt remains failed evidence; the short traces are now reviewed in P03_TRACE_REVIEW_2026_10_19.md. Investigate the reported index-finger false NEXT before any fresh full attempt. Resolve wrong actions first, because separate attempts cannot be combined into a pass. Sync main and use [COMPONENT_INTERFACES.md](COMPONENT_INTERFACES.md) to preserve accepted GF-P13 and complete GF-P34 integration checks: one persistent dispatcher, exact snapshots, duplicate suppression, acknowledged Camera release and distinct simulated/manual/launch outcomes. Explicit LIVE allows manual actions without a model; Preview/Rehearsal simulate typed actions. PR #21's longer rehearsal component is attached in Practice. Deston's shared-shell review now reconciles its saved event IDs with frozen dispatcher outcomes under Session summary. The short six-event check and historical review cannot grant LIVE permission. A genuine current-session full Practice pass can grant temporary personal LIVE eligibility after save, exact event reconciliation and paused restoration; explicit LIVE selection, Apply, Start and fresh NEUTRAL are still required. Fix evidenced component defects and report shell issues to Deston rather than duplicating the attachment. GF-P19 then records the integrated Windows cases on both laptops, including isolated focus loss and error/recovery behaviour.
 
-1. **GF-P13 accepted; GF-P34 integration remains.** Sync main and reuse the persistent dispatcher, registry and widget. Preserve duplicate suppression, typed target validation, capture-release refusal and simulation isolation. GF-P34's original final gate still depends on GF-P10; standalone software verification is recorded separately in [PROGRESS.md](PROGRESS.md). Previous-stage navigation, bookmark review/removal, restart and restore remain explicit operations outside typed dispatch; stage transitions stay paused. Fix demonstrated component defects with focused regressions and return shared-shell issues to Deston. Record GF-P19's broader integrated Windows cases separately.
+1. **GF-P13, GF-P10 and GF-P34 software accepted.** Sync main and reuse the persistent dispatcher, registry and widget. Preserve duplicate suppression, typed target validation, capture-release refusal and simulation isolation. The 22 October original-criteria review is recorded in [PROGRESS.md](PROGRESS.md); qualifying starter deployment and native device checks remain separate. Previous-stage navigation, bookmark review/removal, restart and restore remain explicit operations outside typed dispatch; stage transitions stay paused. Fix demonstrated component defects with focused regressions and return shared-shell issues to Deston. Record GF-P19's broader integrated Windows cases separately.
 2. **GF-P08/GF-P09/GF-P29 - maintain the delivered viewer, workspace and runbook.** These components are already implemented. Fix evidenced boundary, bookmark, validation, save-recovery or editor defects with focused regression tests; do not rebuild them. Track each task against its own acceptance criteria in [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv).
 3. **GF-P31 - review the attached historical Practice view.** Deston has added the host reconciliation; do not build a second attachment or change the legacy Trial/export schema. Use Practice's saved local result together with the persistent session-summary outcomes. Match each simulated event ID once; keep per-pose correct/wrong/missed outcomes separate from manual actions, launch requests and acknowledged task completion. Twenty-two timed v4 windows are not twenty-two actions: NEUTRAL and negative windows should emit none. Historical fifty-window v1-v3 records stay historical. Do not relabel simulated counts as successful Windows launches. Report any shared-shell mismatch to Deston and fix summary-component defects in your branch.
 4. **GF-P25 - keep the guide and demo draft current.** Document the reviewed Studio controls and actual Windows outcomes. Distinguish Preview/Rehearsal simulations, explicit LIVE manual requests and acknowledged task completion. Record which GF-P19 integrated cases were actually run; live-gesture cases still require the full personal readiness handoff.
@@ -363,7 +383,7 @@ Do not recollect P03 unless Hau Jie asks for a repair sample. The merged [PR #13
 | GF-P22 | Viewer/storage/shortcut/runbook defects resolved | 1 Nov |
 | GF-P25 | Accurate installation/user guide and full demo video draft | 6 Nov |
 
-Estimate 73 base hours, about 88 with contingency. GF-P34's dependency on GF-P10 is the final integration gate; target validation and standalone widget unit tests can start earlier.
+Estimate 73 base hours, about 88 with contingency. GF-P34 and its GF-P10 software dependency are accepted; remaining native and release acceptance is tracked separately.
 
 ## Ownership and shared interfaces
 

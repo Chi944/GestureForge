@@ -314,3 +314,46 @@ def test_capture_worker_without_feature_function_yields_rejected_prediction(monk
     _, prediction = packet
     assert prediction.label == "UNKNOWN"
     assert prediction.accepted is False
+
+def test_worker_diagnostics_are_per_packet_and_clear_after_invalid_hand(monkeypatch):
+    from types import SimpleNamespace
+    import gestureforge.app as app_module
+    from gestureforge.app import CaptureWorker
+    from gestureforge.models import PredictionResult
+
+    packets = []
+    detail: dict[str, float | None] = {"distance": 1.0, "threshold": 2.0, "competitor_distance": 3.0, "competitor_ratio": 3.0}
+    class Camera:
+        def __init__(self, *args):
+            self.count = 0
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+        def read(self):
+            if self.count:
+                packets.append(worker.take_latest())
+                worker.requestInterruption()
+            obs = Observation("session", "pilot", self.count, 10.0 + self.count,
+                              1 if self.count == 0 else 0, "Right", None)
+            self.count += 1
+            return None, obs
+    def extract(observation, hand):
+        if observation.hand_count == 0:
+            raise ValueError("no_hand")
+        return np.zeros(60)
+    calls = []
+    def predict_one(features, *, diagnostics):
+        calls.append(diagnostics)
+        return PredictionResult("NEXT", True, diagnostics=detail)
+    model = SimpleNamespace(predict_one=predict_one, model_version="v1")
+    monkeypatch.setattr(app_module, "HandCamera", Camera)
+    worker = CaptureWorker(model, extract, "Right", 0, None, "session", "pilot",
+                           recognition_diagnostics=True)
+    worker.run()
+    packets.append(worker.take_latest())
+    assert worker.error == ""
+    assert calls == [True]
+    assert packets[0][2] == detail
+    assert packets[1][2] is None
+    assert packets[1][1].rejection_reason == "no_hand"

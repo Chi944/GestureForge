@@ -144,6 +144,7 @@ class FakeWorker:
         self.interrupted = False
         self.finished = False
         self.wait_result = wait_result
+        self.recognition_diagnostics = False
         self.start = Mock()
 
     def take_latest(self):
@@ -2473,5 +2474,60 @@ def test_studio_camera_failure_clears_preview_and_preserves_manual_controls(monk
         _set_live_manual(window)
         window.next_card()
         assert window.viewer.position == 1
+    finally:
+        window.close()
+
+def test_opt_in_recognition_diagnostic_recording_discards_old_generation(tmp_path, monkeypatch, qapp):
+    import gestureforge.app as app_module
+    from gestureforge.fixtures import synthetic_dataset
+    from gestureforge.models import train_model
+    bundle = synthetic_dataset(trials_per_label_per_split=2)
+    features, labels, _ = bundle.training_data()
+    model = train_model(features, labels)
+    window = Window(model=model, studio=True)
+    _disable_logging(window)
+    window.trace_folder = tmp_path
+    worker = FakeWorker()
+    monkeypatch.setattr(app_module, "CaptureWorker", lambda *a: worker)
+    monkeypatch.setattr(app_module.time, "monotonic", lambda: 100.0)
+    try:
+        assert not window.record_diagnostics.isChecked()
+        assert not window.record_trace.isChecked()
+        window.record_diagnostics.setChecked(True)
+        window.start_camera()
+        assert worker.recognition_diagnostics is True
+        assert not window.record_diagnostics.isEnabled()
+        prediction = _studio_prediction(window, 0, 99.95, "NEUTRAL")
+        detail = model.predict_one(features[0], diagnostics=True).diagnostics
+        worker.packets = [(_frame(), replace(prediction, session_id="old-generation"), detail)]
+        window.poll()
+        assert window.evaluation_trace is not None
+        assert window.evaluation_trace.frame_count == 0
+        worker.packets = [(_frame(), prediction, detail)]
+        window.poll()
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert worker.interrupted
+        assert window.evaluation_trace is None
+        saved = json.loads(next(tmp_path.glob("*.json")).read_text())
+        assert len(saved["recognition_diagnostics"]["frames"]) == 1
+        assert saved["recognition_diagnostics"]["config"]["margin"] == 1.0
+        assert saved["recognition_diagnostics"]["capture"] == {"camera_index": 0, "chosen_hand": "Right"}
+        worker.finished = True
+        window.poll()
+        assert window.worker is None
+        monkeypatch.setattr(window, "isActiveWindow", lambda: True)
+        monkeypatch.setattr(window, "_live_gate_reason", lambda snapshot: "")
+        window.start_camera()
+        assert window.evaluation_trace is None
+        assert window.worker is None
+        assert "require Preview or Rehearsal" in window.trace_status.text()
+        window.record_diagnostics.setChecked(False)
+        next_worker = FakeWorker()
+        next_worker.recognition_diagnostics = False
+        monkeypatch.setattr(app_module, "CaptureWorker", lambda *a: next_worker)
+        window.start_camera()
+        assert window.worker is next_worker
+        assert next_worker.recognition_diagnostics is False
+        assert window.evaluation_trace is None
     finally:
         window.close()

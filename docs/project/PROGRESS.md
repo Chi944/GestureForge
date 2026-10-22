@@ -2,7 +2,49 @@
 
 Snapshot: 22 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Marker-response build verification — 22 October
+## Current acceptance correction and recognition review — 22 October
+
+**Accepted: 151/223 (67.7%), 19/29 tasks.** Deston 34/75 (45.3%),
+Hau Jie 63/75 (84.0%), Javier 54/73 (74.0%). GF-P10 and GF-P34 now meet
+and are accepted against their original software criteria at `223c8c3`.
+Later notes had incorrectly carried production-starter/native-first-use gates
+into the shell task. Independent verification passed **236 tests, one platform
+skip**, covering all original clauses. This corrects task classification without
+changing weights, dependencies, runtime gates or the promised final product.
+**R15 production starter and GF-P16's actual starter/personal scenario remain
+unmet.** Generated software tests do not prove real gesture performance.
+
+Hau Jie's new P02/P03 recognition packet passes CRC and all 16 payload hashes.
+Fresh replay matches both supplied reconstructions and actual simulation logs;
+P03's old development comparison is independently reproduced. P02's reported
+index-only segment produced three PREVIOUS and one NEXT Preview simulation,
+with 253 accepted NEUTRAL predictions and no stale/excessively gapped packets.
+No controller mismatch or safe threshold fix is established. The
+[recognition review and next acceptance steps](P02_P03_RECOGNITION_REVIEW_2026_10_22.md)
+retain the distinction between physical attribution, replay and model results.
+
+The shared capture path adds an optional bounded development decision diagnostic,
+off by default, without changing predictions, profiles or safeguards. After its
+software checks, Hau Jie can capture one short consented Preview diagnostic with
+the unchanged P02 model and separate intended-pose notes. No full Practice,
+repeat old trace, participant TEST or blanket recollection is requested.
+Javier can finish remaining manual native checks in parallel. Existing private
+packets and methods contributions need no resend.
+
+Fresh verification: **1,076 tests passed, two platform skips**, both GUI startup
+checks and synthetic evaluation passed. The first full run found nine test-only
+type-annotation errors; these were repaired without production changes. The
+affected four test files then passed **142 tests**, and full Ruff/mypy passed
+(106 files). These overlapping tests are not added to the full-suite count.
+The original run and successful type-check follow-up remain separately recorded
+under `.local/recognition-review-20261022/`. Independent final code review found
+no blockers. This is software evidence, not a physical diagnostic run or a
+recognition-performance repair.
+
+The dated checkpoints below preserve earlier totals; this section and the
+completion measure are current.
+
+## Marker-response build verification — earlier 22 October checkpoint
 
 The existing packager now verifies declared evaluation inputs inside a finished
 ZIP without extraction or execution. It checks CRC, safe names (including Windows
@@ -766,12 +808,13 @@ Progress = the original estimated hours of fully completed tasks / the total ori
 
 | Owner | Completed task weight / planned | Verified completion |
 | :--- | ---: | ---: |
-| Deston | 26 / 75 | 34.7% |
+| Deston | 34 / 75 | 45.3% |
 | Hau Jie | 63 / 75 | 84.0% |
-| Javier | 48 / 73 | 65.8% |
-| Team | 137 / 223 | 61.4% |
+| Javier | 54 / 73 | 74.0% |
+| Team | 151 / 223 | 67.7% |
 
-Seventeen of 29 tasks are complete. On 14 October, GF-P17's original
+Nineteen of 29 tasks are complete. GF-P10 and GF-P34 were accepted on 22 October
+against their original software criteria after independent verification. On 14 October, GF-P17's original
 12-hour preparation task and GF-P18's original 10-hour paired evaluation task
 were accepted. The [GF-P18 record](GF_P18_TEST_RESULTS_2026_10_14.md) preserves
 both failed personal targets and the failed P67 starter target. Other completed
@@ -780,15 +823,15 @@ GF-P12, GF-P13, GF-P28, GF-P29, GF-P31 and GF-P32. Owners, weights, requirements
 and dependencies are unchanged. Evaluation completion does not approve a
 deployment model or close live/system release gates.
 
-The new decisions use the original criteria and handoffs at `223c8c3`, current software checks and attributed evidence already delivered by teammates. GF-P13 combines persistent duplicate suppression, typed no-shell dispatch and release/recovery regressions with Javier's [laptop-A Camera observations](../evidence/WINDOWS_RESULTS_2026-10-02.md). Broader two-device integrated cases remain GF-P19. GF-P28 accepts Hau Jie's [person-separated feasibility study](STARTER_EVALUATION_CHECKPOINT.md), including its unsuccessful outcome, internal-use-only permissions and first-use risks. Private P02/P03 measurements were not independently rerun; no qualifying or redistributable starter is claimed.
+The new decisions use the original criteria and handoffs at `223c8c3`, current software checks and attributed evidence already delivered by teammates. GF-P13 combines persistent duplicate suppression, typed no-shell dispatch and release/recovery regressions with Javier's [laptop-A Camera observations](../evidence/WINDOWS_RESULTS_2026-10-02.md). Broader two-device integrated cases remain GF-P19. GF-P28 accepts Hau Jie's [person-separated feasibility study](STARTER_EVALUATION_CHECKPOINT.md), including its unsuccessful outcome, internal-use-only permissions and first-use risks. The H1 study remains attributed; the separate P03 development comparison has since been independently rerun. No qualifying or redistributable starter is claimed.
 
-GF-P34's original handoff expressly makes GF-P10 a final integration gate. Standalone Quick Actions checks cannot remove that dependency. GF-P10 now has a validated approved-starter provider and revision-bound standard Guest activation path verified with generated fixtures. A qualifying permitted starter and native first-use evidence still remain. GF-P12's software criterion is Done through PR #25; physical selected-pose repair, native Practice and later evaluation remain separate. These findings are assigned in the updated briefs.
+GF-P34's GF-P10 software dependency is now satisfied; its original standalone Quick Actions checks also pass. GF-P10's six simulated actions, UNKNOWN failure and snapshot invalidation are software acceptance, not approval of a production starter. A qualifying permitted starter and native first-use evidence remain under R15 and GF-P16. GF-P12's software criterion is Done through PR #25; physical selected-pose repair, native Practice and later evaluation remain separate. See the dated acceptance reconciliation above.
 
 GF-P02 is now accepted against its original design criteria: the approved Try Now / optional Personalise flow, one typed action per stage slot and the screen transitions are fixed in [CONTRACTS.md](CONTRACTS.md#gf-p02-design-freeze---2-october-2026). Independent acceptance and architecture reviews reconciled the logical handoffs with reviewed merged profile/workspace code, explicit tab activation and LIVE-only readiness gating. This is an owner design freeze supported by approved scope and code adoption, not a claim of a new team meeting or completed runtime/hardware tests. GF-P10/P12 remain separate from the completed GF-P06 profile workflow.
 
 Hau Jie's [PR #10](https://github.com/Chi944/GestureForge_304/pull/10) and Javier's reviewed component delivery are integrated; see [delivery review](JAVIER_DELIVERY_REVIEW.md). Native Windows launch evidence, readiness integration and the final live workflow remain separate tasks.
 
-## Built, but broader tasks still in progress
+## Earlier implementation notes — current acceptance is above
 
 - **GF-P10, 5 October follow-up:** Profiles loads only a code-approved, checksum-verified standard release through the existing background loader. It rebuilds numeric TRAIN data and checks the exact model revision. Approval remains empty: GF-P11 found no qualifying candidate and redistribution permission is unresolved. Generated checks exercise the separate standard six-action grant, explicit LIVE/Start/NEUTRAL and revision expiry. Personal LIVE still requires full Practice. Action outcomes now also appear in the top notice, addressing Javier's off-screen failure-message observation. [PR #24](https://github.com/Chi944/GestureForge_304/pull/24) is merged as attributed partial laptop-A evidence; GF-P19 remains open. No accepted weights changed.
 

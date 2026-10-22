@@ -1,5 +1,12 @@
 # Team deliverable review — 22 October 2026
 
+**Later recognition supplement and acceptance audit:** see the
+[P02/P03 review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) for the independently
+reproduced findings, original-criterion correction for GF-P10/GF-P34 and current
+accepted progress of **151/223 (67.7%), 19/29 tasks**. The earlier records below
+remain evidence of the deliverables they describe, not production recognition
+qualification.
+
 Hau Jie's methods/results contribution and Javier's edited manual demonstration
 are received and reviewed. They complete handoff substeps; they do not close a
 remaining full task. Original owners, weights, dependencies and targets remain
@@ -124,6 +131,8 @@ documents, full exports, video and participant data stay private. Prompt and
 decision logs are unchanged. No new runtime defect is established by these
 deliverables, so no speculative classifier change or replacement ZIP is needed.
 
-Accepted whole-task weights remain **Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%),
-Javier 48/73 (65.8%), total 137/223 (61.4%), 17/29 tasks**. GF-P24's status change
-records work actually delivered without counting unfinished criteria as accepted.
+At this earlier deliverable-review checkpoint, accepted whole-task weights were
+**Deston 26/75 (34.7%), Hau Jie 63/75 (84.0%), Javier 48/73 (65.8%), total 137/223
+(61.4%), 17/29 tasks**. The later original-criteria audit linked at the top raises
+the current total to **151/223 (67.7%), 19/29 tasks**. GF-P24 remains In Progress;
+received drafting work does not count unfinished criteria as accepted.
