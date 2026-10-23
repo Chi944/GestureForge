@@ -20,13 +20,15 @@ verification is in [PROGRESS.md](PROGRESS.md).
 
 ### Private receipts reviewed — 22 October
 
-**23 October recognition update:** Hau Jie's
-[numeric diagnostic is received and verified](P02_NUMERIC_REVIEW_2026_10_23.md).
-All 1,479 numeric decisions and 12 simulated event labels/times reproduce. There
-is no demonstrated label remap or shared-controller defect. The diagnostic is
-complete; do not repeat your old trace or resend the received P03 inputs. Hau Jie
-now packages the exact existing P02 Original profile/development files for a
-reproducible baseline. No threshold change or full Practice rerun is assigned.
+**24 October recognition update:** Hau Jie's exact profile packet is received;
+[the P02 Original result reproduces independently](P02_PROFILE_REVIEW_2026_10_24.md).
+Macro-F1 0.936508 is the unchanged Original result, with two NEUTRAL trials
+misclassified as G1. Matching negative data and a separate repaired profile are
+absent. The earlier 1,479 decisions and 12 Preview events also reproduce; no
+label remap or shared-controller defect is demonstrated. Do not repeat your old
+trace or resend P03 inputs. Hau Jie's next small labelled development diagnostic
+is prepared; it is not a Practice/LIVE approval. No threshold change or full
+Practice rerun is assigned. No stakeholder interviews are assigned to anyone.
 
 Continue the remaining native cases and current recovery regressions. The packet
 retains an unresolved `0x8001010d` notice; it does not establish process termination

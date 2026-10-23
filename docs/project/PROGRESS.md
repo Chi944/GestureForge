@@ -1,6 +1,44 @@
 # GestureForge Studio progress
 
-Snapshot: 23 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 24 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Exact P02 baseline reproduced — 24 October
+
+Hau Jie's existing-profile packet passes CRC, safe-member checks and all thirteen
+payload hashes. Independent loading reproduces the exact saved model revision,
+thresholds, predictions and Original macro-F1 **0.936508**. This closes the
+requested file-handoff and baseline-reproduction substeps. All action classes
+score 8/8, but two of eight NEUTRAL trials become G1. The supplied historical
+margin-1.5 result also reproduces at **0.720879**, with thirteen UNKNOWN trials.
+Neither result is a repaired-profile improvement. Matching negatives are absent;
+unmeasured false-command performance is not zero.
+
+The [review and prepared follow-up](P02_PROFILE_REVIEW_2026_10_24.md) specifies
+twenty new labelled DEVELOPMENT trials using the existing collector and unchanged
+TRAIN/settings. It is prepared, not recorded: Hau Jie first agrees to new numeric
+collection. It targets missing index-only conditions and positive controls;
+no full Practice or participant TEST repeat is requested. Javier can continue
+independent native checks. No runtime defect was demonstrated or runtime code
+changed. The earlier native fault remains unresolved.
+
+Current briefs, backlog evidence and local Word report/matrix reflect this result.
+No stakeholder interviews are assigned; secondary research supplies the problem
+rationale while actual workflow/safety measurements remain engineering tests.
+Prompt and decision logs are untouched. Private evidence remains under
+`.local/p02-profile-20261024/` and Word deliverables remain local.
+
+Fresh focused verification passed **150 tests in 30.62 seconds**, covering profile
+reconstruction, evaluation, collection, development diagnosis, models and trace
+analysis. These software checks do not establish physical recognition or device
+acceptance. Ruff and application mypy checks also pass. Independent review
+reconfirmed the original task gates. Trello GF-P21/GF-P24 descriptions were
+updated and read back to verify the new handoff; both remain In Progress.
+
+Accepted progress remains **151/223 (67.7%), 19/29 tasks**: Deston **34/75
+(45.3%)**, Hau Jie **63/75 (84.0%)**, Javier **54/73 (74.0%)**. GF-P21 still
+needs a demonstrated repair/disposition and original affected checks/dependencies;
+GF-P24 requires final reconciliation. Completion of the baseline substeps does
+not satisfy either entire task. Earlier dated next-file requests below are superseded.
 
 ## P02 numeric diagnostic completed — 23 October
 

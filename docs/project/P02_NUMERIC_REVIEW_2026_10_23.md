@@ -1,5 +1,11 @@
 # P02 numeric recognition review — 23 October 2026
 
+**24 October update:** the exact-profile handoff below is now complete. The
+[Original model and both recorded development results reproduce](P02_PROFILE_REVIEW_2026_10_24.md).
+The 0.936508 result is Original, not a repaired improvement; matching negatives
+and a separate repaired profile were not found. Follow the new review's bounded
+labelled diagnostic, not the historical request to resend existing files.
+
 ## Decision
 
 Hau Jie's requested numeric diagnostic is complete and independently reproduced.

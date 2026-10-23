@@ -1,8 +1,10 @@
 # Recognition review and acceptance reconciliation — 22 October 2026
 
-**23 October update:** the requested numeric diagnostic is now received and
-independently verified. Use [the current review and next existing-file handoff](P02_NUMERIC_REVIEW_2026_10_23.md).
-The diagnostic requests below are historical; no repeat recording is assigned.
+**24 October update:** both the numeric diagnostic and exact P02 profile packet
+are received and independently reproduced. Use [the current result and bounded
+next check](P02_PROFILE_REVIEW_2026_10_24.md). Requests below for those files or the
+old recording are historical. No stakeholder interviews are assigned; published
+research replaces those earlier suggestions. Actual engineering tests remain.
 
 ## Received evidence
 

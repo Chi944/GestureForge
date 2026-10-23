@@ -1,10 +1,10 @@
 # GestureForge Studio team implementation guide
 
-Updated 23 October 2026 · Project deadline 7 November 2026
+Updated 24 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
-## Current deliveries — 23 October
+## Current deliveries — 24 October
 
 **Numeric recognition diagnostic complete:** the new
 [P02 packet and review](P02_NUMERIC_REVIEW_2026_10_23.md) verify 1,479 numeric
@@ -12,13 +12,15 @@ decisions and all 12 runtime Preview events across two separate captures. No
 controller or label-permutation defect is demonstrated. Do not request another
 copy of the received traces or another unannotated recording.
 
-Hau Jie's next GPT task is packaging the exact existing P02 Original profile,
-referenced numeric inputs and existing development comparison, with hashes and
-permission. Deston then reproduces that baseline; old H1 starter inputs cannot
-silently replace it. No live settings change is approved. The fixed margin-1.5
-counterfactual rejects many recorded NEUTRAL predictions as well as commands;
-it cannot demonstrate accuracy or an effective repair. Javier continues native
-recovery checks and retains the unresolved process-level diagnostic.
+**Exact P02 profile handoff and reproduction complete:** the [24 October review](P02_PROFILE_REVIEW_2026_10_24.md)
+verifies all supplied hashes, model identity and predictions. Original macro-F1
+0.936508 includes two NEUTRAL trials misclassified as G1; it is not a repaired
+result. The historical stricter-margin result reproduces at 0.720879. Matching
+negatives and a separate repaired profile are absent. No live model/settings
+change is approved. Hau Jie's next GPT task is preparing the linked fixed
+twenty-trial missing-condition diagnostic, with new numeric collection only
+after he agrees. Javier continues native recovery checks. No stakeholder
+interviews are assigned; software-use observations are engineering tests.
 
 GF-P10 and GF-P34 are now accepted against their original software criteria,
 verified independently by 236 passing tests and one platform skip. This corrects
@@ -44,8 +46,8 @@ archive checksum and file count; send both files together and record that identi
 on each new check. The 23 October handoff includes opt-in recognition recording
 and analysis. Source setup is still required; it is not a standalone executable.
 Hau Jie's earlier archive has a different hash; retain its separate receipt.
-The requested P02 numeric recording is now complete; its next step is the
-existing-file handoff above, not another recording. The [progress record](PROGRESS.md) records verified repairs;
+The original P02 numeric recording and exact-file handoff are complete; only the
+labelled missing-condition check above is newly prepared. The [progress record](PROGRESS.md) records verified repairs;
 Javier checks only affected recovery cases plus the remaining original cases.
 Git users sync main on their own branches; existing physical evidence retains
 the build on which it was collected.
@@ -149,18 +151,18 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 22 October, after the [recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) and original-criteria acceptance audit. All three
+Current as of 24 October, after the [exact P02 review](P02_PROFILE_REVIEW_2026_10_24.md) and original-criteria acceptance audit. All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
 | Deston | Review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. Retain final direction; no repeat participant TEST is requested. | Integrate marker-response and reproducibility improvements, reconcile report sections and analyse actual workflow evidence when supplied. |
-| Hau Jie | After the diagnostic software passes and recording consent, perform one bounded Preview/rehearsal decision-geometry diagnostic with unchanged profile settings; do not repeat full Practice or the old labels-only trace. Continue laptop-B remaining checks. No trainer interviews are assigned. | Inspect the new private diagnostic against intended-pose notes, predeclare any development-only repair experiment, and reconcile methods/results after GF-P21. Preserve failed TEST and separate interrupted versus later reported stability runs; use the research review for interaction limits. |
+| Hau Jie | If agreed, record the new twenty-trial labelled development check in the linked protocol: eight positive controls and twelve index-only negatives. No full Practice or TEST repeat. Continue laptop-B remaining checks. No stakeholder interviews. | Prepare existing collector commands and vocabulary; score fresh inputs using exact Original TRAIN/settings without selection. Reconcile methods/results with the verified baseline and missing negatives; retain failed TEST and separate stability records. |
 | Javier | Finish unrun native association/error and eligible active-capture Camera/focus recovery cases; coordinate laptop B and the prescribed real workflow study. Capture exact runtime identity on new checks. | Consolidate the received two-device matrix without duplicate/cumulative event counting, fix demonstrated defects and prepare remaining gesture/scenario/recovery footage and guide. |
 
 **Next returns:** only new remaining-case observations, actual workflow
 records and revised final report/demo sections when their prerequisites pass.
-The Word contribution, manual video, reference [10] packet and restore exports
+The exact P02 packet, Word contribution, manual video, reference [10] packet and restore exports
 are already received. Do not repeat successful unchanged cases. The manual
 workspace in the exports is not the study workspace; preserve that distinction.
 No measured clicker advantage or stakeholder interview is claimed.

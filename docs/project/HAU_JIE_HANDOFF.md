@@ -4,33 +4,34 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**23 October — numeric diagnostic received and independently verified.**
-Read [the numeric review and exact next handoff](P02_NUMERIC_REVIEW_2026_10_23.md).
-Both captures reproduce exactly: 1,479 numeric decisions agree with the saved
-rules; all 12 Preview event labels/times match the runtime log. The requested
-recording substep is complete. Do not repeat it or start a full Practice trial.
+**24 October — exact P02 packet received and Original baseline reproduced.**
+Read [the verified result and next diagnostic](P02_PROFILE_REVIEW_2026_10_24.md).
+All 13 payload hashes, exact saved model identity and supplied predictions
+reproduce. Your file-handoff and baseline-reproduction substeps are complete;
+do not resend them or search again for the absent old negatives/repaired profile.
 
-- **Next with GPT:** package the existing P02 Original profile JSON, its exact
-  referenced TRAIN manifest/sidecar, existing development positives/negatives,
-  and the existing repair inputs behind reported macro-F1 0.936508, if available.
-  Include hashes, versions, pose notes and a source-to-archive path map. Use
-  `PRIVATE_P02_PROFILE_DEVELOPMENT.zip`; keep TEST and private target bindings out.
-  The linked review lists the exact contents. The old H1 P02 starter data do not
-  establish the identity of this saved personal model.
-- **Your manual part:** confirm the selected original profile is the one used in
-  the captures and the existing permission covers the private team handoff.
-  Send those existing files privately to Deston. No new recording is requested.
-  Continue the assigned laptop-B native/install/stability checks with Javier.
-- **Repair decision:** leave current settings unchanged. A fixed exploratory
-  margin-1.5 calculation would reject 779/935 command-labelled and 470/543
-  NEUTRAL-labelled decisions; it proves rejection cost, not accuracy or a fix.
-  Deston will reconstruct the exact original and reproduce the already reported
-  development comparison before selecting any new bounded experiment.
-- **Methods:** incorporate the verified diagnostic and its missing pose-timing
-  limitations into your private GF-P24 contribution. The native `0x8001010d`
-  notice remains unresolved; later successful captures do not prove its cause
-  or process survival. Preserve the fault record and actual failures.
-- **Acceptance:** the diagnostic substep is complete; GF-P21/GF-P24 retain their
+- **Result:** macro-F1 0.936508 belongs to P02 Original, not a repaired model.
+  All action trials pass, but two of eight NEUTRAL trials become G1. The recorded
+  stricter-margin result also reproduces at 0.720879, losing genuine recognition.
+  Matching negative-validation data were not supplied; false-command performance
+  is unmeasured. Keep saved settings and TEST unchanged.
+- **Next with GPT:** prepare the existing collector for the linked fixed
+  `p02-gap-v1` plan: eight positive-control trials and twelve index-only negative
+  trials, using the original vocabulary and two new private output folders.
+  Verify camera, paths and consent before recording. Afterwards score the new
+  inputs against exact Original TRAIN/settings; no search or automatic replacement.
+- **Your manual part:** if you agree to new numeric recording, follow those
+  twenty trials (roughly 5–8 minutes including setup; estimate only). Record actual
+  conditions and deviations, retaining invalid trials and interrupted-attempt
+  notes. This fills the labelled negative-condition gap; no full Practice or
+  participant TEST repeat is requested. Continue laptop-B remaining checks with Javier.
+- **Methods:** incorporate both verified fixed results, the NEUTRAL errors and
+  absent negative measurements into your existing private contribution. Deston's
+  local report is refreshed; final GF-P21 reconciliation still remains. Native
+  `0x8001010d` cause/termination is unresolved; preserve fault evidence if it recurs.
+- **No stakeholder interviews:** use the completed secondary research for the
+  problem rationale. Actual software/device checks remain engineering tests.
+- **Acceptance:** baseline reproduction is complete; GF-P21/GF-P24 retain their
   original affected-check/dependency gates. Deston 34/75 (45.3%), Hau Jie 63/75
   (84.0%), Javier 54/73 (74.0%); total 151/223 (67.7%), 19/29 tasks Done.
 
