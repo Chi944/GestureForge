@@ -4,46 +4,35 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
-**23 October — use the existing analyser for the new numeric trace.** Recording
-support is published at `065bc86`; sync current main into your own branch before
-the diagnostic. After the bounded recording below, run
-`python -m gestureforge.trace_diagnose PATH_TO_TRACE`
-in the configured project environment, or send the trace privately to Deston to
-run it. The updated reader checks diagnostic configuration and frame alignment,
-and preserves decision distances beside the controller reconstruction. Include
-the separately recorded intended-pose/timing notes; predictions cannot supply
-those annotations. Do not replace the existing profile or tune settings merely
-because a numeric trace is now available. The old label-only return remains
-valid evidence, but lacks the decision measurements needed for this next step.
+**23 October — numeric diagnostic received and independently verified.**
+Read [the numeric review and exact next handoff](P02_NUMERIC_REVIEW_2026_10_23.md).
+Both captures reproduce exactly: 1,479 numeric decisions agree with the saved
+rules; all 12 Preview event labels/times match the runtime log. The requested
+recording substep is complete. Do not repeat it or start a full Practice trial.
 
-**Latest 22 October update — recognition packet received; no resend needed.**
-Read the [P02/P03 recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md).
-The packet's 17 members and 16 listed hashes verify. The latest 1,086-frame,
-40.578-second trace gives three PREVIOUS and one NEXT Preview simulations during
-your reported index-only attempt; 253 accepted NEUTRAL frames and no stale/gap
-failure are present. Replay matches the log. Do not change the controller or
-thresholds on this evidence.
-
-- **Next bounded manual diagnostic:** once Deston's opt-in decision-geometry
-  recording passes software checks and you consent to recording it, reproduce
-  the index-only pose briefly in Preview/rehearsal with the exact existing profile
-  and settings. Return its private diagnostic and intended-pose notes. This is
-  not another full Practice run or another labels-only trace. Recording stays off
-  by default and contains no hand features, photos or video.
-  Follow the [exact Studio steps](../USER_GUIDE.md#recognition-decision-diagnostic);
-  keep this to one roughly 30–45 second ordinary Preview capture, then Pause to
-  save the private trace and send it with your intended-pose/timing notes.
-- **With GPT:** inspect those decision distances/geometry before proposing a
-  predeclared development-only repair. P03's fixed comparison reproduces macro-F1
-  0.8500 → 0.9423, PREVIOUS 2/8 → 5/8 and negative command samples 10/40 → 4/40
-  on existing data. P02's reported 0.936508 remains attributed because its numeric
-  inputs are absent; do not describe it as independently reproduced.
-- **Acceptance:** GF-P10/GF-P34 now satisfy their original software criteria
-  (236 tests pass, one skip). This corrects later added conditions, not the
-  original requirements. Deployment qualification/R15, actual scenario/GF-P16
-  and GF-P21's physical/dependency evidence remain open. Current totals:
-  Deston 34/75 (45.3%), Hau Jie 63/75 (84.0%), Javier 54/73 (74.0%),
-  team 151/223 (67.7%), 19/29 tasks Done.
+- **Next with GPT:** package the existing P02 Original profile JSON, its exact
+  referenced TRAIN manifest/sidecar, existing development positives/negatives,
+  and the existing repair inputs behind reported macro-F1 0.936508, if available.
+  Include hashes, versions, pose notes and a source-to-archive path map. Use
+  `PRIVATE_P02_PROFILE_DEVELOPMENT.zip`; keep TEST and private target bindings out.
+  The linked review lists the exact contents. The old H1 P02 starter data do not
+  establish the identity of this saved personal model.
+- **Your manual part:** confirm the selected original profile is the one used in
+  the captures and the existing permission covers the private team handoff.
+  Send those existing files privately to Deston. No new recording is requested.
+  Continue the assigned laptop-B native/install/stability checks with Javier.
+- **Repair decision:** leave current settings unchanged. A fixed exploratory
+  margin-1.5 calculation would reject 779/935 command-labelled and 470/543
+  NEUTRAL-labelled decisions; it proves rejection cost, not accuracy or a fix.
+  Deston will reconstruct the exact original and reproduce the already reported
+  development comparison before selecting any new bounded experiment.
+- **Methods:** incorporate the verified diagnostic and its missing pose-timing
+  limitations into your private GF-P24 contribution. The native `0x8001010d`
+  notice remains unresolved; later successful captures do not prove its cause
+  or process survival. Preserve the fault record and actual failures.
+- **Acceptance:** the diagnostic substep is complete; GF-P21/GF-P24 retain their
+  original affected-check/dependency gates. Deston 34/75 (45.3%), Hau Jie 63/75
+  (84.0%), Javier 54/73 (74.0%); total 151/223 (67.7%), 19/29 tasks Done.
 
 **22 October — your methods/results contribution and laptop-B packet are received.**
 Both have been reviewed; do not resend reference [10] or redraft completed

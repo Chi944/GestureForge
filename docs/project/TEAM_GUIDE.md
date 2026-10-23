@@ -4,14 +4,21 @@ Updated 23 October 2026 · Project deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
-## Current deliveries — 22 October
+## Current deliveries — 23 October
 
-**Latest recognition receipt and acceptance correction:** Hau Jie's
-[P02/P03 recognition packet](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) is received
-and reviewed; do not resend it. Its latest trace reproduces three PREVIOUS and
-one NEXT Preview simulations during the reported index-only attempt. Controller
-replay matches; this is not a controller defect or a safe threshold-fix result.
-The missing evidence is the recognition decision geometry for that live pose.
+**Numeric recognition diagnostic complete:** the new
+[P02 packet and review](P02_NUMERIC_REVIEW_2026_10_23.md) verify 1,479 numeric
+decisions and all 12 runtime Preview events across two separate captures. No
+controller or label-permutation defect is demonstrated. Do not request another
+copy of the received traces or another unannotated recording.
+
+Hau Jie's next GPT task is packaging the exact existing P02 Original profile,
+referenced numeric inputs and existing development comparison, with hashes and
+permission. Deston then reproduces that baseline; old H1 starter inputs cannot
+silently replace it. No live settings change is approved. The fixed margin-1.5
+counterfactual rejects many recorded NEUTRAL predictions as well as commands;
+it cannot demonstrate accuracy or an effective repair. Javier continues native
+recovery checks and retains the unresolved process-level diagnostic.
 
 GF-P10 and GF-P34 are now accepted against their original software criteria,
 verified independently by 236 passing tests and one platform skip. This corrects
@@ -37,8 +44,8 @@ archive checksum and file count; send both files together and record that identi
 on each new check. The 23 October handoff includes opt-in recognition recording
 and analysis. Source setup is still required; it is not a standalone executable.
 Hau Jie's earlier archive has a different hash; retain its separate receipt.
-Use the current diagnostic guide for a new recording instead of an older
-labels-only trace. The [progress record](PROGRESS.md) records verified repairs;
+The requested P02 numeric recording is now complete; its next step is the
+existing-file handoff above, not another recording. The [progress record](PROGRESS.md) records verified repairs;
 Javier checks only affected recovery cases plus the remaining original cases.
 Git users sync main on their own branches; existing physical evidence retains
 the build on which it was collected.

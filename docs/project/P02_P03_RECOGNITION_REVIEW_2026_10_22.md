@@ -1,5 +1,9 @@
 # Recognition review and acceptance reconciliation — 22 October 2026
 
+**23 October update:** the requested numeric diagnostic is now received and
+independently verified. Use [the current review and next existing-file handoff](P02_NUMERIC_REVIEW_2026_10_23.md).
+The diagnostic requests below are historical; no repeat recording is assigned.
+
 ## Received evidence
 
 Hau Jie's private recognition supplement is received. Its SHA256 is

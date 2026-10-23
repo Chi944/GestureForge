@@ -20,13 +20,20 @@ verification is in [PROGRESS.md](PROGRESS.md).
 
 ### Private receipts reviewed — 22 October
 
-**Latest recognition and acceptance update:** Hau Jie's
-[P02/P03 recognition review](P02_P03_RECOGNITION_REVIEW_2026_10_22.md) is received.
-Its latest index-only trace reproduces three PREVIOUS and one NEXT Preview
-simulations, with controller replay matching. Keep your profile/settings;
-no safe threshold fix or new full Practice attempt is justified yet. Hau Jie
-owns the next bounded opt-in decision-geometry diagnostic after software checks
-and consent; you do not need to repeat the old labels-only trace or resend P03.
+**23 October recognition update:** Hau Jie's
+[numeric diagnostic is received and verified](P02_NUMERIC_REVIEW_2026_10_23.md).
+All 1,479 numeric decisions and 12 simulated event labels/times reproduce. There
+is no demonstrated label remap or shared-controller defect. The diagnostic is
+complete; do not repeat your old trace or resend the received P03 inputs. Hau Jie
+now packages the exact existing P02 Original profile/development files for a
+reproducible baseline. No threshold change or full Practice rerun is assigned.
+
+Continue the remaining native cases and current recovery regressions. The packet
+retains an unresolved `0x8001010d` notice; it does not establish process termination
+or a particular failing component. If it recurs during a planned check, preserve
+per-launch stdout/stderr, PID, start/end times, actual exit code and the triggering
+UI action. For an actual exit retain the matching Windows faulting-module record.
+Do not suppress the exception or claim a clean stability pass from later captures.
 
 GF-P34 and its GF-P10 software dependency are now accepted against their original
 criteria, independently verified by 236 passing tests and one platform skip.

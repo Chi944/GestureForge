@@ -2,6 +2,35 @@
 
 Snapshot: 23 October 2026. Task weights measure accepted work, not an expected grade.
 
+## P02 numeric diagnostic completed — 23 October
+
+Hau Jie's private 13-member packet passes CRC and all 12 payload hashes; its
+archive hash matches the supplied value. Independent replay exactly reproduces
+both analyses, all 1,479 numeric decisions and all 12 simulated event timestamps.
+The captures last 51.047 s and 29.000 s separately. They are not a continuous
+stability run. No shared-controller or label-permutation defect is demonstrated.
+
+The [review and next input list](P02_NUMERIC_REVIEW_2026_10_23.md) complete the
+requested diagnostic substep. A fixed exploratory margin-1.5 calculation would
+reject 779/935 command-labelled and 470/543 NEUTRAL-labelled accepted decisions.
+Without true-pose timing this demonstrates rejection cost, not accuracy or a
+repair. No runtime setting, profile, model or consumed TEST input was changed.
+The native `0x8001010d` notice remains unresolved, with no confirmed termination.
+
+Hau Jie now packages existing exact P02 profile/TRAIN/development files for
+baseline reproduction; no new recording is requested. Javier continues remaining
+native cases. Both briefs and the team guide supersede older diagnostic requests.
+Fresh targeted verification passed **74 tests** covering models, development
+split guards and the trace analyser. Counts were independently recalculated.
+Receipts are private under `.local/p02-numeric-20261023/`. No open GitHub PR was
+returned at this checkpoint; no merge is claimed.
+
+Accepted progress remains **151/223 (67.7%), 19/29 tasks**: Deston **34/75
+(45.3%)**, Hau Jie **63/75 (84.0%)**, Javier **54/73 (74.0%)**. GF-P21 still
+requires a demonstrated recognition repair/disposition and its original GF-P20
+affected checks; GF-P24 remains dependent on that reconciliation. The completed
+diagnostic is recorded without converting a partial task into Done.
+
 ## Problem research completed — 23 October
 
 Deston selected online research instead of the trainer interviews suggested on
