@@ -20,8 +20,12 @@ product demonstration: finding the next resource, opening a tool, keeping the
 current step visible and recovering the demonstration's position after an
 interruption. Studio brings those steps into a reusable runbook with visible
 controls and saved progress. Gestures are an optional input method alongside
-buttons and keyboard controls. Whether they reduce effort or errors is being
-measured; a clicker remains a simpler option for slide-only navigation.
+buttons and keyboard controls. Whether they reduce effort or errors remains to
+be measured; a familiar clicker may be simpler for slide-only navigation.
+The [research and alternatives review](docs/project/RESEARCH_POSITIONING_2026_10_23.md)
+explains the published evidence, existing competing approaches and the limits of
+the proposed benefit. Gesture control and custom app shortcuts are established
+ideas; this project's focus is a prepared, recoverable demonstration workflow.
 
 Webcam processing and classifier training run locally. Normal use does not save
 photos or video. Numeric collection and evaluation recording require explicit

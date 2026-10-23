@@ -7,29 +7,24 @@ not observe the participant, certify recognition or enable LIVE gestures.
 
 ## Establish the user problem before measuring the solution
 
-Obtain brief, consented accounts from people who have actually delivered training
-or product demonstrations. Hau Jie and Javier can each arrange one conversation;
-Deston reviews the resulting needs against R07/R13/R16/R20/R21. This is a small
-elicitation exercise, not a representative market survey. Do not count the team's
-fictional Harbor scenario or camera-data participants as customer interviews.
+On 23 October Deston selected online secondary research instead of the previously
+suggested trainer interviews. The completed [research review](RESEARCH_POSITIONING_2026_10_23.md)
+connects published presenter needs and interaction constraints to the existing
+requirements and compares current alternatives. Hau Jie and Javier no longer need
+to arrange need interviews. Direct stakeholder elicitation remains unperformed;
+published participants are not this project's customers or study participants.
 
-Ask for a recent example before showing Studio: what resources did the presenter
-switch between, when did they return to the keyboard, what went wrong after an
-interruption, and what do they already use (keyboard, clicker or other controls)?
-Then show the manual and gesture workflow and ask where either would help or make
-the task harder, what would stop adoption, and which recovery behaviour matters.
-Accept an answer that no new input method is needed.
-
-Keep a private dated note containing consent, pseudonym, relevant experience,
-existing workflow, the participant's actual account, priority and proposed
-requirement link. Separate direct quotations, paraphrases and the team's
-interpretation. Record any resulting requirement decision without fabricating
-approval. These notes are a separate qualitative sidecar; do not add unsupported
-fields to the study JSON schema below.
+Use the review to explain the task: select the intended resource, keep the current
+step visible and recover without replaying actions. Preserve the actual M/S/P
+protocol below. Research cannot supply observed task times, comfort ratings,
+correct outcomes or a qualifying model. Record real errors and recovery details
+in the existing observer notes; do not invent new measurements or schema fields.
 
 The existing M condition is Studio's buttons/keyboard baseline. It is not a
 measured clicker comparison. A slide-only clicker is a credible simpler
-alternative; this study tests the wider resource/recovery workflow. Compare task
+alternative; this study compares input methods within the same Studio workflow.
+It does not independently measure the benefit of a runbook against ordinary
+Windows navigation. Compare task
 time, errors, help and usefulness only on the recorded conditions; include setup
 and readiness cost separately. Report no benefit if the evidence shows none.
 

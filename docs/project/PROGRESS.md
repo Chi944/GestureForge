@@ -2,6 +2,29 @@
 
 Snapshot: 23 October 2026. Task weights measure accepted work, not an expected grade.
 
+## Problem research completed — 23 October
+
+Deston selected online research instead of the trainer interviews suggested on
+22 October. The [research review](RESEARCH_POSITIONING_2026_10_23.md) now covers
+six primary research papers and seven official alternatives pages, with inspected
+sections, limitations and a mapping to existing requirements. It supports a
+prepared, recoverable mixed-resource demonstration workflow with optional gestures.
+Custom gestures, app launching and presenter context already have prior art;
+commercial demand and a measured GestureForge advantage remain unestablished.
+
+The research/report substep is complete. The plan, workflow protocol, README,
+marker response and both teammate briefs use the selected method. No trainer
+interviews are assigned; direct elicitation remains unperformed. Local Word
+report and matrix are refreshed; prompt and decision logs remain untouched.
+The original manual/standard/personal study, safety targets, task weights and
+dependencies are preserved. Desk research does not supply physical outcomes.
+
+Accepted progress remains **151/223 (67.7%), 19/29 tasks**: Deston **34/75
+(45.3%)**, Hau Jie **63/75 (84.0%)**, Javier **54/73 (74.0%)**. GF-P26 gains
+completed problem/related-work evidence but retains final review/release gates;
+GF-P20 still requires genuine observed results. This update supersedes older
+instructions to gather trainer accounts, without rewriting historical receipts.
+
 ## Studio recovery repairs — 23 October
 
 Three reproducible defects are repaired without changing recognition settings or

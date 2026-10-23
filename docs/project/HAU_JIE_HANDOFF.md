@@ -56,10 +56,10 @@ sections. GF-P24 remains In Progress pending final GF-P21 reconciliation. See th
   unrun association/error and valid-grant active-capture Camera/focus cases with
   Javier. Retain successful unchanged checks, the first camera failure and the
   interrupted 791.605-second monitor; the later reported thirty minutes is separate.
-- **Problem validation:** obtain genuine feedback from a trainer or demonstration
-  presenter about keyboard interruptions, their current controls and when gestures
-  would help or hinder. Record what they actually say, with permission and minimal
-  identifying data; do not fabricate stakeholder interviews or a clicker advantage.
+- **Problem research updated 23 October:** Deston chose [secondary research](RESEARCH_POSITIONING_2026_10_23.md)
+  instead of trainer interviews; no interview arrangement is assigned. Use its
+  fatigue/background-motion limitations in the methods discussion. Continue the
+  actual recognition and laptop-B checks; research does not replace them.
 - **With GPT:** update the remaining-case matrix from received receipts; continue
   development-only recognition diagnosis and reconcile final methods/results.
   The source-member match remains attributed because the packet omits the source

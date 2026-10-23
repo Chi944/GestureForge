@@ -18,8 +18,10 @@ controls, and restores progress without replaying launches. The presenter is the
 primary user; the walkthrough author is the secondary user.
 
 This is a testable problem statement. Existing team experience and the fictional
-Harbor scenario do not establish customer demand. Genuine accounts from trainers
-or demonstration presenters must validate which interruptions matter. A clicker
+Harbor scenario do not establish customer demand. On 23 October Deston chose
+[published secondary research](RESEARCH_POSITIONING_2026_10_23.md) instead of
+the suggested trainer interviews. This strengthens problem justification while
+leaving direct stakeholder elicitation unperformed. A clicker
 is a sensible simpler alternative for slide-only work. The proposed distinction
 is the combination of authored stages, personal input, local resources, rehearsal
 and recoverable execution; it is not a claim to have invented gesture control.
@@ -29,7 +31,7 @@ and recoverable execution; it is not a claim to have invented gesture control.
 | Marker finding | Change now | Evidence still needed |
 |---|---|---|
 | Requirements lacked measurable pass/fail conditions; quantitative goals largely deferred | All 17 active requirements now have operational checks in [plan section 5](PROJECT_PLAN.md#operational-passfail-rules--clarified-22-october), tied to existing tests and physical records. Existing recognition/latency/false-action targets are retained. | Execute every requirement's physical cases on the identified release. Tests passing does not establish usability or device operation. |
-| One presenter persona/participant, little stakeholder elicitation | [Workflow protocol](WORKFLOW_COMPARISON.md#establish-the-user-problem-before-measuring-the-solution) now includes consented need interviews, existing-workflow questions, requirement links and private qualitative notes. | Hau Jie and Javier obtain actual presenter accounts; Deston reviews decisions. Do not invent quotes or call a small sample representative. |
+| One presenter persona/participant, little stakeholder elicitation | The [secondary-research review](RESEARCH_POSITIONING_2026_10_23.md) examines six research papers and seven official alternatives pages and maps needs to requirements. It replaces the proposed interviews at Deston's request on 23 October. | Direct elicitation was not conducted. Keep this limitation visible; actual workflow observations still determine product usefulness. Published findings do not prove customer demand. |
 | Report claimed P01 data was included, but submitted ZIP lacked it | Read-only inspection confirms the 83-member submitted ZIP lacks the P01 manifest/sidecar. The existing packaging tool now checks declared evaluation inputs **inside the finished ZIP**, including CRC, safe paths and feature hashes. | Build the permitted project evidence package, check every claimed configuration, then reproduce the reported outputs from its extracted contents. Input integrity alone is insufficient. |
 | Live evidence was a participant-reported smoke check, with no measured latency/false-action run | Keep software, offline recognition and physical results separate. The frozen comparison and failed targets remain visible; new teammate exports are reconciled with their actual build and source limits. | Genuine full Practice, timed holds/negative activity, same-stream replay and the observed six-stage workflow under the existing protocol. |
 | No measured advantage over a clicker; integration of existing components | Explain where a clicker/manual control is preferable. Evaluate manual versus gesture operation of the **same** mixed-resource task, counting setup cost, time, errors, retries and help. | Recorded comparison and honest interpretation, including a result of no advantage. The manual baseline is not an actual clicker trial. |

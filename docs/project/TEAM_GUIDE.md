@@ -26,7 +26,10 @@ summary reconstruction, overlap and remaining limits. Do not resend reference
 [10] or the restore exports. GF-P24 remains In Progress; no remaining whole task
 is accepted solely from these deliveries. Follow the
 [marker-feedback response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md) for measurable
-requirements, real stakeholder input, reproducible results and measured value.
+requirements, reproducible results and measured value. On 23 October Deston chose
+[secondary research](RESEARCH_POSITIONING_2026_10_23.md) instead of trainer
+interviews. The problem rationale and alternatives review are complete; no
+interviews are assigned. Direct stakeholder elicitation remains unperformed.
 
 The current retained Studio source ZIP is `releases/gestureforge-studio-source.zip`.
 Its adjacent `gestureforge-studio-source.json` records the exact source commit,
@@ -145,10 +148,10 @@ members have work available now; the later acceptance gates below still apply.
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
 | Deston | Review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. Retain final direction; no repeat participant TEST is requested. | Integrate marker-response and reproducibility improvements, reconcile report sections and analyse actual workflow evidence when supplied. |
-| Hau Jie | After the diagnostic software passes and recording consent, perform one bounded Preview/rehearsal decision-geometry diagnostic with unchanged profile settings; do not repeat full Practice or the old labels-only trace. Continue laptop-B remaining checks and genuine presenter feedback. | Inspect the new private diagnostic against intended-pose notes, predeclare any development-only repair experiment, and reconcile methods/results after GF-P21. Preserve failed TEST and separate interrupted versus later reported stability runs. |
+| Hau Jie | After the diagnostic software passes and recording consent, perform one bounded Preview/rehearsal decision-geometry diagnostic with unchanged profile settings; do not repeat full Practice or the old labels-only trace. Continue laptop-B remaining checks. No trainer interviews are assigned. | Inspect the new private diagnostic against intended-pose notes, predeclare any development-only repair experiment, and reconcile methods/results after GF-P21. Preserve failed TEST and separate interrupted versus later reported stability runs; use the research review for interaction limits. |
 | Javier | Finish unrun native association/error and eligible active-capture Camera/focus recovery cases; coordinate laptop B and the prescribed real workflow study. Capture exact runtime identity on new checks. | Consolidate the received two-device matrix without duplicate/cumulative event counting, fix demonstrated defects and prepare remaining gesture/scenario/recovery footage and guide. |
 
-**Next returns:** only new remaining-case observations, genuine stakeholder/workflow
+**Next returns:** only new remaining-case observations, actual workflow
 records and revised final report/demo sections when their prerequisites pass.
 The Word contribution, manual video, reference [10] packet and restore exports
 are already received. Do not repeat successful unchanged cases. The manual

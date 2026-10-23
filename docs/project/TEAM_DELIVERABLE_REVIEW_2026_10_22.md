@@ -113,6 +113,11 @@ runtime identity, its appearance is not evidence that the repair regressed.
 
 ## Next work and acceptance
 
+**23 October method update:** Deston replaced the trainer-feedback collection
+suggested below with the completed [secondary-research review](RESEARCH_POSITIONING_2026_10_23.md).
+That interview instruction is superseded; the device, recognition and actual
+workflow tasks remain. Direct stakeholder elicitation is not claimed.
+
 | Owner | Manual work | GPT-assisted work |
 |---|---|---|
 | Hau Jie | Operate laptop B for the remaining guide-only setup, measured stability/release and eligible handoff cases agreed with Javier. Gather genuine trainer/demo stakeholder feedback on the problem and proposed workflow. | Continue development-only recognition diagnosis; reconcile final methods/results after GF-P21 and preserve failed targets. No resend of reference [10]. |

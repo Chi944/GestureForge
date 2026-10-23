@@ -3,6 +3,8 @@
 Revision 4 - 30 September 2026. Submission target: 7 November 2026.
 Acceptance wording clarified on 22 October after marker feedback; scope, IDs,
 task weights and the previously frozen recognition targets remain unchanged.
+On 23 October Deston selected published secondary research in place of the
+suggested trainer interviews. Original workflow observations remain required.
 Status: user authorised local implementation and Trello kickoff on 30 September 2026. The user subsequently authorised committing and pushing all current project changes and merging reviewed PRs.
 This approval version removes contextual AI assistance at the user's request: no chat/question-answering, prompt templates, note retrieval, hosted provider, API-key setup or answer-generation evaluation. Requirements R09, R10, R17 and R18 are retired; the other IDs remain stable. Gesture recognition remains the AI subsystem. Proposed capabilities are not claims of completed implementation or achieved results. The submitted assignment remains preserved. Current implementation progress is recorded in docs/project/TEAM_BACKLOG.csv and docs/project/PROGRESS.md.
 
@@ -28,8 +30,10 @@ customer demand. A clicker is a reasonable simpler choice for card-only navigati
 GestureForge's proposed distinction is the combination of personal input,
 authored stages, locally bound resources and safe recovery. We do not claim a new
 gesture-recognition algorithm, universal accessibility or an internet-first idea.
-Use [the workflow protocol](WORKFLOW_COMPARISON.md) to obtain genuine need evidence
-and compare the same task with manual controls before claiming an advantage.
+The [research review](RESEARCH_POSITIONING_2026_10_23.md) grounds this hypothesis
+in published demonstration and interaction research and compares existing tools.
+It does not establish direct customer validation. Use [the workflow protocol](WORKFLOW_COMPARISON.md)
+to compare input methods within the same Studio task before claiming an advantage.
 
 One polished supplied scenario is mandatory: a fictional software-product onboarding session with a ten-card deck, six demo stages, Calculator as a demo tool, a local TXT/PDF reference and resource-folder shortcut, an optional HTTPS help link and clear authored instructions. Camera is a separate device-handoff example. All example claims and data must be explicitly fictional or properly sourced.
 
@@ -175,7 +179,7 @@ passes on the identified release; a test file's existence is not a pass.
 | R15 | A permitted starter can be loaded without enrolment/account; first standard action target ≤2 minutes after camera setup, trial macro-F1 ≥0.85 for each held-out person. Missing/failed starter gives an explicit manual/personal fallback. | `test_starter.py`, `test_app_starter.py`; frozen unseen-person scores and native first-use timing. No approved starter is currently bundled. |
 | R16 | Create, edit, reorder and delete stages within the 1–12 stage limit. One gesture requests at most one configured action; failed stage stays recoverable; saved progress restores paused with no old launches. | `test_javier_lane.py`, `test_javier_widgets.py`, `test_app_dispatch.py`; authored runbook and native recovery |
 | R19 | Summary counters exactly reproduce distinct exported events; launch requests are not labelled task completion. Restore starts a new result revision without replay; overlapping snapshots are not double-counted. | `test_compare_workflows.py`, `test_javier_lane.py`; reviewed before/after exports |
-| R20 | Record every attempted manual/starter/personal condition for the same six-stage scenario. Condition success requires all six observed outcomes, valid readiness where applicable, actual condition-appropriate non-simulated events, no manual fallback, no execution mismatch and completion within the existing 900-second task limit. Report errors/help/retries, missing conditions and ratings without asserting superiority from an incomplete comparison. | `test_compare_workflows.py`, [workflow protocol](WORKFLOW_COMPARISON.md); unfamiliar-presenter observations and need interviews remain required |
+| R20 | Record every attempted manual/starter/personal condition for the same six-stage scenario. Condition success requires all six observed outcomes, valid readiness where applicable, actual condition-appropriate non-simulated events, no manual fallback, no execution mismatch and completion within the existing 900-second task limit. Report errors/help/retries, missing conditions and ratings without asserting superiority from an incomplete comparison. | `test_compare_workflows.py`, [workflow protocol](WORKFLOW_COMPARISON.md); unfamiliar-presenter observations remain required; [secondary research](RESEARCH_POSITIONING_2026_10_23.md) supplies the problem rationale |
 
 Test filenames above refer to `tests/`. The detailed subsystem matrix and release
 records retain actual results, platform skips, build identities and limitations.

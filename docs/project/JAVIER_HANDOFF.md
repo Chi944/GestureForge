@@ -53,8 +53,10 @@ See the [receipt review](TEAM_DELIVERABLE_REVIEW_2026_10_22.md).
 - **Build identity:** record the exact runtime on new checks. The 22 October filmed
   runtime was not freshly captured, so its old LIVE banner does not prove PR #35
   regressed. Verify only affected feedback on the reviewed source.
-- **Study:** coordinate genuine presenter feedback and the prescribed workflow
-  comparison with Hau Jie. The manual exports use `harbor-onboarding-standard`,
+- **Study:** coordinate the prescribed actual workflow comparison with Hau Jie.
+  Deston replaced the suggested trainer interviews with [secondary research](RESEARCH_POSITIONING_2026_10_23.md)
+  on 23 October; no interview arrangement is assigned. Use its problem framing
+  in the guide/video without claiming measured benefits. The manual exports use `harbor-onboarding-standard`,
   not the study workspace `harbor-onboarding`; do not rename evidence or loosen
   the validator. An edited video is not an uninterrupted timed workflow trial.
 - **With GPT:** update the two-device case matrix, preserve duplicate/cumulative
