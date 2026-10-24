@@ -17,8 +17,8 @@ from gestureforge.vocabulary import GestureVocabulary
 
 
 @pytest.fixture
-def workflow(tmp_path):
-    generated = synthetic_dataset(trials_per_label_per_split=2)
+def workflow(tmp_path, request):
+    generated = synthetic_dataset(trials_per_label_per_split=getattr(request, 'param', 2))
     vocabulary = GestureVocabulary(('G1', 'G2', 'G3'))
     mapping = dict(zip(generated.vocabulary.labels, vocabulary.labels, strict=True))
     records = tuple(replace(r, participant_id='SOFTWARE_TEST', hand='Right', provenance='human',
@@ -34,7 +34,7 @@ def workflow(tmp_path):
     repair = PoseRepair(original.record, 'NEUTRAL', 'Reviewed diagnostic: neutral rejection')
     plan = repair.plan(2, 'GENERATED SOFTWARE TEST ONLY')
     # New selected-class session, with five slots in each of two trials.
-    chosen = tuple(r for r in source.records if r.split == 'train' and r.intended_label == 'NEUTRAL')
+    chosen = tuple(r for r in source.records if r.split == 'train' and r.intended_label == 'NEUTRAL')[:10]
     replacement = tuple(replace(r, session_id='repair-session', trial_id='repair-' + r.trial_id)
                         for r in chosen)
     features = np.array([source.features[r.feature_index] for r in chosen], dtype=np.float32) + .02
@@ -261,6 +261,7 @@ def test_failed_candidate_profile_save_keeps_original(workflow, tmp_path, monkey
     assert store.load(original.record.profile_id).record == original.record
 
 
+@pytest.mark.parametrize('workflow', [2, 8], indirect=True)
 def test_widget_review_does_not_train_and_selector_preserves_settings(workflow, tmp_path):
     from PySide6.QtWidgets import QApplication
     from gestureforge.pose_repair_widget import PoseRepairWidget
@@ -289,6 +290,10 @@ def test_widget_review_does_not_train_and_selector_preserves_settings(workflow, 
     widget.session.features = list(samples.features)
     widget.session.state = 'complete'
     widget._collection_complete(samples.manifest_path)
+    old_count = sum(r.intended_label == 'NEUTRAL' for r in repair.bundle.valid_records('train'))
+    assert f'Replace NEUTRAL TRAIN: {old_count} -> 10 valid samples (not added)' in widget.source_notice.text()
+    assert f'Retain TRAIN: G1: {old_count}, G2: {old_count}, G3: {old_count}' in widget.source_notice.text()
+    assert 'Retraining can change predictions for every pose' in widget.source_notice.text()
     results: list[RepairCandidate] = []
     widget.candidate_ready.connect(results.append)
     widget.candidate_ready.connect(selector.offer_repair_candidate)
@@ -300,6 +305,8 @@ def test_widget_review_does_not_train_and_selector_preserves_settings(workflow, 
     assert not selector.consent.isChecked()
     assert selector._repair_candidate is not None
     assert selector._repair_candidate.settings == original.record.settings
+    assert dict(selector._repair_candidate.valid_per_label) == {
+        'G1': old_count, 'G2': old_count, 'G3': old_count, 'NEUTRAL': 10}
     assert store.list_ids() == (original.record.profile_id,)
     widget.close()
     selector.close()

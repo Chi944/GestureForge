@@ -29,7 +29,7 @@ class PoseRepairWidget(EnrolmentWidget):
         self.diagnosis.setMaxLength(500)
         self.diagnosis.setPlaceholderText('Describe the reviewed diagnostic and intended pose')
         self.diagnostic_reviewed = QCheckBox('I reviewed the diagnostic and want to repair this pose.')
-        self.count_review = QCheckBox('I reviewed all collected slots and the retained class counts.')
+        self.count_review = QCheckBox('I reviewed the replacement and retained TRAIN counts.')
         self.count_review.setEnabled(False)
         self.candidate_button = QPushButton('Save separate TRAIN candidate')
         self.candidate_button.setEnabled(False)
@@ -80,7 +80,9 @@ class PoseRepairWidget(EnrolmentWidget):
             return
         self.repair_pose.addItems(list(source.vocabulary.labels))
         self.source_notice.setText(f'Original: {source.display_name} · {source.selected_hand} hand. '
-                                   'A separate candidate will preserve the other three TRAIN classes.')
+                                   'A separate candidate replaces all TRAIN samples for the selected pose; '
+                                   'it keeps the other poses\' samples. Retraining can change predictions '
+                                   'for every pose. The original profile stays available.')
 
     def request_collection(self):
         try:
@@ -129,11 +131,16 @@ class PoseRepairWidget(EnrolmentWidget):
             return
         valid = len(session.features)
         total = len(session.records)
-        retained = [(label, sum(r.intended_label == label
-                               for r in self.repair.bundle.valid_records('train')))
-                    for label in self.repair.source.vocabulary.labels if label != self.repair.label]
+        counts = {label: sum(r.intended_label == label
+                             for r in self.repair.bundle.valid_records('train'))
+                  for label in self.repair.source.vocabulary.labels}
+        retained = ', '.join(f'{label}: {count}' for label, count in counts.items()
+                             if label != self.repair.label)
         self.source_notice.setText(f'Collected {self.repair.label}: {valid}/{total} valid slots. '
-                                   f'Retain: {retained}. Review before saving a separate candidate.')
+                                   f'Replace {self.repair.label} TRAIN: {counts[self.repair.label]} -> {valid} '
+                                   f'valid samples (not added). Retain TRAIN: {retained}. '
+                                   'Retraining can change predictions for every pose; evaluate all poses '
+                                   'and negative gestures before using the candidate. Original profile retained.')
         self.count_review.setEnabled(True)
         self.candidate_button.setEnabled(True)
 

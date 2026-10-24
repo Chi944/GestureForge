@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-Updated 24 October 2026 · Project deadline 7 November 2026
+Updated 24 October 2026 · Intended submission 31 October · Official deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
@@ -16,11 +16,17 @@ copy of the received traces or another unannotated recording.
 verifies all supplied hashes, model identity and predictions. Original macro-F1
 0.936508 includes two NEUTRAL trials misclassified as G1; it is not a repaired
 result. The historical stricter-margin result reproduces at 0.720879. Matching
-negatives and a separate repaired profile are absent. No live model/settings
-change is approved. Hau Jie's next GPT task is preparing the linked fixed
-twenty-trial missing-condition diagnostic, with new numeric collection only
-after he agrees. Javier continues native recovery checks. No stakeholder
-interviews are assigned; software-use observations are engineering tests.
+historical negatives and a separate repaired profile were absent from that packet.
+The [new 20-trial diagnostic](P02_GAP_DIAGNOSTIC_2026_10_24.md) is now received and
+independently reproduced: positive macro-F1 0.666667, NEUTRAL 0/2 and 53/60
+negative command predictions. PR #36 is reviewed and merged. Collection, handoff
+and fixed-model reproduction are complete; no LIVE model change is approved.
+Hau Jie now prepares at most one isolated two-trial NEUTRAL TRAIN replacement,
+after separate consent, using the reviewed plan and existing flow. It replaces
+40 NEUTRAL samples with 10, refits all-class scaling and must pass every fixed
+old/new comparison before further qualification is considered. Javier continues
+native recovery checks. No stakeholder interviews are assigned; software-use
+observations are engineering tests.
 
 GF-P10 and GF-P34 are now accepted against their original software criteria,
 verified independently by 236 passing tests and one platform skip. This corrects
@@ -46,8 +52,8 @@ archive checksum and file count; send both files together and record that identi
 on each new check. The 23 October handoff includes opt-in recognition recording
 and analysis. Source setup is still required; it is not a standalone executable.
 Hau Jie's earlier archive has a different hash; retain its separate receipt.
-The original P02 numeric recording and exact-file handoff are complete; only the
-labelled missing-condition check above is newly prepared. The [progress record](PROGRESS.md) records verified repairs;
+The original P02 numeric recording, exact-file handoff and new labelled
+missing-condition check are complete. Do not repeat them. The [progress record](PROGRESS.md) records verified repairs;
 Javier checks only affected recovery cases plus the remaining original cases.
 Git users sync main on their own branches; existing physical evidence retains
 the build on which it was collected.
@@ -151,13 +157,13 @@ prompt or decision logs as part of this handoff.
 
 ### Current manual and GPT-ready work
 
-Current as of 24 October, after the [exact P02 review](P02_PROFILE_REVIEW_2026_10_24.md) and original-criteria acceptance audit. All three
+Current as of 24 October, after the [new diagnostic review](P02_GAP_DIAGNOSTIC_2026_10_24.md) and original-criteria acceptance audit. All three
 members have work available now; the later acceptance gates below still apply.
 
 | Member | Manual / physical work now | GPT-assisted work now |
 |---|---|---|
-| Deston | Review the integrated demonstration, release evidence and final report/presentation when prerequisites pass. Retain final direction; no repeat participant TEST is requested. | Integrate marker-response and reproducibility improvements, reconcile report sections and analyse actual workflow evidence when supplied. |
-| Hau Jie | If agreed, record the new twenty-trial labelled development check in the linked protocol: eight positive controls and twelve index-only negatives. No full Practice or TEST repeat. Continue laptop-B remaining checks. No stakeholder interviews. | Prepare existing collector commands and vocabulary; score fresh inputs using exact Original TRAIN/settings without selection. Reconcile methods/results with the verified baseline and missing negatives; retain failed TEST and separate stability records. |
+| Deston | Review the integrated demonstration and release evidence when prerequisites pass; rehearse the updated ten-minute presentation. Current report review is complete; contributions are deferred to the final declaration. | Review the isolated candidate, integrate demonstrated fixes and analyse actual workflow evidence. Keep local report/matrix/presentation aligned with verified results. |
+| Hau Jie | After separate consent and a correct-camera/open-palm check, record just two new NEUTRAL TRAIN trials for the reviewed replacement. Preserve failures; no repeat diagnostic, full Practice or TEST. Continue laptop-B remaining checks. | Build at most one isolated candidate; pin inputs and compare all four classes on historical/new development plus each negative condition under fixed stop rules. Reconcile methods/Word QA and return new evidence privately. |
 | Javier | Finish unrun native association/error and eligible active-capture Camera/focus recovery cases; coordinate laptop B and the prescribed real workflow study. Capture exact runtime identity on new checks. | Consolidate the received two-device matrix without duplicate/cumulative event counting, fix demonstrated defects and prepare remaining gesture/scenario/recovery footage and guide. |
 
 **Next returns:** only new remaining-case observations, actual workflow

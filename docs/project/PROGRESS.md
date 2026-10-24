@@ -2,6 +2,40 @@
 
 Snapshot: 24 October 2026. Task weights measure accepted work, not an expected grade.
 
+## New P02 diagnostic independently verified and PR #36 merged — 24 October
+
+The [new gap diagnostic](P02_GAP_DIAGNOSTIC_2026_10_24.md) is complete and received.
+All 23 payload hashes and all 100 sample predictions reproduce from exact Original.
+New positive macro-F1 is 0.666667: action poses each pass 2/2, but NEUTRAL is 0/2
+with all ten samples accepted as G2. Negatives contain 53 command predictions out
+of 60 scheduled slots, three NEUTRAL predictions and four wrong-hand invalids.
+These are classifier predictions, not live actions. The private audit finds no
+trial/session overlap or duplicated features between the four input sets.
+
+The recording, handoff, reproduction and PR-review substeps are complete. The
+reviewed next experiment is one separate NEUTRAL-only TRAIN replacement candidate,
+using two new consented trials and the private proposal's pinned all-class and
+negative comparisons. It replaces 40 NEUTRAL samples with 10 and refits the scaler
+for every class. The existing Repair pose screen now states these consequences
+and shows before/after counts; **32 targeted tests**, Ruff and focused mypy pass.
+No model/settings/controller or readiness gate changed. No further 20-trial
+diagnostic, full Practice, participant TEST or stakeholder interview is assigned.
+
+Hau Jie handles that bounded physical capture and remaining laptop-B evidence;
+Javier continues native cases and consolidates device/guide/video evidence.
+Deston integrates the results and maintains local report, matrix and presentation.
+The report review is a completed substep; final results still require reconciliation.
+Contribution details are deferred to the final declaration, as requested.
+The intended submission date is **31 October**; the official deadline is 7 November.
+
+**Accepted: 151/223 (67.7%), 19/29 tasks.** Deston 34/75 (45.3%), Hau Jie
+63/75 (84.0%), Javier 54/73 (74.0%). Independent review found no remaining whole
+task whose original criteria are now met. The new failure evidence and UI clarity
+fix complete work within GF-P21/GF-P26 without establishing recognition safety,
+real integrated workflow or release acceptance. Earlier recording requests below
+are historical and superseded. Private inputs/Word/slides remain local; prompt
+and decision logs are unchanged.
+
 ## Exact P02 baseline reproduced — 24 October
 
 Hau Jie's existing-profile packet passes CRC, safe-member checks and all thirteen

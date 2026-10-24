@@ -4,6 +4,40 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Next delivery — assigned 7 October
 
+**Current next delivery — 24 October, after PR #36 and the new private packet.**
+Your 20-trial diagnostic and handoff are complete. Deston independently reproduced
+all 100 predictions, section metrics and geometry; see
+[the integration decision](P02_GAP_DIAGNOSTIC_2026_10_24.md#independent-integration-and-next-experiment).
+Do not repeat that diagnostic or resend either received P02 packet.
+
+- **GPT now:** prepare your existing predeclared proposal for at most one isolated
+  selected-label TRAIN candidate. Keep Original, settings and all evaluation input
+  hashes fixed. The existing flow replaces 40 NEUTRAL samples with 10, retains
+  40 samples in each action class and refits the scaler across all classes.
+  Compare all classes on both historical/new validation and each negative
+  condition, using your existing strict stop rules. Never train on validation or
+  TEST, search thresholds, install automatically or claim a LIVE pass.
+- **Your manual part:** if you consent to new numeric recording, check the correct
+  webcam view and full intended open-palm pose, record actual conditions, then use
+  Repair pose for just two new NEUTRAL TRAIN trials. Preserve invalid/cancelled
+  attempts and stop for review if incomplete; do not silently retry or expand.
+  Return the new TRAIN pair, candidate receipt and fixed comparison privately.
+- **Device work in parallel:** continue laptop-B's remaining guide-only install,
+  measured uninterrupted 30-minute stability, shutdown/release and Javier-assigned
+  native cases. Do not rerun unchanged successful cases or bypass gesture readiness.
+- **Methods:** incorporate the independently verified 0.666667 result, 53/60
+  negative command predictions and all limits. Your updated Word draft's visual
+  QA was not supplied as passed; send it privately once ready for visual review.
+- **Dates:** aim for the recognition disposition by 26 October and final handoff
+  by 29 October, supporting Deston's 31 October submission target. The official
+  deadline is 7 November; retain failures rather than imply qualification.
+
+Continue on `codex/hau-jie-profiles`; focused PRs go to Deston for review/merge.
+No interviews or repeat participant TEST are assigned. GF-P21/GF-P24 retain their
+original final checks and dependencies; accepted task weight remains 63/75.
+
+### Historical baseline preparation — superseded by the delivery above
+
 **24 October — exact P02 packet received and Original baseline reproduced.**
 Read [the verified result and next diagnostic](P02_PROFILE_REVIEW_2026_10_24.md).
 All 13 payload hashes, exact saved model identity and supplied predictions

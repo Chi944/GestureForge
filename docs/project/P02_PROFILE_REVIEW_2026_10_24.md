@@ -1,5 +1,12 @@
 # Exact P02 profile review — 24 October 2026
 
+**Later 24 October update:** the 20-trial follow-up specified below is now
+complete, privately received and independently reproduced. See the
+[new diagnostic and next repair step](P02_GAP_DIAGNOSTIC_2026_10_24.md).
+Do not repeat the collection instructions below; they preserve the original plan
+and baseline review. New negatives are available in that separate packet, while
+the historical matching negatives discussed here remain absent.
+
 ## Outcome
 
 The existing P02 Original model and positive development result now reproduce

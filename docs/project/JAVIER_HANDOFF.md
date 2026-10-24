@@ -20,6 +20,26 @@ verification is in [PROGRESS.md](PROGRESS.md).
 
 ### Private receipts reviewed — 22 October
 
+**Current update — 24 October:** Hau Jie's new 20-trial diagnostic is now
+received, independently reproduced and merged in PR #36. The
+[new result and disposition](P02_GAP_DIAGNOSTIC_2026_10_24.md) retain failed
+NEUTRAL/index-only recognition. Hau Jie owns one bounded new NEUTRAL TRAIN
+replacement experiment, after his consent; do not repeat the old trace, collect
+for him, rerun full Practice or assume a recogniser now qualifies for LIVE.
+
+Your work can continue now: finish remaining manual association/error/recovery
+cases, coordinate Hau Jie's laptop-B guide-only setup, measured 30-minute run and
+post-close camera release, and consolidate exact build-tagged evidence. Eligible
+active-camera gesture cases and the real scenario wait for genuine readiness.
+GPT can reconcile the two-device matrix, fix demonstrated app defects and update
+guide/storyboard; capture the complete gesture/recovery video only after the
+working path is verified. Preserve the existing edited manual footage as a draft.
+Aim for evidence handoff by 29 October for Deston's 31 October submission target;
+official deadline remains 7 November. Work on `codex/javier-shortcuts`, with PRs
+left for Deston. No stakeholder interviews or repeat participant TEST.
+
+### Historical 24 October baseline note — superseded above
+
 **24 October recognition update:** Hau Jie's exact profile packet is received;
 [the P02 Original result reproduces independently](P02_PROFILE_REVIEW_2026_10_24.md).
 Macro-F1 0.936508 is the unchanged Original result, with two NEUTRAL trials

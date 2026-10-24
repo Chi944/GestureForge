@@ -2,6 +2,12 @@
 
 ## Decision
 
+**Integration review, 24 October:** Deston received the private gap packet and
+independently reproduced the results below. PR #36 is reviewed and merged.
+The 20-trial collection, private handoff and fixed-model reproduction are complete;
+do not repeat them. The bounded TRAIN replacement below is ready for Hau Jie's
+separate recording consent and preparation; it is not a completed repair.
+
 The fixed `p02-gap-v1` collection and Original-model scoring substeps are complete,
 with operator-confirmed pose order and no reported interruptions. The Original
 personal model is not suitable for LIVE on this evidence. No repaired model,
@@ -111,3 +117,50 @@ private target bindings. Full private data/logs/Word remain out of GitHub/Trello
 This public note is aggregate evidence only. Remaining laptop-B cases and final
 methods/results reconciliation retain their original gates. No interviews are
 assigned and no acceptance totals are changed.
+
+## Independent integration and next experiment
+
+The received ZIP has 24 safe members, passes CRC, and matches all 23 payload
+hashes and the source-to-archive map. Reconstructing exact P02 Original matches
+all 100 new sample predictions, both section metrics, per-trial outcomes and
+geometry (apart from execution-dependent fit time). No trial/session overlap or
+identical feature rows were found across Original TRAIN, historical validation,
+new positive validation and new negatives. Original bytes remain unchanged.
+Private receipts are retained under `.local/p02-gap-20261024/independent/`.
+This confirms the numeric calculation; physical cue adherence, distance and camera
+identity remain operator-reported. No numeric integrity or shared runtime defect
+was found that explains the physical confusion.
+
+The private predeclared repair proposal is reviewed. Proceed with **at most one
+isolated DEVELOPMENT candidate**, after Hau Jie consents and verifies the correct
+webcam view and complete intended open-palm pose. Record actual conditions and any
+deviation; do not rewrite the earlier five-metre report. Use the existing Repair
+pose flow for two new NEUTRAL TRAIN trials, five valid slots each. No other
+collection, search or automatic LIVE installation is authorised by this step.
+
+This is a **replacement**, not an addition: 40 old NEUTRAL TRAIN samples become
+10 new ones, leaving G1/G2/G3/NEUTRAL counts **40/40/40/10**. The scaler refits on
+the whole candidate, so every class prediction can change even when its TRAIN
+samples are retained. Preserve Original for rollback and keep all validation,
+negative and TEST data out of TRAIN. Pin the new TRAIN hashes before fitting.
+
+Use the proposal's unchanged settings and comparisons on both old and new
+development conditions, reported separately. Historical action recall must remain
+8/8 per class and NEUTRAL at least 6/8; new action controls must remain 2/2 per
+class and NEUTRAL reach 2/2 with no command predictions. Each negative condition
+must have zero accepted command samples. Retain all 60 scheduled slots, including
+the four invalid detections: those four are unmeasured recognition, not successful
+rejections. Any failure/incomplete coverage stops the experiment for review.
+No second candidate or selective retry belongs to this plan. Passing this reused
+development screen would still require separate qualification and genuine current
+Practice before LIVE; it does not qualify the starter.
+
+The repair review screen now shows the selected-label before/after counts,
+retained class counts and the all-pose retraining warning. Generated regressions
+cover both 10-to-10 and 40-to-10 replacement with mandatory review and no automatic
+training/profile creation. This improves review clarity; it does not fix recognition.
+
+Accepted progress remains **151/223 (67.7%), 19/29 tasks**. GF-P21 still needs
+affected recognition checks and its original GF-P20 dependency; diagnosis alone
+cannot close it. Target delivery remains 31 October, with official deadline
+7 November. Failed outcomes remain visible if that target cannot be met.
