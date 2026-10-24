@@ -178,6 +178,8 @@ def _parse_record(raw: Any, base: Path, seen: SeenSegments) -> dict[str, Any]:
         "comfort": _nullable_bounded_int(raw["comfort"], 1, 5, "comfort"),
         "usefulness": _nullable_bounded_int(raw["usefulness"], 1, 5, "usefulness"),
     }
+    _require(condition in record["planned_order"], "condition is outside planned_order")
+    _require(record["order"] <= len(record["planned_order"]), "order exceeds planned_order length")
     segments = _segments(raw["summary_segments"], base, record, seen)
     record["summary_segments"] = segments
     return record
@@ -394,6 +396,9 @@ def _participants(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "planned_order": rows[0]["planned_order"],
             "actual_order": [record["condition"] for record in rows],
             "missing_conditions": [condition for condition in CONDITIONS if condition not in present],
+            "missing_planned_conditions": [
+                condition for condition in rows[0]["planned_order"] if condition not in present
+            ],
             "records": rows,
         })
     return result
@@ -540,9 +545,10 @@ def _nullable_bounded_number(value: Any, minimum: float, maximum: float, name: s
 
 
 def _planned_order(value: Any) -> list[str]:
-    _require(isinstance(value, list) and len(value) == 3, "planned_order must contain M, S and P")
+    _require(isinstance(value, list) and len(value) in {2, 3}, "planned_order must contain M/P or M/S/P")
     result = [_enum(item, CONDITIONS, "planned_order item") for item in value]
-    _require(set(result) == set(CONDITIONS), "planned_order must be a complete M/S/P permutation")
+    expected = {"M", "P"} if len(result) == 2 else set(CONDITIONS)
+    _require(set(result) == expected, "planned_order must be a complete M/P or M/S/P permutation")
     return result
 
 

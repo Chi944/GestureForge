@@ -2,6 +2,40 @@
 
 You own recognition and personalisation for GestureForge Studio. Build the reusable AI and profile components; Deston owns integration and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` first. Work is assigned for the project due 7 November 2026; the assignment is already submitted.
 
+## Active task — personal release, Revision 5, 24 October
+
+Deston has authorised a smaller Windows release. **Stop shared-starter delivery,
+new recruitment and broad recognition searches.** Keep the completed starter
+research and failed TEST results in the methods; they are not release gates.
+No interviews, repeat participant TEST or repeat twenty-trial diagnostic.
+
+1. **With GPT:** sync main into `codex/hau-jie-profiles`, preserving private work.
+   Use the existing predeclared NEUTRAL repair proposal and exact Original inputs.
+   Keep settings, old/new validation and negatives fixed; create at most one
+   isolated candidate. This replaces 40 NEUTRAL TRAIN samples with ten, retains
+   40 per action class and refits the all-class scaler. No automatic installation.
+2. **Manual:** if you agree to new numeric collection, record only the two new
+   NEUTRAL TRAIN trials through Repair pose, with actual camera/pose conditions.
+   Keep invalid or interrupted attempts. GPT scores the fixed comparisons; send
+   the private candidate inputs, receipt and pass/fail result to Deston.
+3. **Decision:** if the candidate fails any declared check, stop the experiment
+   and report that result. If it passes, verify the profile's actual 22-window
+   Practice before asking Deston to use it in the integrated workflow. Passing
+   offline checks alone never grants LIVE. Do not bypass rejection or readiness.
+4. **In parallel:** operate laptop B for the remaining guide-only install,
+   offline core, uninterrupted measured 30-minute run and post-close camera
+   reacquisition. Javier coordinates the case list; reuse unchanged valid passes.
+5. **Final handoff:** reconcile methods/results once the repair disposition and
+   affected workflow checks are known. Keep Word/data/full logs private; submit
+   focused code/sanitized-evidence PRs for Deston's review. Aim for recognition
+   disposition by 26 October and complete handoff by 29 October.
+
+GF-P21 now checks the personal profile selected for release and affected behaviour;
+success for every research participant is not required. Its GF-P20 dependency and
+GF-P24's final reconciliation remain. No current LIVE-qualified profile is proven.
+Your accepted progress remains **63/75 (84.0%)**. The dated instructions below are
+historical where they conflict with this section and [Revision 5](PROJECT_PLAN.md).
+
 ## Next delivery — assigned 7 October
 
 **Current next delivery — 24 October, after PR #36 and the new private packet.**

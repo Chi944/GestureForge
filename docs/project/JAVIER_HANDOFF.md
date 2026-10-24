@@ -2,6 +2,37 @@
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
+## Active task — finish Windows evidence, Revision 5, 24 October
+
+Deston has authorised personal enrolment as the release path. Shared-starter
+delivery, new recruitment, interviews and the three-condition user study are
+deferred. Existing product features, safety and two-laptop verification remain.
+
+1. **Manual now:** finish the remaining app/file/folder/HTTPS association,
+   missing-target, invalid-scheme and explicit recovery cases on laptop A. Check
+   only the affected recovery fixes plus unrun cases; preserve valid old passes.
+   Hau Jie operates laptop B. Coordinate its fresh guide-only setup, offline
+   functions, measured continuous 30-minute stability and post-close camera check.
+2. **GPT now:** consolidate the two-device case matrix with exact build identity,
+   observed outcomes and remaining gaps. Fix reproduced retained-feature defects
+   on `codex/javier-shortcuts`; leave review and merge to Deston.
+3. **Once a personal profile qualifies:** help Deston observe the six-stage
+   personal workflow, then the manual-versus-personal case study using at least
+   one consenting available team operator. Record real order, times, errors,
+   assistance and familiarity. Do not invent a starter attempt or generalise a
+   team case study to customers. Follow [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md).
+4. **After the working path passes:** finish eligible active-capture Camera and
+   focus/recovery cases, then capture the actual gesture/recovery video on the
+   identified release build. Use existing manual footage only with correct
+   attribution. Finish the personal-first guide once; avoid repeated redrafts.
+
+Do not collect for Hau Jie or run more full Practice on a known failing profile.
+The 22-window gate, hold/negative measurements and no unintended external actions
+remain. A failed repair does not authorize bypasses. Aim to hand off device and
+video evidence by 29 October for the 31 October submission target.
+Your accepted progress remains **54/73 (74.0%)**. The dated instructions below
+are historical wherever [Revision 5](PROJECT_PLAN.md) supersedes them.
+
 ## Recovery fixes and next work — 23 October
 
 Deston's integration update repairs three software defects: multiple unavailable

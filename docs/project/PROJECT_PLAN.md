@@ -1,20 +1,18 @@
 # GestureForge Studio approved project build plan
 
-Revision 4 - 30 September 2026. Submission target: 7 November 2026.
-Acceptance wording clarified on 22 October after marker feedback; scope, IDs,
-task weights and the previously frozen recognition targets remain unchanged.
-On 23 October Deston selected published secondary research in place of the
-suggested trainer interviews. Original workflow observations remain required.
+Revision 5 - 24 October 2026. Submission target: 31 October 2026; official deadline: 7 November 2026.
+Deston authorised this scope reduction on 24 October to prioritise a working Windows product. R15 supplied starter delivery is deferred; personal enrolment is the supported gesture path. R20 becomes an observed manual-versus-personal engineering case study with an available consenting operator. This is a transparent change to product commitments, not a claim of tutor approval or completed testing. Earlier requirements, experiments and failed frozen TEST results remain part of the project history.
+Task IDs, estimates, dependencies, accepted points and frozen recognition targets are unchanged. Scope reduction earns no acceptance points. On 23 October Deston selected published secondary research instead of trainer interviews; no interviews or new unfamiliar-participant recruitment are required by this revision.
 Status: user authorised local implementation and Trello kickoff on 30 September 2026. The user subsequently authorised committing and pushing all current project changes and merging reviewed PRs.
-This approval version removes contextual AI assistance at the user's request: no chat/question-answering, prompt templates, note retrieval, hosted provider, API-key setup or answer-generation evaluation. Requirements R09, R10, R17 and R18 are retired; the other IDs remain stable. Gesture recognition remains the AI subsystem. Proposed capabilities are not claims of completed implementation or achieved results. The submitted assignment remains preserved. Current implementation progress is recorded in docs/project/TEAM_BACKLOG.csv and docs/project/PROGRESS.md.
+The earlier approved revision removed contextual AI assistance at the user's request: no chat/question-answering, prompt templates, note retrieval, hosted provider, API-key setup or answer-generation evaluation. Requirements R09, R10, R17 and R18 are retired; the other IDs remain stable. Gesture recognition remains the AI subsystem. Proposed capabilities are not claims of completed implementation or achieved results. The submitted assignment remains preserved. Current implementation progress is recorded in docs/project/TEAM_BACKLOG.csv and docs/project/PROGRESS.md.
 
 ## 1. Product and scope correction
 
-**GestureForge Studio is a gesture-controlled training and demonstration workspace: start with standard gestures, personalise when needed, build a guided demo, and control approved desktop resources through deliberate gestures.**
+**GestureForge Studio is a gesture-controlled training and demonstration workspace: enrol personal gestures, reuse a saved profile, build a guided demo, and control approved desktop resources through deliberate gestures.**
 
-The earlier scope made every user enrol gestures and treated most capability as isolated shortcuts. This revision adds depth through a complete presenter workflow, optional personalisation and measurable AI behaviour. Overlap with existing products is acceptable; practical value, justified design and verified execution matter more than a worldwide novelty claim.
+The release prioritises a complete presenter workflow, personal input and measurable AI behaviour. The proposed supplied starter did not qualify for release; deferring it removes the zero-enrolment promise rather than disguising its failed results. Overlap with existing products is acceptable; practical value, justified design and verified execution matter more than a worldwide novelty claim.
 
-Commercial scenario: a corporate software trainer prepares a reusable product walkthrough. A colleague opens it, checks camera framing, tries the standard gestures, follows the demo stages, uses desktop shortcuts for demonstration resources, bookmarks discussion points and resumes saved procedures. After rehearsal, the trainer sees missed gestures, retries and incomplete stages. No enterprise cloud platform is required.
+Commercial scenario: a corporate software trainer prepares a reusable product walkthrough. A colleague opens it, enrols their own gestures or selects their saved personal profile, passes Practice, follows the demo stages, uses desktop shortcuts for demonstration resources, bookmarks discussion points and resumes saved procedures. After rehearsal, the trainer sees missed gestures, retries and incomplete stages. No enterprise cloud platform is required.
 
 **Problem to solve:** a trainer conducting a demonstration repeatedly returns to
 the keyboard to find reference material, open tools and recover their place after
@@ -50,9 +48,9 @@ Sources re-read: `ICT304_Assignment_Project_TS_2026.pdf` (all seven pages) and `
 | Final feedback criterion | Weight | How the revised scope earns evidence |
 |---|---:|---|
 | Requirement and report focus | 20% | Named trainer problem, two user journeys, bounded conditions, numbered requirements, acceptance tests and realistic commercial scenario |
-| System design | 35% | Starter/personal recognition, session engine, local launch control, rehearsal and recovery, explicit interfaces, alternatives and lifecycle decisions |
-| Evaluation and results | 20% | kNN/SVM comparison; unseen-person starter evaluation; personalisation benefit; rejection/controller comparisons; subsystem/recovery tests and workflow comparison |
-| User guide and code/model | 15% | Immediate starter experience, clear optional enrolment, install guide, reproducible data/configurations, screenshots and readable source |
+| System design | 35% | Personal recognition, session engine, local launch control, rehearsal and recovery, explicit interfaces, alternatives and lifecycle decisions |
+| Evaluation and results | 20% | kNN/SVM comparison; retained unseen-person starter results; measured personalisation differences; rejection/controller comparisons; subsystem/recovery tests and workflow comparison |
+| User guide and code/model | 15% | Clear personal enrolment and manual fallback, install guide, reproducible data/configurations, screenshots and readable source |
 | Content and format | 10% | Clear report, figures, references, explained limitations and consistent evidence |
 
 Creativity is explicit in the assignment rubric and the final report's abstract/product discussion. The final feedback sheet does not assign it a separate percentage. Adding unrelated features does not substitute for the 35% design and 20% evaluation requirements. No grade or highest-band outcome can be guaranteed.
@@ -61,17 +59,17 @@ The feedback sheet identifies deductions for missing video (20%), incomplete sub
 
 ## 3. New users, profiles and sharing
 
-### Immediate start
+### Immediate manual use; personal setup for gestures
 
-A new user chooses **Try standard gestures**. No account, custom-pose collection or saved personal profile is required. A compact starter recognition model is shipped using the same MediaPipe features and kNN/SVM machinery, trained on explicitly consented multi-person examples of three standard poses plus NEUTRAL. The existing small landmark asset remains; no large local language model is introduced.
+Guest/manual controls work immediately without a model. For gesture control, a new user creates a local personal profile and uses guided collection for three action poses plus reserved NEUTRAL. A returning user can reuse an existing profile. The existing compact landmark asset remains; no large language model or cloud account is introduced.
 
-A short framing/neutral/action check runs in a simulated preview before real gestures are enabled. This is a readiness check, not training. Target first successful standard action within two minutes after camera setup; measure it rather than claim it achieved. Manual controls work immediately. The user sees the actual startup failure reason and can choose personal training if the starter struggles.
+The selected personal profile must pass the current 22-window Practice gate before native gesture operation. Framing, selected hand, pose consistency and operating conditions must be explained; enrolment does not guarantee recognition for every hand or room. Failed checks leave manual control available and give actionable feedback. Right-hand evidence must not be presented as proof of left-hand performance.
 
-Starter recognition is an engineering deliverable requiring unseen-person tests, not a promise it will work perfectly for every hand, posture or room. Initially support the right hand, matching the current validated collection convention. Offer left-hand personal enrolment through the existing hand-selection contract; do not claim a general left-hand starter until separately tested. State this visibly rather than silently rejecting a left hand.
+**Deferred R15:** the supplied multi-person starter, no-enrolment Try Now experience and two-minute first-standard-action promise are not release requirements. Keep the existing experimental code, consent records and frozen starter evaluation results; do not ship an unqualified model or claim zero-training success. No further starter qualification or new participant recruitment is on the release critical path.
 
-### Optional personal profile
+### Reusable personal profile
 
-Choose **Personalise** to use different poses or improve recognition. Guided collection creates a private model for three action poses plus reserved NEUTRAL, along with preferences and bindings. Rehearsal identifies confusing poses and offers targeted recollection. No silent online learning: explicitly reviewed samples and retraining produce a new version that can be reverted.
+Guided collection creates a private model, preferences and bindings. Rehearsal identifies confusing poses and supports targeted recollection. No silent online learning: explicitly reviewed samples and retraining produce a new version that can be reverted. For the current recognition gap, allow one bounded DEVELOPMENT-only repair candidate, then make an explicit release decision; do not continue automatic recollection, threshold searches or TEST tuning.
 
 A returning user selects their saved profile and resumes; they do not repeat full enrolment each launch. A quick check is offered after a camera/lighting change. Switching to another user's personalised model is allowed as an explicit choice but is not recommended as a guaranteed shared model.
 
@@ -83,12 +81,12 @@ Keep these separate:
 
 | Object | Contains | Sharing rule |
 |---|---|---|
-| Starter recogniser | Standard gesture definitions and consented multi-person numeric examples/configuration | Bundled after redistribution permission and evaluation |
+| Experimental starter recogniser | Historical standard-pose examples/configuration and evaluation | Product delivery deferred; existing permissions still govern retained research data |
 | Personal profile | Gesture samples/model settings, selected hand, names and preferences | Local by default; never silently exported with company material |
 | Company workspace | Deck, runbook stages, authored instructions and named action slots | Shareable JSON pack; each computer binds its local apps |
 | Runtime session | Current stage, bookmarks, outcomes and chosen model revision | Local; pause on switching profile or workspace |
 
-Names and app preferences can be customised without retraining standard gestures. Personal model quality and content portability are separate concerns.
+Names and app preferences can be customised without retraining personal gestures. Personal model quality and content portability are separate concerns.
 
 ## 4. Creative, commercially coherent core
 
@@ -106,7 +104,7 @@ This is a bounded demo authoring tool built around the existing viewer, not a ge
 
 ### B. Rehearsal and session review
 
-Run the actual recognition/controller/mapping path against a recording dispatcher. The current personal Practice gate uses protocol `gf-p12-v4`: three five-second trials for each action pose and NEUTRAL, plus ten five-second negative/transition intervals. Every window must pass: all three trials for each pose correct, zero wrong or repeated activations, complete capture coverage and all ten negatives correct. This can grant current-session personal LIVE eligibility for the exact setup after save/reconciliation/restoration, but it is not equivalent to final reliability evaluation. The shorter guest check requires two correct simulated activations of each standard action, successful neutral rearming between them, and zero incorrect would-be actions; UNKNOWN-only output cannot pass; failed checks offer another attempt, personal enrolment or manual control. Count actions that would have fired, including accidental ones, without opening apps. Show recognition misses, false triggers, duplicate events, stage retries and task completion. Use deterministic guidance based on measured issues, such as a frequently confused pose or repeated loss of hand tracking; do not invent a diagnosis about the user's body.
+Run the actual recognition/controller/mapping path against a recording dispatcher. The current personal Practice gate uses protocol `gf-p12-v4`: three five-second trials for each action pose and NEUTRAL, plus ten five-second negative/transition intervals. Every window must pass: all three trials for each pose correct, zero wrong or repeated activations, complete capture coverage and all ten negatives correct. This can grant current-session personal LIVE eligibility for the exact setup after save/reconciliation/restoration, but it is not equivalent to final reliability evaluation. The legacy experimental starter check remains covered by regression tests but is not the release onboarding path. Failed personal checks offer a reviewed repair or manual control; UNKNOWN-only output cannot pass. Count actions that would have fired, including accidental ones, without opening apps. Show recognition misses, false triggers, duplicate events, stage retries and task completion. Use deterministic guidance based on measured issues, such as a frequently confused pose or repeated loss of hand tracking; do not invent a diagnosis about the user's body.
 
 The session summary makes the product useful for training preparation and provides evaluation evidence. Keep it small: one summary view and exportable numeric/event results, not a separate analytics platform.
 
@@ -138,7 +136,7 @@ Use native Windows opening facilities without shell-built command strings; Pytho
 | ID | Requirement | Acceptance evidence | Owner |
 |---|---|---|---|
 | R01 | Local profile create/rename/load/delete and atomic save | Two independent profiles round-trip; corrupt data rejected; prior data preserved | Hau Jie |
-| R02 | Guided optional enrolment of three custom poses plus NEUTRAL | No CLI needed; collector saves valid/invalid trials; no real actions during enrolment | Hau Jie |
+| R02 | Guided enrolment of three custom poses plus NEUTRAL for personal gesture control | No CLI needed; collector saves valid/invalid trials; no real actions during enrolment | Hau Jie |
 | R03 | Train-only feature/scaling/rejection policy; kNN/SVM comparison | Reproducible splits/configurations; UNKNOWN counts as miss; legacy assignment data imports | Hau Jie |
 | R04 | Rehearsal and readiness tied to behaviour revision | Real controller with simulated dispatch; negative would-be actions measured; changed settings invalidate result | Hau Jie |
 | R05 | NEXT/PREVIOUS/BOOKMARK, custom deck, saved position/bookmarks | Boundaries do not wrap; bookmarks idempotent; reload restores state | Javier |
@@ -149,20 +147,20 @@ Use native Windows opening facilities without shell-built command strings; Pytho
 | R12 | Atomic private storage and portable semantic app slots | No samples/keys/executable paths in exported workspace; local rebinding required | Javier |
 | R13 | Accessible status, manual fallback and clear card changes | Profile/model/context visible; readable card titles and action feedback; keyboard controls | Deston |
 | R14 | Complete release and assessment evidence | Two Windows installs, offline core, stability, full subsystem matrix, guide/video/slides/declaration | Deston |
-| R15 | Try Now using supplied multi-person standard recogniser | No enrolment/account required; unseen-person results recorded; clear fallback on failure | Hau Jie |
+| R15 — deferred | Supplied multi-person starter and no-enrolment Try Now | Preserve completed research and frozen results; no supplied-starter release claim | Hau Jie |
 | R16 | Simple runbook editor and explicit stage execution | Build/edit/reorder/delete stages; one gesture one action; failed stage recoverable | Javier |
 | R19 | Rehearsal/session summary | Counts reproduce event trace; no false completion; no raw video/key leakage | Javier |
-| R20 | Complete supplied corporate scenario and usability comparison | Unfamiliar presenter can attempt workflow; button/starter/personalised comparisons recorded | Deston |
+| R20 | Complete supplied corporate scenario and manual/personal engineering comparison | At least one consenting available operator attempts both conditions; observed outcomes, timings, errors, assistance and limitations recorded | Deston |
 | R21 | Standalone desktop shortcut library and three-slot Quick Actions | App/file/folder/HTTPS targets open through validated bindings; no deck required; missing targets and association errors visible; no duplicate launches | Javier |
 
-### Operational pass/fail rules — clarified 22 October
+### Operational pass/fail rules — revision 5, 24 October
 
-These rules make the existing requirements checkable; they do not retroactively
-change measured targets or certify current implementation. Execute every listed
+R15 and R20 are explicitly revised above; other rules retain their existing criteria.
+This revision does not retroactively change measured targets or certify current implementation. Execute every listed
 case, retain failures, and distinguish software checks from physical observations.
 The [marker response](MARKER_FEEDBACK_RESPONSE_2026_10_22.md) records why this
-clarification was needed. A requirement passes only when its entire evidence row
-passes on the identified release; a test file's existence is not a pass.
+clarification was needed. An active requirement passes only when its entire evidence row
+passes on the identified release; deferred R15 is not counted as a product pass; a test file's existence is not a pass.
 
 | IDs | Observable pass rule | Verification source / remaining physical work |
 |---|---|---|
@@ -176,10 +174,10 @@ passes on the identified release; a test file's existence is not a pass.
 | R08, R21 | Each app/file/folder/HTTPS type opens its intended target on both Windows laptops; unavailable target, association and disallowed path/scheme cases give visible failure with no unintended dispatch. Explicit retry works. Quick Actions works without a deck; active-capture Camera launch releases capture before opening and requires explicit resume on return. | `test_quick_actions_acceptance.py`, `test_windows_probe.py`, `test_app_dispatch.py`; laptop-specific native error, focus-loss and Camera evidence |
 | R13 | Every selected mode displays its current profile/model/context and action meaning; keyboard/manual navigation remains usable when recognition is unavailable. An observer can identify the new card title and distinguish rejection, paused control and failed launch from success. | `test_app_layout.py`, `test_practice_guidance.py`; observed keyboard/readability checks at the test display settings |
 | R14 | Two identified Windows installs run; laptop B follows only the supplied guide. Core actions work offline. One continuous measured 30-minute run records observation rate and peak memory, no unhandled termination, followed by normal exit and camera reacquisition. Every subsystem has evidence and every required submission artifact is present. | `test_stability.py`, release receipts, subsystem matrix; an interrupted monitor and a separate reported run cannot be combined |
-| R15 | A permitted starter can be loaded without enrolment/account; first standard action target ≤2 minutes after camera setup, trial macro-F1 ≥0.85 for each held-out person. Missing/failed starter gives an explicit manual/personal fallback. | `test_starter.py`, `test_app_starter.py`; frozen unseen-person scores and native first-use timing. No approved starter is currently bundled. |
+| R15 — deferred | No starter delivery or first-use pass is required for this release. Historical targets remain ≤2 minutes and macro-F1 ≥0.85; retained results must not be relabelled as passes. | `test_starter.py`, `test_app_starter.py`; preserve frozen unseen-person scores and explain the deferral. |
 | R16 | Create, edit, reorder and delete stages within the 1–12 stage limit. One gesture requests at most one configured action; failed stage stays recoverable; saved progress restores paused with no old launches. | `test_javier_lane.py`, `test_javier_widgets.py`, `test_app_dispatch.py`; authored runbook and native recovery |
 | R19 | Summary counters exactly reproduce distinct exported events; launch requests are not labelled task completion. Restore starts a new result revision without replay; overlapping snapshots are not double-counted. | `test_compare_workflows.py`, `test_javier_lane.py`; reviewed before/after exports |
-| R20 | Record every attempted manual/starter/personal condition for the same six-stage scenario. Condition success requires all six observed outcomes, valid readiness where applicable, actual condition-appropriate non-simulated events, no manual fallback, no execution mismatch and completion within the existing 900-second task limit. Report errors/help/retries, missing conditions and ratings without asserting superiority from an incomplete comparison. | `test_compare_workflows.py`, [workflow protocol](WORKFLOW_COMPARISON.md); unfamiliar-presenter observations remain required; [secondary research](RESEARCH_POSITIONING_2026_10_23.md) supplies the problem rationale |
+| R20 | Record manual and personal attempts of the same six-stage scenario by at least one consenting available operator, including a team member. Condition success requires all six observed outcomes, valid personal readiness, actual condition-appropriate non-simulated events, no manual fallback during the personal condition, no execution mismatch and completion within the existing 900-second task limit. Record order, setup/task times, errors, retries, assistance and outcomes; disclose small-sample and order effects. No starter attempt or unfamiliar recruitment is required. | `test_compare_workflows.py`, [workflow protocol](WORKFLOW_COMPARISON.md); genuine paired observations remain required; [secondary research](RESEARCH_POSITIONING_2026_10_23.md) supplies the problem rationale, not observed product benefit |
 
 Test filenames above refer to `tests/`. The detailed subsystem matrix and release
 records retain actual results, platform skips, build identities and limitations.
@@ -188,7 +186,7 @@ records retain actual results, platform skips, build identities and limitations.
 
 Retain Python 3.11, PySide6 Widgets, OpenCV, MediaPipe, NumPy, scikit-learn and existing tests/tools. Keep 21 world landmarks -> wrist-relative/scaled 60 features and the existing latest-frame worker architecture. Gesture classification and data processing remain local. No hosted AI client, text-retrieval subsystem, new framework or database service is required.
 
-Pipeline: camera -> validated observation -> selected starter/personal classifier -> rejection -> controller -> versioned binding -> deduplicating dispatcher -> viewer/runbook/desktop shortcut. Exactly-once control and outcome logging apply to every action type.
+Pipeline: camera -> validated observation -> selected personal classifier -> rejection -> controller -> versioned binding -> deduplicating dispatcher -> viewer/runbook/desktop shortcut. Exactly-once control and outcome logging apply to every action type.
 
 Deston owns shared `contracts.py`, `controller.py`, `app.py`, `__main__.py` and integration acceptance. Hau Jie owns collection/dataset/models/evaluation and new profile/enrolment modules. Javier owns viewer/workspace/runbook/shortcut widgets and session-summary modules. Builders own their module tests and guide/report sections. Shared changes require an agreed handoff, not parallel edits to the application shell.
 
@@ -203,7 +201,7 @@ Deston owns shared `contracts.py`, `controller.py`, `app.py`, `__main__.py` and 
 | Launch Camera | Pause, release capture and wait for shutdown before launch; return manually and resume |
 | Close/reopen saved session | Restore content position/bookmarks but remain paused; do not replay past app launches |
 
-Readiness revision includes selected hand, training data hash, feature version, classifier/rejection settings, hold/rearm settings and the configured binding-map revision. Selecting an existing stage/context does not edit that revision or repeat rehearsal; it only cancels the pending hold and requires NEUTRAL. Editing a mapping invalidates readiness. Cosmetic renames do not invalidate it. Returning users do not repeat full training. Guest checks are session-local, since there is no identity authentication.
+Readiness revision includes selected hand, training data hash, feature version, classifier/rejection settings, hold/rearm settings and the configured binding-map revision. Selecting an existing stage/context does not edit that revision or repeat rehearsal; it only cancels the pending hold and requires NEUTRAL. Editing a mapping invalidates readiness. Cosmetic renames do not invalidate it. Returning users do not repeat full training. Legacy experimental starter checks remain session-local; no profile provides identity authentication.
 
 ### Validation and data limits
 
@@ -229,19 +227,17 @@ Useful prior-art comparisons remain [Pawvis](https://pawvis.app/), [CyberGesture
 
 ## 8. Evaluation that adds technical depth
 
-### Starter recognition versus personalisation
+### Retained recognition evaluation and bounded repair
 
-Collect a new consented starter dataset from the three team members using the same standard poses in separate sessions. Budget two sessions x eight trials x four labels x five scheduled vectors per member: at most 960 starter vectors across the three members, plus negatives. This is separate from the personal evaluation data. Do not reuse P01 samples for public starter redistribution without specific permission. Use person-separated development folds to compare kNN and SVM and tune thresholds; fit transforms only on each fold's training people. Then freeze the starter and evaluate it on at least two new consenting participants excluded from training and tuning. Their availability is a project dependency, not an established fact.
+The completed starter-versus-personal experiments and frozen TEST results remain report evidence, including failures. Their historical protocol used separate consented starter contributors and held-out participants, person-separated development, TRAIN-only transforms and frozen configurations. Preserve those records and permissions. Do not recruit more participants or repeat starter qualification to satisfy the revised release scope.
 
-For those same participants, collect separate optional personal training and validation sessions, freeze personal configurations, then test starter and personalised systems on the same untouched standard-gesture test trials. This paired comparison isolates personalisation benefit. Evaluate changed custom poses separately; do not directly compare different pose sets and attribute the whole difference to personalisation.
+Personal enrolment is now explicitly required for gesture use. This does not convert a failed starter into a successful zero-training product, nor establish universal personal-model reliability. A working release demonstration may use any genuinely qualified personal profile under declared conditions; every participant need not achieve the target for the research to be reported accurately.
 
-If independent participants cannot be recruited, report team leave-one-person-out evidence honestly and narrow the claim. A starter trained/tested only on its own contributors is not evidence of new-user reliability. If starter quality is weak, improve development data/conditions and use a fresh held-out evaluation; do not silently make full enrolment mandatory while claiming zero-training success.
+The recorded personal evaluation retains its original target of two profiles, separate TRAIN/VALIDATION/TEST sessions, twelve trials per four labels per session and up to five scheduled vectors per trial: 288 trials / 1,440 maximum vectors for those two profiles, plus the separately budgeted starter dataset and negative activity. Keep entire trials in a split. Retain invalid samples and count rejected genuine gestures as misses. No test-data retraining.
 
-Personal evaluation retains the original target of two profiles, separate TRAIN/VALIDATION/TEST sessions, twelve trials per four labels per session and up to five scheduled vectors per trial: 288 trials / 1,440 maximum vectors for those two profiles, plus the separately budgeted starter dataset and negative activity. Keep entire trials in a split. Retain invalid samples and count rejected genuine gestures as misses. No test-data retraining.
+Report per-person trial macro-F1, per-class precision/recall, UNKNOWN confusion and false actions; retain any measured first-use timing without requiring a new starter trial. Historical targets: personal macro-F1 >=0.90; starter >=0.85 per held-out person under stated conditions; first standard action within two minutes after camera setup. These historical targets remain fixed; report the actual frozen results, including shortfalls. The deferred starter and first-use targets are not current product release gates.
 
-Report per-person trial macro-F1, per-class precision/recall, UNKNOWN confusion, false actions and first-use completion time. Proposed targets: personal macro-F1 >=0.90; starter >=0.85 per held-out person under stated conditions; first standard action within two minutes after camera setup. These targets are not achieved results and must be fixed before the final test.
-
-Bound the comparison to kNN k={3,5,7}, uniform/distance weights and RBF SVM C={0.1,1,10}, gamma={scale,0.1}; select rejection on validation positives/negatives. Explain orientation/distance limitations and any preprocessing changes. The assignment's BOOKMARK false acceptances need new negative tests before the action is enabled.
+Retain the original comparison bounds: kNN k={3,5,7}, uniform/distance weights and RBF SVM C={0.1,1,10}, gamma={scale,0.1}, with rejection selected using validation positives/negatives. Report the configurations actually evaluated; do not start another broad search. The one proposed DEVELOPMENT repair must retain its predeclared criteria and original rollback profile. Explain orientation/distance limitations and any preprocessing changes. The assignment's BOOKMARK false acceptances need new negative tests before the action is enabled.
 
 ### Complete system and product value
 
@@ -258,31 +254,33 @@ Bound the comparison to kNN k={3,5,7}, uniform/distance weights and RBF SVM C={0
 
 Twenty five-second holds per profile distributed across enabled action types: zero duplicates. Ten minutes of non-command activity per profile: target <=1 unintended viewer action and zero unintended external launches of any shortcut type. Action latency p95 target <1 second includes hold time; application startup time is recorded separately from dispatch latency. Replay controller protection on/off against the same predictions with simulated dispatch only.
 
-Product task: a presenter unfamiliar with the supplied scenario completes the six-stage demonstration, launches a tool, opens a local reference/folder, bookmarks a discussion point, reloads saved progress, and recovers from one injected failure. Compare manual controls, starter gestures and personal gestures with counterbalanced order; record time, action errors, retries, help requests and brief comfort/usefulness ratings. Report the small sample and practice effects. Do not call this proven commercial demand or universal accessibility.
+Product task: at least one consenting available operator, including a team member, completes the six-stage demonstration, launches a tool, opens a local reference/folder, bookmarks a discussion point, reloads saved progress, and recovers from one injected failure. Compare manual controls and a qualified personal profile. Predeclare and record condition order; record setup/task time, action errors, retries, assistance and actual outcomes. A second available operator may use the reversed order, but no new recruitment is required. This is a small engineering case study, not a representative usability study or proof of commercial demand, superiority or universal accessibility. The personal condition must actually use gestures; a manual-only demonstration does not satisfy it.
 
 ## 9. Team ownership, capacity and delivery
 
 | Member | Main build/review ownership | Required evidence |
 |---|---|---|
 | Deston | Product direction, scope/contracts, screen designs, shared shell/controller integration, independent acceptance tests, report coherence and release decisions | Design decisions, reviewed PRs, integration evidence, final demonstration and release checks |
-| Hau Jie | Starter/personal models, profiles/enrolment/rehearsal, data/evaluation and recognition robustness | Tested modules, reproducible comparisons, data/source documentation, AI-methods report sections |
+| Hau Jie | Personal models, retained starter research, profiles/enrolment/rehearsal, data/evaluation and recognition robustness | Tested modules, reproducible comparisons, data/source documentation, AI-methods report sections |
 | Javier | Viewer, workspace/runbook editor/execution, desktop shortcuts, session summary, guide and video draft | Tested action/storage/UI paths, scenario package, install guide and complete demo recording |
 
 Builders use their AI tools for the substantial implementation and repetitive documentation work, but own tests and explanations. Deston controls direction and final acceptance; he does not replace their unit testing. Do not carry over the assignment's two-person contribution percentages or invent registration/signature approvals for Javier.
 
-The 29-item CSV estimates 75 base hours for Deston, 75 for Hau Jie and 73 for Javier (223 team hours). Reserve 20% contingency: approximately 90 / 90 / 88 hours respectively. These are planning estimates, not confirmed availability. This is 45 fewer base hours than revision 3; do not fill the saving with replacement features. Keep the existing release dates and use the headroom for recognition quality, verification and delivery contingency.
+The 29-item CSV retains 75 estimated points/hours for Deston, 75 for Hau Jie and 73 for Javier (223 total) for consistent progress reporting. These original estimates are not remaining hours or confirmed availability. Revision 5 does not rebase percentages or award Done for removed clauses. Update the changed acceptance wording explicitly and retain the previous revision in Git history.
 
-Before the 18 October feature freeze, the backlog allocates 34 / 51 / 54 base hours respectively. Confirm actual availability at the 4 October capacity gate. Deston integrates modules as they arrive; GF-P16 dependencies are completion prerequisites, not a reason to postpone all integration checks. Feature freeze remains a target; testing, report work and release checks retain their scheduled time.
+Revised task gates: **GF-P16** requires a qualified personal six-stage workflow and recovery, without a starter-success condition. **GF-P20** requires the observed manual/personal comparison plus the existing hold, negative-activity, latency and replay evidence. **GF-P21** requires the bounded recognition-repair assessment and affected checks for the selected release profile; other participants' limitations remain documented, and no universal-perfection claim is required. Existing dependencies remain closure prerequisites; independent device and documentation preparation can proceed in parallel.
 
-| Dates | Exit gate |
+Stop new features, cosmetic redesign, further market research, external recruitment, native macOS expansion, broad recognition searches and repeated diagnostic/document repackaging. Keep existing compatible code and valid evidence. Reconcile the local Word report, matrix and slides once after final results; do not repeatedly rewrite them after every diagnostic. Preserve separate local prompt/decision logs unchanged for now.
+
+| Dates | Remaining exit gate |
 |---|---|
-| 30 Sep-4 Oct | Preserve assignment; agree extension/contracts; demonstrate shortcut opening and Camera handoff; starter leave-one-person-out spike; minimal runbook path; assess capacity/recruitment |
-| 5-11 Oct | Working starter and personal onboarding; all viewer actions; workspace/runbook creation; first integrated corporate scenario |
-| 12-18 Oct | Desktop shortcuts, app recovery, rehearsal/summary; all 17 active requirement paths integrated; feature freeze |
-| 19-25 Oct | Freeze data/configs; held-out-person/personalisation and rejection tests; full workflow and controller tests |
-| 26 Oct-1 Nov | Defect fixes and affected regressions; fresh Windows install; stability; release candidate |
-| 2-6 Nov | Final report/figures, guide, video, slides, declaration and ten-minute presentation; package/upload/download verification |
-| 7 Nov | Deadline buffer only |
+| 24-26 Oct | One bounded personal repair assessment; identify a genuinely qualified release profile; finish independent Windows target/error checks in parallel |
+| 27-28 Oct | Integrated personal scenario, manual/personal observations, remaining safety/device evidence, guide-only installation and measured stability; fix affected blockers |
+| 29-30 Oct | Record the working demo; reconcile report, matrix, guide and slides once; declaration and ten-minute rehearsal; verify the release package |
+| 31 Oct | Intended submission and downloaded-package verification, if release gates pass |
+| 1-7 Nov | Contingency before the official 7 November deadline; do not label an unsafe or unverified build ready to meet the earlier target |
+
+These are delivery targets, not evidence that the prerequisites have passed. The critical path is one qualified personal profile, one complete integrated workflow, remaining release checks, then the final demonstration and package.
 
 Use Trello project-release cards, Git/GitHub PRs and WhatsApp. One active implementation item per builder, twice-weekly integration reviews and genuine weekly tutor updates. Local verification is required; GitHub Actions remains manual. Cards move to Done only with criterion-specific evidence. All 29 project cards were verified on Trello during kickoff; the Trello board and handoff record their links. Owner names identify responsibilities, not confirmed member-account assignments.
 
@@ -292,13 +290,13 @@ Handoffs: Hau Jie and Javier may add owned modules/widgets and tests but must co
 
 Do not build direct PowerPoint control, a virtual mouse, arbitrary OS scripting, background control of other applications, speech recognition, sign-language translation, dynamic/two-hand gestures, PDF ingestion, web crawling, embedding downloads, local LLMs, contextual AI assistance, chatbot integration, AI prompt composition, hosted AI clients, autonomous AI actions, cloud accounts, billing, enterprise RBAC or an executable installer. Preserve existing macOS code where feasible; the expanded release is verified on Windows.
 
-The distinctive contribution is the complete trainer workflow and the evaluation of immediate start versus personalisation, not inventing a new general-purpose model. A small authored runbook, reusable desktop shortcuts, personalisation and rehearsal provide depth without a plugin engine or a second AI subsystem. Playback/media keys, meeting controls and keyboard-macro recording remain outside the approved release; opening a reference file does not imply controlling its viewer.
+The distinctive contribution is the complete trainer workflow, personal input and explicit recovery, not inventing a new general-purpose model. A small authored runbook, reusable desktop shortcuts, personalisation and rehearsal provide depth without a plugin engine or a second AI subsystem. Playback/media keys, meeting controls and keyboard-macro recording remain outside the approved release; opening a reference file does not imply controlling its viewer.
 
 Final report follows the brief: title/abstract, domain/workflow, critical prior work, lifecycle, whole-system/subsystem design, AI methods and preprocessing, evaluation protocol/results, discussion/limits, deployment/integration/maintenance, references and appendices. Guide records dependency versions and reproducible steps. Include source/permitted datasets/configs, demo video, slides, contribution/declaration and mandatory tool use. Update all three members' assistance evidence prospectively.
 
 The brief expressly requires assistance prompts in the report/appendix (pages 1 and 6). Existing separate Word logs remain untouched now; confirm an acceptable final reporting arrangement rather than silently omitting a requirement or combining files against the user's instruction.
 
-Release gate: every agreed requirement has recorded verification; independent install and offline recovery pass; starter distribution permissions are recorded; offline and external-application limitations clear; no secrets in packages; all members explain their work; required documents/video included and downloaded submission inspected. Do not guarantee a grade, fabricate results, or mark an untested capability complete.
+Release gate: every agreed requirement has recorded verification; independent install and offline recovery pass; permissions for every included dataset and asset are recorded; no unqualified starter is bundled; offline and external-application limitations clear; no secrets in packages; all members explain their work; required documents/video included and downloaded submission inspected. Do not guarantee a grade, fabricate results, or mark an untested capability complete.
 
 Kickoff outputs: revised plan and backlog, team handoffs, shared routing/controller foundation and tests, and updated Trello project cards. Existing Word logs and the submitted assignment archive remain unchanged. Source publication is authorised; the progress record identifies the published implementation and remaining work.
 
@@ -308,12 +306,10 @@ Deliver a source release with pinned tested dependencies, the existing Windows s
 
 ## 11. Approval boundary and build acceptance
 
-Approval covers the 17 active requirements in section 5 and the deliverables in this version. It starts local implementation, automated checks and integration in the existing `code` repository, preserving the submitted assignment archive. It is not permission to publish personal datasets or submit to LMS. The subsequent user request authorises committing, pushing and merging reviewed project changes. Existing Word reports and prompt/decision logs remain local and unchanged. Trello project tasks have been migrated to this revision. Use TEAM_BACKLOG.csv and PROGRESS.md for current status; original estimates remain the progress denominator. The first foundation slice passed 116 automated tests. The next slice adds a simulation-only Studio shell; current checks and uncompleted acceptance gates are recorded in PROGRESS.md. Readiness scoring and OS dispatch remain to be integrated.
+Approval covers the 16 active requirements in section 5, the explicit R15 product deferral and the deliverables in revision 5. This is the user's release-scope decision, not a claim of tutor approval. It preserves the same gesture AI system and its submitted baseline. It is not permission to publish personal datasets or submit to LMS. Standing user authority covers committing, pushing and merging reviewed project changes. Word reports and prompt/decision logs remain local. Use TEAM_BACKLOG.csv and PROGRESS.md for current status; original estimates remain the progress denominator.
 
-Retain `python -m gestureforge`, `python -m gestureforge.collect`, `python -m gestureforge.evaluate --config ...` and `python -m pytest`; the UI makes collection optional for standard users but the CLI remains useful for reproducible evaluation. Existing Windows launch/setup scripts remain the supported install path. Run targeted tests, then the existing local lint/type/test verification before a release; Actions stays manual.
+Retain `python -m gestureforge`, `python -m gestureforge.collect`, `python -m gestureforge.evaluate --config ...` and `python -m pytest`. The UI provides guided personal collection; the CLI remains useful for reproducible evaluation. Existing Windows launch/setup scripts remain the supported install path. Run targeted checks for changed behaviour and the existing local release verification; GitHub Actions stays manual.
 
-First build gate, by 4 October: preserve/hash submitted baseline; review pre-existing uncommitted changes; freeze contracts and initial screens; verify starter feasibility, Camera handoff and app/file/folder/HTTPS opening. Confirm real team availability and arrange two independent evaluation participants. These are unresolved execution dependencies, not invented approvals or completed checks. If a core gate fails, propose and document a scope revision before replacing a promised feature.
+The historical first-build and starter-feasibility gates remain in previous revisions and recorded results. Revision 5 supersedes their starter-delivery and unfamiliar-recruitment conditions explicitly. Communicate the revised academic scope accurately in the final report; do not claim tutor approval that has not been received.
 
-The plan avoids conditional 'stretch' features. Do not drop tests, reproduction data, video, guide or old final-project promises to recover schedule. Reduce decorative styling and extra example content first. Any capability change after approval requires an explicit requirement/backlog update and user review, plus tutor discussion when it changes the approved academic scope.
-
-At feature freeze, one complete supplied six-stage scenario must work with standard gestures, saved personal profiles and manual controls. It must demonstrate desktop shortcuts, rehearsal, saved state and recovery. At release, every numbered requirement must have a recorded result and every shortfall must be visible. Performance targets are test objectives; do not fabricate results or retrospectively lower targets to declare success.
+At release, one complete supplied six-stage scenario must work with a saved personal profile and manual controls, demonstrating all three gesture actions, desktop shortcuts, rehearsal, saved state and recovery. Every retained subsystem must have recorded verification and every shortfall must be visible. Do not skip the guide, reproducible permitted inputs, video, presentation, declaration or downloaded submission checks. Performance targets remain test objectives; do not fabricate results or retrospectively lower them to declare success.

@@ -1,7 +1,11 @@
 # Harbor workflow comparison
 
-This guide prepares GF-P20's manual (M), standard starter (S) and personal (P)
-comparison. Follow the participant procedure in [DEMO_SCENARIO.md](DEMO_SCENARIO.md).
+Revision 5, 24 October 2026: this guide prepares GF-P20's manual (M) versus
+personal (P) engineering case study. Use at least one consenting available team
+operator; no new external recruitment is required. The supplied starter and its
+three-condition comparison are deferred. Historical M/S/P records remain valid
+inputs and must not be rewritten as new M/P observations. Follow the operator
+procedure in [DEMO_SCENARIO.md](DEMO_SCENARIO.md).
 The tool combines an observer's record with exported Studio summaries. It does
 not observe the participant, certify recognition or enable LIVE gestures.
 
@@ -15,8 +19,9 @@ to arrange need interviews. Direct stakeholder elicitation remains unperformed;
 published participants are not this project's customers or study participants.
 
 Use the review to explain the task: select the intended resource, keep the current
-step visible and recover without replaying actions. Preserve the actual M/S/P
-protocol below. Research cannot supply observed task times, comfort ratings,
+step visible and recover without replaying actions. Use the revised M/P
+protocol below and preserve historical observations unchanged. Research cannot
+supply observed task times, comfort ratings,
 correct outcomes or a qualifying model. Record real errors and recovery details
 in the existing observer notes; do not invent new measurements or schema fields.
 
@@ -33,8 +38,11 @@ and readiness cost separately. Report no benefit if the evidence shows none.
 1. Before the study, freeze the source commit, workspace, recognition data and
    configuration. Keep their checksums and the exact model version. Use opaque
    participant and environment IDs; keep consent and identifying notes privately.
-2. Record the planned M/S/P order before starting, and the actual position of each
-   condition. Record every attempted condition, including failures, withdrawal,
+2. Record M/P or P/M as the planned order before starting, and the actual position
+   of each condition. If a second operator is readily available, reverse the order.
+   A single team operator is an engineering case study, not independent usability
+   validation; record prior familiarity and order effects as limitations. Record
+   every attempted condition, including failures, withdrawal,
    unavailable recognition and manual fallback. An absent condition stays missing.
 3. Time setup, readiness and the task separately. Task timing starts at the first
    instruction and ends after Finish and summary review. Stop after 15 minutes.
@@ -98,7 +106,7 @@ executable schema; unsupported or misspelled fields are rejected.
 | Fields | Meaning |
 |---|---|
 | `participant_id`, `environment_id` | Opaque ASCII IDs, not names or device paths |
-| `condition`, `order`, `planned_order` | M/S/P, actual position 1–3, and the planned permutation of all three conditions |
+| `condition`, `order`, `planned_order` | Current release: M/P, actual position 1–2, and either `["M", "P"]` or `["P", "M"]`. Historical M/S/P permutations and positions 1–3 remain supported; records must belong to their declared plan |
 | `source_commit`, `workspace_sha256` | 40-character Git commit and 64-character SHA-256 of the frozen workspace bytes |
 | `declared_model_version`, `model_sha256`, `config_sha256`, `data_sha256` | Frozen recogniser identity and 64-character hashes. Manual control uses null; gesture records use a complete set or all null if recognition was unavailable/failed. Withdrawal retains known provenance |
 | `setup_seconds`, `readiness_seconds`, `task_seconds` | Separate finite durations, each bounded to 0–3,600 seconds; task time may be null before it starts. Task times over the protocol's 900-second limit remain visible with `task_limit_exceeded` and cannot qualify as condition success |
@@ -118,7 +126,7 @@ the exact input and summary bytes it reads. A summary's generated `revision_id`
 identifies a measurement segment; it is not a workspace checksum.
 
 The following is a **synthetic format example**, not a participant record. It
-shows an unavailable starter before any task starts; replace every example value
+shows an unavailable personal recogniser before any task starts; replace every example value
 with actual observations and provenance before using `evidence_kind: observed`.
 The zero hashes are placeholders and must not appear in actual evidence.
 
@@ -128,8 +136,8 @@ The zero hashes are placeholders and must not appear in actual evidence.
   "study_id": "format-example-only",
   "evidence_kind": "synthetic",
   "records": [{
-    "participant_id": "EXAMPLE", "condition": "S", "order": 2,
-    "planned_order": ["M", "S", "P"],
+    "participant_id": "EXAMPLE", "condition": "P", "order": 2,
+    "planned_order": ["M", "P"],
     "source_commit": "0000000000000000000000000000000000000000",
     "workspace_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
     "declared_model_version": null, "model_sha256": null,
@@ -152,7 +160,11 @@ The zero hashes are placeholders and must not appear in actual evidence.
 ## Read the result
 
 The report retains individual conditions, actual order, missing conditions,
-fallbacks, failures and observed completion separately. Completion needs all
+fallbacks, failures and observed completion separately. `missing_conditions`
+retains the full historical M/S/P vocabulary; `missing_planned_conditions` shows
+what is missing from the declared plan. In a complete M/P pair, S remains absent,
+its record count is zero and its paired comparisons remain null. Do not invent
+an S attempt or describe this as a completed three-condition study. Completion needs all
 required observer checks, all six observed and acknowledged stages and a task
 time; an application opening cannot supply those facts. Gesture-condition
 success also requires passed readiness, no fallback and actual gesture outcomes,

@@ -1,5 +1,12 @@
 # GestureForge User Guide
 
+**Current Studio release scope — 24 October 2026:** use Windows and a saved
+personal profile. New gesture users complete Enrolment and Practice; returning
+users can reload their saved profile and complete the current-session Practice
+check. Guest/manual controls require no profile. A shared starter model is
+deferred and is not included. The earlier card-viewer instructions below remain
+available for the preserved prototype; use the Studio instructions for this release.
+
 For Apple Silicon macOS installation, camera permissions and equivalent Terminal commands,
 use the [Mac setup guide](MACOS.md). The `.cmd` and PowerShell commands below are for Windows.
 
@@ -32,7 +39,7 @@ hand; invalid wrong-hand/no-hand detections remain recorded and are never fitted
 
 Open **Profiles** to manage saved personal profiles. To create one, enter a name, browse to an existing numeric `manifest.json`, select its hand and classifier, confirm that internal-use permission has been obtained, then click **Create and load personal profile**. Fitting runs in the background. To return to a saved profile, select it and click **Load selected**. Both paths install only a valid completed model and leave control paused in Preview. A failed load keeps the previous selection with an error; a corrupt entry does not hide the other profiles. Competing load, camera and mapping controls are unavailable while creation/loading is busy.
 
-Check the active mappings, then click **Request Preview start** after the previous camera has released. This request must match the loaded profile/model and Preview mode; hold NEUTRAL before simulated actions can occur. Creating/loading a profile never starts capture automatically or passes readiness. **Rename selected profile** changes only its display name. **Delete selected** asks for confirmation, deletes only that profile's settings and clears it if active; its numeric dataset and other profiles remain. **Use Guest (manual only)** returns to manual controls without deleting any profile or dataset, so either profile can be loaded again. **Try standard gestures** remains disabled because no approved starter is supplied. In a future reviewed release it loads the standard right-hand model in paused Preview and opens Setup. Complete the six prompted activations, then select LIVE, Apply and pause, Start, and show NEUTRAL. Changing camera, model or action meanings requires a fresh check. This shorter standard-model check never replaces full Practice for a personal model.
+Check the active mappings, then click **Request Preview start** after the previous camera has released. This request must match the loaded profile/model and Preview mode; hold NEUTRAL before simulated actions can occur. Creating/loading a profile never starts capture automatically or passes readiness. **Rename selected profile** changes only its display name. **Delete selected** asks for confirmation, deletes only that profile's settings and clears it if active; its numeric dataset and other profiles remain. **Use Guest (manual only)** returns to manual controls without deleting any profile or dataset, so either profile can be loaded again. **Try standard gestures** remains disabled: starter delivery is deferred. Use Enrolment and a saved personal profile for gesture control. Changing camera, model or action meanings requires a fresh check. The preliminary six-action check never replaces full Practice for a personal model.
 
 You can also launch `.\run.cmd --studio --profile-id YOUR_PROFILE_ID --camera 1`. The ID is the saved profile JSON filename without `.json`, usually under `.local/profiles`; `--profile-store PATH` selects a different private store for both startup and the Profiles tab. Keep the original numeric dataset at its recorded path. Saved classifier settings are authoritative: do not combine `--profile-id` with `--dataset`, `--algorithm`, `--multiplier` or `--margin`; intentional retraining requires a new profile. Loading displays the profile name/ID and stays paused. A successful load is not a readiness pass.
 

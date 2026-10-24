@@ -37,6 +37,13 @@ consent. **GestureForge controls its own viewer; it is not connected to PowerPoi
 > The frozen held-out comparison is complete, with unmet recognition targets;
 > model improvement and remaining device checks are still in progress.
 
+**Release scope, 24 October:** the supported product is personal gesture control
+on Windows. Enrol once, save the profile and complete Practice before Live use.
+Supplied starter gestures and no-enrolment first use are deferred; the completed
+starter comparisons remain research evidence. The remaining release work is a
+working personal workflow, device verification and submission materials. Existing
+macOS support remains experimental; Windows is the release verification target.
+
 ![Earlier GestureForge card-viewer interface](docs/images/prototype.png)
 
 *The earlier card-viewer interface above shows the foundation of Studio. See the

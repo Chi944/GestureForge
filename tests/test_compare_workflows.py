@@ -148,6 +148,49 @@ def test_known_manual_starter_personal_fixture_reports_deltas_and_denominators(t
     assert report["segment_provenance"]["segment_count"] == 3
 
 
+@pytest.mark.parametrize("planned_order", [["M", "P"], ["P", "M"]])
+def test_personal_release_pair_does_not_invent_starter_evidence(tmp_path, planned_order):
+    rows = []
+    for order, condition in enumerate(planned_order, 1):
+        filename = f"{condition}.json"
+        summary(tmp_path / filename, "P01", condition, f"rev-{condition}", event_id=condition)
+        rows.append(record("P01", condition, order, filename, planned_order=planned_order,
+                           task_seconds=120.0 if condition == "M" else 100.0))
+    path = tmp_path / "observer-study.json"
+    study(path, rows)
+
+    report = compare(path)
+
+    participant = report["participants"][0]
+    assert participant["actual_order"] == planned_order
+    assert participant["missing_conditions"] == ["S"]
+    assert participant["missing_planned_conditions"] == []
+    assert report["condition_totals"]["S"]["records"] == 0
+    pairs = {(row["left"], row["right"]): row for row in report["paired_deltas"]}
+    assert pairs[("M", "P")]["task_seconds_delta"] == -20.0
+    assert pairs[("M", "S")]["reason"] == "missing_condition"
+    assert pairs[("S", "P")]["reason"] == "missing_condition"
+
+
+@pytest.mark.parametrize("planned_order", [["M"], ["M", "S"], ["S", "P"], ["M", "M"],
+                                         ["M", "P", "P"]])
+def test_unsupported_planned_condition_sets_are_rejected(tmp_path, planned_order):
+    path = tmp_path / "observer-study.json"
+    study(path, [record("P01", "M", 1, "unused.json", planned_order=planned_order)])
+
+    with pytest.raises(ValueError, match="planned_order"):
+        compare(path)
+
+
+@pytest.mark.parametrize("condition,order", [("S", 1), ("M", 3)])
+def test_personal_release_rejects_records_outside_declared_plan(tmp_path, condition, order):
+    path = tmp_path / "observer-study.json"
+    study(path, [record("P01", condition, order, "unused.json", planned_order=["M", "P"])])
+
+    with pytest.raises(ValueError, match="planned_order"):
+        compare(path)
+
+
 def test_failed_fallback_and_withdrawn_records_are_retained_without_success(tmp_path):
     summary(tmp_path / "p.json", "P02", "P", "rev-p2", event_id="p2")
     summary(tmp_path / "s.json", "P02", "S", "rev-s2", event_id="s2", stages=["intro", "budget"])

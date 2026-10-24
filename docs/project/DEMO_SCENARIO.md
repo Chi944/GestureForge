@@ -1,6 +1,6 @@
 # Harbor Desk demonstration and evaluation protocol
 
-Owner: Deston · GF-P32 · Authored 30 September 2026
+Owner: Deston · GF-P32 · Authored 30 September 2026 · Release protocol revised 24 October 2026
 
 This is fictional product content and a test protocol, not measured results. The ten-card deck is `assets/corporate_demo_deck.json`; the local reference is `assets/corporate_reference.txt`. Load the supplied `assets/harbor_workspace.json` in Studio to use the custom-gesture six-stage runbook, or `assets/harbor_standard_workspace.json` when the loaded recogniser uses the legacy `NEXT`, `PREVIOUS` and `BOOKMARK` action IDs. Explicit **Live** supports manual stage/deck actions, bookmarks, saved sessions and validated Windows resource requests. Preview/Rehearsal simulates typed requests. Personal LIVE gestures require the user's own genuine full Practice pass in the current app session, saved and reconciled before paused restoration, then explicit Live selection, Apply, Start and fresh NEUTRAL. Loading a profile, the short check and historical/imported results cannot grant eligibility; see the [personal LIVE steps](../USER_GUIDE.md#personal-live-after-practice).
 
@@ -47,14 +47,14 @@ Javier executes this walkthrough after the software checkpoint is reviewed and s
 
 ## Evaluation procedure fixed before collection
 
-Recruit at least two consenting participants who did not contribute to starter training/tuning and are unfamiliar with this scenario. Hau Jie collects their personal TRAIN/VALIDATION/TEST sessions with whole-trial separation. Freeze starter/personal configurations, rejection and hold settings before opening TEST outcomes. Availability and consent are not assumed. Keep pseudonymous records and actual permissions locally.
+Revision 5 replaces the planned three-condition unfamiliar-presenter study with a manual-versus-personal engineering case study using at least one consenting available team operator. No new external recruitment or starter qualification is required. Preserve existing frozen TEST results and historical M/S/P evidence unchanged; do not tune against TEST. Freeze the release profile, rejection and hold settings before this comparison, and keep pseudonymous records and permissions locally. Record the operator's team role and prior familiarity privately so the report can disclose the lack of independent usability validation.
 
 1. Record OS, camera, lighting/framing, selected hand, source commit, workspace revision and model/data/config hashes. Use the same equipment, content and task sequence for paired comparisons.
-2. Provide the same scripted introduction and untimed familiarisation for each condition. Record training/readiness time separately from task time. Manual control requires no recognition check. A personal gesture condition requires that participant's own genuine current-session full Practice pass, terminal save, exact event reconciliation and paused restoration before explicit Live selection, Apply, Start and fresh NEUTRAL. Standard starter gestures remain unavailable; record the starter condition as unavailable until its separate acceptance rather than substituting a personal grant.
-3. Compare manual buttons/keyboard (M), starter gestures (S) and personal gestures (P). With two participants use M–S–P and P–S–M; this balances endpoints only, not all order effects. Report that limitation. With six participants use all six permutations. Record the actual order and prior practice.
+2. Provide the same scripted introduction and untimed familiarisation for each condition. Record training/readiness time separately from task time. Manual control requires no recognition check. A personal gesture condition requires that participant's own genuine current-session full Practice pass, terminal save, exact event reconciliation and paused restoration before explicit Live selection, Apply, Start and fresh NEUTRAL. The supplied starter is deferred; do not manufacture an S attempt for this M/P protocol. The existing full Practice protocol remains 22 windows with its unchanged pass conditions.
+3. Compare manual buttons/keyboard (M) and personal gestures (P). Declare M–P or P–M before starting and record the actual order and prior practice. If a second operator is readily available, reverse the order; do not delay the release to recruit one. A single-operator case study cannot separate order, familiarity or learning effects or establish general user benefit.
 4. Run the six-stage task with the prescribed safe missing-reference failure. Start the task timer on the participant's first task instruction; stop after Finish and summary review. Count help, retries, wrong actions and actual acknowledgements. Save/reload and focus-loss recovery are part of the task.
 5. If recognition/readiness fails, record failure and elapsed time. Allow manual completion for usability, but report it as fallback rather than gesture success. Stop an individual condition after 15 minutes, participant withdrawal, or unrecoverable fault; report incomplete tasks instead of discarding them.
-6. Ask each participant to rate comfort and usefulness from 1 (poor) to 5 (good), then give one limitation and one improvement. Report individual values and small-sample limits, without significance or commercial-demand claims.
+6. Optional comfort/usefulness ratings may be recorded from 1 (poor) to 5 (good); leave uncollected ratings null. Record observed limitations, assistance and errors. Report the individual result and small-sample limits, without significance or commercial-demand claims.
 
 **Keep preparation separate from the measured task.** Practice and familiarisation
 can add simulated outcomes to the current Session summary; exporting alone does
@@ -79,8 +79,8 @@ do not remove rows, discard a segment or reset the summary to manufacture succes
 
 | Measure | Definition / target |
 |---|---|
-| Recognition | Trial majority across five scheduled samples; no majority/invalid/rejected genuine poses count UNKNOWN. Per-person macro-F1: personal ≥0.90, held-out starter ≥0.85 |
-| First-use time | Camera ready to first successful standard action, including readiness check; target ≤120 seconds; installation time reported separately |
+| Recognition | Trial majority across five scheduled samples; no majority/invalid/rejected genuine poses count UNKNOWN. Per-person macro-F1: personal ≥0.90. Preserve the historical held-out starter target ≥0.85 and its results, but starter delivery is deferred |
+| Setup cost | Record personal enrolment/readiness separately from task time. The historical ≤120-second standard first-action promise is deferred with starter delivery |
 | Workflow completion | Six stages and required acknowledgements, correct budget/contact, one discussion bookmark, paused reload, visible recovery; report actual completion and fallback |
 | Duplicate protection | Twenty five-second command holds per profile across enabled actions; target zero duplicates; neutral between trials |
 | Negative activity | Ten minutes per profile; target ≤1 unintended viewer action and zero unintended external launches; prescribed non-command movements/poses recorded |

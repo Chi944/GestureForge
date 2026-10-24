@@ -2,6 +2,46 @@
 
 Snapshot: 24 October 2026. Task weights measure accepted work, not an expected grade.
 
+## Current release decision — personal enrolment on Windows, 24 October
+
+Deston authorised removing optional work to finish a working product. The
+[Revision 5 plan](PROJECT_PLAN.md) now defers R15 supplied starter delivery,
+no-enrolment first use and its two-minute promise. R20 becomes an observed
+manual-versus-personal workflow case study with at least one consenting available
+team operator. No new external recruitment, interviews, starter search, native
+macOS expansion, cosmetic features or repeated broad audits are assigned.
+Historical starter research and failed frozen TEST results remain intact.
+
+GF-P16 requires the real personal six-stage workflow and recovery. GF-P20 retains
+hold/rearm, negative activity, latency and replay alongside the smaller M/P
+comparison. GF-P21 must verify the chosen release profile and affected behaviour;
+it does not require every research participant or the shared starter to succeed.
+The 22-window Practice gate, safety thresholds, all retained product features,
+two-Windows release checks and submission deliverables remain. A manual-only
+demonstration does not close the gesture-product tasks.
+
+**Do next:** Hau Jie completes at most one predeclared two-trial NEUTRAL TRAIN
+replacement and fixed evaluation, then returns its pass/fail disposition. Javier
+finishes independent native/manual cases and coordinates laptop B now. After a
+personal profile genuinely qualifies, Deston verifies the six-stage workflow;
+the team records the paired case study, remaining device evidence and video from
+the identified build. Reconcile Word report, matrix and slides once after those
+results, rather than after each diagnostic. Their current local copies still
+describe the previous scope and need that final reconciliation.
+
+**Accepted remains 151/223 (67.7%), 19/29 tasks:** Deston 34/75 (45.3%),
+Hau Jie 63/75 (84.0%), Javier 54/73 (74.0%). The scope revision removes release
+dependencies; it does not fabricate a pass or rebase the denominator. No current
+personal LIVE pass is established by the received evidence. The ten open tasks
+and their revised criteria are in [TEAM_BACKLOG.csv](TEAM_BACKLOG.csv).
+The comparison tool now accepts declared M/P orders while preserving historical
+M/S/P inputs and reporting absent starter evidence. All **34 focused tests**,
+script Ruff/mypy checks, backlog invariants and changed-document links pass.
+All ten open Trello cards were updated and read back exactly. No open GitHub PR
+was returned at this checkpoint. These are software/coordination results, not a
+new physical trial or accepted product task.
+Earlier dated instructions below are historical wherever Revision 5 supersedes them.
+
 ## New P02 diagnostic independently verified and PR #36 merged — 24 October
 
 The [new gap diagnostic](P02_GAP_DIAGNOSTIC_2026_10_24.md) is complete and received.
