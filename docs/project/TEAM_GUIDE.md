@@ -37,8 +37,10 @@ The intended submission is 31 October; the official deadline is 7 November.
   checks just to regenerate metadata.
 - **Deston:** integrate/review both deliveries and measurement software. The next
   option is one fresh complete four-pose profile from Deston, who volunteered
-  and confirmed his webcam. Conditions and in-app consent precede capture;
-  no new capture/pass is claimed. Preserve
+  and confirmed his webcam. His first new TRAIN session saved 8 trials/40 valid
+  samples, two per pose after a possible scroll change. Preserve it separately;
+  a full 48-trial TRAIN and separate 48-trial VALIDATION are still needed. No
+  profile pass is claimed. Preserve
   Original; pin kNN, multiplier 1.5 and margin 1.5 before capture via an explicit
   default launch, avoiding inherited P02 margin 1.0. Keep TRAIN and VALIDATION
   separate in consistent demo conditions; check fixed validation before the

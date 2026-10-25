@@ -4,7 +4,7 @@ from pathlib import Path
 import time
 from uuid import uuid4
 
-from PySide6.QtCore import QTimer, Signal, Qt
+from PySide6.QtCore import QEvent, QObject, QTimer, Signal, Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit, QComboBox,
     QSpinBox, QCheckBox, QPushButton, QProgressBar, QGridLayout,
@@ -50,6 +50,8 @@ class EnrolmentWidget(QWidget):
         self.trials.setRange(2, 12)
         self.trials.setValue(12)
         form.addRow('&Trials per pose', self.trials)
+        for control in (self.hand, self.split, self.trials):
+            control.installEventFilter(self)
         self.pose_fields: dict[str, QLineEdit] = {}
         for label, default in zip(self.vocabulary.labels,
                                   ('Closed fist', 'Thumb up', 'Index and middle fingers raised',
@@ -96,6 +98,13 @@ class EnrolmentWidget(QWidget):
         self.timer.setInterval(40)
         self.timer.timeout.connect(self.tick)
         self.refresh()
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        if event.type() == QEvent.Type.Wheel and watched in (self.hand, self.split, self.trials):
+            # Scroll the enclosing form without silently changing the collection plan.
+            event.ignore()
+            return True
+        return super().eventFilter(watched, event)
 
     def request_collection(self):
         if self.pending_plan is not None or (self.session is not None and

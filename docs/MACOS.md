@@ -108,15 +108,25 @@ For a new consenting user:
 3. After TRAIN, take a break and make a separate VALIDATION request with the same
    participant, hand and poses. Each request saves a new session folder under
    `data/local/enrolment/`; preserve both manifests and invalid detections.
-4. In **Profiles**, create a personal profile from the completed TRAIN manifest.
-   Collection does not create or qualify a profile automatically. Review validation
-   separately before relying on that model.
+4. In **Profiles**, enter a profile name and use **Browse dataset…** to select the
+   completed TRAIN `manifest.json`. Check the selected hand, classifier and displayed
+   rejection settings, confirm **Dataset permission confirmed**, then click
+   **Create and load personal profile**. Do not select the VALIDATION manifest for
+   training. Collection does not create or qualify a profile automatically; review
+   validation separately before relying on that model.
 
 Keep Studio and Enrolment in front while collecting. Leaving the tab, losing focus,
 Pause or Esc stops collection. If saving fails, leave Studio open and use **Retry
 save** after resolving folder access. Only numeric features and metadata are saved;
 no photos or video are recorded. See the [user guide](USER_GUIDE.md#collect-in-studio)
 for the complete collection and recovery workflow.
+
+The marker can use this same route to create their own profile; no team member's
+private data is required. Allow time for **48 TRAIN + 48 VALIDATION trials**, a
+break and Practice, rather than treating the edited video as the full setup time.
+Guest/manual remains available if personal recognition does not pass. The
+[new-user demo segment](project/DEMO_SCENARIO.md#new-user-enrolment-showcase)
+shows which steps to demonstrate and where to label time cuts.
 
 ## 4. Practice before personal Live control
 

@@ -23,8 +23,10 @@ rerun participant TEST or ask for another twenty-trial diagnostic.
    do not inherit the loaded P02 profile's margin 1.0. Check fixed validation
    before attempting the existing 22-window Practice, and retain failures. This
    is coherent new onboarding, not a proven repair or permission to tune TEST.
-   His webcam is connected; conditions and in-app consent precede recording.
-   No new recording or pass is claimed. Review his resulting fixed validation
+   His first new TRAIN session saved eight trials with 40/40 valid samples, two
+   per pose after a possible scroll change. Keep it separate from the intended
+   new 48-trial TRAIN and 48-trial VALIDATION. No profile pass is claimed.
+   Review his resulting fixed validation
    before Practice; do not repeat the failed P02 repair.
 3. **Manual work in parallel:** operate laptop B for the remaining guide-only
    installation, offline core, uninterrupted measured 30-minute full Studio run

@@ -223,6 +223,54 @@ def test_widget_button_during_hold_retains_partial_slots_and_invalid_feedback(tm
         widget.close()
 
 
+@pytest.mark.parametrize('widget_kind,field', [
+    ('enrolment', 'hand'), ('enrolment', 'split'), ('enrolment', 'trials'),
+    ('repair', 'trials'),
+])
+@pytest.mark.parametrize('focused', [False, True])
+@pytest.mark.parametrize('pixel_scroll', [False, True])
+def test_scrolling_enrolment_preserves_settings_and_scrolls_parent(
+        tmp_path, widget_kind, field, focused, pixel_scroll):
+    os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    from PySide6.QtCore import QPoint, Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication, QScrollArea
+    from gestureforge.enrolment_widget import EnrolmentWidget
+    from gestureforge.pose_repair_widget import PoseRepairWidget
+
+    app = QApplication.instance() or QApplication([])
+    widget = (PoseRepairWidget if widget_kind == 'repair' else EnrolmentWidget)(tmp_path)
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setWidget(widget)
+    scroll.resize(600, 300)
+    scroll.show()
+    try:
+        app.processEvents()
+        control = getattr(widget, field)
+        scroll.ensureWidgetVisible(control)
+        (control if focused else widget.participant).setFocus()
+        app.processEvents()
+        before = (widget.hand.currentText(), widget.split.currentText(), widget.trials.value())
+        bar = scroll.verticalScrollBar()
+        position = bar.value()
+        point = control.mapTo(scroll, control.rect().center())
+        QTest.wheelEvent(scroll.windowHandle(), point,
+                         QPoint(0, -15) if pixel_scroll else QPoint(0, -120),
+                         QPoint(0, -40) if pixel_scroll else QPoint(),
+                         phase=Qt.ScrollPhase.ScrollUpdate if pixel_scroll else Qt.ScrollPhase.NoScrollPhase)
+        app.processEvents()
+        assert (widget.hand.currentText(), widget.split.currentText(), widget.trials.value()) == before
+        assert bar.value() > position
+
+        # Deliberate keyboard edits remain available after scrolling.
+        control.setFocus()
+        QTest.keyClick(control, Qt.Key.Key_Down)
+        assert (control.value() == 11 if field == 'trials' else control.currentIndex() == 1)
+    finally:
+        scroll.close()
+
+
 def test_mouse_press_only_does_not_stop_until_button_release(tmp_path):
     """Qt clicked means press and release; a held mouse button still permits samples."""
     os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')

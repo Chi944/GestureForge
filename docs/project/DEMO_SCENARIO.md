@@ -4,6 +4,57 @@ Owner: Deston · GF-P32 · Authored 30 September 2026 · Release protocol revise
 
 This is fictional product content and a test protocol, not measured results. The ten-card deck is `assets/corporate_demo_deck.json`; the local reference is `assets/corporate_reference.txt`. Load the supplied `assets/harbor_workspace.json` in Studio to use the custom-gesture six-stage runbook, or `assets/harbor_standard_workspace.json` when the loaded recogniser uses the legacy `NEXT`, `PREVIOUS` and `BOOKMARK` action IDs. Explicit **Live** supports manual stage/deck actions, bookmarks, saved sessions and validated Windows resource requests. Preview/Rehearsal simulates typed requests. Personal LIVE gestures require the user's own genuine full Practice pass in the current app session, saved and reconciled before paused restoration, then explicit Live selection, Apply, Start and fresh NEUTRAL. Loading a profile, the short check and historical/imported results cannot grant eligibility; see the [personal LIVE steps](../USER_GUIDE.md#personal-live-after-practice).
 
+## New-user enrolment showcase
+
+Include a **60–90 second edited onboarding segment** in the ten-minute presentation,
+then demonstrate the six-stage product workflow below and explain results and
+limitations. The demo video can include the same segment. This is a recording plan,
+not evidence that a new user or the marker has already passed.
+
+| Shot | What to show and explain |
+| --- | --- |
+| First launch | Guest/manual controls work immediately. **Open Enrolment** starts personal collection without an existing recogniser; the main camera-control Start button is for a loaded recogniser. |
+| Personal choices | Enter a pseudonym, chosen hand, actual conditions and four distinct poses. Show consent before collection. Defaults are G1 = fist, G2 = thumb up, G3 = index/middle fingers raised, NEUTRAL = open palm. These are gesture IDs; the workspace determines their actions. |
+| Real collection | Show **Request collection**, the correct camera preview and **Begin trial**. Include one genuine trial for each pose, with its countdown and hold. Keep the full hand visible and release between trials. |
+| Clearly marked time cuts | Caption: “Time cut: full TRAIN session = 48 trials, 12 per pose.” After a real break, show the separate VALIDATION session and caption: “Separate VALIDATION = 48 trials, 12 per pose.” Show the saved session locations without exposing private paths. Do not imply four filmed trials replace all 96, or that validation was training data. |
+| Save the user's profile | In **Profiles**, enter a profile name, **Browse dataset…** to the TRAIN manifest, review hand/classifier/rejection settings, confirm **Dataset permission confirmed**, then **Create and load personal profile**. Show the actual separate validation result if available; never substitute another user's result. |
+| Qualify and use | Configure the intended workspace/camera before **Open Practice**. Show a real window, then a labelled time cut to the actual saved outcome. Only a complete current-session pass can be followed by explicit Live, Apply, Start and fresh NEUTRAL. Demonstrate one action per hold and neutral rearming. If Practice fails, show the limitation and manual fallback instead of implying a pass. |
+
+The complete Practice protocol remains **22 five-second windows**: three trials of
+each of G1/G2/G3/NEUTRAL (12), plus ten negative/transition windows. Preparation
+adds time. All windows need full coverage and correct outcomes: each pose 3/3,
+zero wrong/repeated actions, and no action in negative windows. Separate failed
+attempts cannot be edited together into a pass. The default controller requires
+300 ms NEUTRAL and 400 ms command holds; a five-second command hold must produce
+only one action. A standard fresh launch uses kNN, distance multiplier 1.5 and
+ambiguity margin 1.5, but saved profiles retain their own settings: show the actual
+values and do not loosen them to make the recording pass.
+
+Configure the screen recording separately and obtain permission from anyone
+shown. Studio's normal numeric collection does not record video. Keep unedited
+numeric outcomes and the reported limitations; an edited showcase is not a
+continuous verification record. The presentation should explain the problem:
+trainers move between explanatory cards and local demonstration resources, and
+GestureForge offers deliberate hands-free requests while preserving manual
+control and explicit confirmation of external outcomes.
+
+### Marker's own profile
+
+The marker can first inspect Guest/manual features without a camera or dataset.
+For personal gestures, use their own consented enrolment, saved profile and
+current-session Practice workflow above; another person's qualifying profile or
+old Practice export does not qualify the marker. Follow the
+[collection guide](../USER_GUIDE.md#collect-in-studio),
+[Practice guide](../USER_GUIDE.md#personal-practice) and
+[Mac setup guide](../MACOS.md) rather than relying on time-cut video instructions.
+
+On Mac, earlier browser-collector recordings support browser collection only;
+they do not establish native Studio installation, enrolment or Live operation.
+Native Apple Silicon Studio still needs destination-machine verification.
+External desktop resource launches are Windows-only; on Mac demonstrate internal
+cards, bookmarks and runbook state, with external requests simulated in Preview.
+Do not present the Windows six-stage resource-launch recording as a Mac run.
+
 ## Six-stage runbook
 
 The custom workspace implements the mappings below with literal `G1`, `G2` and `G3` pose IDs. The standard variant keeps the same columns but uses literal `NEXT`, `PREVIOUS` and `BOOKMARK` pose IDs; those IDs are still independent of the mapped stage action. A vocabulary mismatch leaves gestures unavailable while the manual stage buttons remain usable; Studio does not remap arbitrary imports. Stage changes show the linked card and stay paused; gesture control requires an explicit Start and fresh NEUTRAL. Selecting an existing authored stage preserves a valid personal LIVE grant; editing its action map expires it. Stages never open a resource automatically. Previous-stage and Continue/Finish buttons are always present.

@@ -27,10 +27,13 @@ The next recognition option is **one fresh complete personal enrolment**, with
 all four poses collected in consistent intended-demo conditions and separate
 TRAIN/VALIDATION. Pin the existing kNN / multiplier 1.5 / margin 1.5 settings
 before capture, preserving old profiles; do not inherit P02's saved margin 1.0.
-Deston volunteered and confirmed the webcam is connected. Studio is prepared
-for a new P01 right-hand TRAIN session (12 trials per pose); conditions and the
-in-app consent step must be completed before capture. No new recording or
-qualification is claimed. Fixed validation
+Deston's new right-hand TRAIN recording saved successfully: 8 trials and 40/40
+valid samples, two trials per pose. It completed the selected eight-trial plan,
+but not the intended twelve trials per pose. Deston reports that the count may
+have changed while scrolling. Preserve this small session separately; complete
+a fresh 48-trial TRAIN session and separate 48-trial VALIDATION before qualification.
+The current form fixes wheel-driven changes to hand, session and trial count.
+No profile qualification is claimed. Fixed validation
 comes before the genuine 22-window Practice gate; this option is not a proven
 repair or permission to rerun until a pass. Javier's independent manual/native
 checks and Hau Jie's laptop-B installation checks can proceed meanwhile.
@@ -68,6 +71,14 @@ integration tests and 68 Mac setup/package tests pass; repository Ruff, mypy
 (109 source files), both offscreen startup smokes and diff checks pass. Four
 affected Trello cards were updated and read back exactly. These software checks
 do not qualify the fresh profile or verify a native Mac camera.
+
+The enrolment scroll fix passes 72 focused tests, repository Ruff, mypy (109
+source files) and both offscreen startup smokes. In the restarted Windows UI,
+scrolling directly over Trials per pose moved the form while retaining 12.
+The new TRAIN form is prepared as P01/Right with the confirmed room light/plain
+wall conditions; capture is not started. The [demo guide](DEMO_SCENARIO.md#new-user-enrolment-showcase)
+now includes the new-user/marker path and clearly labelled video time cuts.
+Earlier P67/P1543 Mac returns establish browser collection, not native Studio.
 
 The dated sections below retain historical results. Use this checkpoint and the
 active team briefs for current instructions.
