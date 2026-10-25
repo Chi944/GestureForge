@@ -6,6 +6,8 @@ Deston confirmed basic supervised gesture operation on c49244a. Prepare the real
 
 26 October workflow update: Deston completed the supervised Harbor walkthrough with agent-assisted recovery/save/restore and manual Finish. Reuse [the verified results](SUPERVISED_WORKFLOW_2026_10_26.md); do not request the same whole walkthrough again. This is not a Practice pass, timed study or recorded demo video.
 
+Latest operator review: **22/22 manually accepted by Deston**, following his reported review with Claude; autofocus is his reported explanation. Keep this separate from the unchanged 19/22 automated measurement. Reuse existing workflow evidence and continue the remaining device/performance/report work; no repeat session is requested by this update. See [assessment provenance](SUPERVISED_WORKFLOW_2026_10_26.md#operator-review).
+
 See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.

@@ -40,8 +40,12 @@ do not repeat the entire walkthrough merely to recreate the same evidence.
 
 ## Operator review
 
-On 26 October, Deston reported manually reviewing the results and accepting all
-gestures for continued use. This records operator acceptance of the demonstrated
-behaviour. No trial-specific correction evidence accompanied the review, so the
-recorded Practice score and capture/miss outcomes remain unchanged. Operator
-acceptance and measured qualification are reported separately.
+Deston reports a frame-by-frame review of the latest session with Claude and manually accepts all 22 trials (22/22 operator acceptance), attributing the three automated failures to autofocus. This is an operator-reported assessment; the review output has not been independently inspected and autofocus causation is unverified. The recorded automated result remains 19/22. No saved outcomes, model settings or runtime qualification gates are changed.
+
+| Assessment | Result | Basis |
+| --- | --- | --- |
+| Operator acceptance | 22/22 manually accepted | Deston reports reviewing the latest session with Claude. |
+| Automated Practice measurement | 19/22 | Saved capture-coverage and prediction outcomes, unchanged. |
+
+Use these labels together when reporting this session; manual acceptance is not
+a replacement automated measurement or an independently reproduced adjudication.

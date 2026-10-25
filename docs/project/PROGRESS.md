@@ -31,10 +31,9 @@ Practice remains **19/22 correct**: two capture-coverage failures, one missed G3
 zero negative actions. Its failed record is preserved. The visible supervised
 session override does not change measured outcomes or standard acceptance criteria.
 
-Deston subsequently confirmed manual review and acceptance of all gestures for
-continued use. This closes the operator-review substep. It supplies no new
-trial-specific measurements and does not close the remaining qualification,
-performance or release criteria.
+Deston reports a frame-by-frame review of the latest session with Claude and manually accepts all 22 trials (22/22 operator acceptance), attributing the three automated failures to autofocus. This is an operator-reported assessment; the review output has not been independently inspected and autofocus causation is unverified. The recorded automated result remains 19/22. No saved outcomes, model settings or runtime qualification gates are changed.
+This completes operator review; remaining performance and release criteria are
+unchanged.
 
 **Next:** reuse these results in the report and genuine demo storyboard; complete
 remaining two-laptop native/release evidence and the separately measured hold,
