@@ -182,9 +182,11 @@ Practice. Preserve old passed native launches, restore pairs and original assets
    no runbook. Try Save session to a new filename inside the new evidence
    directory. Expected: a visible no-workspace/runbook reason, no false success
    and no new usable session file. Keep screenshot and actual file result.
-2. **Affected save/restore notice:** load Harbor. If the old launch notice is
-   absent, use one existing known-working manual target request only to establish
-   the affected precondition; do not redo all four target types. Export before
+2. **Affected save/restore notice:** load Harbor. In Setup select **Live**, click
+   **Apply and pause**, confirm **Manual LIVE ready**, and keep Camera off. If the
+   old launch notice is absent, use one existing known-working manual target
+   request only to establish the affected precondition; do not redo all four
+   target types. Preview would only simulate this request. Export before
    restore. Save to a new session filename, close the external resource, restore,
    and observe that the top message now describes the file operation, the footer
    is paused Preview, and nothing opens automatically. Export the new segment.
@@ -218,7 +220,10 @@ native launch requests separately from actual Windows outcomes.
 
 Only the same-camera pause fix is assigned here. Load Javier's existing own
 profile without modifying/retraining it, stay in Preview, and select the working
-camera. Activate a Preview context whose gesture vocabulary matches that profile\n(for example the existing Quick Actions map); do not load a G1/G2/G3-only\nworkspace for a NEXT/PREVIOUS/BOOKMARK profile. Disable optional trace recording\nunless this specific check needs it.
+camera. Activate a Preview context whose gesture vocabulary matches that profile
+(for example the existing Quick Actions map); do not load a G1/G2/G3-only
+workspace for a NEXT/PREVIOUS/BOOKMARK profile. Disable optional trace recording
+unless this specific check needs it.
 
 Keep Setup visible, start capture explicitly and verify actual video/frames.
 Without leaving Studio or changing the camera number, click **Use camera and
