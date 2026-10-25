@@ -636,6 +636,48 @@ replace the full Studio UI/controller stability run, thirty-minute human workflo
 observation, or independent second-laptop checks. A 60-second run cannot be
 reported as thirty-minute acceptance.
 
+## Measure the full Studio stability run
+
+This optional launcher measures the real Studio window and its existing camera
+worker in the same process. It does not start capture or grant gesture readiness.
+Close the other Studio instance and other webcam consumers first. From the
+repository root, use a new filename and the working camera index:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.monitor_studio --output experiments/local/studio-soak-01.json --seconds 1800 --camera 0
+$LASTEXITCODE
+```
+
+1. Load your own profile and workspace, then explicitly start camera control.
+   Keep Preview for simulation checks; native Live operations still require
+   their normal approvals/readiness. Record the source commit and device details
+   with your observation notes. The launcher uses normal Guest/manual defaults.
+2. Keep Studio visible and capture running for at least 30 uninterrupted minutes
+   **after the preview starts**. Exercise its on-screen viewer controls and note
+   faults; do not count setup, pauses or separate restarted periods toward that
+   capture interval. Use a separate clock for the operator's actual start/end.
+   Native target/handoff checks remain separate because they intentionally pause
+   or transfer capture. The monitor does not stop the app automatically.
+3. Close Studio normally. Retain the JSON and printed process exit code. Then
+   check camera acquisition in another app, close that app, and record the result.
+   A normal Qt close and finished worker are not proof that another app can open
+   the physical device.
+4. Send the one JSON and factual observation notes privately to Deston. A zero
+   command exit means the monitor's duration/continuity/gap/memory/close checks
+   passed; it does not accept the entire release or establish recognition accuracy.
+   A nonzero exit or `incomplete_checkpoint` needs review, not relabelling.
+
+The report records delivered observations and rate, longest continuous capture
+interval, camera-active/paused estimates, UI heartbeat gaps, peak process memory,
+worker errors, release state and Qt event-loop exit code. Setup/paused GUI gaps
+are descriptive; capture responsiveness is assessed separately. No camera media,
+landmarks, features, gesture labels, private target paths or error text are saved.
+One small JSON is checkpointed every five seconds; it is not a growing trace.
+Existing outputs are refused. An abrupt exit leaves an incomplete checkpoint;
+write failure cannot become a measurement pass. Retain a failed run separately.
+Activity timing is sampled, not camera-driver instrumentation. Short software
+smokes and generated tests never substitute for the physical 30-minute check.
+
 ## Rejection settings and historical results
 
 The live app defaults to ambiguity margin 1.5. For the revised P01 setting, pass both `--multiplier 2 --margin 1.5`. Accepted unfamiliar poses are recognition errors, not default PREVIOUS/BOOKMARK behaviour. Rejected poses display Unrecognised and cannot dispatch actions.

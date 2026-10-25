@@ -12,7 +12,7 @@ from typing import cast
 from uuid import uuid4
 
 import cv2
-from PySide6.QtCore import Qt, QEvent, QTimer, QSize
+from PySide6.QtCore import Qt, QEvent, QTimer, QSize, Signal
 from PySide6.QtGui import QImage, QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
@@ -361,6 +361,9 @@ class CaptureWorker(Thread):
 
 
 class Window(QMainWindow):
+    # Optional aggregate instrumentation; never carries predictions or camera images.
+    measurement = Signal(str, object)
+
     def __init__(self, model=None, feature_function=None, chosen_hand="Right", camera_index=0,
                  asset=None, profile="pilot", data_note="No enrolled dataset loaded",
                  studio=False, studio_mode=RoutingMode.PREVIEW,
@@ -1943,6 +1946,7 @@ class Window(QMainWindow):
             self.camera_index, self.asset, snapshot.session_id, snapshot.profile_id,
         )
         self.worker.start()
+        self.measurement.emit("worker_started", self.worker)
         self.start_button.setEnabled(False)
         self.practice_widget.prepare_button.setEnabled(False)
         self.record_trace.setEnabled(False)
@@ -2242,6 +2246,7 @@ class Window(QMainWindow):
             observation_only=True,
         )
         self.worker.start()
+        self.measurement.emit("worker_started", self.worker)
         self.start_button.setEnabled(False)
         self.state.setText("Opening camera for enrolment • gesture routing paused")
         self.preview.setText(f"Opening camera {self.camera_index} for enrolment...")
@@ -3840,6 +3845,7 @@ class Window(QMainWindow):
         if diagnostic_config is not None:
             self.worker.recognition_diagnostics = True
         self.worker.start()
+        self.measurement.emit("worker_started", self.worker)
         self.start_button.setEnabled(False)
         self.state.setText("Opening camera • show your enrolled neutral pose")
         if self.studio:
@@ -4009,6 +4015,7 @@ class Window(QMainWindow):
             frame, prediction = packet[:2]
             self.last_result_at = time.monotonic()
             self.received_first_frame = True
+            self.measurement.emit("observation", self.worker)
             self._display_capture_frame(frame)
             display = prediction.label if prediction.accepted else "Unrecognised"
             if not self.studio and prediction.label in {"PREVIOUS", "BOOKMARK"} and prediction.accepted:
@@ -4173,6 +4180,7 @@ class Window(QMainWindow):
                 self._display_capture_frame(frame)
                 self.last_result_at = now
                 self.enrolment_received_first_frame = True
+                self.measurement.emit("observation", worker)
                 if not self.enrolment_capture_attached:
                     if not widget.attach_capture(
                         request_id, self.enrolment_capture_session, self.enrolment_capture_profile,
@@ -4239,4 +4247,5 @@ class Window(QMainWindow):
         for widget in self._enrolment_widgets():
             widget.close()
         self.timer.stop()
+        self.measurement.emit("normal_close", None)
         event.accept()

@@ -4,34 +4,49 @@ You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge 
 
 ## Active task — finish Windows evidence, Revision 5, 24 October
 
-Deston has authorised personal enrolment as the release path. Shared-starter
-delivery, new recruitment, interviews and the three-condition user study are
-deferred. Existing product features, safety and two-laptop verification remain.
+**Updated 25 October:** the [bounded P02 repair](P02_NEUTRAL_REPAIR_2026_10_25.md)
+is independently reproduced and failed. Stop that experiment; no personal LIVE
+qualification is established. New recruitment, interviews, shared-starter
+qualification and the three-condition user study remain deferred. Existing
+product features, safety and two-laptop verification remain.
 
-1. **Manual now:** finish the remaining app/file/folder/HTTPS association,
-   missing-target, invalid-scheme and explicit recovery cases on laptop A. Check
-   only the affected recovery fixes plus unrun cases; preserve valid old passes.
-   Hau Jie operates laptop B. Coordinate its fresh guide-only setup, offline
-   functions, measured continuous 30-minute stability and post-close camera check.
-2. **GPT now:** consolidate the two-device case matrix with exact build identity,
-   observed outcomes and remaining gaps. Fix reproduced retained-feature defects
-   on `codex/javier-shortcuts`; leave review and merge to Deston.
-3. **Once a personal profile qualifies:** help Deston observe the six-stage
-   personal workflow, then the manual-versus-personal case study using at least
-   one consenting available team operator. Record real order, times, errors,
-   assistance and familiarity. Do not invent a starter attempt or generalise a
-   team case study to customers. Follow [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md).
-4. **After the working path passes:** finish eligible active-capture Camera and
-   focus/recovery cases, then capture the actual gesture/recovery video on the
-   identified release build. Use existing manual footage only with correct
-   attribution. Finish the personal-first guide once; avoid repeated redrafts.
+1. **Manual now:** follow the
+   [remaining Windows case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md)
+   for laptop-A app/file/folder/HTTPS association, missing-target, invalid-scheme
+   and explicit recovery cases. Your new 25 October save/restore, clearing and
+   pause/reacquisition observations are recorded as reported passes. Send the
+   existing PRIVATE_JAVIER_CHECKS_20261025-203326.zip, exports and screenshots
+   privately for receipt review; do not repeat successful cases just to resend
+   them. Preview only simulates; the corrected native-notice procedure explicitly
+   selects Live / Apply and pause / Manual LIVE ready with Camera off.
+2. **GPT now:** sync reviewed main into `codex/javier-shortcuts` and consolidate
+   the matrix with exact builds, observed outcomes and remaining gaps. Hau Jie's
+   camera-off window close followed by five camera-0 frames is bounded evidence,
+   not active handoff or a retained Studio exit code. Assisted reused-environment
+   setup and gapped responsiveness samples do not close fresh guide-only setup
+   or continuous full Studio endurance. Use the reviewed
+   [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
+   for the remaining run; keep genuine timing and shutdown observations.
+   Fix reproduced retained-feature defects and leave review/merge to Deston.
+3. **Hau Jie operates laptop B:** coordinate its remaining guide-only install,
+   offline core, measured continuous full Studio run and shutdown/camera checks.
+   Do not rerun unchanged successful cases or substitute headless capture results.
+4. **Once a personal profile genuinely qualifies:** help Deston observe the
+   six-stage workflow and manual-versus-personal case study with at least one
+   consenting available team operator. A fresh complete four-pose enrolment is
+   the next option; its operator is not confirmed and no result is promised.
+   Record real order, times, errors, assistance and familiarity using
+   [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md).
+5. **After the working path passes:** finish eligible active-capture Camera and
+   focus/recovery cases, then film the actual gesture/recovery demonstration on
+   the identified release build. Existing manual footage remains a draft. Finish
+   the personal-first guide once, with genuine results and limitations.
 
-Do not collect for Hau Jie or run more full Practice on a known failing profile.
-The 22-window gate, hold/negative measurements and no unintended external actions
-remain. A failed repair does not authorize bypasses. Aim to hand off device and
-video evidence by 29 October for the 31 October submission target.
-Your accepted progress remains **54/73 (74.0%)**. The dated instructions below
-are historical wherever [Revision 5](PROJECT_PLAN.md) supersedes them.
+Do not collect for Hau Jie or rerun Practice on the failed candidate. The existing
+22-window gate, hold/negative measurements and no unintended external actions
+remain. Aim for device/video handoff by 29 October for the 31 October target.
+Your accepted progress remains **54/73 (74.0%)**. Dated instructions below are
+historical wherever this section and [Revision 5](PROJECT_PLAN.md) supersede them.
 
 ## Recovery fixes and next work — 23 October
 

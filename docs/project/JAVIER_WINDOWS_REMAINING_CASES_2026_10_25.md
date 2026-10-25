@@ -29,8 +29,10 @@ historical. Do not invent a starter attempt.
 
 Keep all existing retained features and safety gates. A known failing profile
 must not receive another full Practice attempt merely to obtain a pass.
-Hau Jie owns the one bounded new NEUTRAL TRAIN replacement experiment.
-Javier does not collect for him or change rejection settings.
+The one bounded NEUTRAL replacement has failed and is stopped; see
+[P02 disposition](P02_NEUTRAL_REPAIR_2026_10_25.md). A fresh complete personal
+enrolment is an operator-dependent option in the current team brief, not a
+qualified model. Javier does not collect for Hau Jie or change rejection settings.
 
 Status vocabulary below:
 **PASS (bounded)** means the recorded observation passed only on the stated
@@ -116,7 +118,7 @@ stability evidence. No new software suite or genuine readiness pass is claimed.
 | Fresh guide-only independent install | No new unaided-install receipt in this consolidation. A existing install remains its own environment. | Assisted independent environment and 1,012-test verification are retained; not guide-only. | Hau Jie performs a separate clean local installation with the guide, logging help/deviations. No copied environment. Keep original assisted result. |
 | Offline core | No new GF-P23 offline acceptance supplied here. | PASS (bounded self-report): Wi-Fi disconnected with app/file/folder use. HTTPS and external online features excluded. | On the fresh installation, record the affected offline local workflow and exact conditions. Do not silently promote earlier self-report to instrumented release acceptance. |
 | Continuous measured 30-minute Studio workflow | UNRUN in current A material. | INTERRUPTED instrumented run: 791.605 s, 79/79 responsiveness samples, working-set peak 170.21 MiB, private-byte peak 979.78 MiB. Separate later 30-minute no-error run is self-report without continuous timing/rate/memory. | B3: a new uninterrupted >=1,800 s full Studio run with independent timing/rate/memory and faults. Never concatenate the two historical runs or relabel a pipeline-only diagnostic as Studio workflow. A requirement remains visible until Deston resolves per-device release coverage. |
-| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | Normal closure self-reported; process exit and post-close camera release not independently measured. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
+| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | 25 Oct received receipt: camera-off normal closure and later five-frame camera-0 reacquisition; Studio exit code unknown; not active-capture handoff. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
 | Native 0x8001010d | No reproduced A triggering action in these records. | Historical notice with later continued output; cause and process termination unestablished. | If it recurs during assigned checks, retain triggering action, PID/start/end, stdout/stderr and exit code; matching Windows faulting-module record only for an actual process exit. Do not suppress or call it a crash from the code alone. |
 | Personal six-stage scenario, M/P case study and final video | Manual draft and development summaries only; known failed P03 Practice. | Diagnostic/model receipts are not genuine readiness or workflow success. | Qualified session C, then final guide/video on identified release after GF-P23. No interviews, new recruitment or fabricated S condition. |
 
@@ -278,12 +280,17 @@ Camera launch is requested. Do not repeat PR29's whole focus sequence.
   After dependencies/assets exist, disconnect networking and check local core.
   Then measure one continuous >=1,800-second full Studio workflow with PID,
   independent start/end, responsiveness, observation rate and peak memory.
-  Use the existing reviewer-approved process monitoring method with its exact
-  command/output; confirm it is ready before starting a long run. If no matching
-  observation-rate metric is available, declare it unmeasured and ask Deston
-  about the existing instrumentation rather than inventing a logger or rate.
-  Close normally, preserve exit status and observe camera release and subsequent
-  reacquisition with competing consumers closed.
+  Use the [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
+  on reviewed main: `.venv\Scripts\python.exe -m scripts.monitor_studio --output
+  experiments/local/studio-soak-UNIQUE.json --seconds 1800 --camera 0` (one command;
+  choose the actual camera and a new filename). Configure the profile/workspace
+  before the timed capture interval. The monitor does not auto-start or auto-close
+  Studio; keep the preview visible and exercise on-screen controls for the full
+  interval. Native handoff cases that pause capture remain separate. Normal
+  closure records Qt exit and worker release; preserve `$LASTEXITCODE` and the
+  operator's independent start/end. Then check native camera reacquisition with
+  competing consumers closed. This instrumentation supplies same-run measurements,
+  not an already completed physical run or a recognition pass.
 - Preserve interrupted and complete runs separately. A 60/1,800-second
   `scripts.check_stability` capture diagnostic measures only the pipeline and
   cannot replace a timed Studio UI/controller workflow. Do not combine its rate

@@ -4,37 +4,48 @@ You own recognition and personalisation for GestureForge Studio. Build the reusa
 
 ## Active task — personal release, Revision 5, 24 October
 
-Deston has authorised a smaller Windows release. **Stop shared-starter delivery,
-new recruitment and broad recognition searches.** Keep the completed starter
-research and failed TEST results in the methods; they are not release gates.
-No interviews, repeat participant TEST or repeat twenty-trial diagnostic.
+**Updated 25 October: the bounded P02 repair is complete and failed. Stop that
+experiment.** The [repair disposition](P02_NEUTRAL_REPAIR_2026_10_25.md) preserves
+Original and the failed candidate. Independent review verifies all 22 payload
+hashes, 520 sample predictions and 104 trial outcomes. Historical NEUTRAL falls
+from 6/8 to 0/8; historical macro-F1 falls from 0.936508 to 0.651003; negative
+command predictions increase from 53/60 to 54/60. Neither model is LIVE-qualified
+by these results. Do not repeat the splice, install the candidate, relax gates,
+rerun participant TEST or ask for another twenty-trial diagnostic.
 
-1. **With GPT:** sync main into `codex/hau-jie-profiles`, preserving private work.
-   Use the existing predeclared NEUTRAL repair proposal and exact Original inputs.
-   Keep settings, old/new validation and negatives fixed; create at most one
-   isolated candidate. This replaces 40 NEUTRAL TRAIN samples with ten, retains
-   40 per action class and refits the all-class scaler. No automatic installation.
-2. **Manual:** if you agree to new numeric collection, record only the two new
-   NEUTRAL TRAIN trials through Repair pose, with actual camera/pose conditions.
-   Keep invalid or interrupted attempts. GPT scores the fixed comparisons; send
-   the private candidate inputs, receipt and pass/fail result to Deston.
-3. **Decision:** if the candidate fails any declared check, stop the experiment
-   and report that result. If it passes, verify the profile's actual 22-window
-   Practice before asking Deston to use it in the integrated workflow. Passing
-   offline checks alone never grants LIVE. Do not bypass rejection or readiness.
-4. **In parallel:** operate laptop B for the remaining guide-only install,
-   offline core, uninterrupted measured 30-minute run and post-close camera
-   reacquisition. Javier coordinates the case list; reuse unchanged valid passes.
-5. **Final handoff:** reconcile methods/results once the repair disposition and
-   affected workflow checks are known. Keep Word/data/full logs private; submit
-   focused code/sanitized-evidence PRs for Deston's review. Aim for recognition
-   disposition by 26 October and complete handoff by 29 October.
+1. **GPT now:** sync reviewed main into `codex/hau-jie-profiles`, preserving
+   private work. Retain the explicit failure and limitations in your methods.
+   No additional candidate or broad model search is assigned.
+2. **Next release option, operator not yet confirmed:** one consenting operator
+   can enrol a fresh complete four-pose profile under consistent demo conditions,
+   with separate TRAIN and VALIDATION sessions. Preserve Original. Pin kNN,
+   multiplier 1.5 and margin 1.5 before capture using an explicit default launch;
+   do not inherit the loaded P02 profile's margin 1.0. Check fixed validation
+   before attempting the existing 22-window Practice, and retain failures. This
+   is coherent new onboarding, not a proven repair or permission to tune TEST.
+   Deston is confirming who is available; no new recording or pass is claimed.
+3. **Manual work in parallel:** operate laptop B for the remaining guide-only
+   installation, offline core, uninterrupted measured 30-minute full Studio run
+   and shutdown/reacquisition checks in the
+   [Windows case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md).
+   Your camera-off window close and subsequent five-frame camera-0 reacquisition
+   are received as bounded evidence. They do not establish active-capture
+   handoff, Studio's exit code, fresh guide-only setup or continuous endurance.
+   Use the reviewed [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
+   with a new output filename; it records same-run measurements. Do not substitute
+   the headless capture diagnostic or earlier gapped responsiveness samples.
+4. **Final handoff:** reconcile methods/results once the chosen release profile
+   and affected workflow checks are known. Keep Word, data and full logs private;
+   send focused code/sanitized-evidence PRs for Deston's review. Aim for complete
+   handoff by 29 October; avoid repeated report redrafts before results exist.
 
-GF-P21 now checks the personal profile selected for release and affected behaviour;
-success for every research participant is not required. Its GF-P20 dependency and
-GF-P24's final reconciliation remain. No current LIVE-qualified profile is proven.
-Your accepted progress remains **63/75 (84.0%)**. The dated instructions below are
-historical where they conflict with this section and [Revision 5](PROJECT_PLAN.md).
+Shared-starter delivery, interviews, new recruitment and broad recognition
+searches remain deferred. GF-P21 checks the chosen personal release profile and
+its affected behaviour; success for every research participant is not required.
+Its GF-P20 dependency and GF-P24's final reconciliation remain. No current
+LIVE-qualified profile is proven. Your accepted progress remains **63/75 (84.0%)**.
+The dated instructions below are historical where they conflict with this section
+and [Revision 5](PROJECT_PLAN.md).
 
 ## Next delivery — assigned 7 October
 

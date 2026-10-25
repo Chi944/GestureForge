@@ -1,47 +1,59 @@
 # GestureForge Studio team implementation guide
 
-Updated 24 October 2026 · Intended submission 31 October · Official deadline 7 November 2026
+Updated 25 October 2026 · Intended submission 31 October · Official deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
 
 ## Active release instructions — Revision 5, 24 October
 
-Follow [PROJECT_PLAN.md](PROJECT_PLAN.md) Revision 5 and the current
-[backlog](TEAM_BACKLOG.csv). These supersede conflicting starter-delivery,
-unfamiliar-user recruitment and three-condition study instructions in the dated
-history below. This is Deston's authorised scope revision, not a claimed tutor
-approval. The target is 31 October; the official deadline remains 7 November.
+**Updated 25 October:** follow [PROJECT_PLAN.md](PROJECT_PLAN.md) Revision 5 and
+[TEAM_BACKLOG.csv](TEAM_BACKLOG.csv). These active instructions supersede the
+older repair, starter-delivery, recruitment and three-condition study requests
+below. This is Deston's authorised scope revision, not claimed tutor approval.
+The intended submission is 31 October; the official deadline is 7 November.
 
-- **Keep:** Windows personal enrolment and saved profiles, all three commands,
+- **Keep:** Windows personal enrolment/saved profiles, all three commands,
   deck/bookmarks, runbook, approved app/file/folder/HTTPS shortcuts, persistence,
   manual fallback and existing safety/readiness gates.
-- **Stop:** supplied starter qualification, new participant recruitment,
-  interviews, broad model searches, native macOS expansion, extra features and
-  repeated report/presentation rewrites. Preserve existing code and research.
-- **Hau Jie:** complete the one bounded two-trial NEUTRAL TRAIN replacement and
-  fixed comparison described in your brief. Return the result once; if it fails,
-  stop and give Deston an explicit disposition. A failure does not authorize more
-  trials, threshold relaxation or TEST tuning. Operate laptop B in parallel.
-- **Javier:** finish remaining manual/native target and recovery cases now;
-  coordinate laptop B, prepare the M/P observation sheet and existing video
-  storyboard. Gesture-dependent Camera checks and filming wait for actual
-  qualification. Do not repeat unchanged passed cases.
-- **Deston:** integrate and review the candidate; accept the chosen personal
-  profile only after genuine current-session Practice. Verify the six-stage
-  workflow and recovery, analyse actual M/P observations and remaining safety
-  evidence, then make one final report/matrix/slides and release-package pass.
+- **Stop:** the failed P02 NEUTRAL-only repair, supplied-starter qualification,
+  interviews, new recruitment, broad model searches, native macOS expansion,
+  extra features and repeated report/presentation rewrites. Preserve research.
+- **Hau Jie:** the [repair disposition](P02_NEUTRAL_REPAIR_2026_10_25.md) is
+  independently reproduced: 22 payload hashes, 520 predictions and 104 trial
+  outcomes agree. The candidate regresses historical NEUTRAL and negatives; it
+  stays uninstalled and does not qualify Original or candidate for LIVE. Operate
+  laptop B for the remaining guide-only/offline/continuous Studio/shutdown cases.
+  Reconcile methods once the chosen release profile and affected checks exist.
+- **Javier:** use the [Windows case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md)
+  to finish remaining manual/native and recovery cases, coordinate laptop B and
+  consolidate receipts. Camera-off close plus later five-frame reacquisition is
+  bounded evidence, not active handoff, retained Studio exit code, fresh install
+  or continuous endurance. Use the reviewed
+  [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run);
+  gapped process samples and headless capture cannot supply that missing evidence.
+  Send the existing 25 October laptop-A originals for receipt review; do not
+  repeat the newly reported successful checks just to regenerate metadata.
+- **Deston:** integrate/review both deliveries and measurement software. The next
+  option is one fresh complete four-pose profile from a consenting team operator;
+  availability is being confirmed, so no new capture/pass is claimed. Preserve
+  Original; pin kNN, multiplier 1.5 and margin 1.5 before capture via an explicit
+  default launch, avoiding inherited P02 margin 1.0. Keep TRAIN and VALIDATION
+  separate in consistent demo conditions; check fixed validation before the
+  existing 22-window Practice. This is new onboarding, not a proven repair.
 
-One consenting available team operator can supply the M/P engineering case
-study; use a second only if readily available. Record the operator's familiarity,
-condition order, assistance, errors and actual outcomes, and limit conclusions.
-The unavailable shared starter needs no fabricated study run. Anyone may use
-their own genuinely qualified personal profile; no such pass is currently
-established. Manual controls alone do not establish a working gesture product.
+After a personal profile genuinely qualifies, verify the real six-stage workflow
+and recovery. One consenting available team operator can supply the M/P case
+study; use a second only if readily available. Record familiarity, condition order,
+assistance, errors and actual outcomes with small-sample limits. No current
+personal LIVE pass is established, and manual controls alone do not establish a
+working gesture product. Reconcile report/matrix/slides and video once after the
+real workflow and release evidence exist.
 
 The 22-window Practice gate, 20 five-second holds, ten-minute negative activity,
-latency/replay evidence and two-laptop guide/offline/30-minute/shutdown checks
-remain. No safety criterion, consumed TEST result, task weight or completed-task
-history changes. Accepted progress remains 151/223, with 19/29 tasks Done.
+latency/replay evidence and two-Windows guide/offline/30-minute/shutdown checks
+remain. No threshold relaxation or TEST tuning; task weights, dependencies and
+completed-task history are unchanged. Accepted progress remains **151/223 (67.7%),
+19/29 tasks Done**: Deston 34/75, Hau Jie 63/75, Javier 54/73.
 Hau Jie pushes `codex/hau-jie-profiles`; Javier pushes
 `codex/javier-shortcuts`; Deston reviews and merges.
 

@@ -1,6 +1,55 @@
 # GestureForge Studio progress
 
-Snapshot: 24 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 25 October 2026. Task weights measure accepted work, not an expected grade.
+
+## Current checkpoint — 25 October
+
+PR **#37** and **#38** are reviewed and merged. The received P02 repair packet
+passes all 22 payload hashes; independent reconstruction reproduces all 520
+sample predictions and 104 trial outcomes. The candidate **fails**: historical
+NEUTRAL falls from 6/8 to 0/8; negative command predictions increase from 53/60
+to 54/60. The [bounded experiment](P02_NEUTRAL_REPAIR_2026_10_25.md) is stopped.
+Neither Original nor this candidate has a demonstrated current LIVE pass.
+Do not repeat the NEUTRAL splice, search thresholds, or tune consumed TEST.
+
+Javier's [two-device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md) now
+uses Live explicitly for its native-launch precondition. His new laptop-A
+save/restore, unavailable-slot and pause/reacquisition observations remain
+attributed to Javier and his assisting agent: the new original packet has not
+arrived here. Hau Jie's separate camera-off closure and subsequent five-frame
+camera reacquisition are bounded evidence, not active-capture handoff or a
+continuous 30-minute run. Reuse valid receipts; fill only the actual gaps.
+
+The next recognition option is **one fresh complete personal enrolment**, with
+all four poses collected in consistent intended-demo conditions and separate
+TRAIN/VALIDATION. Pin the existing kNN / multiplier 1.5 / margin 1.5 settings
+before capture, preserving old profiles; do not inherit P02's saved margin 1.0.
+The operator and new collection consent remain unconfirmed. Fixed validation
+comes before the genuine 22-window Practice gate; this option is not a proven
+repair or permission to rerun until a pass. Javier's independent manual/native
+checks and Hau Jie's laptop-B installation checks can proceed meanwhile.
+
+The optional [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
+is implemented and independently reviewed. It measures the real GUI/camera
+process, rejects summed interrupted periods, excludes setup/paused GUI waits
+from active responsiveness checks, preserves incomplete checkpoints and records
+memory/Qt-close/worker-release outcomes. It adds no dependency, does not start
+capture or change routing, and writes one small aggregate JSON without media.
+**98 focused integration tests**, repository Ruff, mypy (45 source files), both
+startup smokes and a no-camera monitor smoke pass. The no-camera smoke correctly
+fails measurement acceptance. No physical endurance or camera-reopen run occurred.
+Six affected Trello descriptions were updated and read back exactly.
+
+**Accepted: 151/223 (67.7%), 19/29 tasks.** Deston 34/75 (45.3%), Hau Jie
+63/75 (84.0%), Javier 54/73 (74.0%). Packet reproduction, experiment closure,
+PR corrections and software instrumentation are completed substeps. No remaining
+whole task has all its physical evidence and dependencies satisfied. GF-P16 is
+the next 10-point milestone once a qualified personal six-stage workflow and
+recovery are actually observed. Word reconciliation remains a final pass;
+private inputs, prompt log and decision log are unchanged.
+
+The dated sections below retain historical results. Use this checkpoint and the
+active team briefs for current instructions.
 
 ## Current release decision — personal enrolment on Windows, 24 October
 
@@ -20,7 +69,7 @@ The 22-window Practice gate, safety thresholds, all retained product features,
 two-Windows release checks and submission deliverables remain. A manual-only
 demonstration does not close the gesture-product tasks.
 
-**Do next:** Hau Jie completes at most one predeclared two-trial NEUTRAL TRAIN
+**Sequence recorded on 24 October (superseded above):** Hau Jie completes at most one predeclared two-trial NEUTRAL TRAIN
 replacement and fixed evaluation, then returns its pass/fail disposition. Javier
 finishes independent native/manual cases and coordinates laptop B now. After a
 personal profile genuinely qualifies, Deston verifies the six-stage workflow;
