@@ -1,5 +1,11 @@
 # Javier implementation brief
 
+## Current direction — 26 October
+
+Deston confirmed basic supervised gesture operation on c49244a. Prepare the real Harbor six-stage workflow/video with the visible supervised-demo override and honest limitations. Continue remaining laptop-A native/recovery checks and consolidate laptop-B evidence. Retain before/after restore exports and actual app outcomes; a launch request alone is not task completion. Work on codex/javier-shortcuts and submit a focused PR.
+
+See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
+
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
 
 ## Active task — finish Windows evidence, Revision 5, 24 October

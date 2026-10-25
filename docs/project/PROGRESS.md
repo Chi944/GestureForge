@@ -1,8 +1,37 @@
 # GestureForge Studio progress
 
-Snapshot: 25 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 25 October
+## Current checkpoint — 26 October: supervised gestures confirmed
+
+Deston explicitly authorised supervised-demo use and then reported **“all gestures
+work perfectly”** on build **c49244a**. The basic gesture-operation substep of
+GF-P16 is accepted as operator-reported. Exact counts, timing, external launches
+and the complete six-stage workflow were not reported.
+
+The measured Practice remains **19/22 correct**: two capture-coverage failures,
+one missed G3, zero negative actions. The separate session-only override is visibly
+labelled **qualification NOT passed**. Its 68 targeted tests, Ruff, mypy and both
+startup smokes pass. Saved outcomes, model settings and hold/rearm/focus/target
+protections are unchanged. The confirmation receipt and numeric data stay private.
+
+**Next: record the real Harbor six-stage workflow under the declared supervised
+override**, including an approved target launch, bookmark, save/restore and one
+missing-reference recovery. Retain session exports and show the override in the
+video. No new enrolment, threshold search or blind full Practice repetition is
+assigned. This advances integration and demonstration; it does not retrospectively
+satisfy the standard qualification or measured-study criteria.
+
+Hau Jie finishes laptop-B evidence and recognition limitations from existing data.
+Javier consolidates native/recovery checks and prepares genuine workflow footage.
+Deston verifies the workflow and then reconciles the local report/presentation.
+
+**Accepted whole tasks: 151/223 (67.7%), 19/29.** Deston 34/75 (45.3%), Hau Jie
+63/75 (84.0%), Javier 54/73 (74.0%). Basic supervised gesture operation is a newly
+accepted substep; the full ten-point GF-P16 task still needs workflow/recovery
+evidence and its qualification criterion. Weights and dependencies are unchanged.
+
+## Historical checkpoint — 25 October
 
 PR **#37** and **#38** are reviewed and merged. The received P02 repair packet
 passes all 22 payload hashes; independent reconstruction reproduces all 520

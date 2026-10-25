@@ -1,5 +1,11 @@
 # GestureForge Studio approved project build plan
 
+## Current direction — 26 October
+
+Deston authorised session-only supervised-demo use and confirmed basic gesture operation on c49244a. Continue integration and demonstration while measured qualification remains incomplete. Label the override in the app/video, retain failed measurements and quantitative targets, and keep this operator authorisation separate from tutor approval or task acceptance. Next: actual Harbor workflow/recovery, remaining device evidence, final documents. No new recognition search is assigned.
+
+See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
+
 Revision 5 - 24 October 2026. Submission target: 31 October 2026; official deadline: 7 November 2026.
 Deston authorised this scope reduction on 24 October to prioritise a working Windows product. R15 supplied starter delivery is deferred; personal enrolment is the supported gesture path. R20 becomes an observed manual-versus-personal engineering case study with an available consenting operator. This is a transparent change to product commitments, not a claim of tutor approval or completed testing. Earlier requirements, experiments and failed frozen TEST results remain part of the project history.
 Task IDs, estimates, dependencies, accepted points and frozen recognition targets are unchanged. Scope reduction earns no acceptance points. On 23 October Deston selected published secondary research instead of trainer interviews; no interviews or new unfamiliar-participant recruitment are required by this revision.

@@ -1,5 +1,11 @@
 # Harbor Desk demonstration and evaluation protocol
 
+## Current direction — 26 October
+
+Deston authorised and confirmed basic gesture use through the session-only override on c49244a. Configure Harbor and local resources first, then Practice > Enable supervised demo. Select Live, Apply and pause, Start and NEUTRAL. Keep the override visible in the video. Camera/model/binding changes invalidate it; restore/reconfiguration may need explicit re-enabling. Record all six stages, app launches, bookmark, save/restore and failure recovery with session exports. This is supervised integration evidence, not a qualifying Practice or measured-study pass. Do not hide manual fallback. The next task is this workflow, not another blind Practice repetition.
+
+See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
+
 Owner: Deston · GF-P32 · Authored 30 September 2026 · Release protocol revised 24 October 2026
 
 This is fictional product content and a test protocol, not measured results. The ten-card deck is `assets/corporate_demo_deck.json`; the local reference is `assets/corporate_reference.txt`. Load the supplied `assets/harbor_workspace.json` in Studio to use the custom-gesture six-stage runbook, or `assets/harbor_standard_workspace.json` when the loaded recogniser uses the legacy `NEXT`, `PREVIOUS` and `BOOKMARK` action IDs. Explicit **Live** supports manual stage/deck actions, bookmarks, saved sessions and validated Windows resource requests. Preview/Rehearsal simulates typed requests. Personal LIVE gestures require the user's own genuine full Practice pass in the current app session, saved and reconciled before paused restoration, then explicit Live selection, Apply, Start and fresh NEUTRAL. Loading a profile, the short check and historical/imported results cannot grant eligibility; see the [personal LIVE steps](../USER_GUIDE.md#personal-live-after-practice).

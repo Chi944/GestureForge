@@ -1,5 +1,11 @@
 # Hau Jie implementation brief
 
+## Current direction — 26 October
+
+Deston confirmed basic supervised gesture operation on c49244a. The measured Practice remains 19/22 with two capture gaps, one G3 miss and zero negative actions. Finish recognition limitations/methods from existing data and laptop-B install, offline, endurance and shutdown checks. No new P02 repair, model search, TEST tuning or blind Practice repeat is assigned. Keep your work on codex/hau-jie-profiles and submit a focused PR.
+
+See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
+
 You own recognition and personalisation for GestureForge Studio. Build the reusable AI and profile components; Deston owns integration and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` first. Work is assigned for the project due 7 November 2026; the assignment is already submitted.
 
 ## Active task — personal release, Revision 5, 24 October
