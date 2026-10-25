@@ -201,6 +201,57 @@ def test_live_start_requires_live_selection_and_revokes_on_camera_change(qapp, t
         window.close()
 
 
+def test_supervised_demo_is_explicit_scoped_and_does_not_create_pass(qapp, tmp_path, monkeypatch):
+    window = Window(model=model(), studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
+    records = []
+    monkeypatch.setattr(window, "log", records.append)
+    evidence = tmp_path / "practice-failed.json"
+    evidence.write_text('{"status":"failed"}', encoding="utf-8")
+    try:
+        assert window.routing is not None
+        assert window._personal_live_grant is None
+        window.demo_override_button.click()
+        assert window._personal_live_grant.supervised_demo
+        assert window.practice_attempt is None
+        assert "qualification NOT passed" in window.boundary.text()
+        assert "select LIVE" in window._live_gate_reason(window.routing.snapshot)
+        assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert window.routing.state == "PAUSED"
+        assert window._live_gate_reason(window.routing.snapshot) == ""
+        assert window._can_start_studio_camera()
+        overrides = [record for record in records if record["type"] == "supervised_demo_override"]
+        assert len(overrides) == 1
+        assert overrides[0]["qualification_passed"] is False
+        assert evidence.read_text(encoding="utf-8") == '{"status":"failed"}'
+        assert window.set_studio_camera(1)
+        assert window._personal_live_grant is None
+        assert not window._can_start_studio_camera()
+        assert "SUPERVISED DEMO OVERRIDE" not in window.boundary.text()
+    finally:
+        window.close()
+
+
+@pytest.mark.parametrize("busy_field", ["practice_attempt", "readiness_check", "model_loader", "worker"])
+def test_demo_override_cannot_interrupt_active_work(qapp, busy_field):
+    window = Window(model=model(), studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
+    try:
+        setattr(window, busy_field, object())
+        assert not window.enable_supervised_demo()
+        assert window._personal_live_grant is None
+    finally:
+        setattr(window, busy_field, None)
+        window.close()
+
+
+def test_demo_override_unavailable_in_guest(qapp):
+    window = Window(studio=True)
+    try:
+        assert not window.enable_supervised_demo()
+        assert window._personal_live_grant is None
+    finally:
+        window.close()
+
+
 def test_live_context_must_be_approved_current_stage_or_active_quick_actions(qapp, tmp_path):
     window = Window(model=model(), studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
     try:

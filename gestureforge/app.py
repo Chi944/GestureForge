@@ -208,6 +208,7 @@ class LiveGrant:
     camera_index: int
     behavior_revision: str
     context_bindings: frozenset[tuple[str, tuple[tuple[str, Action], ...]]]
+    supervised_demo: bool = False
 
 
 REJECTION_MESSAGES = {
@@ -807,6 +808,13 @@ class Window(QMainWindow):
             self.practice_start_button.setObjectName("compactButton")
             self.practice_start_button.clicked.connect(self.start_practice_rehearsal)
             practice_layout.addWidget(self.practice_start_button)
+            self.demo_override_button = QPushButton("Enable supervised demo — qualification not passed")
+            self.demo_override_button.setToolTip(
+                "Session-only operator override. Keeps measured results unchanged; "
+                "recognition may miss or activate incorrectly. Start and NEUTRAL are still required."
+            )
+            self.demo_override_button.clicked.connect(self.enable_supervised_demo)
+            practice_layout.addWidget(self.demo_override_button)
             self.practice_host = QWidget()
             self.practice_host.setObjectName("manualViewer")
             self.practice_host_layout = QVBoxLayout(self.practice_host)
@@ -1599,6 +1607,40 @@ class Window(QMainWindow):
             behavior_revision=revision,
             context_bindings=self._approved_personal_live_contexts(),
         )
+        return True
+
+    def enable_supervised_demo(self) -> bool:
+        """Authorize supervised use without manufacturing a Practice pass."""
+        if (not self.studio or self.routing is None or self.model is None
+                or self.model is self._standard_model or self._closing
+                or self.model_loader is not None or self._profile_selector_change_blocked()
+                or self._enrolment_blocks_recognition() or self.practice_attempt is not None
+                or self.readiness_check is not None or self.worker is not None):
+            self._set_practice_status("Demo override unavailable: load a personal recogniser and finish active capture or setup first.")
+            return False
+        if not self.pause():
+            return False
+        revision = self._practice_current_revision()
+        if not revision:
+            return False
+        self._invalidate_live_grants()
+        self._personal_live_grant = LiveGrant(
+            attempt_id="demo-" + uuid4().hex,
+            camera_index=self.camera_index,
+            behavior_revision=revision,
+            context_bindings=self._approved_personal_live_contexts(),
+            supervised_demo=True,
+        )
+        self.log({"type": "supervised_demo_override", "qualification_passed": False,
+                  "profile": self.profile, "model": self._model_version(),
+                  "camera": self.camera_index, "behavior_revision": revision,
+                  "timestamp": time.monotonic()})
+        self._set_practice_status(
+            "Supervised demo enabled for this session. Qualification NOT passed; "
+            "saved Practice results are unchanged. Select LIVE, Apply and pause, then Start and show NEUTRAL."
+        )
+        self.start_button.setEnabled(self._can_start_studio_camera())
+        self.render_studio_status()
         return True
 
     def _live_gate_reason(self, snapshot: RoutingSnapshot) -> str:
@@ -2870,6 +2912,9 @@ class Window(QMainWindow):
         if self.readiness_check is not None and self.readiness_check.status == "running":
             expected = self.readiness_check.expected or "the prompted pose"
             boundary_text += f"\nReadiness running: perform {expected}. {self.readiness_check.completed}/6 complete."
+        demo_override = self._personal_live_grant is not None and self._personal_live_grant.supervised_demo
+        if demo_override:
+            boundary_text = "SUPERVISED DEMO OVERRIDE — qualification NOT passed. Esc pauses control.\n" + boundary_text
         self.boundary.setText(boundary_text)
         missing = []
         if self.model is None:
@@ -2889,6 +2934,8 @@ class Window(QMainWindow):
                 )
             else:
                 self.studio_status.setText(
+                    "Supervised demo only; qualification NOT passed. Press Start and show NEUTRAL."
+                    if demo_override else
                     "LIVE gestures eligible. Press Start explicitly, show NEUTRAL, then use approved gestures."
                 )
         else:
