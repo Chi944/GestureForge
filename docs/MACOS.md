@@ -1,145 +1,172 @@
-# Run GestureForge on Apple Silicon
+# Run GestureForge Studio on Apple Silicon
 
-Target: **Apple Silicon, macOS 13 Ventura or newer, native Python 3.11**.
-The pinned dependencies have compatible wheels and passed a cross-platform pip
-[resolution check](project/macos-compatibility.json) (1 October 2026). Actual Mac installation, camera permission, live operation and
-performance still need verification on the destination Mac. Intel Macs and Rosetta
-are outside this setup path.
+This guide is for a marker or user with **Apple Silicon, macOS 13 Ventura or newer,
+and native Python 3.11**. The marker's processor is confirmed; their macOS version
+still needs checking. Intel Macs and Rosetta are outside this setup path.
 
-## Install and launch
+The source ZIP includes the setup and launch scripts, **not Python or a bundled
+application**. First setup requires internet and installs dependencies locally.
+A Windows virtual environment cannot be used on a Mac.
 
-Use a fresh clone or source ZIP, extracted into a writable folder. Do not copy a
-Windows `.venv`; virtual environments must be created on the destination computer.
-Open Terminal in the folder containing `pyproject.toml`.
+The pinned dependencies passed a Windows-hosted
+[Mac wheel-resolution check](project/macos-compatibility.json). That is dependency
+resolution evidence, not a successful Mac installation or camera test. Native Mac
+installation, camera operation and performance remain unverified.
 
-Check the Mac and Python:
+## 1. Install and launch
+
+Extract the source ZIP into a writable folder. Open Terminal in the folder
+containing `pyproject.toml`, then check the operating system and Python:
 
 ```bash
 sw_vers -productVersion
 python3.11 -c 'import platform; print(platform.machine())'
 ```
 
-The Python command must print `arm64`. If Python 3.11 is missing, install native
-Python 3.11; with [Homebrew](https://formulae.brew.sh/formula/python@3.11) already
-installed, use `brew install python@3.11`. Do not launch Terminal using Rosetta.
+The macOS version must be 13 or later and the Python command must print `arm64`.
+If Python 3.11 is missing, install native Python 3.11. With
+[Homebrew](https://formulae.brew.sh/formula/python@3.11) already installed, use
+`brew install python@3.11`. Do not launch Terminal using Rosetta.
 
 ```bash
 python3.11 scripts/setup_macos.py
 bash run-studio.command
 ```
 
-Setup needs internet. It installs the existing pinned dependencies into `.venv`,
-verifies their consistency, downloads the checksum-verified hand model and runs
-blank-image landmark inference, then briefly opens and closes both the assignment
-window and Studio preview. Setup reports success only if these checks pass. It does
-not open the camera or collect samples. Run setup from an ordinary graphical Mac
+Setup creates `.venv`, installs the pinned dependencies, checks their consistency,
+downloads the checksum-verified hand model and runs blank-image landmark inference.
+It briefly opens and closes both application windows to check native Qt startup.
+It does not open the camera or collect data. Run setup in an ordinary graphical
 Terminal session, without setting `QT_QPA_PLATFORM=offscreen`.
-If setup fails, resolve the reported error and rerun; it does not delete an existing
-environment. After setup, `run-studio.command` is executable and can be opened
-from Finder; use `bash run-studio.command` in Terminal to retain error output.
-The launcher handles project folders containing spaces.
 
-The initial viewer supports keyboard/mouse control. **Start camera control remains
-disabled until a personal dataset is supplied.** A connected webcam alone is not enough.
+If setup fails, retain the error and fix its reported cause before retrying. An
+incompatible existing `.venv` must be renamed before setup; it is not deleted by
+the script. Once setup succeeds, Finder can open `run-studio.command`. Use
+`bash run-studio.command` in Terminal when you need to retain an error message.
+The launcher handles folders containing spaces. `bash run.sh --studio` is equivalent.
 
-## Studio on Mac
+## 2. Begin with the manual walkthrough
 
-```bash
-bash run.sh --studio
-```
+Studio opens in **Guest/manual** and **Preview**. No profile or webcam is required
+to inspect the supplied deck, runbook or simulated actions.
 
-Choose **Load personal dataset...** to load your own `manifest.json`, or launch with
-`--studio --dataset data/local/mac-pilot/manifest.json --multiplier 2 --margin 1.5`.
-Choose **Camera index**, click **Use camera and pause**, then explicitly Start after
-the previous capture stops. The on-screen keyboard hint uses the native Qt shortcut
-names. Start/Pause and the active gesture meanings stay visible while setup scrolls.
+1. Click **Open Setup**. Use **Load deck...** for
+   `assets/corporate_demo_deck.json`, or **Load workspace...** for
+   `assets/harbor_workspace.json` and its six-stage runbook.
+2. Preview and Rehearsal simulate typed actions. To change cards or advance stages
+   manually, select **Live** in **Studio action mode**, then **Apply and pause**.
+3. Use **Manual browse / bookmarks** for Next, Previous and Bookmark, and
+   **Runbook** for the stage instructions and Continue/Finish controls.
+4. Use **Save session...** to save workspace progress. Load the same workspace
+   before **Restore session...**. Restoring returns to paused Preview and does not
+   replay launches; select Live explicitly again for manual actions.
 
-This command is equivalent to `bash run-studio.command`. Preview/Rehearsal simulate
-gesture actions. Explicit Live permits manual viewer actions without Practice;
-personal gesture actions require the current full Practice pass. External launches are supported
-on Windows and remain unavailable on macOS. Personal data loading, classifier
-training, preview/rehearsal and the viewer are the Mac compatibility target;
-native device verification is still required.
+**External application, file, folder and website launches are Windows-only in this
+build.** On macOS, Preview/Rehearsal can simulate their requests; Live external
+requests report an unsupported-platform reason. Internal cards, bookmarks and
+runbook navigation are the Mac compatibility target. Do not present simulated
+Calculator or Camera requests as native Mac launches.
 
-## Camera permission and personal gestures
+## 3. Camera and personal gesture setup
 
-First check the camera from the same Terminal you will use to run the app:
+**A connected camera alone does not enable Start camera control.** That button
+needs a loaded recogniser. For a new user, **Open Enrolment → Request collection** starts
+the collection camera without a recogniser. These are separate workflows.
+
+First check the camera from the same Terminal used to launch Studio:
 
 ```bash
 .venv/bin/python scripts/check_environment.py --camera --camera-index 0
 ```
 
-Allow camera access when macOS asks. If denied, open **System Settings → Privacy &
-Security → Camera** and enable the listed launching application (Terminal, your
-editor, or Python as shown). Quit and reopen that application after changing its
-permission. Close FaceTime, Zoom and other camera applications before retrying.
-The check processes five frames without saving images. Its hand counts can be zero
-if no hand was in view; this is not a successful recognition test.
+Allow camera access if macOS asks. If access was denied, use **System Settings →
+Privacy & Security → Camera** to enable the launching application shown there,
+then quit and reopen it. Close FaceTime, Zoom and other camera applications before
+retrying. This check processes five frames without saving images; a zero hand count
+is not a successful recognition check.
 
-Start with camera index 0. If it selects the wrong camera or is unavailable, repeat
-with index 1. Use the successful index consistently for collection and live control;
-do not assume the Windows development computer's index applies to a Mac.
+Start with camera index **0**. If it selects the wrong camera, try **1**. In Studio,
+set **Camera index**, then click **Use camera and pause** to apply it. Editing the
+number alone does not apply it. Do not assume the Windows computer's camera index
+matches the Mac.
 
-Use your existing personal dataset if you already have one. The GitHub/source ZIP
-does not contain private P01 data. To enrol a new consenting user, follow the
-[collection protocol](DATA_COLLECTION.md), using a new folder and participant ID.
-For example, after consent, collect a right-hand TRAIN session:
+For an existing consenting user's data, choose **Load personal dataset...** and
+select their TRAIN `manifest.json`, or create/load a saved profile in **Profiles**.
+Loading trains locally and leaves control paused. The source ZIP excludes private
+P01 data. A supplied personal dataset can reproduce numeric results, but its model
+is not qualified for a different person's hand.
 
-```bash
-.venv/bin/python -m gestureforge.collect --output data/local/mac-pilot --participant MAC01 --split train --hand Right --trials 8 --camera 0 --setup "Record your actual lighting, camera position and four poses here" --consent
-```
+For a new consenting user:
 
-Replace the setup text with actual conditions. Use the same folder, participant,
-hand and pose mapping in a separate recording session with `--split validation`.
-Collection shows the camera in an OpenCV window; focus it and use Space/Q as prompted.
-Only numeric features and metadata are saved. Do not overwrite P01 or reuse someone
-else's classifier as evidence of your own recognition accuracy.
+1. Click **Open Enrolment**. Enter a participant pseudonym, selected hand, TRAIN session,
+   actual collection conditions and three distinct action poses plus NEUTRAL.
+   The defaults are fist, thumb up, two fingers and open palm, stored as
+   G1/G2/G3/NEUTRAL. Keep the default **12 trials per pose**.
+2. Read and select the local numeric-data consent checkbox if you agree. Click
+   **Request collection**, check the preview, then use **Begin trial** and follow
+   the countdown/hold prompts. A complete session contains 48 trials.
+3. After TRAIN, take a break and make a separate VALIDATION request with the same
+   participant, hand and poses. Each request saves a new session folder under
+   `data/local/enrolment/`; preserve both manifests and invalid detections.
+4. In **Profiles**, create a personal profile from the completed TRAIN manifest.
+   Collection does not create or qualify a profile automatically. Review validation
+   separately before relying on that model.
 
-```bash
-bash run.sh --dataset data/local/mac-pilot/manifest.json --algorithm knn --multiplier 2 --margin 1.5 --camera 0
-```
+Keep Studio and Enrolment in front while collecting. Leaving the tab, losing focus,
+Pause or Esc stops collection. If saving fails, leave Studio open and use **Retry
+save** after resolving folder access. Only numeric features and metadata are saved;
+no photos or video are recorded. See the [user guide](USER_GUIDE.md#collect-in-studio)
+for the complete collection and recovery workflow.
 
-These are the prototype's provisional live settings, not a guarantee for a new
-person or camera. Keep the enrolled hand fully visible, steady and similarly
-oriented to training. Wait for NEUTRAL → READY, then hold NEXT. Return to NEUTRAL
-before repeating. PREVIOUS and BOOKMARK remain recognition previews.
+## 4. Practice before personal Live control
 
-## Verify the destination Mac
+With the recogniser loaded, Preview allows a simulated gesture check: explicitly
+Start, show NEUTRAL until READY, then hold an action pose and return to NEUTRAL
+before repeating. Confirm the displayed action mapping; gesture IDs do not always
+mean the same action in every runbook stage.
+
+**Open Practice** runs the measured personal check. It uses three trials for each
+of the three action poses and NEUTRAL, plus ten negative/transition windows:
+**22 five-second windows**, with preparation time in addition. Follow the
+[Practice instructions](USER_GUIDE.md#personal-practice), including numeric-outcome
+consent and the on-screen preparation prompts.
+
+Only a complete, saved, reconciled pass in the current app session grants personal
+Live eligibility. The short six-action readiness check and an imported old result
+do not grant it. Practice always simulates. After a pass, explicitly select Live,
+apply it, Start and show NEUTRAL. Changing the model, camera or action mappings can
+expire eligibility; restarting Studio requires a fresh Practice pass. External
+launches remain unsupported on Mac even after a pass.
+
+## 5. Verify the destination Mac
+
+After setup, optional reproducible software checks are:
 
 ```bash
 .venv/bin/python -m pip check
 .venv/bin/python scripts/check_environment.py --model
-.venv/bin/python scripts/verify.py --output experiments/local/macos-verification.json --synthetic-output experiments/local/macos-software-check.json
+.venv/bin/python scripts/verify.py
 ```
 
-These commands save Mac verification under ignored `experiments/local/`, preserving
-the recorded Windows and submitted assignment evidence. The verification script runs
-offscreen software checks; it does not prove camera or live performance. Share the
-Mac report with the team after checking it contains no private participant details.
+The last command writes a fresh timestamped report under ignored
+`experiments/local/`. It runs offscreen software checks, not a physical camera or
+live-performance test. Keep its actual result and the Mac model/macOS version.
 
-Use new filenames for both `--output` and `--synthetic-output` on each run;
-existing files are refused before checks start. Omit both options to save a
-fresh timestamped report under ignored `experiments/local/`, with synthetic
-results inside it. The command prints the saved report's location.
+Before describing Mac operation as verified, check the normal graphical app:
 
-Then run the app normally and confirm:
+- Manual cards, bookmarks, runbook navigation and save/restore behave as described.
+- The intended camera produces a moving preview; pause/restart and close release it.
+- Personal collection, loading and Practice work with the consenting user's data.
+- A qualifying personal Live internal action occurs once per hold and needs NEUTRAL
+  before repeating. Failed or interrupted Practice is recorded as such.
+- After successful setup, internal viewer/camera operation works offline.
+- A sustained session remains responsive. Record its duration and any errors;
+  do not substitute Windows measurements for Mac results.
 
-- Test both `bash run.sh` and `bash run.sh --studio`. The window responds while the
-  camera preview moves; setup scrolls without hiding Start/Pause or gesture meanings.
-- In Studio, load a dataset, change camera, pause/restart and switch Preview/Rehearsal.
-  Each change requires a fresh NEUTRAL; displayed actions remain simulations.
-- In the assignment viewer, different cards are visibly distinct.
-- NEUTRAL arms, a five-second NEXT hold advances once, and another NEXT needs NEUTRAL.
-- Pause releases the camera; restarting and closing/reopening work.
-- After successful setup, the viewer and camera still work with Wi-Fi disconnected.
-- A sustained session remains responsive; record duration, Mac model, macOS version,
-  camera, dataset and any errors. Do not report Windows timings as Mac measurements.
+Until these checks are performed on an actual Mac, provide the marker with the
+Windows demonstration video and recorded evidence alongside this source path,
+without claiming equivalent native Mac verification.
 
-Camera inference already runs outside the UI thread with only the latest result
-retained. If transitions remain slow, compare the displayed prediction and controller
-state, improve lighting/framing and close other camera/compute-heavy apps. Do not
-shorten the deliberate hold or disable rejection to conceal recognition problems.
-
-Sources: [Qt macOS requirements](https://doc.qt.io/qt-6/macos.html),
+References: [Qt macOS requirements](https://doc.qt.io/qt-6/macos.html),
 [MediaPipe Python setup](https://developers.google.com/edge/mediapipe/solutions/setup_python),
 [Apple camera permissions](https://support.apple.com/guide/mac-help/control-access-to-your-camera-mchlf6d108da/mac).

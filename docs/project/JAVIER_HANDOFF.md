@@ -14,10 +14,11 @@ product features, safety and two-laptop verification remain.
    [remaining Windows case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md)
    for laptop-A app/file/folder/HTTPS association, missing-target, invalid-scheme
    and explicit recovery cases. Your new 25 October save/restore, clearing and
-   pause/reacquisition observations are recorded as reported passes. Send the
-   existing PRIVATE_JAVIER_CHECKS_20261025-203326.zip, exports and screenshots
-   privately for receipt review; do not repeat successful cases just to resend
-   them. Preview only simulates; the corrected native-notice procedure explicitly
+   pause/reacquisition observations are recorded as reported passes. The original
+   nine-member ZIP is now received: integrity, export counters and saved budget
+   stage reproduce; current restore validators pass with a stub callback.
+   Screenshots are absent and native behaviour remains attributed. Do not resend
+   the ZIP or repeat successful cases. Preview only simulates; the corrected native-notice procedure explicitly
    selects Live / Apply and pause / Manual LIVE ready with Camera off.
 2. **GPT now:** sync reviewed main into `codex/javier-shortcuts` and consolidate
    the matrix with exact builds, observed outcomes and remaining gaps. Hau Jie's
@@ -34,7 +35,7 @@ product features, safety and two-laptop verification remain.
 4. **Once a personal profile genuinely qualifies:** help Deston observe the
    six-stage workflow and manual-versus-personal case study with at least one
    consenting available team operator. A fresh complete four-pose enrolment is
-   the next option; its operator is not confirmed and no result is promised.
+   the next option; Deston volunteered and confirmed his webcam. No result is promised.
    Record real order, times, errors, assistance and familiarity using
    [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md).
 5. **After the working path passes:** finish eligible active-capture Camera and

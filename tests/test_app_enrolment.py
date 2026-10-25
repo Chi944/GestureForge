@@ -107,6 +107,29 @@ def capture_factory(workers):
     return factory
 
 
+def test_guest_enrolment_entrypoint_reveals_form_without_starting_capture(monkeypatch, qapp):
+    import gestureforge.app as app_module
+
+    capture = Mock()
+    monkeypatch.setattr(app_module, "CaptureWorker", capture)
+    window = app_module.Window(model=None, studio=True)
+    try:
+        assert "Open Enrolment" in window.start_button.toolTip()
+        window.open_enrolment_button.click()
+        qapp.processEvents()
+        assert window.deck_tabs.currentWidget() is window.enrolment_widget
+        assert not window.start_button.isEnabled()
+        assert window.worker is None
+        assert window.enrolment_widget.pending_plan is None
+        assert not window.enrolment_widget.consent.isChecked()
+        capture.assert_not_called()
+
+        window.open_setup_page()
+        assert "Open Enrolment" in window.detail.text()
+    finally:
+        window.close()
+
+
 @pytest.mark.parametrize("interruption", [None, "cancel", "tab", "close"])
 def test_enrolment_queued_scroll_stays_with_current_request(interruption, monkeypatch, qapp):
     import gestureforge.app as app_module
@@ -287,6 +310,11 @@ def test_enrolment_capture_can_start_without_loaded_model(tmp_path, monkeypatch,
         assert workers[0].observation_only is True
         assert window.model is None
         assert "Enrolment mode" in window.prediction.text()
+        window.open_enrolment_button.click()
+        qapp.processEvents()
+        assert window.worker is workers[0]
+        assert not workers[0].interrupted
+        assert len(workers) == 1
     finally:
         window.close()
 

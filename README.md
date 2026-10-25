@@ -82,6 +82,8 @@ repository or extract the source ZIP, then open PowerShell in its folder:
 Setup installs the pinned dependencies and prepares the hand-landmark asset.
 After setup, double-click **run-studio.cmd** to reopen Studio.
 Start in Guest/manual mode to explore Studio without a webcam or dataset.
+For a new personal recording, use **Open Enrolment → Request collection**.
+**Start camera control** needs a loaded recogniser and is not the collection button.
 See the [Windows guide](docs/WINDOWS_LAPTOP.md) for setup and troubleshooting.
 
 ### Apple Silicon Mac
@@ -95,8 +97,8 @@ bash run-studio.command
 
 Use a fresh Mac environment rather than copying a Windows `.venv`. Allow camera
 access for the launching application when requested. The Mac path supports the
-viewer and personal recognition workflow; **external application shortcuts are
-Windows-specific**. Intel Macs are outside this setup path.
+viewer and personal recognition workflow; **external app/file/folder/website
+launches are Windows-specific**. Intel Macs are outside this setup path.
 
 Dependency resolution has been checked for Apple Silicon. Full native Mac
 installation, webcam operation and smoothness still need device verification;

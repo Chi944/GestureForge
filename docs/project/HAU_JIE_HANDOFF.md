@@ -16,14 +16,16 @@ rerun participant TEST or ask for another twenty-trial diagnostic.
 1. **GPT now:** sync reviewed main into `codex/hau-jie-profiles`, preserving
    private work. Retain the explicit failure and limitations in your methods.
    No additional candidate or broad model search is assigned.
-2. **Next release option, operator not yet confirmed:** one consenting operator
-   can enrol a fresh complete four-pose profile under consistent demo conditions,
+2. **Next release option, Deston volunteered:** Deston will enrol a fresh
+   complete four-pose profile under consistent demo conditions,
    with separate TRAIN and VALIDATION sessions. Preserve Original. Pin kNN,
    multiplier 1.5 and margin 1.5 before capture using an explicit default launch;
    do not inherit the loaded P02 profile's margin 1.0. Check fixed validation
    before attempting the existing 22-window Practice, and retain failures. This
    is coherent new onboarding, not a proven repair or permission to tune TEST.
-   Deston is confirming who is available; no new recording or pass is claimed.
+   His webcam is connected; conditions and in-app consent precede recording.
+   No new recording or pass is claimed. Review his resulting fixed validation
+   before Practice; do not repeat the failed P02 repair.
 3. **Manual work in parallel:** operate laptop B for the remaining guide-only
    installation, offline core, uninterrupted measured 30-minute full Studio run
    and shutdown/reacquisition checks in the

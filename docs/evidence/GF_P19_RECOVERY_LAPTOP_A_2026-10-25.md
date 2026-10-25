@@ -1,12 +1,14 @@
 # GF-P19/GF-P22: laptop A recovery observations — 25 October 2026
 
-The 25 October observations, archive checks and JSON comparisons below are
-reported by Javier and his assisting agent. Deston has reviewed this note only;
-the original ZIP, exports and screenshots have not yet been received or
-independently checked here. These reported passes do not advance task acceptance.
+The original 25 October ZIP and its exports/logs were received and independently
+checked in Deston's checkout on 25 October 2026. Receipt integrity, summary
+counters and saved-state validation pass. Physical Windows results remain
+Javier's guided observations; no screenshots are included in this packet.
+This receipt review does not advance whole-task acceptance.
 
-Operator: Javier. Review owner: Deston; independent receipt review outstanding. These are guided human observations and
-receipt checks, not independent native replay or whole-task acceptance.
+Operator: Javier. Review owner: Deston; independent artifact receipt review
+complete. Guided human observations and artifact checks do not constitute
+independent native replay or whole-task acceptance.
 
 ## Build and private receipt
 
@@ -21,10 +23,12 @@ No subsequent source edit was reported; this is not an independent runtime attes
 Private original: `PRIVATE_JAVIER_CHECKS_20261025-203326.zip`, 6,933 bytes,
 9 members, SHA256
 `2829b372db25d9bce8782833bcca84e521977e0e5346a3031478beb01176123d`.
-CRC passes. Backslash member separators normalize safely; no absolute or parent
-traversal paths, duplicate normalized names or links. Preserve original bytes.
+CRC, size and SHA256 were reproduced on receipt. Actual ZIP member names use
+forward slashes; extraction also normalizes backslashes. No absolute or parent
+traversal paths, duplicate normalized names or links were found. Original bytes
+are preserved in private storage.
 The archive root is `javier-check-20261025-153143-857`.
-Screenshots and operator confirmations were supplied separately in the guided session.
+Screenshots and operator confirmations were reported separately in Javier's guided session; screenshots are absent from the received ZIP.
 
 | Case / expected result | Actual observation | Boundary |
 | --- | --- | --- |
@@ -45,7 +49,9 @@ recognition repair, grant, Live gesture or active-capture Camera handoff is clai
 
 ## Disjoint restore segments
 
-Both packet summaries are byte-identical to the separately uploaded originals.
+Javier's earlier review reports byte identity with separately uploaded originals.
+Receipt review reproduces the published hashes below; separate standalone
+originals were not available for an independent byte comparison here.
 
 | Export | Revision | Contents | SHA256 |
 | --- | --- | --- | --- |
@@ -86,10 +92,18 @@ successful UI checks solely to replace missing logging metadata.
 
 ## Validation and remaining work
 
-Archive CRC/safe paths, member inventory, SHA256, summary counters versus
-outcomes, separate revision identities, saved stage and standalone/packet
-byte equality were checked. No new production code change, Ruff/mypy/pytest,
-smoke or verification run is claimed by this evidence-only update.
+Independent receipt assertions pass for archive CRC/safe paths, nine-member
+inventory, SHA256, summary counters recomputed from events, unique event IDs,
+distinct revision identities and saved budget stage/card. Current workspace,
+viewer and Runbook validators accept the saved session; a stub routing callback
+receives budget with resume=False, leaving the restored runbook paused. No OS
+action was executed. This verifies artifact compatibility, not Javier's physical
+UI state or camera behavior. Private intake, audit and review files are retained
+under `.local/javier-checks-20261025/` and excluded from Git.
+
+Receipt/integrity and JSON review substeps are closed. Standalone/packet byte
+equality remains attributed to the earlier review. No production code change,
+Ruff/mypy/pytest, full build or native hardware run is claimed by this update.
 
 A association/input cases not exercised here remain unrun. Laptop B's remaining
 affected fixes, guide-only installation, offline checks, continuous measured

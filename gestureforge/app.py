@@ -503,6 +503,12 @@ class Window(QMainWindow):
             self.setup_toggle_button.setAccessibleName("Open Studio setup controls")
             self.setup_toggle_button.clicked.connect(self.open_setup_page)
             setup_header.addWidget(self.setup_toggle_button)
+            self.open_enrolment_button = QPushButton("Open Enrolment")
+            self.open_enrolment_button.setObjectName("compactButton")
+            self.open_enrolment_button.setAccessibleName("Open personal gesture enrolment")
+            self.open_enrolment_button.setToolTip("Collect a new dataset using Request collection; no model is needed.")
+            self.open_enrolment_button.clicked.connect(self.open_enrolment_page)
+            setup_header.addWidget(self.open_enrolment_button)
             self.open_practice_button = QPushButton("Open Practice")
             self.open_practice_button.setObjectName("compactButton")
             self.open_practice_button.setAccessibleName("Open personal practice tab")
@@ -909,8 +915,8 @@ class Window(QMainWindow):
             )
             self.start_button.setToolTip("Load a personal gesture dataset when launching the app.")
             if studio:
-                self.detail.setText("Choose Load personal dataset and select your collected manifest.json.")
-                self.start_button.setToolTip("Open Setup to load a personal dataset.")
+                self.detail.setText("Open Enrolment to record gestures, or Open Setup to load a saved dataset.")
+                self.start_button.setToolTip("Open Enrolment to record gestures, or Open Setup to load a saved dataset.")
         self.start_button.clicked.connect(self.start_camera)
         controls.addWidget(self.start_button)
         self.pause_button = QPushButton("Pause / camera off")
@@ -1058,6 +1064,18 @@ class Window(QMainWindow):
         if not self.studio or not hasattr(self, "deck_tabs"):
             return
         self.deck_tabs.setCurrentWidget(self.studio_setup_panel)
+
+    def open_enrolment_page(self) -> None:
+        if not self.studio or not hasattr(self, "enrolment_widget"):
+            return
+        self.deck_tabs.setCurrentWidget(self.enrolment_widget)
+
+        def scroll_to_form() -> None:
+            if self._closing or self.deck_tabs.currentWidget() is not self.enrolment_widget:
+                return
+            self.studio_scroll.ensureWidgetVisible(self.enrolment_widget.participant, 0, 12)
+
+        QTimer.singleShot(0, scroll_to_form)
 
     def _model_version(self) -> str:
         return getattr(self.model, "model_version", "unversioned")
@@ -2384,7 +2402,11 @@ class Window(QMainWindow):
                 if self.model is not None else
                 "Camera control unavailable: no gesture dataset loaded"
             )
-            self.detail.setText("Start -> neutral pose -> hold a bound gesture -> return to neutral")
+            self.detail.setText(
+                "Start -> neutral pose -> hold a bound gesture -> return to neutral"
+                if self.model is not None else
+                "Open Enrolment to record gestures, or Open Setup to load a saved dataset."
+            )
             self.render_studio_status()
         self.start_button.setEnabled(self._can_start_studio_camera() and not self._enrolment_blocks_recognition())
 

@@ -221,6 +221,13 @@
   "limitations": [
     "Resolver ran on Windows; target environment markers still need confirmation by native pip on the Mac.",
     "No Mac installation, Cocoa startup, camera permissions, live recognition or performance was tested.",
-    "Studio remains simulation-only; Windows shortcut dispatch is not macOS automation."
-  ]
+    "Windows external shortcut dispatch is unavailable on macOS; Preview/Rehearsal simulate external requests."
+  ],
+  "current_scope_note": {
+    "reviewed_on": "2026-10-25",
+    "basis": "Repository implementation review, not a new resolver or native Mac run.",
+    "scope": "Studio supports Guest/manual internal card and runbook actions in explicitly selected Live mode. Personal Live gestures require a current-session saved full Practice pass. External desktop launches remain Windows-only.",
+    "correction": "The previous Studio simulation-only description is superseded by this current implementation scope; original resolver timestamp, command, package list and requirements hash are unchanged.",
+    "native_mac_verified": false
+  }
 }

@@ -246,7 +246,7 @@ are model measurements, not confidence percentages or proof of the intended pose
 
 ### Collect in Studio
 
-1. Launch `.\run.cmd --studio`. Choose **Camera index**, then **Use camera and pause** before opening the **Enrolment** tab. A trained model is not required for collection.
+1. Launch `.\run.cmd --studio`. Choose **Camera index**, then **Use camera and pause**, then click **Open Enrolment** above the preview. A trained model is not required for collection; **Start camera control** is for a loaded recogniser, not collection.
 2. Enter your participant pseudonym, selected hand, TRAIN or VALIDATION session, trials per pose and collection conditions. Describe three distinct poses plus NEUTRAL. The default descriptions are fist, thumb up, two fingers and open palm; the stored action IDs are G1/G2/G3. Select the consent checkbox only if you agree to local numeric collection and internal evaluation.
 3. Click **Request collection**. Studio pauses gesture control, waits for any previous camera to release, then opens the selected camera. **Begin trial** becomes available after the first matching camera observation. Check the preview and keep the whole selected hand visible.
 4. Prepare the prompted pose and click **Begin trial**. Follow the two-second countdown and two-second hold. Five timestamps are sampled; invalid detections remain recorded with their reasons. Release between trials, then begin the next prompted trial. Use the default twelve trials per pose for the planned personal sessions.

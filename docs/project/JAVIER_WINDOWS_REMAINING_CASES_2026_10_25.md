@@ -1,12 +1,13 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
-The 25 October observations, archive checks and JSON comparisons below are
-reported by Javier and his assisting agent. Deston has reviewed this note only;
-the original ZIP, exports and screenshots have not yet been received or
-independently checked here. These reported passes do not advance task acceptance.
+The 25 October original ZIP and exports/logs have been received and independently
+checked in Deston's checkout. Archive integrity, event/counter reconciliation and
+saved-state validation pass. Physical Windows checks remain Javier's guided
+observations; the packet contains no screenshots. Receipt review does not advance
+whole-task acceptance.
 
 Scope: GF-P19, GF-P22 and coordination for GF-P23/GF-P25.
-Review owner: Deston; independent 25 October receipt review outstanding. Laptop A operator: Javier. Laptop B operator: Hau Jie.
+Review owner: Deston; independent 25 October artifact receipt review complete. Laptop A operator: Javier. Laptop B operator: Hau Jie.
 This is an inventory and execution checklist with bounded 25 October laptop-A observations; no whole-task acceptance is claimed.
 
 Reviewed source snapshot: `19c95233b25c227094c1fbe6ce42202bbb47e2d8`.
@@ -81,7 +82,14 @@ for expected/observed results, private screenshot identifiers and exact limits.
 Original new packet: `PRIVATE_JAVIER_CHECKS_20261025-203326.zip`, 6,933 bytes,
 9 CRC-checked members; SHA256
 `2829b372db25d9bce8782833bcca84e521977e0e5346a3031478beb01176123d`.
-Do not resend earlier reviewed packets.
+Receipt verified on 25 October 2026: size, CRC, nine-member inventory, SHA256
+and safe paths match. Actual member names use forward slashes. Fresh assertions
+recompute before/after counts, verify distinct revisions and confirm saved budget
+stage/card, finished=false and no bookmarks. Current Runbook restoration with a
+stub callback returns budget with resume=False and stays paused; no native
+launch or device check was executed. Private audit: `.local/javier-checks-20261025/`.
+Separate screenshots and standalone-original byte comparisons were not reproduced
+from this ZIP. No whole task is newly accepted. Do not resend earlier reviewed packets.
 
 A1 now has bounded no-workspace refusal/no-file, independent clearing of two
 unavailable slots with retained entries and restored choices, and corrected

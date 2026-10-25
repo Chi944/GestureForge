@@ -15,8 +15,11 @@ Do not repeat the NEUTRAL splice, search thresholds, or tune consumed TEST.
 Javier's [two-device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md) now
 uses Live explicitly for its native-launch precondition. His new laptop-A
 save/restore, unavailable-slot and pause/reacquisition observations remain
-attributed to Javier and his assisting agent: the new original packet has not
-arrived here. Hau Jie's separate camera-off closure and subsequent five-frame
+attributed to Javier and his assisting agent. The original nine-member packet
+has now arrived: its SHA256, CRC, export counters and saved budget stage reproduce;
+the current Runbook restore succeeds with a stub callback and resume disabled.
+No screenshots are included; the blank exit code and overwritten launch logs
+still cannot establish native shutdown or endurance. Hau Jie's separate camera-off closure and subsequent five-frame
 camera reacquisition are bounded evidence, not active-capture handoff or a
 continuous 30-minute run. Reuse valid receipts; fill only the actual gaps.
 
@@ -24,7 +27,10 @@ The next recognition option is **one fresh complete personal enrolment**, with
 all four poses collected in consistent intended-demo conditions and separate
 TRAIN/VALIDATION. Pin the existing kNN / multiplier 1.5 / margin 1.5 settings
 before capture, preserving old profiles; do not inherit P02's saved margin 1.0.
-The operator and new collection consent remain unconfirmed. Fixed validation
+Deston volunteered and confirmed the webcam is connected. Studio is prepared
+for a new P01 right-hand TRAIN session (12 trials per pose); conditions and the
+in-app consent step must be completed before capture. No new recording or
+qualification is claimed. Fixed validation
 comes before the genuine 22-window Practice gate; this option is not a proven
 repair or permission to rerun until a pass. Javier's independent manual/native
 checks and Hau Jie's laptop-B installation checks can proceed meanwhile.
@@ -47,6 +53,21 @@ whole task has all its physical evidence and dependencies satisfied. GF-P16 is
 the next 10-point milestone once a qualified personal six-stage workflow and
 recovery are actually observed. Word reconciliation remains a final pass;
 private inputs, prompt log and decision log are unchanged.
+
+The marker uses Apple Silicon; macOS version is unknown. The existing source
+setup and [Mac guide](../MACOS.md) target native Python 3.11 on macOS 13+.
+Core Studio/profile/card workflows are the compatibility target; external
+desktop launches remain Windows-only. This requested marker path does not
+reopen optional native-shortcut expansion or claim a native Mac test.
+
+Studio now exposes **Open Enrolment** beside Setup/Practice and explains that
+Guest recording uses Request collection rather than Start camera control.
+The shortcut does not start capture, select consent, train a model or interrupt
+an existing collection on that tab. Verification: 154 enrolment/Practice/app
+integration tests and 68 Mac setup/package tests pass; repository Ruff, mypy
+(109 source files), both offscreen startup smokes and diff checks pass. Four
+affected Trello cards were updated and read back exactly. These software checks
+do not qualify the fresh profile or verify a native Mac camera.
 
 The dated sections below retain historical results. Use this checkpoint and the
 active team briefs for current instructions.

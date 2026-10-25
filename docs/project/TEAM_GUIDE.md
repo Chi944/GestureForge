@@ -31,15 +31,23 @@ The intended submission is 31 October; the official deadline is 7 November.
   or continuous endurance. Use the reviewed
   [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run);
   gapped process samples and headless capture cannot supply that missing evidence.
-  Send the existing 25 October laptop-A originals for receipt review; do not
-  repeat the newly reported successful checks just to regenerate metadata.
+  The 25 October laptop-A ZIP is received and its integrity, export counters
+  and saved-state restoration checked. Screenshots are absent from that packet;
+  native execution remains attributed. Do not resend it or repeat successful
+  checks just to regenerate metadata.
 - **Deston:** integrate/review both deliveries and measurement software. The next
-  option is one fresh complete four-pose profile from a consenting team operator;
-  availability is being confirmed, so no new capture/pass is claimed. Preserve
+  option is one fresh complete four-pose profile from Deston, who volunteered
+  and confirmed his webcam. Conditions and in-app consent precede capture;
+  no new capture/pass is claimed. Preserve
   Original; pin kNN, multiplier 1.5 and margin 1.5 before capture via an explicit
   default launch, avoiding inherited P02 margin 1.0. Keep TRAIN and VALIDATION
   separate in consistent demo conditions; check fixed validation before the
   existing 22-window Practice. This is new onboarding, not a proven repair.
+
+**Marker Mac:** Deston requested the existing Apple Silicon core Studio path.
+Use [MACOS.md](../MACOS.md); macOS 13+ and native Python 3.11 are prerequisites.
+The marker's OS version and native run remain unverified. External desktop
+launches stay Windows-only; no new Mac shortcut implementation is assigned.
 
 After a personal profile genuinely qualifies, verify the real six-stage workflow
 and recovery. One consenting available team operator can supply the M/P case
