@@ -129,6 +129,7 @@ def test_single_pose_widget_uses_existing_capture_and_saves_once(tmp_path):
         h.feed('NEUTRAL')
     widget.refresh()
     widget.begin_button.click()
+    h.feed('NEUTRAL')
     start = h.now
     while h.now < start + 4.89:
         h.feed('NEUTRAL')
@@ -740,6 +741,35 @@ def test_begin_request_waits_for_next_fresh_frame_without_scoring_setup():
     assert h.dispatcher.summary.outcomes == []
 
 
+def test_begin_click_waits_out_queued_pre_click_command_without_losing_completed_trial():
+    h = Harness()
+    h.window('G1')
+    completed = h.attempt.result().trials
+    h.attempt.prepare(h.now)
+    for _ in range(6):
+        h.feed('NEUTRAL')
+    clicked = h.now + .14
+    assert not h.attempt.request_begin(clicked)
+    h.feed_at('G3', captured=clicked - .046, received=clicked + .016)
+    assert h.attempt.status in {'preparing', 'armed'}
+    assert h.attempt.begin_pending
+    assert h.attempt.result().trials == completed
+    assert len(h.dispatcher.summary.outcomes) == 1
+    for _ in range(6):
+        h.feed('NEUTRAL')
+        if h.attempt.status == 'measuring':
+            break
+    assert h.attempt.status == 'measuring'
+    assert h.attempt.remaining_window_seconds(h.now) == 5
+    assert h.attempt.last_begin_attempt is not None
+    assert h.attempt.last_begin_attempt['button_requested_at'] == clicked
+    start = h.now
+    while h.now < start + 4.89:
+        h.feed('G2')
+    h.attempt.tick(start + 5 + MAX_PREDICTION_AGE_SECONDS + .000001)
+    assert [t.outcome for t in h.attempt.result().trials] == ['correct', 'correct']
+
+
 def test_pending_begin_expires_and_cannot_start_from_later_or_wrong_generation_frame():
     h = Harness()
     h.attempt.select_diagnostic_pose('NEUTRAL')
@@ -756,7 +786,8 @@ def test_pending_begin_expires_and_cannot_start_from_later_or_wrong_generation_f
     assert 'Click Begin again' in h.attempt.reason
     h.feed('NEUTRAL')
     assert h.attempt.status == 'preparing'
-    assert h.attempt.request_begin(h.now)
+    assert not h.attempt.request_begin(h.now)
+    h.feed('NEUTRAL')
     assert h.attempt.status == 'measuring'
 
 

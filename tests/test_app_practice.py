@@ -752,6 +752,9 @@ def test_practice_footer_keeps_neutral_until_begin_then_follows_window(monkeypat
 
         widget.begin_button.click()
         window.poll()  # Phase guidance updates even without a new camera packet.
+        assert "NEUTRAL" in window.detail.text()
+        clock.advance(.02)
+        enqueue(window, worker, clock, "NEUTRAL")
         assert "Hold G1" in window.detail.text()
         assert "remaining" in window.detail.text()
         assert "keep NEUTRAL" not in window.detail.text()
@@ -977,17 +980,22 @@ def test_practice_completes_full_22_window_host_regression(
                     assert attempt.begin_pending
                     assert attempt.status == "preparing"
                     assert not widget.begin_button.isEnabled()
+                    clock.advance(.02)
                     enqueue(window, worker, clock, "NEUTRAL")
                     assert attempt.status == "measuring"
                     assert not attempt.begin_pending
                     assert "Measurement started" in widget.feedback.text()
                 else:
                     widget.begin()
+                    clock.advance(.02)
+                    enqueue(window, worker, clock, "NEUTRAL")
                 clock.advance(0.05)
                 feed_window(window, worker, clock, "NEUTRAL")
             elif expected == "NEGATIVE":
                 feed_until_armed(window, worker, clock)
                 widget.begin()
+                clock.advance(.02)
+                enqueue(window, worker, clock, "NEUTRAL")
                 clock.advance(0.05)
                 feed_window(window, worker, clock, "UNKNOWN", accepted=False, rejection_reason="distance_rejection")
             else:
@@ -1014,6 +1022,8 @@ def test_practice_completes_full_22_window_host_regression(
                     feed_until_armed(window, worker, clock)
                     assert widget.begin_button.isEnabled()
                 widget.begin()
+                clock.advance(.02)
+                enqueue(window, worker, clock, "NEUTRAL")
                 clock.advance(0.05)
                 if late_during_ninth and index == 8:
                     attempt = window.practice_attempt

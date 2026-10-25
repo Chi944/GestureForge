@@ -75,6 +75,10 @@ Practice countdown now distinguish preparation from measurement: only change to
 the prompted pose after **Measurement started**. At zero, wait while the last
 in-window frames finish processing. For a NEUTRAL window, establish READY inside
 the measurement window itself; for a negative window, follow its displayed cue.
+Begin waits for a fresh camera prediction captured after the click, so a queued
+pre-click frame does not start measurement. Keep NEUTRAL through that brief wait.
+For saved profiles, the prompt and pose key show the enrolled names beside
+G1/G2/G3; these IDs identify poses, while workspace bindings determine their actions.
 
 After saving, **Session summary** offers measured next steps for that recorded
 attempt. Incomplete capture is separated from recognition misses, and unattempted

@@ -265,29 +265,24 @@ feeds the supplied router exactly once; the shell must not process packets again
         self.reason = prompt.instruction
 
     def request_begin(self, now: float) -> bool:
-        """An explicit click may wait briefly for capture/READY, never skip guards."""
-        try:
-            self.begin_window(now)
-        except ValueError:
-            if self.status not in {'preparing', 'armed'}:
-                raise
-            # begin_window validates the clock before any transient guard.
-            if type(now) not in (float, int) or not math.isfinite(now) or now != self._clock:
-                raise
-            if self._begin_requested_at is None:
-                self._begin_requested_at = now
-            self.reason = 'Begin requested. Keep NEUTRAL while waiting for fresh capture / READY.'
-            return False
-        return True
+        """Wait for post-click capture so queued pre-click poses stay in setup."""
+        self.tick(now)
+        if self.status not in {'preparing', 'armed'}:
+            raise ValueError('prepare and arm the trial before beginning')
+        if self._begin_requested_at is None:
+            self._begin_requested_at = now
+        self.reason = 'Begin requested. Keep NEUTRAL until the countdown starts.'
+        return False
 
     def receive(self, prediction: Prediction, now: float) -> None:
         self._receive(prediction, now)
-        if (self.begin_pending and self.status in {'preparing', 'armed'}
+        if (self._begin_requested_at is not None and self.status in {'preparing', 'armed'}
                 and prediction.session_id == self._snapshot.session_id
                 and prediction.profile_id == self._snapshot.profile_id
                 and prediction.model_version == self._snapshot.model_version
                 and prediction.frame_id == self._last_frame
                 and prediction.timestamp == self._last_packet
+                and prediction.timestamp > self._begin_requested_at
                 and now - prediction.timestamp <= MAX_FRAME_GAP_SECONDS
                 and self.expected is not None
                 and (self.expected.expected == 'NEUTRAL' or self.router.state == 'READY')):

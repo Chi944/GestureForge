@@ -23,9 +23,13 @@ class PersonalRehearsalWidget(QWidget):
     controls_changed = Signal()
 
     def __init__(self, attempt: PersonalRehearsal, output_root: Path, parent=None,
-                 *, clock=time.monotonic):
+                 *, clock=time.monotonic, gesture_names: dict[str, str] | None = None):
         super().__init__(parent)
         self.attempt, self.output_root, self.clock = attempt, Path(output_root), clock
+        self.pose_labels = {pose: pose for pose in (*attempt.gesture_ids, 'NEUTRAL')}
+        for pose, name in (gesture_names or {}).items():
+            if pose in self.pose_labels and name and name != pose:
+                self.pose_labels[pose] = f'{pose} — {name}'
         self._released = True
         self._announced = False
         self._terminal_autosave_attempted = False
@@ -35,10 +39,14 @@ class PersonalRehearsalWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
+        self.pose_key = QLabel(' | '.join(self.pose_labels.values()))
+        self.pose_key.setWordWrap(True)
+        self.pose_key.setTextFormat(Qt.TextFormat.PlainText)
+        self.pose_key.setAccessibleName('Enrolled gesture pose key')
         self.test_selection = QComboBox()
         self.test_selection.addItem(f'Full rehearsal — {len(attempt.sequence)} windows', None)
         for pose in (*attempt.gesture_ids, 'NEUTRAL'):
-            self.test_selection.addItem(f'Test only {pose} — one diagnostic window', pose)
+            self.test_selection.addItem(f'Test only {self.pose_labels[pose]} — one diagnostic window', pose)
         self.test_selection.setAccessibleName('Practice test selection')
         self.test_selection.currentIndexChanged.connect(self.select_test)
         layout.addWidget(self.test_selection)
@@ -67,6 +75,7 @@ class PersonalRehearsalWidget(QWidget):
         for button in (self.stop_button, self.save_button):
             secondary.addWidget(button)
         layout.addLayout(secondary)
+        layout.addWidget(self.pose_key)
         self.prepare_button.clicked.connect(self.prepare)
         self.begin_button.clicked.connect(self.begin)
         self.stop_button.clicked.connect(self.stop)
@@ -153,7 +162,8 @@ class PersonalRehearsalWidget(QWidget):
             if prompt is not None and prompt.expected == 'NEGATIVE' else practice_pose_trials(PROTOCOL_VERSION)
         )
         total = len(attempt.sequence)
-        next_text = (f'{prompt.expected} {prompt.repetition}/{repetitions}: {prompt.instruction}'
+        next_text = (f'{self.pose_labels.get(prompt.expected, prompt.expected)} '
+                     f'{prompt.repetition}/{repetitions}: {prompt.instruction}'
                      if prompt else 'All prompted windows recorded.')
         status_text = ('diagnostic complete' if diagnostic and attempt.completed == total
                        and attempt.result().trials[-1].outcome != 'interrupted' else attempt.status)
@@ -172,7 +182,10 @@ class PersonalRehearsalWidget(QWidget):
         elif 'Begin wait expired' in attempt.reason:
             self.countdown.setText(attempt.reason)
         elif attempt.status == 'armed':
-            self.countdown.setText('READY — keep NEUTRAL. Click Begin before showing the prompted pose.')
+            self.countdown.setText(
+                'READY — click Begin and keep NEUTRAL until the countdown starts. '
+                'Then show the prompted pose.'
+            )
         elif attempt.status == 'preparing':
             self.countdown.setText('Timing has not started. Follow the preparation instructions above.')
         elif attempt.status == 'idle':

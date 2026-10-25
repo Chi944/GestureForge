@@ -1818,8 +1818,10 @@ class Window(QMainWindow):
         if attempt is None or attempt.expected is None:
             return False
         prompt = attempt.expected
-        if attempt.status == "armed":
-            message = "READY — keep NEUTRAL. Click Begin before showing the prompted pose."
+        if attempt.begin_pending:
+            message = "Begin requested — keep NEUTRAL until the countdown starts."
+        elif attempt.status == "armed":
+            message = "READY — keep NEUTRAL. Click Begin, then wait for the countdown."
         elif attempt.status == "preparing":
             message = (
                 "NEUTRAL trial: click Begin after capture is ready, then hold NEUTRAL."
@@ -1828,8 +1830,13 @@ class Window(QMainWindow):
             )
         elif attempt.status == "measuring":
             remaining = attempt.remaining_window_seconds(time.monotonic())
+            instruction = prompt.instruction
+            if self.practice_widget is not None:
+                instruction = instruction.replace(
+                    prompt.expected, self.practice_widget.pose_labels.get(prompt.expected, prompt.expected),
+                )
             message = (
-                f"{prompt.instruction} {remaining:.1f} seconds remaining."
+                f"{instruction} {remaining:.1f} seconds remaining."
                 if remaining is not None and remaining > 0
                 else "Five seconds complete — finishing the trial."
             )
@@ -1909,7 +1916,17 @@ class Window(QMainWindow):
         self.practice_attempt = attempt
         self.practice_revision = revision
         self._clear_practice_widget()
-        widget = PersonalRehearsalWidget(attempt, self.studio_state_folder / "practice", self, clock=time.monotonic)
+        loaded = self.profile_selector.loaded
+        gesture_names = (
+            dict(loaded.record.gesture_names)
+            if loaded is not None
+            and loaded.record.profile_id == self.selected_profile_id
+            and self.model is loaded.model else {}
+        )
+        widget = PersonalRehearsalWidget(
+            attempt, self.studio_state_folder / "practice", self,
+            clock=time.monotonic, gesture_names=gesture_names,
+        )
         widget.setObjectName("manualViewer")
         widget.feedback.setText("Follow the prompt; all actions are simulated. Results save locally.")
         widget_layout = widget.layout()
