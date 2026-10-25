@@ -2,15 +2,16 @@
 
 Scope: GF-P19, GF-P22 and coordination for GF-P23/GF-P25.
 Reviewer: Deston. Laptop A operator: Javier. Laptop B operator: Hau Jie.
-This is an inventory and execution checklist, not new native observations or task acceptance.
+This is an inventory and execution checklist with bounded 25 October laptop-A observations; no whole-task acceptance is claimed.
 
 Reviewed source snapshot: `19c95233b25c227094c1fbe6ce42202bbb47e2d8`.
 The remote `codex/javier-shortcuts` ref was fast-forwarded from
 `6e7ca70c421d7740c253763c5fb72400d823434b` to that main snapshot with an
 expected-head check and `force=false`. No main ref was changed.
 This remote operation does not update Javier's Windows working copy.
-The last supplied local screenshot identified `d200947692253ede0c264755152e4419530147a3`
-and clean tracked status on 22 October; the requested later local sync has no supplied result.
+A new 25 October post-sync screenshot identifies clean tracked status and local HEAD
+`d9c68c651132d1405881966c2fd5445d820201c9`. Native observations below are
+bounded to that source, not later documentation commits.
 
 ## Current scope and evidence rules
 
@@ -66,6 +67,30 @@ retains the actual failed attempt. None marks a whole task accepted.
 - Historical Windows probe filenames contain “oct4”, while their embedded UTC
   dates are 2 October. Keep both original names and timestamps.
 
+## New laptop-A receipt — 25 October
+
+See the [sanitized native note](../evidence/GF_P19_RECOVERY_LAPTOP_A_2026-10-25.md)
+for expected/observed results, private screenshot identifiers and exact limits.
+Original new packet: `PRIVATE_JAVIER_CHECKS_20261025-203326.zip`, 6,933 bytes,
+9 CRC-checked members; SHA256
+`2829b372db25d9bce8782833bcca84e521977e0e5346a3031478beb01176123d`.
+Do not resend earlier reviewed packets.
+
+A1 now has bounded no-workspace refusal/no-file, independent clearing of two
+unavailable slots with retained entries and restored choices, and corrected
+save/restore top messages. The new manual Harbor before export has one stage
+advance and one Calculator request; the new after revision is empty. Javier
+confirmed Calculator opened before, stayed closed after restore, and Stage 2
+restored paused in Preview. This is not a timed workflow study.
+
+A2 same-camera pause and explicit reacquisition passed by Javier's observation.
+He explicitly confirmed pause happened before switching windows; the post-state
+screenshot alone also shows later focus loss. Post-close Windows Camera live
+video was reported. Numeric process exit status remains unavailable.
+Two launches reused log paths, overwriting earlier process/stdout/stderr records;
+only the last PID 36832 log set survives. The multi-hour wall interval is not
+stability evidence. No new software suite or genuine readiness pass is claimed.
+
 ## Reconciled two-device case matrix
 
 | Case | Laptop A: existing result | Laptop B: existing result | Remaining action |
@@ -73,12 +98,12 @@ retains the actual failed attempt. None marks a whole task accepted.
 | Calculator, permitted reference file, folder, HTTPS | PASS (bounded): native openings in PR24/26; Calculator 240 captured on `9e109a7`. PR34 adds selected trusted Notepad requests on d200947. Requests and actual task acknowledgements remain distinct. | PASS (bounded, assisted, a480e2e): Calculator, Notepad, file, folder and HTTPS observed; exports reviewed. No external task acknowledgements. | Preserve these unchanged passes. Recheck only a changed binding/adapter or demonstrated affected path. HTTPS is online, not offline-core evidence. |
 | Missing disposable reference and explicit retry | PASS (bounded): PR26 on 5595129 records visible missing-target message, unchanged context and explicit restored-file retry. Earlier failed attempts remain. | PASS (bounded, assisted): deliberate missing-file failure and explicit successful retry; saved summaries now validate. | Do not rerun the old case unchanged. New multiple-unavailable-slot regression below uses separate disposable files and is not a substitute for these records. |
 | Save/restore paused, bookmark and no replay | PASS (bounded): PR28 on a1bb37a checks discussion bookmark and Preview; PR34 on d200947 adds historical-real-request restore. The 22 October pair is one request then a new empty revision, with attributed no reopening. | PASS (bounded, a480e2e): nine pre-restore outcomes = seven requests, one failure, one applied stage advance; new empty after revision; saved Runbook restores budget paused with resume=False. | Preserve separate segments and build bounds. Only the affected visible feedback needs retesting on updated source. |
-| Session save without runbook; stale top LIVE notice | FAILED historical UI feedback on d200947; AFFECTED after PR35's software fix. Old video banner is not proof of regression on newer code. | PR35-containing source used; no separate complete native reproduction of this feedback case retained in the review. | A session A1 below: one no-runbook attempt plus affected save/restore notice checks on updated source; no full native walkthrough repeat. |
+| Session save without runbook; stale top LIVE notice | PASS (bounded, d9c68c6): no-runbook refusal/no file, new Save and Restore top messages after a real manual Calculator request. See new receipt above. | PR35-containing source used; no separate complete native reproduction of this feedback case retained in the review. | Retain old failure history; A affected feedback check is complete within the note's limits. B still needs its affected receipt. |
 | App trust guard; .cmd as reference; HTTP; credential URL; device/UNC paths | PASS (bounded, d200947): PR34. Some screenshots contain status only; HTTP fields were separately captured. Valid HTTPS save recovered. | Partial invalid-target coverage not individually established by receipt review. | Preserve A checks. Fill only absent original matrix cells on either device, including relevant native association failures where an isolated setup exists. |
 | App-mode interpreter/.cmd, .lnk/.url, mapped network drive | UNRUN in the supplied focused A follow-up (reference .cmd rejection is not App-mode extension coverage). | UNRUN unless a reviewed specific receipt establishes the case. | On safe disposable/local fixtures only, distinguish configuration refusal from OS launch refusal. Never trust/execute an interpreter or script just to get a launch result. Mark no mapped-drive fixture UNRUN, not passed from UNC evidence. |
 | Missing/default association and manual recovery | UNRUN: no isolated association-free test setup supplied. Successful TXT opening does not exercise this path. | UNRUN: receipt review still lists native association-error handling. | Check an already available isolated test setup only. Do not delete/change a user's existing Windows associations to manufacture the failure. Report unavailability to Deston. |
-| Clear two unavailable Quick Actions slots independently, preserve library | AFFECTED/UNRUN natively after 23 October software fix. | AFFECTED/UNRUN on updated source. | A1/B1: two disposable file targets bound while present, move copies aside, clear one slot then the other, verify both library entries remain. Do not click Delete target. |
-| Same-camera Use camera and pause | AFFECTED/UNRUN natively after 23 October fix. | AFFECTED/UNRUN on updated source. | A2/B2: Preview capture only, existing own profile, same camera number, click the control and observe capture stops. This is not active-capture native Camera launch. |
+| Clear two unavailable Quick Actions slots independently, preserve library | PASS (bounded, d9c68c6): both disposable slots cleared independently, library entries and original choices restored. | AFFECTED/UNRUN on updated source. | A check complete within private screenshot/transcript limits; B1 remains. |
+| Same-camera Use camera and pause | PASS by guided operator observation, d9c68c6, Preview/index 0; immediate stop before switching windows and explicit reacquisition reported. | AFFECTED/UNRUN on updated source. | A2 complete by attributed observation, not gesture handoff; B2 remains. |
 | Isolated Preview focus loss and explicit reacquisition | PASS (bounded): PR29 on ffa0af7; active Preview paused on leaving, explicit Start recovered. | Initial no-frame failure retained, subsequent live picture/NEUTRAL READY reported; full focus-loss/resume case not established by receipt review. | Do not repeat unchanged A Preview case. B fills only missing bounded case. Gesture-Live focus/handoff remains conditional. |
 | Native Windows Camera with capture already off | PASS (bounded): PR29, followed by explicit Preview reacquisition. | B has bounded Camera/capture recovery reports; preserve initial no-frame failure. | Never relabel as handoff from active gesture capture or a complete shutdown-order proof. |
 | Active-capture native Camera; gesture focus/resume; hold/rearm | UNRUN: no qualifying current-session full Practice grant. | UNRUN: no such grant established. | Conditional session C only after a genuine pass. No settings/gate bypass or full Practice rerun on known failing profile. |
@@ -86,7 +111,7 @@ retains the actual failed attempt. None marks a whole task accepted.
 | Fresh guide-only independent install | No new unaided-install receipt in this consolidation. A existing install remains its own environment. | Assisted independent environment and 1,012-test verification are retained; not guide-only. | Hau Jie performs a separate clean local installation with the guide, logging help/deviations. No copied environment. Keep original assisted result. |
 | Offline core | No new GF-P23 offline acceptance supplied here. | PASS (bounded self-report): Wi-Fi disconnected with app/file/folder use. HTTPS and external online features excluded. | On the fresh installation, record the affected offline local workflow and exact conditions. Do not silently promote earlier self-report to instrumented release acceptance. |
 | Continuous measured 30-minute Studio workflow | UNRUN in current A material. | INTERRUPTED instrumented run: 791.605 s, 79/79 responsiveness samples, working-set peak 170.21 MiB, private-byte peak 979.78 MiB. Separate later 30-minute no-error run is self-report without continuous timing/rate/memory. | B3: a new uninterrupted >=1,800 s full Studio run with independent timing/rate/memory and faults. Never concatenate the two historical runs or relabel a pipeline-only diagnostic as Studio workflow. A requirement remains visible until Deston resolves per-device release coverage. |
-| Clean exit, camera release after closure and reacquisition | No new final-release process/camera check supplied here. | Normal closure self-reported; process exit and post-close camera release not independently measured. | B3/A affected release check: actual PID exit/status, observed camera release, then another camera consumer or explicit later reopen/reacquisition. Close competing consumers between steps. |
+| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | Normal closure self-reported; process exit and post-close camera release not independently measured. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
 | Native 0x8001010d | No reproduced A triggering action in these records. | Historical notice with later continued output; cause and process termination unestablished. | If it recurs during assigned checks, retain triggering action, PID/start/end, stdout/stderr and exit code; matching Windows faulting-module record only for an actual process exit. Do not suppress or call it a crash from the code alone. |
 | Personal six-stage scenario, M/P case study and final video | Manual draft and development summaries only; known failed P03 Practice. | Diagnostic/model receipts are not genuine readiness or workflow success. | Qualified session C, then final guide/video on identified release after GF-P23. No interviews, new recruitment or fabricated S condition. |
 
@@ -317,9 +342,10 @@ process/monitor/fault records and checksums. Missing logs are explicitly absent.
 Do not include old reviewed packets again, profiles/data/videos/Word in a code
 PR, or modify prompt/decision logs. Deston reviews acceptance.
 
-Current blockers: no new local sync receipt or affected A/B native observations;
-missing isolated association fixture where unavailable; no guide-only/measured
-continuous stability/post-close release evidence; no genuine personal readiness,
+Current blockers: remaining A input/association cases and missing isolated fixture
+where unavailable; B affected native, guide-only/offline, measured continuous
+stability and post-close release receipts; incomplete A numeric exit status and
+per-launch logs; no genuine personal readiness,
 actual personal scenario/M/P/hold-negative-latency evidence or final release video.
 These are separate, not reasons to delay camera-free A1 work.
 
