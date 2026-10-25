@@ -2,7 +2,7 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 holds captured
+## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 holds and negatives captured
 
 Deston completed the Harbor walkthrough on build **a8b86f6**, with agent assistance
 for file recovery, saving/restoring and final manual Finish. The exported events
@@ -75,6 +75,37 @@ hash-checked `cue-review.json`. No images or video were recorded.
 manual/personal workflow comparison and remaining independently timed latency
 assessment. The hold capture is a completed substep; GF-P20 remains In Progress
 and whole-task accepted points remain **161/223 (72.2%), 20/29**.
+
+### GF-P20 negative activity — 26 October
+
+Deston completed the ten-minute guided non-command test on `d6e6970` using the
+same P01 profile and unchanged kNN/rejection/controller settings. The instruction
+interval was **600.000 seconds**. The saved trace contains **9,956 inputs** over
+601.703 seconds including initial NEUTRAL preparation; 9,914 inputs fall within
+the negative cues. The last input receipt precedes the end cue by 0.032 seconds.
+There are **zero simulated command actions**, reproduced by controller replay and
+confirmed by the empty runtime outcome export. No stale inputs or excessive
+capture gaps were recorded (maximum gap 0.172 s; maximum input age 0.188 s).
+
+The classifier briefly accepted mapped command labels on 36 negative inputs.
+The real activation controller emitted none; the naive per-accepted-frame
+baseline emits **36 unintended requests versus zero protected** on the same
+saved inputs. This meets the at-most-one unintended-action target for this
+recorded personal-profile run. It does not establish perfect recognition,
+external-launch safety or performance for other users.
+
+**Accepted substeps:** completed negative capture, zero unintended simulated
+actions and the negative-trace protection ablation. Original files remain
+unchanged under ignored `experiments/local/p20-negatives-20261026-ready/`.
+`review_capture.py` reproduces the hash-checked review and replay; a separate
+annotated copy declares the preplanned negative-only intent using the protocol
+and operator completion, without inventing physical onset timestamps or changing
+the original trace. No raw images or video were saved.
+
+**Remaining GF-P20 work:** timed manual/personal Harbor comparison and independent
+physical-onset latency assessment. Do not repeat these completed hold/negative
+captures merely to raise the whole-task percentage. Accepted totals remain
+**161/223 (72.2%), 20/29 tasks** until the remaining GF-P20 criteria are resolved.
 
 ## Historical checkpoint — 25 October
 

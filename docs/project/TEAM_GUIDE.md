@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-GF-P20 update — 26 October: twenty hold prompts captured in one session; 20 matching simulated actions and no repeats across prompt intervals. First action is 0.047 seconds after release cue; physical latency remains unmeasured. Next: ten-minute negatives and timed manual/personal comparison. See [current evidence](PROGRESS.md#gf-p20-hold-capture--26-october); do not repeat the completed capture solely for presentation.
+GF-P20 update — 26 October: ten-minute negative capture completed with zero simulated actions; controller replay agrees, compared with 36 naive per-frame requests. Hold and negative capture substeps are complete. Next: timed manual/personal comparison and physical-onset latency assessment. See [current evidence](PROGRESS.md#gf-p20-negative-activity--26-october).
 
 Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
 
