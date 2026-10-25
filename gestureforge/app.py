@@ -791,6 +791,7 @@ class Window(QMainWindow):
             self.practice_negative_cues.setToolTip("Keep exactly ten lines. Edit any cue that overlaps your custom gestures.")
             self.practice_negative_cues.setMinimumHeight(220)
             self.practice_cues_dialog = QDialog(self)
+            self.practice_cues_dialog.setObjectName("manualViewer")
             self.practice_cues_dialog.setWindowTitle("Review negative cues")
             self.practice_cues_dialog.setModal(True)
             cues_dialog_layout = QVBoxLayout(self.practice_cues_dialog)

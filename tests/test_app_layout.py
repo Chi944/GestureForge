@@ -116,6 +116,24 @@ def test_practice_entry_controls_fit_half_width_workflow(qapp) -> None:
         window.close()
 
 
+def test_negative_cue_dialog_keeps_readable_editor_and_editable_cues(qapp) -> None:
+    window = Window(model=object(), studio=True)
+    try:
+        window.practice_cues_dialog.show()
+        qapp.processEvents()
+        editor = window.practice_negative_cues
+        assert editor.palette().base().color().name() == "#0c1620"
+        assert editor.palette().text().color().name() == "#e8eef4"
+        assert not editor.isReadOnly()
+        cues = list(window._practice_negative_cue_values())
+        cues[0] = "Keep both hands below the camera."
+        editor.setPlainText("\n".join(cues))
+        assert window._practice_negative_cue_values() == tuple(cues)
+    finally:
+        window.practice_cues_dialog.close()
+        window.close()
+
+
 def test_active_practice_actions_fit_half_width_workflow(qapp) -> None:
     window = Window(model=object(), studio=True)
     window.resize(900, 620)
