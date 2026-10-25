@@ -1,7 +1,12 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
+The 25 October observations, archive checks and JSON comparisons below are
+reported by Javier and his assisting agent. Deston has reviewed this note only;
+the original ZIP, exports and screenshots have not yet been received or
+independently checked here. These reported passes do not advance task acceptance.
+
 Scope: GF-P19, GF-P22 and coordination for GF-P23/GF-P25.
-Reviewer: Deston. Laptop A operator: Javier. Laptop B operator: Hau Jie.
+Review owner: Deston; independent 25 October receipt review outstanding. Laptop A operator: Javier. Laptop B operator: Hau Jie.
 This is an inventory and execution checklist with bounded 25 October laptop-A observations; no whole-task acceptance is claimed.
 
 Reviewed source snapshot: `19c95233b25c227094c1fbe6ce42202bbb47e2d8`.
