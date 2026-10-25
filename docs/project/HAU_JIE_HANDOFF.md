@@ -23,11 +23,13 @@ rerun participant TEST or ask for another twenty-trial diagnostic.
    do not inherit the loaded P02 profile's margin 1.0. Check fixed validation
    before attempting the existing 22-window Practice, and retain failures. This
    is coherent new onboarding, not a proven repair or permission to tune TEST.
-   His first new TRAIN session saved eight trials with 40/40 valid samples, two
-   per pose after a possible scroll change. Keep it separate from the intended
-   new 48-trial TRAIN and 48-trial VALIDATION. No profile pass is claimed.
-   Review his resulting fixed validation
-   before Practice; do not repeat the failed P02 repair.
+   Update: separate new TRAIN has 47 complete trials / 235 valid samples;
+   VALIDATION has 48 complete trials / 240 valid samples. Fixed validation is
+   48/48 correct (macro-F1 1.00). Saved-profile reload reproduces all 240
+   predictions. TRAIN is one NEUTRAL trial short, with its incomplete flag
+   retained. Earlier small/interrupted sessions are preserved and excluded.
+   No negative-validation or Practice pass is claimed. Next is the existing
+   full 22-window Practice, then observed workflow; no model search is assigned.
 3. **Manual work in parallel:** operate laptop B for the remaining guide-only
    installation, offline core, uninterrupted measured 30-minute full Studio run
    and shutdown/reacquisition checks in the

@@ -27,16 +27,23 @@ The next recognition option is **one fresh complete personal enrolment**, with
 all four poses collected in consistent intended-demo conditions and separate
 TRAIN/VALIDATION. Pin the existing kNN / multiplier 1.5 / margin 1.5 settings
 before capture, preserving old profiles; do not inherit P02's saved margin 1.0.
-Deston's new right-hand TRAIN recording saved successfully: 8 trials and 40/40
-valid samples, two trials per pose. It completed the selected eight-trial plan,
-but not the intended twelve trials per pose. Deston reports that the count may
-have changed while scrolling. Preserve this small session separately; complete
-a fresh 48-trial TRAIN session and separate 48-trial VALIDATION before qualification.
-The current form fixes wheel-driven changes to hand, session and trial count.
-No profile qualification is claimed. Fixed validation
-comes before the genuine 22-window Practice gate; this option is not a proven
-repair or permission to rerun until a pass. Javier's independent manual/native
-checks and Hau Jie's laptop-B installation checks can proceed meanwhile.
+Deston's new right-hand profile now has **47 TRAIN trials / 235 valid samples**
+and a separate complete **48-trial VALIDATION / 240 valid samples**. Fixed kNN,
+multiplier 1.5 and margin 1.5 score **48/48 validation trials correct, macro-F1
+1.00**, with 12/12 for each enrolled label. The saved profile reload reproduces
+all 240 saved validation predictions exactly. This is development evidence,
+not a held-out TEST or unknown-gesture/live safety result.
+
+TRAIN stopped one NEUTRAL trial short (11 NEUTRAL, 12 of each command); its
+incomplete flag remains unchanged. This protocol deviation is disclosed rather
+than represented as a complete 48-trial session. The earlier eight-trial TRAIN
+and interrupted three-trial VALIDATION remain preserved and excluded. The form
+now protects hand, session and trial count against accidental wheel changes.
+
+Next: the genuine **22-window full Practice** on this separate saved P01 profile,
+then the personal six-stage workflow and recovery. No Practice qualification or
+whole-task acceptance is claimed yet. Javier's independent manual/native checks
+and Hau Jie's laptop-B installation checks can proceed meanwhile.
 
 The optional [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
 is implemented and independently reviewed. It measures the real GUI/camera

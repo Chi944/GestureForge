@@ -35,16 +35,14 @@ The intended submission is 31 October; the official deadline is 7 November.
   and saved-state restoration checked. Screenshots are absent from that packet;
   native execution remains attributed. Do not resend it or repeat successful
   checks just to regenerate metadata.
-- **Deston:** integrate/review both deliveries and measurement software. The next
-  option is one fresh complete four-pose profile from Deston, who volunteered
-  and confirmed his webcam. His first new TRAIN session saved 8 trials/40 valid
-  samples, two per pose after a possible scroll change. Preserve it separately;
-  a full 48-trial TRAIN and separate 48-trial VALIDATION are still needed. No
-  profile pass is claimed. Preserve
-  Original; pin kNN, multiplier 1.5 and margin 1.5 before capture via an explicit
-  default launch, avoiding inherited P02 margin 1.0. Keep TRAIN and VALIDATION
-  separate in consistent demo conditions; check fixed validation before the
-  existing 22-window Practice. This is new onboarding, not a proven repair.
+- **Deston:** integrate/review both deliveries and measurement software. His new
+  personal profile now has 47 TRAIN trials / 235 valid samples and a separate
+  complete 48-trial VALIDATION / 240 valid samples. Fixed kNN, multiplier 1.5,
+  margin 1.5 score 48/48 trials correct (macro-F1 1.00); profile reload reproduces
+  all 240 validation predictions. TRAIN lacks one NEUTRAL trial; preserve that
+  incomplete flag and disclose the deviation. Earlier small/interrupted sessions
+  remain excluded. Next: full 22-window Practice, then the six-stage workflow
+  and recovery. No unknown-gesture safety or LIVE qualification is claimed.
 
 **Marker Mac:** Deston requested the existing Apple Silicon core Studio path.
 Use [MACOS.md](../MACOS.md); macOS 13+ and native Python 3.11 are prerequisites.
