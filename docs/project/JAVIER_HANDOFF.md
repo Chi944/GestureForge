@@ -4,6 +4,8 @@
 
 Deston confirmed basic supervised gesture operation on c49244a. Prepare the real Harbor six-stage workflow/video with the visible supervised-demo override and honest limitations. Continue remaining laptop-A native/recovery checks and consolidate laptop-B evidence. Retain before/after restore exports and actual app outcomes; a launch request alone is not task completion. Work on codex/javier-shortcuts and submit a focused PR.
 
+26 October workflow update: Deston completed the supervised Harbor walkthrough with agent-assisted recovery/save/restore and manual Finish. Reuse [the verified results](SUPERVISED_WORKFLOW_2026_10_26.md); do not request the same whole walkthrough again. This is not a Practice pass, timed study or recorded demo video.
+
 See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
 
 You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.

@@ -2,34 +2,44 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 26 October: supervised gestures confirmed
+## Current checkpoint — 26 October: supervised workflow completed
 
-Deston explicitly authorised supervised-demo use and then reported **“all gestures
-work perfectly”** on build **c49244a**. The basic gesture-operation substep of
-GF-P16 is accepted as operator-reported. Exact counts, timing, external launches
-and the complete six-stage workflow were not reported.
+Deston completed the Harbor walkthrough on build **a8b86f6**, with agent assistance
+for file recovery, saving/restoring and final manual Finish. The exported events
+show gesture NEXT/PREVIOUS, stage transitions, Calculator/reference/folder launch
+requests, repeat bookmarks remaining unchanged, two intentional missing-reference
+failures and a successful explicit gesture request after the disposable file was
+restored. Deston confirmed that the reference opened. Save/Restore/Save produced
+identical session content: Discussion stage, its card and all four bookmarks.
+Restoration left the camera off in Preview mode; Live was explicitly reapplied.
 
-The measured Practice remains **19/22 correct**: two capture-coverage failures,
-one missed G3, zero negative actions. The separate session-only override is visibly
-labelled **qualification NOT passed**. Its 68 targeted tests, Ruff, mypy and both
-startup smokes pass. Saved outcomes, model settings and hold/rearm/focus/target
-protections are unchanged. The confirmation receipt and numeric data stay private.
+The final segment records the Discussion-to-Review gesture and a **manual** Finish.
+Discussion was acknowledged by Deston; the agent recorded Review acknowledgement
+after Deston reported “finished”. Earlier stages have operator confirmation but
+no in-app completion acknowledgements. Five pre-restore launch requests include
+the recovery reference both before failure injection and after recovery. Two
+failures are intentional test events, not recognition failures. Exported retry
+count remains zero: recovery used a fresh gesture, not the dedicated Retry control.
 
-**Next: record the real Harbor six-stage workflow under the declared supervised
-override**, including an approved target launch, bookmark, save/restore and one
-missing-reference recovery. Retain session exports and show the override in the
-video. No new enrolment, threshold search or blind full Practice repetition is
-assigned. This advances integration and demonstration; it does not retrospectively
-satisfy the standard qualification or measured-study criteria.
+**Accepted substeps:** supervised workflow integration, repeat-bookmark behaviour,
+missing-file error/recovery and exact session persistence on this Windows machine.
+Private exports and checksums remain local; see
+[walkthrough evidence](SUPERVISED_WORKFLOW_2026_10_26.md).
 
-Hau Jie finishes laptop-B evidence and recognition limitations from existing data.
-Javier consolidates native/recovery checks and prepares genuine workflow footage.
-Deston verifies the workflow and then reconciles the local report/presentation.
+This is not a timed comparison, stability run, demo video or formal qualification.
+Practice remains **19/22 correct**: two capture-coverage failures, one missed G3,
+zero negative actions. Its failed record is preserved. The visible supervised
+session override does not change measured outcomes or standard acceptance criteria.
+
+**Next:** reuse these results in the report and genuine demo storyboard; complete
+remaining two-laptop native/release evidence and the separately measured hold,
+negative and workflow-comparison checks. No repeat of this whole walkthrough is
+needed solely to reproduce its verified recovery/persistence results.
 
 **Accepted whole tasks: 151/223 (67.7%), 19/29.** Deston 34/75 (45.3%), Hau Jie
-63/75 (84.0%), Javier 54/73 (74.0%). Basic supervised gesture operation is a newly
-accepted substep; the full ten-point GF-P16 task still needs workflow/recovery
-evidence and its qualification criterion. Weights and dependencies are unchanged.
+63/75 (84.0%), Javier 54/73 (74.0%). GF-P16 remains In Progress because its original
+qualification criterion is not met; the workflow/recovery substeps now have
+physical evidence. Weights and dependencies are unchanged.
 
 ## Historical checkpoint — 25 October
 

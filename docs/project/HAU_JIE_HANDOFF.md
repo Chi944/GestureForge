@@ -4,6 +4,8 @@
 
 Deston confirmed basic supervised gesture operation on c49244a. The measured Practice remains 19/22 with two capture gaps, one G3 miss and zero negative actions. Finish recognition limitations/methods from existing data and laptop-B install, offline, endurance and shutdown checks. No new P02 repair, model search, TEST tuning or blind Practice repeat is assigned. Keep your work on codex/hau-jie-profiles and submit a focused PR.
 
+26 October workflow update: Deston completed the supervised Harbor walkthrough with agent-assisted recovery/save/restore and manual Finish. Reuse [the verified results](SUPERVISED_WORKFLOW_2026_10_26.md); do not request the same whole walkthrough again. This is not a Practice pass, timed study or recorded demo video.
+
 See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
 
 You own recognition and personalisation for GestureForge Studio. Build the reusable AI and profile components; Deston owns integration and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` first. Work is assigned for the project due 7 November 2026; the assignment is already submitted.
