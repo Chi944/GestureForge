@@ -170,6 +170,15 @@ onsets separately before scoring; instruction times cannot establish latency.
 Focus/capture/configuration interruption stops the run, and failed saves can be
 retried in the same window without repeating holds.
 
+**Guided ten-minute non-command capture:** add `--negative` to the same command
+and choose a different output folder. Click **Start guided ten-minute negative
+test**, show NEUTRAL until READY, then follow the ten one-minute activity cues.
+Avoid deliberate fist, thumb-up and V-sign command poses. Hand absence and
+unrecognised poses are valid inputs during this test; READY is required only
+before the ten-minute clock starts. Keep Studio focused. Completion saves the
+trace and instructions for review, without declaring a pass or changing profile
+qualification. The result measures simulated command requests, not OS launches.
+
 Run the same annotated prediction trace through the actual rehearsal routing/controller and a naive baseline that emits one simulated action for every accepted mapped frame:
 
 ```powershell

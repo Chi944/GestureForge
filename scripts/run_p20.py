@@ -1,4 +1,4 @@
-"""Guide twenty five-second holds using Studio's real simulated controller path.
+"""Guide hold or ten-minute negative tests using Studio's simulated controller path.
 
 Cue times are instructions, not observed stable-pose onsets. This tool does not
 qualify a profile or score latency; original traces need independent annotation.
@@ -23,6 +23,19 @@ from gestureforge.features import extract_feature_vector
 from gestureforge.profiles import ProfileStore
 from gestureforge.storage import atomic_write_json
 
+NEGATIVE_CUES = (
+    "Keep both hands out of view; look around normally.",
+    "Rest your hands flat on the desk; move your head normally.",
+    "Move an open palm slowly left and right.",
+    "Turn an open palm partly sideways, then face the camera again.",
+    "Move an open palm slowly closer to and farther from the camera.",
+    "Show only your index finger; keep the middle finger folded.",
+    "Keep all five fingers extended together; move your hand gently.",
+    "Move an open palm into and out of view.",
+    "Alternate an open palm with resting your hand flat on the desk.",
+    "Move your arms naturally with open hands; do not make a command pose.",
+)
+
 
 @dataclass
 class HoldSequence:
@@ -30,34 +43,53 @@ class HoldSequence:
 
     actions: tuple[str, ...]
     started: float
+    negative: bool = False
     phase_started: float = field(init=False)
     phase: str = "neutral"
     completed: int = 0
     reason: str = ""
     cues: list[dict] = field(default_factory=list)
+    negative_elapsed: float = 0.0
 
     def __post_init__(self) -> None:
         if len(self.actions) != 3 or len(set(self.actions)) != 3:
             raise ValueError("three distinct action poses are required")
         self.phase_started = self.started
-        self.cues.append({"kind": "neutral", "timestamp": self.started, "before_hold": 1})
+        self.cues.append({"kind": "neutral", "timestamp": self.started,
+                          **({"before_negative": True} if self.negative else {"before_hold": 1})})
 
     def advance(self, now: float, *, ready: bool, capture_ok: bool) -> None:
         if self.phase in {"complete", "interrupted"}:
             return
+        if self.phase == "negative":
+            self.negative_elapsed = max(0.0, now - self.phase_started)
         if not capture_ok:
             self.interrupt("Capture, focus or configuration interrupted", now)
             return
         elapsed = now - self.phase_started
         if self.phase == "neutral":
             if elapsed >= 3 and ready:
-                self.phase = "form"
+                self.phase = "negative" if self.negative else "form"
                 self.phase_started = now
-                self.cues.append({"kind": "form", "timestamp": now,
-                                  "hold": self.completed + 1,
-                                  "command": self.actions[self.completed % 3]})
+                if self.negative:
+                    self.cues.append({"kind": "negative", "timestamp": now,
+                                      "minute": 1, "instruction": NEGATIVE_CUES[0]})
+                else:
+                    self.cues.append({"kind": "form", "timestamp": now,
+                                      "hold": self.completed + 1,
+                                      "command": self.actions[self.completed % 3]})
             elif elapsed >= 30:
                 self.interrupt("NEUTRAL did not reach READY within 30 seconds", now)
+        elif self.phase == "negative":
+            completed = min(10, int(elapsed // 60))
+            if elapsed >= 600:
+                self.completed = 10
+                self.phase = "complete"
+                self.cues.append({"kind": "negative_end", "timestamp": now})
+            elif completed != self.completed:
+                self.completed = completed
+                self.cues.append({"kind": "negative", "timestamp": now,
+                                  "minute": completed + 1, "instruction": NEGATIVE_CUES[completed]})
         elif self.phase == "form" and elapsed >= 1:
             self.phase = "hold"
             self.phase_started = now
@@ -75,23 +107,28 @@ class HoldSequence:
 
     def interrupt(self, reason: str, now: float) -> None:
         if self.phase not in {"complete", "interrupted"}:
+            if self.phase == "negative":
+                self.negative_elapsed = max(0.0, now - self.phase_started)
             self.phase = "interrupted"
             self.reason = reason
             self.cues.append({"kind": "interrupted", "timestamp": now, "reason": reason})
 
     def report(self) -> dict:
-        return {"schema_version": 1, "protocol": "GF-P20-twenty-holds-v1",
+        return {"schema_version": 1,
+                "protocol": "GF-P20-ten-minute-negatives-v1" if self.negative else "GF-P20-twenty-holds-v1",
                 "status": self.phase, "reason": self.reason,
-                "requested_holds": 20, "completed_cue_windows": self.completed,
+                **({"requested_duration_seconds": 600, "elapsed_negative_seconds": self.negative_elapsed,
+                    "completed_minutes": self.completed} if self.negative else
+                   {"requested_holds": 20, "completed_cue_windows": self.completed}),
                 "capture_passed": None, "annotation_complete": False,
                 "latency_measured": False, "cues": self.cues,
                 "limitations": ["Cue timestamps are not observed stable-pose onsets.",
                                 "All controller actions are simulated; no external launches.",
-                                "Completed cues do not establish correct physical holds or a pass."]}
+                                "Completed cues do not establish physical compliance or a pass."]}
 
 
 class GuidedWindow(Window):
-    def __init__(self, loaded, store: ProfileStore, camera: int, output: Path):
+    def __init__(self, loaded, store: ProfileStore, camera: int, output: Path, *, negative: bool = False):
         record = loaded.record
         settings = record.settings
         super().__init__(
@@ -101,7 +138,8 @@ class GuidedWindow(Window):
             model_settings=(settings.algorithm, settings.multiplier, settings.margin),
             profile_display_name=record.display_name, profile_store=store, loaded_profile=loaded,
         )
-        self.setWindowTitle("GestureForge | GF-P20 guided holds")
+        self.negative = negative
+        self.setWindowTitle("GestureForge | GF-P20 " + ("ten-minute negatives" if negative else "guided holds"))
         self.output = output
         self.trace_folder = output
         self.hold_sequence: HoldSequence | None = None
@@ -113,7 +151,7 @@ class GuidedWindow(Window):
         assert self.routing is not None
         self.expected_snapshot = self.routing.snapshot
         self.finished_evidence = False
-        self.metadata = {"profile_id": record.profile_id,
+        self.metadata = {"profile_id": record.profile_id, "negative_activity": negative,
                          "model_version": record.model_version,
                          "manifest_sha256": record.manifest_sha256,
                          "features_sha256": record.features_sha256,
@@ -125,11 +163,15 @@ class GuidedWindow(Window):
                                       "multiplier": settings.multiplier, "margin": settings.margin}}
         panel = QWidget()
         layout = QVBoxLayout(panel)
-        self.cue = QLabel("20 holds · 5 seconds each · about 3–5 minutes\n"
-                          "Start when ready. Keep this window focused; Esc stops and saves an incomplete run.")
+        introduction = ("10 minutes of non-command activity after NEUTRAL arming\n"
+                        "Avoid fist, thumb up and V sign. Follow each one-minute instruction."
+                        if negative else "20 holds · 5 seconds each · about 3–5 minutes")
+        self.cue = QLabel(introduction + "\nStart when ready. Keep this window focused; "
+                          "Esc stops and saves an incomplete run.")
         self.cue.setWordWrap(True)
         self.cue.setStyleSheet("background:#173548;color:#ffffff;font-size:20px;padding:12px;")
-        self.begin_holds = QPushButton("Start guided 20-hold test")
+        self.begin_holds = QPushButton("Start guided ten-minute negative test" if negative
+                                      else "Start guided 20-hold test")
         self.begin_holds.clicked.connect(self.start_holds)
         layout.addWidget(self.cue)
         layout.addWidget(self.begin_holds)
@@ -161,7 +203,7 @@ class GuidedWindow(Window):
         self.record_diagnostics.setChecked(False)
         self.start_camera()
         now = time.monotonic()
-        self.hold_sequence = HoldSequence(tuple(self.vocabulary.action_ids), now)
+        self.hold_sequence = HoldSequence(tuple(self.vocabulary.action_ids), now, negative=self.negative)
         self.capture_worker = self.worker
         self.capture_snapshot = self.routing.snapshot
         self.last_tick = now
@@ -205,7 +247,15 @@ class GuidedWindow(Window):
     def render_cue(self, now: float) -> None:
         sequence = self.hold_sequence
         assert sequence is not None
-        if sequence.phase == "hold":
+        if sequence.phase == "negative":
+            negative_remaining = max(0, int(600 - (now - sequence.phase_started) + 0.999))
+            self.cue.setText(f"Non-command activity {sequence.completed + 1}/10 · "
+                             f"{negative_remaining // 60}:{negative_remaining % 60:02d} remaining\n"
+                             f"{NEGATIVE_CUES[sequence.completed]}\nAvoid fist, thumb up and V sign.")
+        elif self.negative:
+            self.cue.setText(f"Before the ten-minute test: NEUTRAL — {self.names['NEUTRAL']}\n"
+                             "Keep your open palm steady until READY; then follow the activity cues.")
+        elif sequence.phase == "hold":
             action = sequence.actions[sequence.completed % 3]
             remaining = max(0.0, 5 - (now - sequence.phase_started))
             self.cue.setText(f"Hold {sequence.completed + 1}/20: {action} — {self.names[action]}\n"
@@ -220,7 +270,7 @@ class GuidedWindow(Window):
                              f"Keep your open palm steady. Next: {action} — {self.names[action]}.")
 
     def offer_save_retry(self) -> None:
-        self.begin_holds.setText("Retry saving this test (does not repeat holds)")
+        self.begin_holds.setText("Retry saving this test (does not repeat recording)")
         self.begin_holds.setEnabled(True)
 
     def save_cues(self) -> bool:
@@ -256,7 +306,8 @@ class GuidedWindow(Window):
             return
         self.finished_evidence = True
         self.begin_holds.setEnabled(False)
-        status = "Captured all 20 cue windows" if self.hold_sequence.phase == "complete" else "Test interrupted"
+        completed = "Captured ten-minute negative test" if self.negative else "Captured all 20 cue windows"
+        status = completed if self.hold_sequence.phase == "complete" else "Test interrupted"
         self.cue.setText(f"{status}. Review needed — no automatic pass.\n"
                          f"{self.hold_sequence.reason}\nSaved in {self.output}")
 
@@ -276,13 +327,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--camera", type=int, default=1)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--smoke-test", action="store_true")
+    parser.add_argument("--negative", action="store_true", help="guide ten minutes of non-command activity")
     args = parser.parse_args(argv)
     validate_camera_index(args.camera)
     store = ProfileStore(Path(".local/profiles"))
     loaded = store.load(args.profile_id)
     args.output_dir.mkdir(parents=True, exist_ok=False)
     app = QApplication(sys.argv[:1])
-    window = GuidedWindow(loaded, store, args.camera, args.output_dir.resolve())
+    window = GuidedWindow(loaded, store, args.camera, args.output_dir.resolve(), negative=args.negative)
     window.show()
     window.raise_()
     window.activateWindow()

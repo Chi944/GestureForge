@@ -2,7 +2,7 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 started
+## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 holds captured
 
 Deston completed the Harbor walkthrough on build **a8b86f6**, with agent assistance
 for file recovery, saving/restoring and final manual Finish. The exported events
@@ -46,6 +46,35 @@ needed solely to reproduce its verified recovery/persistence results.
 63/75 (84.0%), Javier 54/73 (74.0%). The additional ten points are GF-P16
 accepted under the explicitly revised owner criterion, not an improved automated
 score. GF-P20 is now the active evaluation task. Weights are unchanged.
+
+### GF-P20 hold capture — 26 October
+
+The guided sequence on `44cea12` completed all twenty five-second cue windows
+in one camera session. Deston confirmed completion. The saved trace has **2,783
+controller inputs over 185.687 seconds**. Reconstruction reproduces the runtime
+sequence: **20 simulated actions**, one matching G1/G2/G3 action in each
+form-cue-to-next-form-cue interval (7/7/6), **zero extra or wrong-command actions**.
+There are no stale inputs or gaps above the controller limit; maximum capture gap
+is 0.156 seconds. Dispatch timestamps follow input receipt by at most 0.016 seconds.
+
+The first G1 request arrived **0.047 seconds after its release instruction**;
+the other nineteen requests arrived before release. These instruction timestamps
+are not observed physical pose boundaries. Accept completed capture and the
+observed no-repeat controller substep; do not label this a measured 20/20 physical
+timing pass or a sub-second latency pass. No repeat is requested solely to remove
+this recorded limitation.
+
+An unprotected per-accepted-mapped-input baseline would emit **1,718 simulated
+requests**, versus 20 with the real controller on identical inputs. This is a
+controller ablation, not a comparison between classifiers or native launches.
+Original inputs remain unchanged under ignored
+`experiments/local/p20-holds-20261026-ready/`; `review_capture.py` reproduces the
+hash-checked `cue-review.json`. No images or video were recorded.
+
+**Next for GF-P20:** ten minutes of non-command activity, then the timed
+manual/personal workflow comparison and remaining independently timed latency
+assessment. The hold capture is a completed substep; GF-P20 remains In Progress
+and whole-task accepted points remain **161/223 (72.2%), 20/29**.
 
 ## Historical checkpoint — 25 October
 

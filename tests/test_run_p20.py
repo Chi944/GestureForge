@@ -14,7 +14,7 @@ from gestureforge.dataset import save_dataset
 from gestureforge.fixtures import synthetic_dataset
 from gestureforge.profiles import ProfileStore
 from gestureforge.vocabulary import GestureVocabulary
-from scripts.run_p20 import GuidedWindow, HoldSequence
+from scripts.run_p20 import GuidedWindow, HoldSequence, NEGATIVE_CUES
 
 
 def test_twenty_cues_are_five_seconds_with_neutral_and_no_inferred_pass():
@@ -74,8 +74,44 @@ def test_close_interrupt_does_not_rewrite_completed_sequence():
     assert sequence.phase == "complete" and not sequence.reason
 
 
+def test_negative_timer_requires_neutral_then_runs_full_ten_minutes_without_ready():
+    sequence = HoldSequence(("G1", "G2", "G3"), 10, negative=True)
+    sequence.advance(13, ready=False, capture_ok=True)
+    assert sequence.phase == "neutral"
+    sequence.advance(14, ready=True, capture_ok=True)
+    assert sequence.phase == "negative"
+    for minute in range(1, 10):
+        sequence.advance(14 + minute * 60, ready=False, capture_ok=True)
+        assert sequence.phase == "negative" and sequence.completed == minute
+    sequence.advance(613.9, ready=False, capture_ok=True)
+    assert sequence.phase == "negative"
+    sequence.advance(614, ready=False, capture_ok=True)
+    assert sequence.phase == "complete"
+    report = sequence.report()
+    assert report["protocol"] == "GF-P20-ten-minute-negatives-v1"
+    assert report["requested_duration_seconds"] == report["elapsed_negative_seconds"] == 600
+    assert report["completed_minutes"] == 10
+    assert "requested_holds" not in report
+    assert report["capture_passed"] is None and not report["annotation_complete"]
+    assert [c["instruction"] for c in sequence.cues if c["kind"] == "negative"] == list(NEGATIVE_CUES)
+
+
+def test_negative_interruption_retains_elapsed_time_without_pass():
+    sequence = HoldSequence(("G1", "G2", "G3"), 0, negative=True)
+    sequence.advance(3, ready=True, capture_ok=True)
+    sequence.advance(63, ready=False, capture_ok=True)
+    sequence.advance(93, ready=False, capture_ok=False)
+    report = sequence.report()
+    assert report["status"] == "interrupted"
+    assert report["elapsed_negative_seconds"] == 90
+    assert report["completed_minutes"] == 1
+    assert report["capture_passed"] is None
+    sequence.advance(1000, ready=True, capture_ok=True)
+    assert sequence.phase == "interrupted" and sequence.negative_elapsed == 90
+
+
 @pytest.fixture
-def window(tmp_path, monkeypatch):
+def window(tmp_path, monkeypatch, request):
     import gestureforge.app as app_module
     app = QApplication.instance() or QApplication([])
     monkeypatch.setattr(app_module, "DEFAULT_STUDIO_STATE_FOLDER", tmp_path / "state")
@@ -93,7 +129,7 @@ def window(tmp_path, monkeypatch):
     loaded = store.create("Software fixture", data.manifest_path, "Right", consent=True)
     output = tmp_path / "run"
     output.mkdir()
-    value = GuidedWindow(loaded, store, 1, output)
+    value = GuidedWindow(loaded, store, 1, output, negative=getattr(request, "param", False))
     yield value
     value.close()
     app.processEvents()
@@ -107,6 +143,25 @@ def test_window_starts_no_camera_and_close_retains_not_started(window):
     assert window.names["G1"]
     window.close()
     assert json.loads((window.output / "run.json").read_text())["status"] == "not_started"
+
+
+@pytest.mark.parametrize("window", [True], indirect=True)
+def test_negative_ui_and_incomplete_report_are_distinct(window, monkeypatch):
+    assert window.worker is None
+    assert window.begin_holds.text() == "Start guided ten-minute negative test"
+    assert "Avoid fist, thumb up and V sign" in window.cue.text()
+    monkeypatch.setattr(window, "start_camera", lambda: None)
+    window.start_holds()
+    report = json.loads((window.output / "run.json").read_text())
+    assert report["protocol"] == "GF-P20-ten-minute-negatives-v1"
+    assert report["status"] == "interrupted"
+    assert report["elapsed_negative_seconds"] == 0
+    assert report["capture_passed"] is None
+    window.hold_sequence = HoldSequence(("G1", "G2", "G3"), 0, negative=True)
+    window.hold_sequence.advance(3, ready=True, capture_ok=True)
+    window.render_cue(3)
+    assert "10:00 remaining" in window.cue.text()
+    assert NEGATIVE_CUES[0] in window.cue.text()
 
 
 def test_failed_camera_start_saves_incomplete_not_pass(window, monkeypatch):
