@@ -37,3 +37,11 @@ qualified-profile criterion remains unmet: the measured Practice record is still
 Use this walkthrough to prepare genuine demonstration footage and report the
 recognition limitation and manual fallback. Reuse these passed recovery checks;
 do not repeat the entire walkthrough merely to recreate the same evidence.
+
+## Operator review
+
+On 26 October, Deston reported manually reviewing the results and accepting all
+gestures for continued use. This records operator acceptance of the demonstrated
+behaviour. No trial-specific correction evidence accompanied the review, so the
+recorded Practice score and capture/miss outcomes remain unchanged. Operator
+acceptance and measured qualification are reported separately.

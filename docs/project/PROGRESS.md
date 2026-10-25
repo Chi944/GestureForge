@@ -31,6 +31,11 @@ Practice remains **19/22 correct**: two capture-coverage failures, one missed G3
 zero negative actions. Its failed record is preserved. The visible supervised
 session override does not change measured outcomes or standard acceptance criteria.
 
+Deston subsequently confirmed manual review and acceptance of all gestures for
+continued use. This closes the operator-review substep. It supplies no new
+trial-specific measurements and does not close the remaining qualification,
+performance or release criteria.
+
 **Next:** reuse these results in the report and genuine demo storyboard; complete
 remaining two-laptop native/release evidence and the separately measured hold,
 negative and workflow-comparison checks. No repeat of this whole walkthrough is
