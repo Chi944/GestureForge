@@ -1,6 +1,11 @@
 # GF-P19/GF-P22: laptop A recovery observations — 25 October 2026
 
-Operator: Javier. Reviewer: Deston. These are guided human observations and
+The 25 October observations, archive checks and JSON comparisons below are
+reported by Javier and his assisting agent. Deston has reviewed this note only;
+the original ZIP, exports and screenshots have not yet been received or
+independently checked here. These reported passes do not advance task acceptance.
+
+Operator: Javier. Review owner: Deston; independent receipt review outstanding. These are guided human observations and
 receipt checks, not independent native replay or whole-task acceptance.
 
 ## Build and private receipt
