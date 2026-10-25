@@ -566,7 +566,7 @@ class Window(QMainWindow):
             setup_layout.addWidget(self.record_trace)
             self.record_diagnostics = QCheckBox("Record recognition diagnostics (Preview/Rehearsal only)")
             self.record_diagnostics.setToolTip(
-                "Separate opt-in: saves numeric decision distances with labels/timing, up to 18,000 inputs. "
+                "Separate opt-in: saves numeric decision distances with labels/timing, up to 24,000 inputs. "
                 "No images, landmarks or features. Pause to save privately; development diagnosis only."
             )
             setup_layout.addWidget(self.record_diagnostics)

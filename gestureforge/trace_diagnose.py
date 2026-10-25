@@ -13,7 +13,7 @@ from .controller import (
     Controller, NEUTRAL_HOLD_SECONDS, MAX_FRAME_GAP_SECONDS, MAX_PREDICTION_AGE_SECONDS,
 )
 from .storage import atomic_write_json, fields, read_json, version
-from .traces import EvaluationTrace
+from .traces import MAX_TRACE_FRAMES, EvaluationTrace
 
 
 def diagnose_trace(path: Path) -> dict:
@@ -33,8 +33,8 @@ def diagnose_trace(path: Path) -> dict:
         frames = data['frames']
     except (KeyError, TypeError, AttributeError) as exc:
         raise ValueError('trace identity/bindings are incomplete') from exc
-    if not isinstance(frames, list) or not 1 <= len(frames) <= 18000:
-        raise ValueError('trace must contain 1–18000 recorded frames')
+    if not isinstance(frames, list) or not 1 <= len(frames) <= MAX_TRACE_FRAMES:
+        raise ValueError(f'trace must contain 1 to {MAX_TRACE_FRAMES} recorded frames')
     recognition = None
     recognition_frames = None
     capture = {}

@@ -149,6 +149,27 @@ Targets are prospective, not passed checks. Use a simulated dispatcher for the p
 
 ### Controller replay tool (GF-P20 preparation)
 
+**Guided twenty-hold capture:** from the repository root, run the following with
+the saved profile ID and a new output folder:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_p20 --profile-id PROFILE_ID --camera 1 --output-dir experiments/local/p20-holds-RUN_ID
+```
+
+Click **Start guided 20-hold test** when ready. Keep this window in front. Follow
+the named poses: at least three seconds of NEUTRAL until READY, one second to
+form the requested pose, then five seconds holding it. The sequence covers
+G1/G2/G3 seven/seven/six times with one continuous camera session. Esc stops the
+test and retains incomplete evidence. The runner uses simulated viewer actions;
+it does not open applications or change profile qualification.
+
+The output folder contains instruction timestamps in `run.json`, the original
+controller trace and `session-summary.json`. Completion of twenty cue windows
+is not a performance pass. Review physical compliance and annotate observed
+onsets separately before scoring; instruction times cannot establish latency.
+Focus/capture/configuration interruption stops the run, and failed saves can be
+retried in the same window without repeating holds.
+
 Run the same annotated prediction trace through the actual rehearsal routing/controller and a naive baseline that emits one simulated action for every accepted mapped frame:
 
 ```powershell
@@ -172,7 +193,7 @@ Include neutral/release frames, invalid detections and negative activity; do not
 
 **Record a new trace:** open Studio, load your personal dataset, select Preview or Rehearsal and check **Record evaluation trace (labels and timing only)** before Start. Confirm participant permission for this evaluation. Start, perform the planned neutral/hold/negative sequence, then Pause. A local `experiments/local/controller-traces/trace-*.json` is saved and the UI shows its path. Pause, focus loss, camera failure or reconfiguration ends that segment; a new Start records a new file. No camera images, landmarks or feature vectors are included. Recording is off by default, applies only to Studio and does not turn simulation into desktop control.
 
-The recorder saves the predictions actually consumed by the controller, including rejected inputs, with their original capture and processing timestamps. The latest-frame mailbox can discard intermediate camera frames, so this is a controller-input trace, not every sensor frame. Frame IDs can start at zero and have gaps. At 18,000 inputs, recording pauses before processing another input; the saved trace covers only its recorded interval. Saving never overwrites existing files. If storage fails, keep the app open, fix the storage problem and press Pause to retry; buffered evidence is retained. Capture restart, closing, deck reset, camera/configuration changes and dataset/model replacement wait until it is saved.
+The recorder saves the predictions actually consumed by the controller, including rejected inputs, with their original capture and processing timestamps. The latest-frame mailbox can discard intermediate camera frames, so this is a controller-input trace, not every sensor frame. Frame IDs can start at zero and have gaps. At 24,000 inputs, recording pauses before processing another input; the saved trace covers only its recorded interval. Saving never overwrites existing files. If storage fails, keep the app open, fix the storage problem and press Pause to retry; buffered evidence is retained. Capture restart, closing, deck reset, camera/configuration changes and dataset/model replacement wait until it is saved.
 
 **Before scoring:** preserve the original and make an annotated copy. Record source commit, actual collection conditions, annotator, annotation method and timing uncertainty alongside it. Use an independent observer or separately consented, synchronised recording to identify stable-pose onsets/releases; never derive the intended pose from the classifier output. Fill `expected_holds` using the same monotonic seconds as `frames[*].timestamp`, then set `annotation_complete` to `true` in the copy. For a deliberate negative-only session, explicitly confirm the empty hold list. New recordings default to `false` and the replay tool refuses to score them. Legacy hand-authored traces without this field remain supported. Without reliable independent timing, do not claim the latency target from these traces.
 

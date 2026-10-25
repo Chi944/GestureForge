@@ -4,7 +4,7 @@ from typing import Any, cast
 import pytest
 
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode, RoutingSnapshot
-from gestureforge.traces import EvaluationTrace
+from gestureforge.traces import MAX_TRACE_FRAMES, EvaluationTrace
 
 
 def snapshot() -> RoutingSnapshot:
@@ -174,7 +174,7 @@ def test_full_diagnostic_trace_fits_reader_size_bound_and_survives_failed_save(t
     trace = EvaluationTrace(snapshot(), recognition_config={"algorithm": "knn", "multiplier": 1.5, "margin": 1})
     detail: dict[str, float | None] = {"distance": 1.23456789, "threshold": 2.3456789,
               "competitor_distance": 3.456789, "competitor_ratio": 2.800000002}
-    for index in range(18000):
+    for index in range(MAX_TRACE_FRAMES):
         trace.append(prediction(index, 10.0 + index * 0.1), 10.01 + index * 0.1, detail)
     original_link = traces_module.os.link
     def fail(*args):
@@ -182,16 +182,25 @@ def test_full_diagnostic_trace_fits_reader_size_bound_and_survives_failed_save(t
     monkeypatch.setattr(traces_module.os, "link", fail)
     with pytest.raises(OSError, match="disk full"):
         trace.save(tmp_path / "failed.json")
-    assert trace.frame_count == 18000
+    assert trace.frame_count == MAX_TRACE_FRAMES
     assert not list(tmp_path.iterdir())
     monkeypatch.setattr(traces_module.os, "link", original_link)
     destination = tmp_path / "saved.json"
     trace.save(destination)
     assert destination.stat().st_size < 16 * 1024 * 1024
-    assert len(json.loads(destination.read_text())["recognition_diagnostics"]["frames"]) == 18000
+    assert len(json.loads(destination.read_text())["recognition_diagnostics"]["frames"]) == MAX_TRACE_FRAMES
 
 @pytest.mark.parametrize("camera,hand", [(True, "Right"), (-1, "Right"), (0, "Other"), (None, "Right"), (0, None)])
 def test_diagnostic_capture_context_validated(camera, hand):
     with pytest.raises(ValueError, match="capture context"):
         EvaluationTrace(snapshot(), recognition_config={"algorithm": "knn", "multiplier": 1, "margin": 1},
                         camera_index=camera, chosen_hand=hand)
+
+
+def test_default_trace_covers_ten_minutes_at_studio_poll_rate(tmp_path):
+    trace = EvaluationTrace(snapshot())
+    # 30 ms polling plus one minute of setup must fit without stopping capture.
+    for index in range(22001):
+        trace.append(prediction(index, 10.0 + index * 0.03), 10.01 + index * 0.03)
+    trace.save(tmp_path / "ten-minute.json")
+    assert trace.frame_count == 22001

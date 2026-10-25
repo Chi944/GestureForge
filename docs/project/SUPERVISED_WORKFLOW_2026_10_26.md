@@ -29,8 +29,8 @@ roundtrip files and retry/restore receipt with checksums. Numeric/profile data a
 local machine paths are excluded from the public repository.
 
 Accepted substeps: supervised workflow integration, repeat-bookmark behaviour,
-missing-target recovery and session persistence on this machine. GF-P16's existing
-qualified-profile criterion remains unmet: the measured Practice record is still
+missing-target recovery and session persistence on this machine. GF-P16 is now owner-accepted under the revised criterion documented below;
+the original automated qualification was not met and its measured result remains
 19/22 correct. No latency, 20-hold, ten-minute-negative, timed manual comparison,
 30-minute stability, second-device, macOS Studio or video acceptance is inferred.
 
@@ -49,3 +49,7 @@ Deston reports a frame-by-frame review of the latest session with Claude and man
 
 Use these labels together when reporting this session; manual acceptance is not
 a replacement automated measurement or an independently reproduced adjudication.
+
+## GF-P16 acceptance decision
+
+26 October owner acceptance: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged.

@@ -12,12 +12,14 @@ from typing import Any
 from .contracts import Prediction, RoutingMode, RoutingSnapshot
 
 SCHEMA_VERSION = 1
+# Ten minutes at the 30 ms UI poll interval plus preparation headroom.
+MAX_TRACE_FRAMES = 24000
 
 
 class EvaluationTrace:
     """Bounded label/timing recorder; never stores frames, landmarks or features."""
 
-    def __init__(self, snapshot: RoutingSnapshot, *, max_frames: int = 18000,
+    def __init__(self, snapshot: RoutingSnapshot, *, max_frames: int = MAX_TRACE_FRAMES,
                  recognition_config: dict[str, Any] | None = None,
                  camera_index: int | None = None, chosen_hand: str | None = None) -> None:
         if not isinstance(max_frames, int) or isinstance(max_frames, bool) or max_frames <= 0:

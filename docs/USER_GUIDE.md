@@ -609,7 +609,7 @@ rerunning analysis does not recreate them.
 The trace adds numeric nearest-class distance, threshold, competing distance and
 ratio, together with model/session identity, settings, chosen hand and camera
 index. It saves no photos, video, landmarks, features or training examples. The
-existing limit is 18,000 consumed inputs, not a timed session; Pause ends a short
+existing limit is 24,000 consumed inputs, not a timed session; Pause ends a short
 check. Changing mode pauses and saves capture. Diagnostics cannot run in LIVE,
 change a classifier decision or grant readiness. See the
 [review and next steps](project/P02_P03_RECOGNITION_REVIEW_2026_10_22.md).

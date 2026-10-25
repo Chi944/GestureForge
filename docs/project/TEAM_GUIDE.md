@@ -1,5 +1,7 @@
 # GestureForge Studio team implementation guide
 
+Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
+
 Updated 25 October 2026 · Intended submission 31 October · Official deadline 7 November 2026
 
 Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
@@ -60,8 +62,9 @@ real workflow and release evidence exist.
 The 22-window Practice gate, 20 five-second holds, ten-minute negative activity,
 latency/replay evidence and two-Windows guide/offline/30-minute/shutdown checks
 remain. No threshold relaxation or TEST tuning; task weights, dependencies and
-completed-task history are unchanged. Accepted progress remains **151/223 (67.7%),
-19/29 tasks Done**: Deston 34/75, Hau Jie 63/75, Javier 54/73.
+completed-task history is retained. Current accepted progress is **161/223 (72.2%),
+20/29 tasks Done**: Deston 44/75, Hau Jie 63/75, Javier 54/73, including GF-P16
+accepted under the owner-approved manual-review criterion above.
 Hau Jie pushes `codex/hau-jie-profiles`; Javier pushes
 `codex/javier-shortcuts`; Deston reviews and merges.
 

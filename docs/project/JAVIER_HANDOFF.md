@@ -1,5 +1,7 @@
 # Javier implementation brief
 
+Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
+
 ## Current direction — 26 October
 
 Deston confirmed basic supervised gesture operation on c49244a. Prepare the real Harbor six-stage workflow/video with the visible supervised-demo override and honest limitations. Continue remaining laptop-A native/recovery checks and consolidate laptop-B evidence. Retain before/after restore exports and actual app outcomes; a launch request alone is not task completion. Work on codex/javier-shortcuts and submit a focused PR.

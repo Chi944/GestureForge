@@ -4,7 +4,7 @@ import pytest
 
 from gestureforge.contracts import Action, ActionType, Prediction, RoutingMode, RoutingSnapshot
 from gestureforge.trace_diagnose import diagnose_trace
-from gestureforge.traces import EvaluationTrace
+from gestureforge.traces import MAX_TRACE_FRAMES, EvaluationTrace
 
 
 def test_unannotated_trace_distinguishes_rejected_neutral_and_recovery(tmp_path):
@@ -118,7 +118,7 @@ def test_full_diagnostic_trace_cli_fits_output_limit(tmp_path, monkeypatch):
     detail: dict[str, float | None] = {
         'distance': 1.2345678901234567, 'threshold': 2.345678901234567,
         'competitor_distance': 3.456789012345678, 'competitor_ratio': 2.800000000000002}
-    for index in range(18000):
+    for index in range(MAX_TRACE_FRAMES):
         trace.append(Prediction('s', 'p', index, 10. + index * .1, 'NEUTRAL', True, 'm'),
                      10.01 + index * .1, detail)
     source = tmp_path / 'trace.json'
@@ -130,5 +130,5 @@ def test_full_diagnostic_trace_cli_fits_output_limit(tmp_path, monkeypatch):
     assert len(files) == 1
     assert files[0].stat().st_size < 16 * 1024 * 1024
     result = json.loads(files[0].read_text())
-    assert len(result['frames']) == 18000
+    assert len(result['frames']) == MAX_TRACE_FRAMES
     assert result['frames'][-1]['recognition_decision'] == detail

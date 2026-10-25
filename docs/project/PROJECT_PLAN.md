@@ -1,5 +1,7 @@
 # GestureForge Studio approved project build plan
 
+Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
+
 ## Current direction — 26 October
 
 Deston authorised session-only supervised-demo use and confirmed basic gesture operation on c49244a. Continue integration and demonstration while measured qualification remains incomplete. Label the override in the app/video, retain failed measurements and quantitative targets, and keep this operator authorisation separate from tutor approval or task acceptance. Next: actual Harbor workflow/recovery, remaining device evidence, final documents. No new recognition search is assigned.

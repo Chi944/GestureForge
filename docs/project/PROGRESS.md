@@ -2,7 +2,7 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 26 October: supervised workflow completed
+## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 started
 
 Deston completed the Harbor walkthrough on build **a8b86f6**, with agent assistance
 for file recovery, saving/restoring and final manual Finish. The exported events
@@ -32,18 +32,20 @@ zero negative actions. Its failed record is preserved. The visible supervised
 session override does not change measured outcomes or standard acceptance criteria.
 
 Deston reports a frame-by-frame review of the latest session with Claude and manually accepts all 22 trials (22/22 operator acceptance), attributing the three automated failures to autofocus. This is an operator-reported assessment; the review output has not been independently inspected and autofocus causation is unverified. The recorded automated result remains 19/22. No saved outcomes, model settings or runtime qualification gates are changed.
-This completes operator review; remaining performance and release criteria are
-unchanged.
+This completes operator review. Deston subsequently approved manual review as
+the replacement acceptance criterion for GF-P16 only; its verified workflow and
+recovery plus owner acceptance now close that task. Performance and release
+criteria remain unchanged.
 
 **Next:** reuse these results in the report and genuine demo storyboard; complete
 remaining two-laptop native/release evidence and the separately measured hold,
 negative and workflow-comparison checks. No repeat of this whole walkthrough is
 needed solely to reproduce its verified recovery/persistence results.
 
-**Accepted whole tasks: 151/223 (67.7%), 19/29.** Deston 34/75 (45.3%), Hau Jie
-63/75 (84.0%), Javier 54/73 (74.0%). GF-P16 remains In Progress because its original
-qualification criterion is not met; the workflow/recovery substeps now have
-physical evidence. Weights and dependencies are unchanged.
+**Accepted whole tasks: 161/223 (72.2%), 20/29.** Deston 44/75 (58.7%), Hau Jie
+63/75 (84.0%), Javier 54/73 (74.0%). The additional ten points are GF-P16
+accepted under the explicitly revised owner criterion, not an improved automated
+score. GF-P20 is now the active evaluation task. Weights are unchanged.
 
 ## Historical checkpoint — 25 October
 
