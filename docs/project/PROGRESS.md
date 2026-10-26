@@ -2,7 +2,28 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 26 October: GF-P20 walkthroughs recorded; latency remains
+## Current checkpoint — GF-P20 evaluation complete
+
+**Accepted progress: 171/223 (76.7%), 21/29 tasks.** Deston **54/89 (60.7%)**;
+Hau Jie **63/69 (91.3%)**; Javier **54/65 (83.1%)**. Eight whole tasks remain.
+
+GF-P20 is accepted as a completed evaluation with limitations reported. The new
+visual capture has 16 responses from 20 cued attempts, no duplicate/wrong actions,
+and four misses. Successful-response p95 is approximately **0.515–0.718 s** from
+visually bracketed camera-frame pose onset to simulated dispatch; misses remain
+in the results. This is not an all-attempt latency target pass. The completed
+hold/negative/replay checks and M/P walkthroughs are included; the walkthroughs
+are not a controlled speed comparison. See the [final GF-P20 evaluation](P20_EVALUATION_2026_10_26.md).
+
+**Next:** Hau Jie reviews the four saved recognition/transition misses for GF-P21;
+Javier finishes the outstanding native/device cases for GF-P19/GF-P22. Deston
+prepares GF-P24 methods/results and GF-P25 guide/demo material, then reviews the
+release evidence for GF-P23. No further recording is assigned now. Reports and
+Word logs stay local; original measurements and confirmations remain unchanged.
+
+## Earlier checkpoints — retained history
+
+### Before latency review — 26 October
 
 **Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
 
