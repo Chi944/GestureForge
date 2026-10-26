@@ -114,8 +114,9 @@ Hau Jie's supplied message reports runtime
 `ac7f887dae858bf80ffdea2c32094bbf9739b076806c5d048c9080fabf1c40c2`,
 Python 3.11.15 and camera 0. Setup remained agent-assisted with a reused
 environment. These are reported identifiers, not a fresh hash/runtime validation
-by this consolidation. Original new files were not attached to the message.
-Keep Deston's already-received receipts separately attributed.
+by this consolidation. The message was followed by the private original packet
+reviewed below; package/source files themselves are not embedded, so its setup
+claims remain receipt claims. Keep Deston's prior reviews separately attributed.
 
 Paths below are relative to `experiments/local/`:
 A = `p02-neutral-repair-20261024/`;
@@ -126,9 +127,9 @@ These are evidence locations, not instructions to resume stopped P02 work.
 | Case / distinct attempt | Operator-reported result | Receipt / remaining boundary |
 | --- | --- | --- |
 | Fresh guide-only installation | NOT COMPLETED; assisted setup, reused environment | A/setup-receipt.json; no unaided clean-install pass. |
-| Offline core | NO NEW VERIFIED RUN | NO NEW VERIFIED RUN per 26 Oct update. Historical Wi-Fi-disconnected local app/file/folder use remains self-report; no new build-tagged offline evidence. |
-| Instrumented full Studio attempt | Interrupted after approximately seven seconds; reported exit 0, worker release unconfirmed | B/measurement.json, B/studio-exit.json, B/aggregate-seconds.jsonl. No measured 30-minute pass; trigger/root cause not established by this message. |
-| Separate background capture/classifier diagnostic | 300.016 seconds, 8,147 packets, 27.155 packets/s; peak working set 372.31 MiB; 720 frame-ID skips; no samples older than 200 ms; reported clean worker shutdown and exit 0 | C/capture-300s.json, C/process-ended.json. Pipeline-only diagnostic, not GUI/controller/endurance acceptance. Numeric results await original-file inspection here. |
+| Offline core | NO NEW VERIFIED RUN | Earlier self-report remains separate; no new build-tagged offline result in the packet. |
+| Instrumented full Studio attempt | Interrupted after 6.922 measured seconds; Studio receipt records event_loop_exit_code 0, not an OS process return code; worker release unconfirmed | B/measurement.json, B/studio-exit.json, B/aggregate-seconds.jsonl. No measured 30-minute pass; trigger/root cause not established by this message. |
+| Separate background capture/classifier diagnostic | 300.016 seconds, 8,147 packets, 27.155 packets/s; peak working set 372.31 MiB; 720 frame-ID skips; no samples older than 200 ms; reported clean worker shutdown and exit 0 | C/capture-300s.json, C/process-ended.json. Pipeline-only diagnostic, not GUI/controller/endurance acceptance. Numeric receipt fields and arithmetic inspected below; no independent physical replay. |
 | Separate post-close camera probe | Five frames acquired/released; that Studio launch's exit code not retained | A/post-close-camera.json; retain existing reviewed receipt. Do not borrow exit 0 from either other run to close this attempt's gap. |
 | Additional 30-minute Studio run | USER-REPORTED COMPLETED; measurement records not retained | Evidence missing and pending review; separate from interrupted runs and diagnostic. No rate/memory/timing/clean-exit acceptance inferred. |
 | Updated native recovery/error cells | NO NEW NATIVE PASS | Two unavailable slots, same-camera pause, affected restore feedback and remaining association/error cases still outstanding on B. Automated checks do not replace physical outcomes. |
@@ -145,9 +146,67 @@ local functions; affected recovery/error checks; one continuous instrumented
 >=1,800-second full Studio workflow with responsiveness/rate/memory/faults and
 same-run exit/worker-release evidence, then post-close camera reacquisition.
 Confirm the existing approved instrumentation records the required metrics
-before scheduling another long attempt. Request only the NEW listed original
-receipts and hashes for private review; do not resend the reviewed 22 October
-packet. Preserve assistance, failures and original files.
+before scheduling another long attempt. The new listed receipts are now received;
+do not request them again or resend the reviewed 22 October packet. Preserve
+assistance, failures and original files.
+
+### Original laptop-B packet inspected — 26 October
+
+Private original `PRIVATE_LAPTOP_B_NEW_RECEIPTS_20261026.zip`: 20,559 bytes,
+12 members; SHA256
+`f18d6dbd2a3caac62c9d6843d06215a2f395d8a03eef523dc758862aaa510c0f`.
+Archive CRC passes; all names safe/unique, no symlinks. The contents index
+covers exactly the other 11 members and all 11 SHA256 values match.
+Original bytes were read without modification. Raw receipts remain private;
+this is assisting-agent artifact inspection, not Deston's final acceptance
+or independent physical Windows operation.
+
+- **A setup/post-close:** setup receipt explicitly says assisted/reused
+  environment and records clean source at packaging, 205 matched source members,
+  build/ZIP identity as above. Source archive/member bytes are not included for
+  this assistant to reproduce the 205-member/source-ZIP claim. Five-frame probe
+  records returncode 0 for the probe; original Studio exit is null. Studio was
+  Camera off before closure. This remains bounded post-close reacquisition,
+  not active-capture handoff or a complete Studio shutdown pass.
+- **B instrumented Studio:** PID 15344 in run-start. The JSONL parses into 842
+  rows: 835 with measurement_started false and seven true; no row declares
+  completed_continuous_measurement true. Final measurement is 168 UI-consumed
+  packets over 6.922 seconds, 24.270442 packets/s, 28 missing frame IDs across
+  26 gap events, zero over-200-ms stale packets. Peak 455,262,208 bytes
+  (434.171875 MiB) is process-lifetime peak, not measured capture-only growth.
+  The JSONL has a 1,034.595167-second maximum adjacent UTC gap; neither waiting
+  rows nor the overall timestamp span establish continuous capture or GUI
+  responsiveness. The snapshot's max_gui_timer_gap_seconds=1.0 does not erase
+  this recorded gap; its cause is unestablished without the private harness.
+  measurement_finished true means terminal measurement, not target achieved.
+  studio-exit records a rounded 7.0-second interval and event_loop_exit_code 0;
+  no OS-process return-code receipt is included for B.
+  window_worker_released false is described as a pointer-based unconfirmed
+  check, not proof of a camera leak. Do not infer one from it.
+- **C diagnostic:** report completed true, interrupted false, clean_shutdown
+  true, worker_error null; 8,147 / 300.016 seconds = 27.155218 packets/s.
+  Peak 390,397,952 bytes = 372.3125 MiB; 720 frame-ID gap events/missing IDs,
+  no over-200-ms stale packets, maximum receive gap 0.125 seconds.
+  The separate process receipt records returncode 0 and 341.484 seconds total
+  including setup, not a longer capture interval. Report source_commit and
+  source_dirty are null for this extracted copy. Recorded app.py hash agrees
+  with B/run-start and recorded helper hash agrees with C/start; this checks
+  cross-receipt hash-string equality, not source-byte verification. No GUI,
+  controller, recognition-accuracy, LIVE or 30-minute pass follows.
+- **Separate earlier native interval:** C/start also references 223.063 seconds
+  from Start to Pause, with pause cause explicitly not recorded. Its full
+  referenced log is not embedded. Do not attribute that pause to focus or
+  operator error, or join it to the diagnostic.
+- **Unmeasured 30-minute statement:** the supplied dated operator note expressly
+  leaves exact build, times, uninterrupted capture, rate, memory, faults and
+  shutdown/reacquisition unestablished. Retain USER-REPORTED COMPLETED;
+  measurement evidence missing; pending review. Do not apply 33090e5 or the
+  diagnostic's measurements to this particular run without its own evidence.
+
+These receipts substantiate the reported short diagnostic and interrupted
+attempt, while leaving the same release cases open. No new production defect
+or new physical pass was established by file inspection. No software-suite
+run, threshold/qualification change or task acceptance is claimed.
 
 ## Reconciled two-device case matrix
 
@@ -169,7 +228,7 @@ packet. Preserve assistance, failures and original files.
 | Fresh guide-only independent install | No new unaided-install receipt in this consolidation. A existing install remains its own environment. | NOT COMPLETED per 26 Oct update: 33090e5 setup still agent-assisted with a reused environment; A/setup-receipt.json reported. Earlier independent assisted environment remains historical. | Hau Jie performs a separate clean local installation with the guide, logging help/deviations. No copied environment. Keep original assisted result. |
 | Offline core | No new GF-P23 offline acceptance supplied here. | PASS (bounded self-report): Wi-Fi disconnected with app/file/folder use. HTTPS and external online features excluded. | On the fresh installation, record the affected offline local workflow and exact conditions. Do not silently promote earlier self-report to instrumented release acceptance. |
 | Continuous measured 30-minute Studio workflow | UNRUN in current A material. | NOT COMPLETED: new ~7 s Studio interruption; separate reported 300.016 s pipeline diagnostic; additional 30-minute run user-reported completed, records missing/pending review. Preserve historical 791.605 s monitor and earlier self-report separately; see attempt inventory above. | B3: a new uninterrupted >=1,800 s full Studio run with independent timing/rate/memory and faults. Never concatenate the two historical runs or relabel a pipeline-only diagnostic as Studio workflow. A requirement remains visible until Deston resolves per-device release coverage. |
-| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | PARTIAL: reviewed post-close five-frame probe, its Studio exit unknown; separate ~7 s Studio run reportedly exit 0 with worker release unconfirmed; pipeline diagnostic separately exit 0/worker release. No combined pass. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
+| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | PARTIAL: reviewed post-close five-frame probe, its Studio exit unknown; separate ~7 s Studio receipt records event-loop code 0 (OS process status absent), worker release unconfirmed; pipeline diagnostic separately exit 0/worker release. No combined pass. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
 | Native 0x8001010d | No reproduced A triggering action in these records. | Historical notice with later continued output; cause and process termination unestablished. | If it recurs during assigned checks, retain triggering action, PID/start/end, stdout/stderr and exit code; matching Windows faulting-module record only for an actual process exit. Do not suppress or call it a crash from the code alone. |
 | Personal six-stage scenario, M/P case study and final video | Manual draft and development summaries only; known failed P03 Practice. | Diagnostic/model receipts are not genuine readiness or workflow success. | GF-P20 is complete on Deston's device; do not repeat historical session C. Final guide/video belongs to Deston after GF-P23. This does not establish separate A/B readiness or native handoff. |
 
