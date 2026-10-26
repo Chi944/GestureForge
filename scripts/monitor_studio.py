@@ -31,6 +31,8 @@ class Monitor:
     heartbeat_count: int = 0
     max_heartbeat_gap: float = 0.0
     active_max_heartbeat_gap: float = 0.0
+    first_active_gui_gap_elapsed_seconds: float | None = None
+    first_delivered_gap_elapsed_seconds: float | None = None
     active_seconds: float = 0.0
     normal_close: bool = False
     last_tick: float | None = None
@@ -55,9 +57,11 @@ class Monitor:
             self.active_seconds += gap
         if any(self.last_frames[index] is not None for index in still_running):
             self.active_max_heartbeat_gap = max(self.active_max_heartbeat_gap, gap)
+            if gap > 2.0 and self.first_active_gui_gap_elapsed_seconds is None:
+                self.first_active_gui_gap_elapsed_seconds = max(0.0, now - self.started)
         for index, (worker, previous) in enumerate(zip(self.workers, self.last_frames, strict=True)):
             if previous is not None and index in running:
-                self.max_frame_gap = max(self.max_frame_gap, now - previous)
+                self._record_frame_gap(now - previous, now)
             if self.segment_generation == index and (
                 index not in running or (previous is not None and now - previous > 2.0)
             ):
@@ -66,6 +70,11 @@ class Monitor:
         self.running_generations = running
         self.last_tick = now
         self.heartbeat_count += 1
+
+    def _record_frame_gap(self, gap: float, now: float) -> None:
+        self.max_frame_gap = max(self.max_frame_gap, gap)
+        if gap > 2.0 and self.first_delivered_gap_elapsed_seconds is None:
+            self.first_delivered_gap_elapsed_seconds = max(0.0, now - self.started)
 
     def event(self, kind: str, worker: Any, now: float) -> None:
         self.tick(now)
@@ -97,7 +106,7 @@ class Monitor:
             )
             previous = self.last_frames[index]
             if previous is not None:
-                self.max_frame_gap = max(self.max_frame_gap, now - previous)
+                self._record_frame_gap(now - previous, now)
             self.last_frames[index] = now
             self.frames[index] += 1
 
@@ -109,7 +118,9 @@ class Monitor:
                 continuous = max(0.0, last - self.segment_started)
         state = "Receiving frames" if self.segment_generation is not None else "Waiting / paused"
         remaining = max(0.0, self.requested_seconds - continuous)
-        return (f"Stability: {state} | continuous {continuous:.1f}s / {self.requested_seconds:g}s"
+        warning = ("GAP RECORDED (>2s): this run cannot pass | "
+                   if self.active_max_heartbeat_gap > 2.0 or self.max_frame_gap > 2.0 else "")
+        return (f"Stability: {warning}{state} | continuous {continuous:.1f}s / {self.requested_seconds:g}s"
                 f" | remaining {remaining:.1f}s | received {sum(self.frames)} frames"
                 " | close normally when finished; no automatic stop")
 
@@ -162,6 +173,8 @@ class Monitor:
             "gui_max_gap_seconds": self.max_heartbeat_gap,
             "active_gui_max_gap_seconds": self.active_max_heartbeat_gap,
             "delivered_max_gap_seconds_within_generation": self.max_frame_gap,
+            "first_active_gui_gap_elapsed_seconds": self.first_active_gui_gap_elapsed_seconds,
+            "first_delivered_gap_elapsed_seconds": self.first_delivered_gap_elapsed_seconds,
             "worker_error_count": errors,
             "unexpected_worker_stop_count": unexpected,
             "all_workers_released": released,
@@ -172,6 +185,7 @@ class Monitor:
             "limitations": ["Not recognition accuracy or full workflow acceptance.",
                             "Delivered frames only; no raw camera frame-rate claim.",
                             "Active time is sampled; an interval ending with worker release is unmeasured, not an active gap.",
+                            "First-gap times are elapsed seconds at detection, not the gap onset or its cause.",
                             "A checkpoint cannot establish subsequent process exit or camera release.",
                             "Camera reopen after close requires a separate native check."],
         }

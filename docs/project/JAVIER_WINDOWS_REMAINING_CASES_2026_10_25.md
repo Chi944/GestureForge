@@ -1,5 +1,13 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
+**26 October independent integration check:** the original new laptop-B ZIP has
+now arrived in Deston's checkout. CRC, safe unique member paths and all 11
+payload hashes pass; the PR #40 values below are reproduced. No resend is needed.
+[Deston's separate endurance run](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) reaches
+32 min 20.578 s continuous capture and passes close/reopen substeps, with a
+five-second responsiveness gap retained. These results do not relabel his
+machine as laptop A/B or close their remaining cells.
+
 **Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
 
 **26 October current handoff:** GF-P16 is accepted under owner manual review; GF-P20 evaluation is complete, with its four misses and measured limits retained. Deston owns GF-P20, GF-P24 and final GF-P25 guide/video. Javier continues GF-P19/GF-P22 and two-device receipts for GF-P23. Do not restart completed holds, negatives, latency, comparison or walkthrough captures. [Current Javier brief](JAVIER_HANDOFF.md) and [team guide](TEAM_GUIDE.md) supersede dated session plans below.

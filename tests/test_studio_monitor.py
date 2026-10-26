@@ -250,6 +250,8 @@ def test_preflight_gui_gap_is_descriptive_not_active_capture_failure():
     report = finish(monitor, camera, 31)
     assert report["gui_max_gap_seconds"] == 20
     assert report["active_gui_max_gap_seconds"] == 1
+    assert report["first_active_gui_gap_elapsed_seconds"] is None
+    assert report["first_delivered_gap_elapsed_seconds"] is None
     assert report["measurement_criteria_met"]
 
 
@@ -265,6 +267,8 @@ def test_finished_camera_then_paused_native_dialog_does_not_invent_active_gap():
     assert report["active_gui_max_gap_seconds"] == 1
     assert report["delivered_max_gap_seconds_within_generation"] == 1
     assert report["camera_active_seconds_estimate"] == 1
+    assert report["first_active_gui_gap_elapsed_seconds"] is None
+    assert report["first_delivered_gap_elapsed_seconds"] is None
     assert report["measurement_criteria_met"]
 
 
@@ -284,3 +288,36 @@ def test_progress_counts_received_continuity_not_waiting_time():
     monitor.event("observation", camera, 5)
     assert "continuous 0.0s" in monitor.progress_text()
     assert "no automatic stop" in monitor.progress_text()
+
+
+def test_gap_warning_and_first_detection_survive_recovered_duration():
+    monitor = Monitor(10, 1)
+    camera = worker()
+    monitor.event("observation", camera, 10)
+    monitor.event("observation", camera, 13)
+    monitor.event("observation", camera, 14)
+    assert "remaining 0.0s" in monitor.progress_text()
+    assert "GAP RECORDED (>2s): this run cannot pass" in monitor.progress_text()
+    # A later, larger gap must not overwrite when the first gap was detected.
+    monitor.event("observation", camera, 18)
+    monitor.event("observation", camera, 19)
+    report = finish(monitor, camera, 19)
+    assert report["first_active_gui_gap_elapsed_seconds"] == 3
+    assert report["first_delivered_gap_elapsed_seconds"] == 3
+    assert report["active_gui_max_gap_seconds"] == 4
+    assert report["delivered_max_gap_seconds_within_generation"] == 4
+    assert report["longest_contiguous_delivered_seconds"] == 1
+    assert not report["measurement_criteria_met"]
+    assert "GAP RECORDED (>2s): this run cannot pass" in monitor.progress_text()
+
+
+def test_frame_gap_records_detection_without_inventing_gui_gap():
+    monitor = Monitor(10, 1)
+    camera = worker()
+    monitor.event("observation", camera, 10)
+    for now in (11, 12, 13, 14):
+        monitor.tick(now)
+    report = finish(monitor, camera, 14)
+    assert report["first_delivered_gap_elapsed_seconds"] == 3
+    assert report["first_active_gui_gap_elapsed_seconds"] is None
+    assert "GAP RECORDED (>2s): this run cannot pass" in monitor.progress_text()

@@ -681,6 +681,10 @@ repository root, use a new output folder and the working camera index:
    capture interval. The bottom status bar shows continuous received-frame time,
    remaining time and frame count, or waiting/paused. It advances only from
    received observations and resets after an interrupted capture interval.
+     **Remaining zero means the duration was reached, not that every check passed.**
+     If `GAP RECORDED (>2s): this run cannot pass` appears, close normally and
+     keep the receipts for review; waiting longer cannot clear that run's gap.
+     Do not repeatedly restart a failed run without reviewing its cause.
    Use a separate clock for the operator's actual start/end.
    Native target/handoff checks remain separate because they intentionally pause
    or transfer capture. The monitor does not stop the app automatically.

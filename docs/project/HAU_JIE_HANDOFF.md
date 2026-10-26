@@ -18,6 +18,15 @@ This section is the current work assignment. Dated instructions below are refere
 
 ## Your next delivery
 
+**New receipts received and verified:** all 11 indexed payload hashes in your
+`PRIVATE_LAPTOP_B_NEW_RECEIPTS_20261026.zip` match; no resend is needed.
+[Latest review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) preserves the interrupted
+Studio run, separate five-minute pipeline diagnostic and unmeasured reported
+run separately. Deston's new 32-minute continuous interval and close/reopen
+checks passed their substeps, but a five-second gap failed responsiveness.
+Sync the monitor warning fix before future measurement; keep your remaining
+guide-only/offline and affected native laptop-B cases as the priority.
+
 **Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
 
 ### Laptop B support for release

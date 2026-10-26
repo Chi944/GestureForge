@@ -23,6 +23,13 @@ record. GF-P21/GF-P24 are complete; final recording and GF-P23 release evidence 
 
 ## Remaining tasks and handoffs
 
+**Latest device evidence:** [26 October endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
+Deston completed the duration and close/reopen substeps, but a recorded five-second
+gap prevents a strict stability pass. The new laptop-B ZIP is now independently
+verified and must not be resent. The updated monitor warns about failed gaps;
+review them before another full attempt. Remaining A/B cases and task totals are
+unchanged; no repeated recognition collection is assigned.
+
 | Task | Owner | Manual work | GPT work |
 | --- | --- | --- | --- |
 | GF-P19 | Javier | Javier: finish only outstanding laptop-A native/error-path cases in the Windows matrix; coordinate Hau Jie's laptop-B cases. Retain exact build, actual outcomes and original per-process logs. | Reconcile the two-device matrix, separate observed launches from requests, and validate new receipts without recounting overlapping exports. |

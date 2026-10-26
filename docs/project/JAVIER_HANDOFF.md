@@ -16,6 +16,13 @@ This section is the current work assignment. Dated instructions below are refere
 
 ## Your next delivery
 
+**PR #40 merged; originals now received:** Deston's checkout independently
+verified the laptop-B ZIP CRC and all 11 payload hashes. Your disjoint-run
+inventory is correct. [The current endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
+adds Deston's duration and close/reopen results while retaining a five-second
+responsiveness failure. Consolidate these bounded substeps without combining
+devices or runs; finish only the remaining native/recovery cells below.
+
 **Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
 
 ### GF-P19

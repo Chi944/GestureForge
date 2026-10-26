@@ -4,6 +4,17 @@ Snapshot: 26 October 2026. Task weights measure accepted work, not an expected g
 
 ## Current checkpoint — recognition assessment and methods complete
 
+**Release evidence update — 26 October:** [Deston's endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
+verifies 54,396 frames, a 32 min 20.578 s continuous interval, normal Qt close,
+worker release and a separate successful camera reopen. A 5.094 s delivery gap
+and 5.062 s GUI gap fail the existing responsiveness limits; Deston noticed no
+interruption and confirms no app switching, screen lock or system prompt.
+The timer now warns immediately when a recorded gap prevents a pass. The new
+laptop-B ZIP is received and independently hash-checked; it confirms PR #40's
+separate interrupted/short runs, not another completed endurance test.
+Duration and close/reopen substeps advance; GF-P23 and whole-task totals below
+remain unchanged. No repeat enrolment, Practice or blind full-run retry is assigned.
+
 **Accepted progress:** Deston 60/89 (67.4%); Hau Jie 69/69 (100.0%); Javier 54/65 (83.1%); total **183/223 (82.1%), 23/29 tasks**. Six whole tasks remain.
 
 **GF-P21 is Done:** the [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md) preserves the actual
