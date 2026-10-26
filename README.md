@@ -33,12 +33,14 @@ consent. **GestureForge controls its own viewer; it is not connected to PowerPoi
 
 > **Current status:** Studio is under active development. Manual controls and
 > personal enrolment are available. No approved shared starter model is bundled;
-> personal Live gestures require the current session's full Practice pass.
+> personal Live gestures require the current session's full Practice pass or
+> explicit [manual demo approval](docs/USER_GUIDE.md#manually-approved-demo).
 > The frozen held-out comparison is complete, with unmet recognition targets;
 > model improvement and remaining device checks are still in progress.
 
 **Release scope, 24 October:** the supported product is personal gesture control
-on Windows. Enrol once, save the profile and complete Practice before Live use.
+on Windows. Enrol once, save the profile and complete Practice before Live use,
+or explicitly enable a manually approved, supervised demo.
 Supplied starter gestures and no-enrolment first use are deferred; the completed
 starter comparisons remain research evidence. The remaining release work is a
 working personal workflow, device verification and submission materials. Existing

@@ -49,21 +49,25 @@ In Studio, choose **Camera index** (usually 0 or 1), then **Use camera and pause
 
 **Ctrl+O** loads a dataset, **Ctrl+Enter** starts capture when ready, and **Esc** pauses. The indeterminate loading bar means local training is still running, not a completion percentage. Camera selection is disabled during loading. If the preview stalls or the camera disconnects, follow the recovery message: close other camera apps, check the cable and permissions, then retry Start or another camera index. Studio keeps the camera outside the scrolling workflow pane. **Setup** contains the camera, mapping, readiness and file controls; **Open Practice** goes directly to the trial workflow. Start/Pause, manual controls, prediction, rejection/rearm guidance and hold progress stay visible while the right pane scrolls. Resizing fits the entire camera image without cropping; narrow borders can remain to preserve its aspect ratio. Draft settings do not replace the active context/gesture legend until applied.
 
-### Supervised demo override
+### Manually approved demo
 
 For an operator-supervised demonstration, a loaded personal recogniser can use
-**Practice → Enable supervised demo — qualification not passed** while capture
+**Practice → Enable manually approved demo** while capture
 and all checks are stopped. This is an explicit exception to the normal Practice
-gate described below, not a qualification pass. Select **LIVE**, **Apply and pause**,
+gate described below. Operator approval and automated Practice results are separate:
+manual approval enables the demo without creating a measured Practice pass.
+Select **LIVE**, **Apply and pause**,
 then **Start camera control** and show NEUTRAL. Keep **Esc / Pause** available.
 Recognition can miss commands or activate incorrectly; supervise every action.
 
-The app displays **SUPERVISED DEMO OVERRIDE — qualification NOT passed** and logs
-the override. It does not change saved results or grant assessment acceptance.
-The override lasts for this app session and the current camera, recogniser and
+The app displays **Manually approved demo active** and logs the operator approval
+using the existing `supervised_demo_override` event. Its `qualification_passed: false`
+field means this action did not produce an automated Practice pass; it does not
+reverse the operator's manual acceptance. Saved measured results remain unchanged.
+The approval lasts for this app session and the current camera, recogniser and
 approved action mappings. Changes invalidate it just like a normal LIVE grant.
 Hold/rearm, stale-frame rejection, focus-loss pause and target validation remain
-active. A normal qualification pass still requires the complete measured protocol.
+active. An automated Practice pass still requires the complete measured protocol.
 
 ### Personal Practice
 

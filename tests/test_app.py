@@ -48,6 +48,24 @@ def test_studio_keyboard_hint_matches_native_shortcuts(qapp):
         window.close()
 
 
+@pytest.mark.parametrize("asset_kwargs", [{}, {"asset": None}, {"asset": Path("custom.task")}])
+def test_camera_start_resolves_default_asset_and_preserves_custom_path(qapp, monkeypatch, asset_kwargs):
+    import gestureforge.app as app_module
+    from gestureforge.capture import DEFAULT_ASSET
+
+    window = Window(model=object(), studio=True, **asset_kwargs)
+    worker = FakeWorker()
+    factory = Mock(return_value=worker)
+    monkeypatch.setattr(app_module, "CaptureWorker", factory)
+    _disable_logging(window)
+    try:
+        window.start_camera()
+        expected = asset_kwargs.get("asset") or DEFAULT_ASSET
+        assert factory.call_args.args[4] == expected
+    finally:
+        window.close()
+
+
 def test_opt_in_trace_ends_at_pause_and_ignores_old_packets(tmp_path, monkeypatch, qapp):
     import gestureforge.app as app_module
     window = Window(model=object(), studio=True)

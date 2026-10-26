@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
     QSizePolicy, QTabWidget, QTextEdit, QDialog, QToolButton,
 )
 
-from .capture import HandCamera
+from .capture import DEFAULT_ASSET, HandCamera
 from .contracts import Action, ActionType, Observation, Prediction, RoutingMode, RoutingSnapshot, validate_identifier
 from .controller import Controller, NEUTRAL_HOLD_SECONDS
 from .dispatcher import DispatchFailure, Dispatcher
@@ -380,7 +380,8 @@ class Window(QMainWindow):
         self.resize(1150, 740)
         self.setMinimumSize(900, 620)
         self.model, self.feature_function = model, feature_function
-        self.chosen_hand, self.camera_index, self.asset = chosen_hand, camera_index, asset
+        self.chosen_hand, self.camera_index = chosen_hand, camera_index
+        self.asset = DEFAULT_ASSET if asset is None else asset
         self.profile = profile
         self.vocabulary = vocabulary
         self.routing = (
@@ -808,9 +809,9 @@ class Window(QMainWindow):
             self.practice_start_button.setObjectName("compactButton")
             self.practice_start_button.clicked.connect(self.start_practice_rehearsal)
             practice_layout.addWidget(self.practice_start_button)
-            self.demo_override_button = QPushButton("Enable supervised demo — qualification not passed")
+            self.demo_override_button = QPushButton("Enable manually approved demo")
             self.demo_override_button.setToolTip(
-                "Session-only operator override. Keeps measured results unchanged; "
+                "Session-only operator approval. Keeps measured Practice results unchanged; "
                 "recognition may miss or activate incorrectly. Start and NEUTRAL are still required."
             )
             self.demo_override_button.clicked.connect(self.enable_supervised_demo)
@@ -1616,7 +1617,7 @@ class Window(QMainWindow):
                 or self.model_loader is not None or self._profile_selector_change_blocked()
                 or self._enrolment_blocks_recognition() or self.practice_attempt is not None
                 or self.readiness_check is not None or self.worker is not None):
-            self._set_practice_status("Demo override unavailable: load a personal recogniser and finish active capture or setup first.")
+            self._set_practice_status("Manual demo approval unavailable: load a personal recogniser and finish active capture or setup first.")
             return False
         if not self.pause():
             return False
@@ -1636,7 +1637,7 @@ class Window(QMainWindow):
                   "camera": self.camera_index, "behavior_revision": revision,
                   "timestamp": time.monotonic()})
         self._set_practice_status(
-            "Supervised demo enabled for this session. Qualification NOT passed; "
+            "Manually approved demo active for this session; "
             "saved Practice results are unchanged. Select LIVE, Apply and pause, then Start and show NEUTRAL."
         )
         self.start_button.setEnabled(self._can_start_studio_camera())
@@ -2914,7 +2915,7 @@ class Window(QMainWindow):
             boundary_text += f"\nReadiness running: perform {expected}. {self.readiness_check.completed}/6 complete."
         demo_override = self._personal_live_grant is not None and self._personal_live_grant.supervised_demo
         if demo_override:
-            boundary_text = "SUPERVISED DEMO OVERRIDE — qualification NOT passed. Esc pauses control.\n" + boundary_text
+            boundary_text = "Manually approved demo active. Esc pauses control.\n" + boundary_text
         self.boundary.setText(boundary_text)
         missing = []
         if self.model is None:
@@ -2934,7 +2935,7 @@ class Window(QMainWindow):
                 )
             else:
                 self.studio_status.setText(
-                    "Supervised demo only; qualification NOT passed. Press Start and show NEUTRAL."
+                    "Manually approved demo active. Press Start and show NEUTRAL."
                     if demo_override else
                     "LIVE gestures eligible. Press Start explicitly, show NEUTRAL, then use approved gestures."
                 )

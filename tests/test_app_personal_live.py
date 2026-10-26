@@ -210,12 +210,15 @@ def test_supervised_demo_is_explicit_scoped_and_does_not_create_pass(qapp, tmp_p
     try:
         assert window.routing is not None
         assert window._personal_live_grant is None
+        assert window.demo_override_button.text() == "Enable manually approved demo"
         window.demo_override_button.click()
         assert window._personal_live_grant.supervised_demo
         assert window.practice_attempt is None
-        assert "qualification NOT passed" in window.boundary.text()
+        assert "Manually approved demo active" in window.boundary.text()
+        assert "Manually approved demo active" in window.practice_status.text()
         assert "select LIVE" in window._live_gate_reason(window.routing.snapshot)
         assert window.configure_studio(mode=RoutingMode.LIVE)
+        assert "Manually approved demo active" in window.studio_status.text()
         assert window.routing.state == "PAUSED"
         assert window._live_gate_reason(window.routing.snapshot) == ""
         assert window._can_start_studio_camera()
@@ -226,7 +229,7 @@ def test_supervised_demo_is_explicit_scoped_and_does_not_create_pass(qapp, tmp_p
         assert window.set_studio_camera(1)
         assert window._personal_live_grant is None
         assert not window._can_start_studio_camera()
-        assert "SUPERVISED DEMO OVERRIDE" not in window.boundary.text()
+        assert "Manually approved demo active" not in window.boundary.text()
     finally:
         window.close()
 
