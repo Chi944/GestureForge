@@ -101,6 +101,18 @@ class Monitor:
             self.last_frames[index] = now
             self.frames[index] += 1
 
+    def progress_text(self) -> str:
+        continuous = 0.0
+        if self.segment_generation is not None and self.segment_started is not None:
+            last = self.last_frames[self.segment_generation]
+            if last is not None:
+                continuous = max(0.0, last - self.segment_started)
+        state = "Receiving frames" if self.segment_generation is not None else "Waiting / paused"
+        remaining = max(0.0, self.requested_seconds - continuous)
+        return (f"Stability: {state} | continuous {continuous:.1f}s / {self.requested_seconds:g}s"
+                f" | remaining {remaining:.1f}s | received {sum(self.frames)} frames"
+                " | close normally when finished; no automatic stop")
+
     def report(self, now: float, *, finalized: bool = False,
                qt_exit_code: int | None = None) -> dict[str, Any]:
         elapsed = max(0.0, now - self.started)
@@ -208,6 +220,7 @@ def main(argv: list[str] | None = None) -> int:
     window = Window(feature_function=extract_feature_vector, camera_index=args.camera,
                     asset=DEFAULT_ASSET, studio=True, profile_store=ProfileStore(Path(".local/profiles")))
     window.measurement.connect(lambda kind, worker: monitor.event(kind, worker, time.monotonic()))
+    window.statusBar().showMessage(monitor.progress_text())
     failed = False
     last_saved = monitor.started
 
@@ -215,6 +228,9 @@ def main(argv: list[str] | None = None) -> int:
         nonlocal failed, last_saved
         now = time.monotonic()
         monitor.tick(now)
+        window.statusBar().showMessage(
+            "Stability: output failed; no measurement pass." if failed else monitor.progress_text()
+        )
         if now - last_saved >= 5 and not failed:
             try:
                 output.save(monitor.report(now))

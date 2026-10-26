@@ -266,3 +266,21 @@ def test_finished_camera_then_paused_native_dialog_does_not_invent_active_gap():
     assert report["delivered_max_gap_seconds_within_generation"] == 1
     assert report["camera_active_seconds_estimate"] == 1
     assert report["measurement_criteria_met"]
+
+
+def test_progress_counts_received_continuity_not_waiting_time():
+    monitor = Monitor(0, 10)
+    assert "Waiting / paused" in monitor.progress_text()
+    camera = worker()
+    monitor.event("observation", camera, 0)
+    monitor.event("observation", camera, 1)
+    monitor.tick(2)
+    assert "continuous 1.0s / 10s" in monitor.progress_text()
+    assert "remaining 9.0s" in monitor.progress_text()
+    assert "received 2 frames" in monitor.progress_text()
+    monitor.tick(4)
+    assert "Waiting / paused" in monitor.progress_text()
+    assert "remaining 10.0s" in monitor.progress_text()
+    monitor.event("observation", camera, 5)
+    assert "continuous 0.0s" in monitor.progress_text()
+    assert "no automatic stop" in monitor.progress_text()

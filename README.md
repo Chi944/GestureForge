@@ -276,6 +276,11 @@ preserve recorded results.
 Verification runs locally. The GitHub Actions workflow is manual-only while
 hosted usage is unavailable. This desktop application needs no deployment service.
 
+For a full Studio stability check, the [measurement launcher](docs/USER_GUIDE.md#measure-the-full-studio-stability-run)
+shows continuous capture progress and saves the measurement, actual process exit
+and console logs in one new private folder. Software checks do not replace the
+physical Windows run or camera-reopen observation.
+
 ## Documentation and development
 
 | Topic | Guide |
@@ -283,6 +288,7 @@ hosted usage is unavailable. This desktop application needs no deployment servic
 | Installation and operation | [User guide](docs/USER_GUIDE.md), [Windows](docs/WINDOWS_LAPTOP.md), [macOS](docs/MACOS.md) |
 | Product demonstration | [Studio walkthrough guide](docs/project/GF_P25_WINDOWS_GUIDE_DRAFT.md), [ten-minute presentation and demo storyboard](docs/project/GF_P25_DEMO_STORYBOARD.md) |
 | Data and evaluation | [Collection protocol](docs/DATA_COLLECTION.md), [participant kits](docs/project/PARTICIPANT_KITS.md), [paired evaluation](docs/project/PAIRED_EVALUATION.md) |
+| Selected-profile findings | [Recognition disposition](docs/project/GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md), [workflow evaluation](docs/project/P20_EVALUATION_2026_10_26.md) |
 | Design and verification | [Shared contracts](docs/project/CONTRACTS.md), [test plan](docs/TEST_PLAN.md), [workflow comparison](docs/project/WORKFLOW_COMPARISON.md) |
 | Team coordination | [Team guide](docs/project/TEAM_GUIDE.md), [accepted progress](docs/project/PROGRESS.md), [agile record](docs/AGILE.md) |
 | Packaging | [Release instructions](releases/README.md) |

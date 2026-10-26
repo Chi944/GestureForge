@@ -2,37 +2,36 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — GF-P20 evaluation complete
+## Current checkpoint — recognition assessment and methods complete
 
-**Accepted progress: 171/223 (76.7%), 21/29 tasks.** Deston **54/89 (60.7%)**;
-Hau Jie **63/69 (91.3%)**; Javier **54/65 (83.1%)**. Eight whole tasks remain.
+**Accepted progress:** Deston 60/89 (67.4%); Hau Jie 69/69 (100.0%); Javier 54/65 (83.1%); total **183/223 (82.1%), 23/29 tasks**. Six whole tasks remain.
 
-GF-P20 is accepted as a completed evaluation with limitations reported. The new
-visual capture has 16 responses from 20 cued attempts, no duplicate/wrong actions,
-and four misses. Successful-response p95 is approximately **0.515–0.718 s** from
-visually bracketed camera-frame pose onset to simulated dispatch; misses remain
-in the results. This is not an all-attempt latency target pass. The completed
-hold/negative/replay checks and M/P walkthroughs are included; the walkthroughs
-are not a controlled speed comparison. See the [final GF-P20 evaluation](P20_EVALUATION_2026_10_26.md).
+**GF-P21 is Done:** the [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md) preserves the actual
+19/22 Practice result and documents the four GF-P20 misses as handedness or
+sustained-rejection transitions requiring fresh NEUTRAL. Replay agrees with runtime;
+57 affected tests pass. This completes the bounded assessment under Revision 5,
+not automated qualification or a universal recognition target. The selected model
+and runtime protections are unchanged. No repeat recording is assigned.
 
-**GF-P24/GF-P25 preparation — 26 October:** Deston's local six-page
-`GestureForge_Methods_Results.docx` reconciles the original classifier research,
-frozen TEST, stopped repair and current P01/GF-P20 evidence. The local presentation
-now has twelve slides and 600 seconds of planned narration, including a 190-second
-genuine-demo slot. The local five-page `GestureForge_Demo_Guide.docx` provides the
-operator and recording handbook. The [updated Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and
-[storyboard](GF_P25_DEMO_STORYBOARD.md) connect the trainer's resource-selection and
-interruption problem to enrolment, contextual actions, bookmarks, paused restore
-and manual fallback. Local Word/PowerPoint files stay out of GitHub; original
-Hau Jie/Javier contributions remain attributed. These are completed preparation
-substeps, not newly accepted whole tasks. Final GF-P24 reconciliation still needs
-GF-P21; GF-P25 still needs release-matched footage and playback after GF-P23.
+**GF-P24 is Done:** the local six-page `GestureForge_Methods_Results.docx` now
+includes that final disposition, original techniques, failed frozen TEST and
+stopped P02 repair, incomplete selected TRAIN and current P01/GF-P20 evidence.
+Rendered pages and content were checked. Hau Jie's original contribution stays
+credited. The full technical report is reconciled later under GF-P26.
 
-**Next:** Hau Jie reviews the four saved recognition/transition misses for GF-P21;
-Javier finishes the outstanding native/device cases for GF-P19/GF-P22. Deston
-prepares GF-P24 methods/results and GF-P25 guide/demo material, then reviews the
-release evidence for GF-P23. No further recording is assigned now. Reports and
-Word logs stay local; original measurements and confirmations remain unchanged.
+**PR #39 merged:** laptop-B attempt reports remain separately attributed;
+interrupted or unmeasured runs do not establish a release pass. The new
+`scripts.run_stability` launcher keeps measurement, actual process exit and
+stdout/stderr together in a fresh folder. Studio displays continuous-frame progress.
+The [guide](../USER_GUIDE.md#measure-the-full-studio-stability-run) explains its use.
+This removes missing-log friction; it does not perform the physical test.
+
+**Next:** Javier closes GF-P19/GF-P22 with remaining two-device cases; Hau Jie
+operates laptop B for GF-P23 support. Deston reviews release evidence, then
+records GF-P25's genuine demo and completes GF-P26/GF-P27. The local presentation,
+Word guide and [storyboard](GF_P25_DEMO_STORYBOARD.md) are ready for rehearsal.
+Native Apple Silicon Studio remains unverified. Word files, private evidence and
+unchanged prompt/decision logs remain local.
 
 ## Earlier checkpoints — retained history
 

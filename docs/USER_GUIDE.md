@@ -665,11 +665,10 @@ reported as thirty-minute acceptance.
 This optional launcher measures the real Studio window and its existing camera
 worker in the same process. It does not start capture or grant gesture readiness.
 Close the other Studio instance and other webcam consumers first. From the
-repository root, use a new filename and the working camera index:
+repository root, use a new output folder and the working camera index:
 
 ```powershell
-.\.venv\Scripts\python.exe -m scripts.monitor_studio --output experiments/local/studio-soak-01.json --seconds 1800 --camera 0
-$LASTEXITCODE
+.\.venv\Scripts\python.exe -m scripts.run_stability --output-dir experiments/local/studio-soak-01 --seconds 1800 --camera 0
 ```
 
 1. Load your own profile and workspace, then explicitly start camera control.
@@ -679,25 +678,36 @@ $LASTEXITCODE
 2. Keep Studio visible and capture running for at least 30 uninterrupted minutes
    **after the preview starts**. Exercise its on-screen viewer controls and note
    faults; do not count setup, pauses or separate restarted periods toward that
-   capture interval. Use a separate clock for the operator's actual start/end.
+   capture interval. The bottom status bar shows continuous received-frame time,
+   remaining time and frame count, or waiting/paused. It advances only from
+   received observations and resets after an interrupted capture interval.
+   Use a separate clock for the operator's actual start/end.
    Native target/handoff checks remain separate because they intentionally pause
    or transfer capture. The monitor does not stop the app automatically.
-3. Close Studio normally. Retain the JSON and printed process exit code. Then
+3. Close Studio normally and let the launcher finish. Retain the entire output
+   folder: `measurement.json`, `process.json`, `stdout.log` and `stderr.log`. Then
    check camera acquisition in another app, close that app, and record the result.
    A normal Qt close and finished worker are not proof that another app can open
    the physical device.
-4. Send the one JSON and factual observation notes privately to Deston. A zero
-   command exit means the monitor's duration/continuity/gap/memory/close checks
-   passed; it does not accept the entire release or establish recognition accuracy.
+4. Send that folder and factual observation notes privately to Deston. A zero
+   launcher exit requires both a final passing measurement and actual child
+   process exit zero. `process.json` records these separately, so a passing
+   measurement followed by an abnormal process exit cannot pass the combined check.
+   This does not accept the entire release or establish recognition accuracy.
    A nonzero exit or `incomplete_checkpoint` needs review, not relabelling.
 
 The report records delivered observations and rate, longest continuous capture
 interval, camera-active/paused estimates, UI heartbeat gaps, peak process memory,
 worker errors, release state and Qt event-loop exit code. Setup/paused GUI gaps
 are descriptive; capture responsiveness is assessed separately. No camera media,
-landmarks, features, gesture labels, private target paths or error text are saved.
+landmarks, features, gesture labels, private target paths or error text are saved
+in the aggregate measurement. Console logs can contain diagnostic paths or error
+text; keep the output folder private and review before sharing.
 One small JSON is checkpointed every five seconds; it is not a growing trace.
-Existing outputs are refused. An abrupt exit leaves an incomplete checkpoint;
+Existing output folders are refused. An abrupt child exit leaves its checkpoint
+intact; the parent records the actual process exit without promoting that checkpoint.
+If the launcher itself is killed or the computer loses power, `process.json` may
+be absent; that run has no confirmed process-exit receipt. An output
 write failure cannot become a measurement pass. Retain a failed run separately.
 Activity timing is sampled, not camera-driver instrumentation. Short software
 smokes and generated tests never substitute for the physical 30-minute check.

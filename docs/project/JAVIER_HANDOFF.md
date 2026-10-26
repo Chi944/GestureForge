@@ -2,7 +2,7 @@
 
 ## Current release briefing — 26 October 2026
 
-**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. Reassignment alone earned no points. GF-P20 evaluation is now accepted separately; current team progress is 171/223 (76.7%).
+**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. Reassignment alone earned no points. GF-P20, GF-P21 and GF-P24 are now accepted separately; current team progress is 183/223 (82.1%).
 
 This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
 
@@ -12,7 +12,7 @@ This section is the current work assignment. Dated instructions below are refere
 
 **GF-P20 complete:** hold, negative, replay, timed walkthrough and visual latency evidence are reviewed. Fresh latency capture: 16/20 responses, four misses, no duplicate/wrong actions; conditional p95 interval 0.515–0.718 s. M/P times are 105.094/165.844 s, with operator-confirmed checks and intentional extra P actions; no controlled speed comparison is claimed. Evaluation completion does not mean every target passed. [Final evidence and four-miss diagnosis](P20_EVALUATION_2026_10_26.md). No repeat recording is assigned now. Stop P02 searches, interviews, recruitment and native Mac expansion.
 
-**Accepted progress:** Deston 54/89 (60.7%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **171/223 (76.7%), 21/29 tasks**. Eight whole tasks remain. GF-P20 closes as evaluation completed, with shortfalls preserved.
+**Accepted progress:** Deston 60/89 (67.4%); Hau Jie 69/69 (100.0%); Javier 54/65 (83.1%); total **183/223 (82.1%), 23/29 tasks**. Six whole tasks remain. GF-P21/GF-P24 close the bounded assessment and methods delivery; shortfalls remain recorded.
 
 ## Your next delivery
 
@@ -37,6 +37,9 @@ identities. Continue GF-P19/GF-P22 and device consolidation; no duplicate filmin
 or final guide rewrite is assigned.
 
 **Device coordination:** Hau Jie operates laptop B. You consolidate its original receipts with laptop A and supply missing numeric process-exit/coverage evidence for GF-P23. Use [the case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); repeat only incomplete or affected cases. A camera-off close or five-frame reacquisition alone does not prove active handoff or continuous endurance. Work on **codex/javier-shortcuts**.
+
+
+**Stable measurement handoff:** use `.\.venv\Scripts\python.exe -m scripts.run_stability --output-dir experiments/local/studio-soak-NEW --seconds 1800 --camera 0`, choosing the actual camera and a new folder. The status bar shows continuous received-frame time; the launcher preserves measurement, actual exit, stdout and stderr together. Keep the folder private and record build, operator observations and separate camera-reopen result. No existing receipt or pass is overwritten.
 
 ## Prompt to give your coding agent
 
