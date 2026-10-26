@@ -2,48 +2,54 @@
 
 ## Current release briefing — 26 October 2026
 
-**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. Reassignment alone earned no points. GF-P20, GF-P21 and GF-P24 are now accepted separately; current team progress is 183/223 (82.1%).
+**Your weighted tasks are complete: 69/69 (100.0%).** Your remaining contribution
+is laptop-B support for Javier's integration checks and Deston's release.
+Target submission is **31 October**; the official deadline is **7 November**.
 
-This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
+GF-P20, GF-P21 and GF-P24 are complete. Do not restart P02 experiments, Practice
+searches or participant collection. The [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md)
+and [evaluation](P20_EVALUATION_2026_10_26.md) retain the actual outcomes. GF-P16
+uses Deston's owner-approved manual acceptance; automated Practice remains
+19/22. No settings or runtime qualification records change.
 
-**Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
-
-**GF-P20 completed substeps:** 20 hold cues produced 20 matching simulated actions without extras (the first occurs 0.047 s after its release cue). The ten-minute non-command capture produced zero protected actions versus 36 naive per-frame requests. Replay agrees. These captures do not measure physical-onset latency or native external execution. Do not repeat them merely to increase progress.
-
-**GF-P20 complete:** hold, negative, replay, timed walkthrough and visual latency evidence are reviewed. Fresh latency capture: 16/20 responses, four misses, no duplicate/wrong actions; conditional p95 interval 0.515–0.718 s. M/P times are 105.094/165.844 s, with operator-confirmed checks and intentional extra P actions; no controlled speed comparison is claimed. Evaluation completion does not mean every target passed. [Final evidence and four-miss diagnosis](P20_EVALUATION_2026_10_26.md). No repeat recording is assigned now. Stop P02 searches, interviews, recruitment and native Mac expansion.
-
-**Accepted progress:** Deston 60/89 (67.4%); Hau Jie 69/69 (100.0%); Javier 54/65 (83.1%); total **183/223 (82.1%), 23/29 tasks**. Six whole tasks remain. GF-P21/GF-P24 close the bounded assessment and methods delivery; shortfalls remain recorded.
-
-**Recognition work complete:** [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md). GF-P21 closes after independent saved-evidence review and affected tests; Deston has completed GF-P24 final methods reconciliation. Your earlier contribution remains credited. Focus on laptop-B support below, not another P02 experiment or Practice search.
+Team progress is **183/223 (82.1%), 23/29 tasks**: Deston 60/89 (67.4%), Hau Jie
+69/69 (100.0%), Javier 54/65 (83.1%). The six remaining tasks are GF-P19,
+GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. See the [team guide](TEAM_GUIDE.md).
 
 ## Your next delivery
 
-**New receipts received and verified:** all 11 indexed payload hashes in your
-`PRIVATE_LAPTOP_B_NEW_RECEIPTS_20261026.zip` match; no resend is needed.
-[Latest review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) preserves the interrupted
-Studio run, separate five-minute pipeline diagnostic and unmeasured reported
-run separately. Deston's new 32-minute continuous interval and close/reopen
-checks passed their substeps, but a five-second gap failed responsiveness.
-Sync the monitor warning fix before future measurement; keep your remaining
-guide-only/offline and affected native laptop-B cases as the priority.
-
-**Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
+Your `PRIVATE_LAPTOP_B_NEW_RECEIPTS_20261026.zip` is received: CRC and all 11
+indexed payload hashes pass. **Do not resend it.** The [receipt review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
+keeps the interrupted Studio run, separate pipeline diagnostic and unmeasured
+reported run distinct. Deston's new duration/close/reopen checks passed their
+substeps, but a measured five-second gap prevents a full stability pass.
 
 ### Laptop B support for release
 
-- **Manual:** follow the existing fresh-install/offline/native cases and one measured full-Studio run. Use the new launcher below; keep the window visible and do not restart already reviewed recognition recordings.
-- **GPT:** sync main into your own branch, prepare a fresh receipt directory, retain exact build/archive identity, and validate only the new device files. Send the originals privately to Deston and a sanitized summary to Javier. GF-P21/GF-P24 need no duplicate delivery.
+| Work | What to do next | What to return |
+| --- | --- | --- |
+| Manual: fresh installation/offline | Follow the [Windows guide](../WINDOWS_LAPTOP.md) in a fresh writable installation with its own environment. Record any help. After setup, test local core with networking disconnected. | Exact package/source identity, setup receipt and factual observations. Assisted setup is recorded as assisted. |
+| Manual: affected native cases | Complete only laptop-B cells still outstanding in the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md), including affected slot recovery, same-camera pause and focus/resume where unverified. | Expected/observed results and original exports/logs for those cases. |
+| Manual/GPT: endurance | Sync the monitor warning fix before a justified new attempt. Review existing gaps first; keep the same run's measurement, exit and separate reopen evidence. | A new output folder and actual observations, including interruptions or failure. Never combine separate runs into one pass. |
+| GPT: handoff | Validate only new receipts, retain hashes/build identity and reconcile remaining cells with Javier. | Originals privately to Deston; a sanitized case summary to Javier and a focused PR if source/docs change. |
 
-**Laptop B support for GF-P19/GF-P23:** Hau Jie operates laptop B: fresh guide-only installation, offline core, uninterrupted measured 30-minute full Studio run, clean exit and camera reacquisition. Javier supplies missing laptop-A exit/coverage evidence; Deston reviews release acceptance.
+Use [the measurement guide](../USER_GUIDE.md#measure-the-full-studio-stability-run)
+with the working camera index and a **new** output directory. Remaining zero
+does not erase an earlier gap; close normally and retain evidence if the persistent
+gap warning appears. Do not blindly repeat a full run. Active-camera external
+handoff is separate from endurance and must respect the current runtime controls.
 
-Use [the exact device case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md) and [full Studio monitoring guide](../USER_GUIDE.md#measure-the-full-studio-stability-run). Send the original new receipts privately to Deston and the sanitized case summary to Javier. Do not resend received packets. Work on **codex/hau-jie-profiles**; laptop B is your laptop, not a second machine Javier must obtain.
-
-
-**Stable measurement handoff:** use `.\.venv\Scripts\python.exe -m scripts.run_stability --output-dir experiments/local/studio-soak-NEW --seconds 1800 --camera 0`, choosing the actual camera and a new folder. The status bar shows continuous received-frame time; the launcher preserves measurement, actual exit, stdout and stderr together. Keep the folder private and record build, operator observations and separate camera-reopen result. No existing receipt or pass is overwritten.
+Work on **codex/hau-jie-profiles**, not `main`. Hau Jie's laptop is laptop B;
+Javier does not need another machine. Your recognition/methods contribution
+remains credited; Deston owns final GF-P24/GF-P25 delivery. Native Mac expansion,
+interviews and further consumed-TEST work are not assigned.
 
 ## Prompt to give your coding agent
 
-> Read the current section of this brief and TEAM_GUIDE.md before the dated history. Sync reviewed main into my own branch, preserving local changes and private evidence. Complete the GPT work listed above, using existing evidence and only fixing reproduced defects. Prepare the remaining device checks for me; do not invent physical passes, repeat completed captures, change qualification records, tune TEST, or push main. Submit a focused PR with fresh targeted checks and a sanitized case/result summary. Keep full logs, participant data and Word documents private. State exactly which remaining actions require my physical laptop.
+> Read this current briefing and TEAM_GUIDE.md. Sync reviewed main into codex/hau-jie-profiles without losing local work. Prepare the remaining laptop-B cases from the device matrix; distinguish manual checks from what you can verify in code. The latest private ZIP is already received, so send only new evidence. Preserve exact run/build identity, original failures and separate process receipts. Do not repeat recognition collection, change qualification results or tune TEST. Fix only reproduced owned-component defects and submit a focused PR with fresh affected checks. Keep full logs, samples and Word documents private; leave prompt/decision logs unchanged. Report the remaining human actions clearly.
+
+<details>
+<summary>Historical record — expand for earlier deliveries and decisions</summary>
 
 ## Historical instructions and technical reference
 
@@ -637,3 +643,5 @@ windows and stale-frame counts must be reported even when the session finishes.
 Include this branch instruction with the task prompt: **Work only on `codex/hau-jie-profiles`. Before every commit or push, verify the current branch. When asked to publish, push only this branch and open a PR to `main` for Deston; never push or merge directly into `main` or another member's branch.**
 
 > Work only on `codex/hau-jie-profiles`; sync reviewed main, preserving local work. Read TEAM_GUIDE.md, this brief, CONTRACTS.md and the 19 October results in GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md. Deston's integration track has implemented and independently reproduced the fixed wrist/scale versus palm-local experiment; do not rebuild or retune it. Review its mixed class-level results, including P1543's NEUTRAL regression, and update your private GF-P24 methods/results contribution. Read P03_TRACE_REVIEW_2026_10_19.md: the private profile/DEVELOPMENT packet is received and its exact model reproduced. Review the fixed-setting comparison with Deston: older index negatives are rejected, while four older OK-sign samples are accepted as NEXT after repair. The recent live index failure still lacks numeric features; do not conflate those conditions or request a duplicate packet. Do not repeat the trace or infer a higher-margin fix; propose any further DEVELOPMENT experiment before execution. No model is deployment-approved. Preserve the consumed TEST results, original targets, source data and profiles; do not request repeat TEST from P67/P1543 or more data from P69. GF-P21 retains its GF-P20 dependency. Operate laptop B for Javier's agreed native/fresh-install/offline/thirty-minute/shutdown checks using the identified Studio handoff. Keep full data, exports, Word reports and logs private. Return demonstrated repairs or sanitized evidence in focused PRs from your branch; leave merge and acceptance to Deston. Keep original owners, weights and Done criteria.
+
+</details>

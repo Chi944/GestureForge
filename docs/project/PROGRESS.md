@@ -1,50 +1,66 @@
 # GestureForge Studio progress
 
-Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
+Snapshot: **26 October 2026**. Weighted points describe accepted work, not a grade.
+Target submission: **31 October**; official deadline: **7 November**.
 
 ## Current checkpoint — recognition assessment and methods complete
 
-**Release evidence update — 26 October:** [Deston's endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
-verifies 54,396 frames, a 32 min 20.578 s continuous interval, normal Qt close,
-worker release and a separate successful camera reopen. A 5.094 s delivery gap
-and 5.062 s GUI gap fail the existing responsiveness limits; Deston noticed no
-interruption and confirms no app switching, screen lock or system prompt.
-The timer now warns immediately when a recorded gap prevents a pass. The new
-laptop-B ZIP is received and independently hash-checked; it confirms PR #40's
-separate interrupted/short runs, not another completed endurance test.
-Duration and close/reopen substeps advance; GF-P23 and whole-task totals below
-remain unchanged. No repeat enrolment, Practice or blind full-run retry is assigned.
+**23/29 tasks accepted; 183/223 points (82.1%).** Six whole tasks remain.
+Completed substeps are recorded below; they do not award a whole task early.
 
-**Accepted progress:** Deston 60/89 (67.4%); Hau Jie 69/69 (100.0%); Javier 54/65 (83.1%); total **183/223 (82.1%), 23/29 tasks**. Six whole tasks remain.
+| Member | Accepted progress | Next manual tasks | Next GPT tasks |
+| --- | --- | --- | --- |
+| Deston | **60/89 — 67.4%** | Separate camera handoff; demo/presentation rehearsal; final release and document review. | Investigate the gap, integrate release evidence, finish documents and package preflight. |
+| Hau Jie | **69/69 — 100.0%** | Remaining laptop-B fresh-install/offline and affected native support. | Validate and send only outstanding device receipts; no new recognition work. |
+| Javier | **54/65 — 83.1%** | Remaining laptop-A/B shortcut and recovery cases. | Reconcile the device matrix and finish GF-P19/GF-P22. |
+| Total | **183/223 — 82.1%** | **23 of 29 tasks accepted.** | Remaining: GF-P19, GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. |
 
-**GF-P21 is Done:** the [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md) preserves the actual
-19/22 Practice result and documents the four GF-P20 misses as handedness or
-sustained-rejection transitions requiring fresh NEUTRAL. Replay agrees with runtime;
-57 affected tests pass. This completes the bounded assessment under Revision 5,
-not automated qualification or a universal recognition target. The selected model
-and runtime protections are unchanged. No repeat recording is assigned.
+**Completed evaluation and methods:** GF-P20 covers the saved hold, negative,
+replay, walkthrough and visual-latency evidence; the fresh capture has 16 responses
+and four misses, not a universal performance pass. GF-P21 independently reviewed
+the selected profile and four misses, with 57 affected tests passing. GF-P24's
+local six-page methods/results Word document incorporates that disposition and
+the original failed TEST/development results. Earlier contributions stay credited.
+See [evaluation](P20_EVALUATION_2026_10_26.md) and
+[recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md).
 
-**GF-P24 is Done:** the local six-page `GestureForge_Methods_Results.docx` now
-includes that final disposition, original techniques, failed frozen TEST and
-stopped P02 repair, incomplete selected TRAIN and current P01/GF-P20 evidence.
-Rendered pages and content were checked. Hau Jie's original contribution stays
-credited. The full technical report is reconciled later under GF-P26.
+GF-P16 is accepted under Deston's revised manual-review criterion with 22/22
+operator acceptance. Saved automated Practice remains 19/22; no recorded trial,
+model setting or runtime qualification gate was changed.
 
-**PR #39 merged:** laptop-B attempt reports remain separately attributed;
-interrupted or unmeasured runs do not establish a release pass. The new
-`scripts.run_stability` launcher keeps measurement, actual process exit and
-stdout/stderr together in a fresh folder. Studio displays continuous-frame progress.
-The [guide](../USER_GUIDE.md#measure-the-full-studio-stability-run) explains its use.
-This removes missing-log friction; it does not perform the physical test.
+**Release substeps completed:** Deston's run delivered 54,396 observations and a
+32 min 20.578 s continuous interval, closed normally, released its worker and
+passed a separate camera-reopen check. Active GUI/delivery gaps of 5.062/5.094 s
+fail the existing responsiveness limits. Deston noticed no interruption and
+confirms no app switching, screen lock or system prompt. Cause remains unknown.
+The monitor now warns about retained gap failures; remaining zero means duration
+reached, not a full pass. No blind repeat of enrolment, Practice or endurance is
+assigned. [Full endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
 
-**Next:** Javier closes GF-P19/GF-P22 with remaining two-device cases; Hau Jie
-operates laptop B for GF-P23 support. Deston reviews release evidence, then
-records GF-P25's genuine demo and completes GF-P26/GF-P27. The local presentation,
-Word guide and [storyboard](GF_P25_DEMO_STORYBOARD.md) are ready for rehearsal.
-Native Apple Silicon Studio remains unverified. Word files, private evidence and
-unchanged prompt/decision logs remain local.
+**PR #40 merged and original laptop-B ZIP received:** CRC and all 11 payload
+hashes are independently verified. Its interrupted Studio attempt, separate
+five-minute pipeline diagnostic and unmeasured reported run remain distinct.
+Do not resend the packet. [Deston's earlier bounded device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md)
+also remain valid additional-device evidence, without replacing A/B coverage.
 
-**Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
+| Remaining task | Owner | Completion gate |
+| --- | --- | --- |
+| GF-P19 · Desktop shortcuts | Javier | Remaining two-device native/error-path and eligible camera-handoff evidence. |
+| GF-P22 · Recovery integration | Javier | GF-P19 plus affected recovery verification; fix any demonstrated defects. GF-P20 is complete. |
+| GF-P23 · Release verification | Deston | Resolve the stability shortfall, complete remaining fresh laptop-B installation/offline evidence and GF-P22 dependency, then review the release. |
+| GF-P25 · Guide and demo | Deston | Final genuine release-matched footage, finished guide and playback check after GF-P23. Rehearse now. |
+| GF-P26 · Documents/presentation | Deston | Reconcile final report, matrix, slides and declaration after GF-P23/GF-P24/GF-P25; rehearse ten minutes. |
+| GF-P27 · Submission | Deston | Verify final permitted package, upload, download and open the actual LMS files after GF-P26. |
+
+The [team guide](TEAM_GUIDE.md), [Hau Jie brief](HAU_JIE_HANDOFF.md),
+[Javier brief](JAVIER_HANDOFF.md) and [backlog](TEAM_BACKLOG.csv) define next work.
+The [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and
+[storyboard](GF_P25_DEMO_STORYBOARD.md) are ready for rehearsal, not final footage.
+Native Apple Silicon Studio remains unverified. Private evidence and Word files
+stay local; prompt and decision logs remain unchanged.
+
+<details>
+<summary>Historical record — expand for earlier deliveries and decisions</summary>
 
 ## Earlier checkpoints — retained history
 
@@ -1745,3 +1761,5 @@ acknowledgements.
 - **Deston:** complete software integration and verification, then review the evidence supplied by Javier and Hau Jie against the existing acceptance criteria. Retain design, routing safety, final acceptance and release decisions. Loading, diagnostics and delegation do not grant LIVE eligibility or complete acceptance; only the full current-session Practice lifecycle can establish personal LIVE eligibility.
 
 Use [TEAM_GUIDE.md](TEAM_GUIDE.md) and the individual briefs for file ownership, test expectations and PR rules. Teammates push their own branches; Deston reviews and merges into main. Move cards to Done only with linked acceptance evidence.
+
+</details>

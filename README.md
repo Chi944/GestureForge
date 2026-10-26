@@ -35,21 +35,22 @@ consent. **GestureForge controls its own viewer; it is not connected to PowerPoi
 > personal enrolment are available. No approved shared starter model is bundled;
 > personal Live gestures require the current session's full Practice pass or
 > explicit [manual demo approval](docs/USER_GUIDE.md#manually-approved-demo).
-> The frozen held-out comparison is complete, with unmet recognition targets;
-> model improvement and remaining device checks are still in progress.
+> Recognition assessment and the supervised personal workflow evaluation are
+> complete, with their measured limitations retained. Device verification,
+> release-matched video and final delivery checks remain in progress.
 
-**Release scope, 24 October:** the supported product is personal gesture control
+**Release scope, updated 26 October:** the release target is personal gesture control
 on Windows. Enrol once, save the profile and complete Practice before Live use,
 or explicitly enable a manually approved, supervised demo.
 Supplied starter gestures and no-enrolment first use are deferred; the completed
-starter comparisons remain research evidence. The remaining release work is a
-working personal workflow, device verification and submission materials. Existing
+starter comparisons remain research evidence. The remaining release work is
+device verification, a demonstrated release candidate and delivery materials. Existing
 macOS support remains experimental; Windows is the release verification target.
 
-![Earlier GestureForge card-viewer interface](docs/images/prototype.png)
+![GestureForge Studio in Guest preview mode with camera off](docs/images/studio.png)
 
-*The earlier card-viewer interface above shows the foundation of Studio. See the
-[user guide](docs/USER_GUIDE.md) for the current Studio tabs and controls.*
+*Current Studio, rendered from the application with the camera off and no personal
+data loaded. Start in Guest/manual mode, then enrol your own gestures when ready.*
 
 ## What you can do
 
@@ -240,7 +241,9 @@ automatically.
 These are collection tools, not the Studio application. Each participant checks
 their actual camera preview before starting; software checks do not establish
 physical compatibility with every browser. Preserve partial attempts and invalid
-slots; never delete difficult trials to improve scores. Follow the [current GF-P18 steps](docs/project/PAIRED_EVALUATION.md#current-gf-p18-next-steps).
+slots; never delete difficult trials to improve scores. The assigned P67/P1543
+TEST collection and [paired scoring](docs/project/GF_P18_TEST_RESULTS_2026_10_14.md)
+are complete; no repeat collection is currently assigned.
 
 ## Verify and reproduce
 
@@ -280,6 +283,26 @@ For a full Studio stability check, the [measurement launcher](docs/USER_GUIDE.md
 shows continuous capture progress and saves the measurement, actual process exit
 and console logs in one new private folder. Software checks do not replace the
 physical Windows run or camera-reopen observation.
+
+## Release verification
+
+The [26 October endurance review](docs/project/GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
+separates completed checks from remaining release work:
+
+| Check | Recorded result |
+| :--- | :--- |
+| Continuous delivered observations | 32 minutes 20.578 seconds; duration requirement met |
+| Shutdown and camera reuse | Normal Qt exit, workers released; separate five-frame camera reopen passed |
+| Responsiveness | GUI gap 5.062 seconds and frame-delivery gap 5.094 seconds exceeded the two-second limits; cause unresolved |
+| Monitor feedback | Sticky gap warning and first-gap timing added; 35 focused tests, lint, type checks and Studio startup passed |
+| Second-device release coverage | Original laptop-B receipts received and checked; remaining installation/offline/native cases stay open |
+| Native Apple Silicon Studio | Setup path available; full native device verification outstanding |
+
+Reaching zero remaining time does not by itself pass the stability check. No
+interruption was noticed during the measured run; that observation does not
+explain its recorded gap. Do not repeat a full recording simply to replace a
+failed result. Follow the [current team actions](docs/project/TEAM_GUIDE.md) and
+[accepted progress](docs/project/PROGRESS.md) for the remaining evidence.
 
 ## Documentation and development
 

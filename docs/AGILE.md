@@ -1,6 +1,8 @@
 # GestureForge Agile Working Method
 
-Status: assignment submitted; three-member project development in progress.
+Status, 26 October 2026: release verification and delivery preparation. The first
+release is submitted; the three-member team is working toward 31 October, with
+7 November as the official deadline.
 
 ## Agile Setup
 
@@ -23,7 +25,33 @@ Every issue should have:
 - Evidence path.
 - Actual status.
 
-`docs/backlog.csv` is the submission snapshot. `docs/sprint_events.jsonl` records factual status changes made during development. The archived local HTML board and generator are no longer part of the submitted repo.
+`docs/backlog.csv` is the historical first-release snapshot, not the current task
+list. `docs/sprint_events.jsonl` retains factual development events. Current
+owners, dependencies and accepted weights come from `project/TEAM_BACKLOG.csv`.
+
+## Current Release Plan
+
+These are planning targets, not evidence that a gate has passed. Work can proceed
+in parallel where dependencies permit; acceptance still requires the recorded
+criteria. Prepare and rehearse the presentation now; record the final video on
+the verified release build.
+
+| Target | Work | Owner and support |
+| --- | --- | --- |
+| 28 Oct | GF-P19 native shortcut/recovery coverage; GF-P22 affected defect checks | Javier; Hau Jie operates laptop B |
+| 29 Oct | GF-P23 release installation, offline operation and stability evidence | Deston accepts; Javier and Hau Jie supply device receipts |
+| 30 Oct | GF-P25 guide/video and GF-P26 final report/presentation reconciliation | Deston; teammates review their technical sections |
+| 31 Oct | GF-P27 package, upload, download and verify actual delivered files | Deston |
+| 7 Nov | Official deadline buffer | Team |
+
+The current six-task handoff is in [TEAM_GUIDE](project/TEAM_GUIDE.md). Hau Jie's
+own weighted tasks are accepted; laptop-B release support remains. Existing
+passed checks are reused when the build and affected behaviour still match.
+No repeat enrolment, Practice or full endurance run is assigned merely to
+increase progress. The measured responsiveness gap needs diagnosis first.
+
+<details>
+<summary>Original sprint cadence (historical planning record)</summary>
 
 ## Planned Sprint Cadence
 
@@ -40,6 +68,8 @@ Every issue should have:
 | P4 | 26 Oct-1 Nov | Fix defects, release candidate, stability and second-machine checks |
 | P5 | 2-7 Nov | Final report, guide, video, slides, submission verification |
 
+</details>
+
 ## Definition of Ready
 
 An issue is ready when:
@@ -48,17 +78,21 @@ An issue is ready when:
 - Acceptance criteria are testable.
 - Required files or modules are known.
 - Human gates are identified.
-- The issue will not expand assignment scope into final-project scope.
+- The work fits the agreed personal-first Windows release scope.
 
 ## Definition of Done
 
 An issue is done when:
 
-- Code or document changes are committed or staged for review.
+- Code or document changes have been reviewed and integrated.
 - Relevant tests or checks have fresh evidence.
+- The recorded acceptance criteria and dependencies are satisfied.
 - Claims in the report and guide match the implemented system.
 - Any limitation is recorded.
 - No fake measurements, approvals, participants, signatures, or tool usage are present.
+
+<details>
+<summary>Original review gates (historical planning record)</summary>
 
 ## Review Gates
 
@@ -70,6 +104,8 @@ An issue is done when:
 | Final feature freeze | 18 Oct | Are all final features implemented before evaluation? |
 | Final release candidate | 1 Nov | Can another machine run the package from instructions? |
 | Final submission | 7 Nov | Are all required artifacts uploaded and downloaded for verification? |
+
+</details>
 
 ## Board Status
 

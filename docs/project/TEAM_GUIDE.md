@@ -2,51 +2,68 @@
 
 ## Current release briefing — 26 October 2026
 
-**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. Reassignment alone earned no points. GF-P20, GF-P21 and GF-P24 are now accepted separately; current team progress is 183/223 (82.1%).
+Target submission: **31 October**. Official deadline: **7 November**.
+Use this current briefing; expand the historical section only for earlier decisions.
 
-This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
+**23 of 29 tasks are accepted: 183/223 weighted points (82.1%).** GF-P20
+(evaluation), GF-P21 (recognition assessment) and GF-P24 (methods/results) are
+complete. Recognition research, new participant collection and P02 repair are
+not current assignments. Deston owns final direction, integration and acceptance.
 
-**Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
+The supervised personal workflow is demonstrated. GF-P16 was accepted under
+Deston's revised manual-review criterion; operator acceptance is 22/22, while the
+saved automated Practice result remains 19/22. Runtime protections are unchanged.
+The [evaluation](P20_EVALUATION_2026_10_26.md) and
+[recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md)
+retain actual misses, failed targets and limits.
 
-**GF-P20 completed substeps:** 20 hold cues produced 20 matching simulated actions without extras (the first occurs 0.047 s after its release cue). The ten-minute non-command capture produced zero protected actions versus 36 naive per-frame requests. Replay agrees. These captures do not measure physical-onset latency or native external execution. Do not repeat them merely to increase progress.
-
-**GF-P20 complete:** hold, negative, replay, timed walkthrough and visual latency evidence are reviewed. Fresh latency capture: 16/20 responses, four misses, no duplicate/wrong actions; conditional p95 interval 0.515–0.718 s. M/P times are 105.094/165.844 s, with operator-confirmed checks and intentional extra P actions; no controlled speed comparison is claimed. Evaluation completion does not mean every target passed. [Final evidence and four-miss diagnosis](P20_EVALUATION_2026_10_26.md). No repeat recording is assigned now. Stop P02 searches, interviews, recruitment and native Mac expansion.
-
-**Accepted progress:** Deston 60/89 (67.4%); Hau Jie 69/69 (100.0%); Javier 54/65 (83.1%); total **183/223 (82.1%), 23/29 tasks**. Six whole tasks remain. GF-P21/GF-P24 close the bounded assessment and methods delivery; shortfalls remain recorded.
-
-**Presentation and guide prepared:** the [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md)
-and [ten-minute storyboard](GF_P25_DEMO_STORYBOARD.md) now use the current UI and
-evaluation. Deston's local methods/results Word document and twelve-slide deck
-connect the trainer's problem to actual features and measured limits. Review the
-suggested speaking roles together; they are not an attendance or contribution
-record. GF-P21/GF-P24 are complete; final recording and GF-P23 release evidence remain.
+**Latest release evidence:** Deston completed a 32 min 20.578 s continuous
+capture interval, normal close and successful camera reopening. A recorded
+five-second gap prevents the full stability pass. Hau Jie's new laptop-B ZIP
+is received and independently verified; do not resend it. The
+[endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) separates each run.
+Review the gap before any blind full-duration retry. No repeat enrolment or
+Practice is assigned.
 
 ## Remaining tasks and handoffs
 
-**Latest device evidence:** [26 October endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
-Deston completed the duration and close/reopen substeps, but a recorded five-second
-gap prevents a strict stability pass. The new laptop-B ZIP is now independently
-verified and must not be resent. The updated monitor warns about failed gaps;
-review them before another full attempt. Remaining A/B cases and task totals are
-unchanged; no repeated recognition collection is assigned.
-
-| Task | Owner | Manual work | GPT work |
+| Task | Owner | Next manual work | Next GPT work |
 | --- | --- | --- | --- |
-| GF-P19 | Javier | Javier: finish only outstanding laptop-A native/error-path cases in the Windows matrix; coordinate Hau Jie's laptop-B cases. Retain exact build, actual outcomes and original per-process logs. | Reconcile the two-device matrix, separate observed launches from requests, and validate new receipts without recounting overlapping exports. |
-| GF-P22 | Javier | Javier with Hau Jie: finish affected native recovery checks on laptops A/B; record failures and actual recovery, preserving unchanged passes. | Fix reproduced viewer/shortcut/runbook/storage defects, add targeted regression coverage, and reconcile GF-P19/GF-P20 before closure. |
-| GF-P23 | Deston | Hau Jie operates laptop B: fresh guide-only installation, offline core, uninterrupted measured 30-minute full Studio run, clean exit and camera reacquisition. Javier supplies missing laptop-A exit/coverage evidence; Deston reviews release acceptance. | Identify exact release/build and hashes, verify install/monitor/shutdown receipts, reconcile two-device coverage and GF-P21/GF-P22. Apple Silicon core remains unverified; browser collection is not native Studio evidence. |
-| GF-P25 | Deston | Deston: rehearse the proposed speaking roles; after GF-P23 record genuine enrolment and six-stage gesture/recovery footage on the identified release, with actual mode and limitation visible, then verify playback. | Guide and 600-second storyboard are prepared, including a 190-second demo slot. Edit genuine footage and verify final guide/package/video consistency. No new evaluation or fabricated footage is needed. |
-| GF-P26 | Deston | Deston: approve the reconciled final report/slides, complete required declaration/contribution facts before submission, and rehearse the ten-minute presentation. | After GF-P23/GF-P24/GF-P25, update the local Word report, requirements/test matrix and slides once; check tools, AI use, references, evidence and file consistency. Keep Word logs local and unchanged. |
-| GF-P27 | Deston | Deston: submit to LMS, then download/open the uploaded files and verify playback and contents. | After GF-P26, assemble and verify the permitted source/data/assets, report, guide, video, slides and declaration; exclude private extras/secrets and check archive contents. |
+| GF-P19 | Javier | Complete remaining laptop-A shortcut/error cases; Hau Jie handles laptop B. Deston can supply the separate active-camera handoff check on his device. | Reconcile exact case/build receipts against the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); preserve device boundaries and unchanged passes. |
+| GF-P22 | Javier | Verify affected native recovery on A/B. | Fix reproduced defects, run affected checks and reconcile GF-P19 plus completed GF-P20 before closure. |
+| GF-P23 | Deston | Hau Jie completes fresh guide-only laptop-B installation, offline core and remaining measured device checks. Deston reviews the release. | Investigate the unresolved gap, validate same-run measurement/exit/reopen receipts and close GF-P21/GF-P22 dependencies. |
+| GF-P25 | Deston | Rehearse now; record final genuine onboarding and six-stage demonstration on the verified GF-P23 release, then check playback. | Finish the guide and edit genuine footage using the [storyboard](GF_P25_DEMO_STORYBOARD.md); keep mode and limitations visible. |
+| GF-P26 | Deston | Review the final report/slides, complete required declaration/contribution details and rehearse ten minutes. | Reconcile local documents after GF-P23/GF-P24/GF-P25; verify requirements, tools, AI use, references and evidence. |
+| GF-P27 | Deston | Upload to LMS, then download/open the actual submitted files. | After GF-P26, package and verify permitted source/data/assets and required documents/video; exclude private extras. |
 
-Work in parallel now: Hau Jie operates laptop B; Javier finishes laptop A and consolidates both devices for GF-P19/GF-P22. Deston reviews GF-P23 release evidence and rehearses the prepared presentation. Then record GF-P25 and complete GF-P26/GF-P27. GF-P21/GF-P24 are complete; no recognition experiment or duplicate methods rewrite is assigned.
+| Member | Accepted progress | Next manual tasks | Next GPT tasks |
+| --- | --- | --- | --- |
+| Deston | **60/89 — 67.4%** | Camera handoff; demo/presentation rehearsal; final release review. | Gap investigation, release integration, final documents and packaging. |
+| Hau Jie | **69/69 — 100.0%** | Remaining laptop-B installation/offline/native support. | Prepare only outstanding device receipts; no new recognition work. |
+| Javier | **54/65 — 83.1%** | Remaining A/B shortcut and recovery cases. | Consolidate evidence and finish GF-P19/GF-P22. |
+| Total | **183/223 — 82.1%** | **23/29 tasks accepted.** | Six whole tasks remain; partial checks do not award whole-task points. |
 
-Hau Jie pushes **codex/hau-jie-profiles**; Javier pushes **codex/javier-shortcuts**. Submit focused PRs; Deston reviews and merges main. Send numeric data, full logs and Word deliverables privately; commit only source and sanitized evidence. Each handoff must identify task/case IDs, actual commit/dirty state or archive hash, expected/observed outcome, evidence paths, failures and remaining gaps.
+Hau Jie's own weighted work is complete; laptop-B support still contributes to
+the team's release. Prior contributions remain credited when final delivery moves
+to Deston. Existing [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and storyboard
+are ready for rehearsal, not a claim that final footage is complete.
 
-See [backlog](TEAM_BACKLOG.csv), [progress](PROGRESS.md), [Hau Jie brief](HAU_JIE_HANDOFF.md), [Javier brief](JAVIER_HANDOFF.md), [Windows remaining cases](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md) and [workflow comparison](WORKFLOW_COMPARISON.md). The marker's Apple Silicon core installation remains unverified; successful browser data collection does not verify native Studio.
+Hau Jie pushes **codex/hau-jie-profiles**; Javier pushes **codex/javier-shortcuts**.
+Use focused PRs. Deston reviews and merges `main`. Each delivery identifies case
+IDs, exact source/package identity, expected/observed outcomes, evidence and gaps.
+Keep numeric samples, full logs and Word deliverables private; leave prompt and
+decision logs unchanged. Native Apple Silicon Studio remains unverified.
 
+For a justified new endurance attempt, use the [measurement guide](../USER_GUIDE.md#measure-the-full-studio-stability-run)
+and a fresh output folder. Remaining zero means duration reached, not a complete
+pass; the updated monitor retains a visible gap warning. Camera handoff is a
+separate check because it intentionally interrupts capture.
 
-**Stable measurement handoff:** use `.\.venv\Scripts\python.exe -m scripts.run_stability --output-dir experiments/local/studio-soak-NEW --seconds 1800 --camera 0`, choosing the actual camera and a new folder. The status bar shows continuous received-frame time; the launcher preserves measurement, actual exit, stdout and stderr together. Keep the folder private and record build, operator observations and separate camera-reopen result. No existing receipt or pass is overwritten.
+Sources: [backlog](TEAM_BACKLOG.csv), [progress](PROGRESS.md),
+[Hau Jie brief](HAU_JIE_HANDOFF.md), [Javier brief](JAVIER_HANDOFF.md).
+
+<details>
+<summary>Historical record — expand for earlier deliveries and decisions</summary>
 
 ## Previous deliveries and technical reference
 
@@ -456,3 +473,5 @@ Each review must include: requirement/task IDs; what works; exact tests and resu
 Base estimates: Deston 75h, Hau Jie 75h, Javier 73h; reserve about 20% contingency. These are estimates, not verified availability. Hau Jie owns methods/results sections; Javier owns user-guide/video drafts; Deston integrates the report, rubric/test matrix and ten-minute presentation. Every member must explain their own work. Register/report the new three-person team using actual identities and contributions; do not reuse the assignment's two-person split.
 
 No participant performance, commercial demand, universal accessibility or world-first novelty is claimed. The final project needs measured recognition, complete subsystem testing, a working demo/video and clear operating limits. Existing reports and prompt/decision logs are not edited by this kickoff.
+
+</details>

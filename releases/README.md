@@ -16,7 +16,44 @@ Packaging stops if a tracked source file is missing and preserves the previous
 ZIP and checksum receipt. Restore the missing file, or review and stage its
 intentional removal, before packaging again; files are never silently omitted.
 
-The Studio ZIP is a development source handoff, not final release acceptance. It does not replace either assignment archive. On another Windows laptop, extract it into a fresh folder, open `gestureforge`, run `setup.cmd` with internet for the initial dependencies/model download, then double-click `run-studio.cmd`. The `.command` launcher opens Studio after Mac setup; the legacy launchers remain available. Rebind local targets on that machine and follow the [manual walkthrough](../docs/project/DEMO_SCENARIO.md#manual-walkthrough-available-now). Keep old private profiles, datasets and `.local` evidence outside the replacement folder unless you intentionally import them through the app. If a teammate uses Git, they should pull or rebase instead of receiving the ZIP. If they run from ZIP, resend a rebuilt Studio ZIP after the issue #30 / GF-P12 v4 change is included; do not resend an older archive. Participant browser collection ZIPs are separate and are not replaced by this Studio handoff. Test offline use after setup separately. macOS uses the [Apple Silicon setup](../README.md#apple-silicon-mac); Windows external shortcuts remain unsupported there. Do not combine `--project` with `--include-pilot`.
+The Studio ZIP is a source handoff; creating it does not establish release
+acceptance. On another Windows laptop, extract it into a fresh folder, open
+`gestureforge`, run `setup.cmd` with internet for the initial dependencies/model
+download, then double-click `run-studio.cmd`. Python 3.11 is required. Rebind local
+targets and follow the [manual walkthrough](../docs/project/DEMO_SCENARIO.md#manual-walkthrough-available-now).
+
+Keep private profiles, datasets and `.local` evidence outside the replacement
+folder unless intentionally importing them through the app. Git users update
+their checkout; ZIP users compare the package manifest's source commit and hash
+with the reviewed handoff. Rebuild only when a new package is needed, and identify
+the exact package in device receipts. Do not reuse results from an unidentified
+older ZIP. Participant browser collection kits are separate, require no Python,
+and are not replaced by a Studio handoff.
+
+Test offline use after setup separately. The Mac `.command` launcher requires
+the [Apple Silicon setup](../README.md#apple-silicon-mac); full native verification
+is outstanding and Windows external shortcuts are unavailable there. Do not
+combine `--project` with `--include-pilot`.
+
+## Current release gates
+
+Follow [accepted progress](../docs/project/PROGRESS.md) and the
+[team handoff](../docs/project/TEAM_GUIDE.md) before assembling the final delivery.
+The 26 October run met continuous-duration and close/reopen substeps but exceeded
+the responsiveness limits; see the [endurance review](../docs/project/GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
+Laptop-B receipts have been received and checked. Remaining native, installation
+and offline coverage must be reconciled; neither a successful archive build nor
+the monitor's countdown completes GF-P23.
+
+After release verification, match the genuine demo video and guide to that build,
+then reconcile the report, presentation and declaration. Keep Word deliverables,
+prompt/decision logs and permitted private evidence outside the public source
+archive. GF-P27 covers the final source/assets, required documents, guide, slides,
+video and permitted reproduction data, followed by checking the actual LMS
+download. No new package is created by this documentation refresh.
+
+<details>
+<summary>First-release packages and instructions (historical reference)</summary>
 
 ## Retained assignment packages
 
@@ -46,3 +83,5 @@ To reproduce the saved P01 comparison after extracting the private marker packag
 Consult the [results and configuration history](../docs/evidence/RESULTS.md) for the expected scores and limits of each model version. Live recognition on another person's hand needs separate enrolment. Keep the retained P01 samples unchanged.
 
 Before upload, verify the exact archive on the second computer using the [Windows guide](../docs/WINDOWS_LAPTOP.md). After upload, download and check the actual LMS files. Required personal details belong in the local report and declaration.
+
+</details>

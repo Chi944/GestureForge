@@ -1,7 +1,7 @@
 # GestureForge Studio Windows guide
 
 Current delivery owner: Deston (transferred 26 October 2026). Original draft prepared by Javier on 19 October 2026; preserve his contribution.
-Updated 26 October 2026 against source `39db517`. Guide in preparation; final
+Updated 26 October 2026 against source `fa9647b`. Guide in preparation; final
 package instructions and genuine demonstration footage depend on GF-P23 release
 checks. This revision does not certify a new ZIP or change historical device evidence.
 
@@ -250,6 +250,13 @@ The [26 October evaluation](P20_EVALUATION_2026_10_26.md) contains the current
 walkthrough, hold, negative-activity and latency evidence. It reports recognition
 misses separately from completed operator-confirmed workflows; no controlled
 speed advantage is claimed. Original traces/profiles/exports stay private.
+
+The [endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) records a completed
+continuous-duration interval, normal close and camera reopening, alongside a
+five-second responsiveness gap. The monitor now retains a visible gap warning;
+zero remaining time does not mean every stability criterion passed. The original
+laptop-B packet has been received and checked. Use the [current team guide](TEAM_GUIDE.md)
+for remaining device work rather than repeating unchanged passed checks.
 
 Use the [presentation and demo storyboard](GF_P25_DEMO_STORYBOARD.md) for the
 pain-point-led sequence and genuine enrolment excerpt. Label manual footage,
