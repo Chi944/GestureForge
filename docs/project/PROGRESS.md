@@ -2,7 +2,7 @@
 
 Snapshot: 26 October 2026. Task weights measure accepted work, not an expected grade.
 
-## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 holds and negatives captured
+## Current checkpoint — 26 October: GF-P20 walkthroughs recorded; latency remains
 
 **Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
 
@@ -40,14 +40,41 @@ recovery plus owner acceptance now close that task. Performance and release
 criteria remain unchanged.
 
 **Next:** reuse these results in the report and genuine demo storyboard; complete
-remaining two-laptop native/release evidence and the separately measured hold,
-negative and workflow-comparison checks. No repeat of this whole walkthrough is
+remaining two-laptop native/release evidence and physical-onset latency. Hold,
+negative and timed walkthrough captures are recorded below. No repeat of this whole walkthrough is
 needed solely to reproduce its verified recovery/persistence results.
 
 **Accepted whole tasks: 161/223 (72.2%), 20/29.** Deston 44/89 (49.4%), Hau Jie
 63/69 (91.3%), Javier 54/65 (83.1%). The additional ten points are GF-P16
 accepted under the explicitly revised owner criterion, not an improved automated
 score. GF-P20 is now the active evaluation task. Weights are unchanged.
+
+### GF-P20 timed walkthroughs — 26 October
+
+Both timed walkthroughs are saved and Deston confirms completing the calculation
+(240 credits), identifying the training coordinator, testing missing-file recovery,
+restoring paused without automatic replay, and reviewing the final summary.
+
+| Recorded measure | Manual M | Personal P |
+| --- | --- | --- |
+| Task duration | 105.094 s (1:45.09) | 165.844 s (2:45.84) |
+| Setup interval | 129.390 s | 160.391 s |
+| Gesture / manual outcomes | 0 / 10 | 15 / 4 |
+| In-app stage acknowledgements | 6 | 0 |
+| Source build | `a0095b3` | `0ed7c32` |
+
+The P run used the manually approved demo. Deston confirms that its repeated
+Calculator launch and manual navigation were intentional feature checks, with no
+problems reported. Completion and recovery are operator-reported where the exports
+lack acknowledgements or recovery/reload events. Original exports remain unchanged;
+confirmations are separate private addenda. Setup included assistance and is not a
+clean independent-installation measure.
+
+These are completed engineering walkthroughs, not a controlled speed comparison:
+the P run included extra checks/manual navigation and followed a camera-start fix
+on a different build. Do not infer a gesture speed advantage or a strict comparison
+protocol pass. The remaining measurement is independently annotated physical-pose
+onset latency. GF-P20 remains In Progress; whole-task acceptance is unchanged.
 
 ### GF-P20 hold capture — 26 October
 

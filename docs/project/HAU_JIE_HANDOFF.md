@@ -10,7 +10,7 @@ This section is the current work assignment. Dated instructions below are refere
 
 **GF-P20 completed substeps:** 20 hold cues produced 20 matching simulated actions without extras (the first occurs 0.047 s after its release cue). The ten-minute non-command capture produced zero protected actions versus 36 naive per-frame requests. Replay agrees. These captures do not measure physical-onset latency or native external execution. Do not repeat them merely to increase progress.
 
-**Remaining GF-P20:** timed manual/personal comparison and independent physical-onset latency. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
+**GF-P20 workflow update:** M took 105.094 s; P took 165.844 s. Deston confirms all workflow checks passed and the extra P launches/manual navigation were intentional. The exports and separate operator confirmations establish completed assisted walkthroughs; different builds, extra checks and missing P acknowledgements prevent a controlled speed comparison. **Remaining GF-P20:** independent physical-onset latency and final evidence synthesis. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
 
 **Accepted progress:** Deston 44/89 (49.4%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
 
