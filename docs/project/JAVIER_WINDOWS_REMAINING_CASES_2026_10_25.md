@@ -1,6 +1,6 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
-**26 October current handoff:** GF-P16 is accepted under owner manual review; the supervised Harbor walkthrough is complete. GF-P20 hold and negative captures are complete; timed comparison and physical-onset latency remain. The dated device receipts and unresolved cases below remain valid. References below to repeating fresh enrolment or the whole walkthrough are superseded by [the current Javier brief](JAVIER_HANDOFF.md). Laptop B is Hau Jie's laptop. Final video/release acceptance remains outstanding.
+**26 October current handoff:** GF-P16 is accepted under owner manual review; GF-P20 evaluation is complete, with its four misses and measured limits retained. Deston owns GF-P20, GF-P24 and final GF-P25 guide/video. Javier continues GF-P19/GF-P22 and two-device receipts for GF-P23. Do not restart completed holds, negatives, latency, comparison or walkthrough captures. [Current Javier brief](JAVIER_HANDOFF.md) and [team guide](TEAM_GUIDE.md) supersede dated session plans below.
 
 The 25 October original ZIP and exports/logs have been received and independently
 checked in Deston's checkout. Archive integrity, event/counter reconciliation and
@@ -108,6 +108,48 @@ Two launches reused log paths, overwriting earlier process/stdout/stderr records
 only the last PID 36832 log set survives. The multi-hour wall interval is not
 stability evidence. No new software suite or genuine readiness pass is claimed.
 
+## Laptop-B operator update received — 26 October
+
+Hau Jie's supplied message reports runtime
+`33090e53c796da82d0ce0b942c6557e7ba1f7f97`, Studio ZIP SHA256
+`ac7f887dae858bf80ffdea2c32094bbf9739b076806c5d048c9080fabf1c40c2`,
+Python 3.11.15 and camera 0. Setup remained agent-assisted with a reused
+environment. These are reported identifiers, not a fresh hash/runtime validation
+by this consolidation. Original new files were not attached to the message.
+Keep Deston's already-received receipts separately attributed.
+
+Paths below are relative to `experiments/local/`:
+A = `p02-neutral-repair-20261024/`;
+B = `laptop-b-soak-20261025/`;
+C = `camera-stop-diagnosis-20261025/`.
+These are evidence locations, not instructions to resume stopped P02 work.
+
+| Case / distinct attempt | Operator-reported result | Receipt / remaining boundary |
+| --- | --- | --- |
+| Fresh guide-only installation | NOT COMPLETED; assisted setup, reused environment | A/setup-receipt.json; no unaided clean-install pass. |
+| Offline core | NO NEW VERIFIED RUN | NO NEW VERIFIED RUN per 26 Oct update. Historical Wi-Fi-disconnected local app/file/folder use remains self-report; no new build-tagged offline evidence. |
+| Instrumented full Studio attempt | Interrupted after approximately seven seconds; reported exit 0, worker release unconfirmed | B/measurement.json, B/studio-exit.json, B/aggregate-seconds.jsonl. No measured 30-minute pass; trigger/root cause not established by this message. |
+| Separate background capture/classifier diagnostic | 300.016 seconds, 8,147 packets, 27.155 packets/s; peak working set 372.31 MiB; 720 frame-ID skips; no samples older than 200 ms; reported clean worker shutdown and exit 0 | C/capture-300s.json, C/process-ended.json. Pipeline-only diagnostic, not GUI/controller/endurance acceptance. Numeric results await original-file inspection here. |
+| Separate post-close camera probe | Five frames acquired/released; that Studio launch's exit code not retained | A/post-close-camera.json; retain existing reviewed receipt. Do not borrow exit 0 from either other run to close this attempt's gap. |
+| Additional 30-minute Studio run | USER-REPORTED COMPLETED; measurement records not retained | Evidence missing and pending review; separate from interrupted runs and diagnostic. No rate/memory/timing/clean-exit acceptance inferred. |
+| Updated native recovery/error cells | NO NEW NATIVE PASS | Two unavailable slots, same-camera pause, affected restore feedback and remaining association/error cases still outstanding on B. Automated checks do not replace physical outcomes. |
+| B readiness | Operator reports unqualified | No B-specific grant or active-capture handoff inferred from the project's separate accepted GF-P16/GF-P20 evidence. |
+
+Do not merge the new approximately seven-second run with the historical
+791.605-second monitor, the separate earlier reported 30-minute run, the
+300.016-second diagnostic, the five-frame probe, or the newly reported
+unmeasured 30-minute run. The number/identity of all unmeasured long runs is not
+independently established; do not count them as additional verified passes.
+
+Next B sessions remain: fresh guide-only installation; build-tagged offline
+local functions; affected recovery/error checks; one continuous instrumented
+>=1,800-second full Studio workflow with responsiveness/rate/memory/faults and
+same-run exit/worker-release evidence, then post-close camera reacquisition.
+Confirm the existing approved instrumentation records the required metrics
+before scheduling another long attempt. Request only the NEW listed original
+receipts and hashes for private review; do not resend the reviewed 22 October
+packet. Preserve assistance, failures and original files.
+
 ## Reconciled two-device case matrix
 
 | Case | Laptop A: existing result | Laptop B: existing result | Remaining action |
@@ -119,16 +161,16 @@ stability evidence. No new software suite or genuine readiness pass is claimed.
 | App trust guard; .cmd as reference; HTTP; credential URL; device/UNC paths | PASS (bounded, d200947): PR34. Some screenshots contain status only; HTTP fields were separately captured. Valid HTTPS save recovered. | Partial invalid-target coverage not individually established by receipt review. | Preserve A checks. Fill only absent original matrix cells on either device, including relevant native association failures where an isolated setup exists. |
 | App-mode interpreter/.cmd, .lnk/.url, mapped network drive | UNRUN in the supplied focused A follow-up (reference .cmd rejection is not App-mode extension coverage). | UNRUN unless a reviewed specific receipt establishes the case. | On safe disposable/local fixtures only, distinguish configuration refusal from OS launch refusal. Never trust/execute an interpreter or script just to get a launch result. Mark no mapped-drive fixture UNRUN, not passed from UNC evidence. |
 | Missing/default association and manual recovery | UNRUN: no isolated association-free test setup supplied. Successful TXT opening does not exercise this path. | UNRUN: receipt review still lists native association-error handling. | Check an already available isolated test setup only. Do not delete/change a user's existing Windows associations to manufacture the failure. Report unavailability to Deston. |
-| Clear two unavailable Quick Actions slots independently, preserve library | PASS (bounded, d9c68c6): both disposable slots cleared independently, library entries and original choices restored. | AFFECTED/UNRUN on updated source. | A check complete within private screenshot/transcript limits; B1 remains. |
-| Same-camera Use camera and pause | PASS by guided operator observation, d9c68c6, Preview/index 0; immediate stop before switching windows and explicit reacquisition reported. | AFFECTED/UNRUN on updated source. | A2 complete by attributed observation, not gesture handoff; B2 remains. |
+| Clear two unavailable Quick Actions slots independently, preserve library | PASS (bounded, d9c68c6): both disposable slots cleared independently, library entries and original choices restored. | NO NEW NATIVE PASS per 26 Oct operator update; B1 remains. | A check complete within private screenshot/transcript limits; B1 remains. |
+| Same-camera Use camera and pause | PASS by guided operator observation, d9c68c6, Preview/index 0; immediate stop before switching windows and explicit reacquisition reported. | NO NEW NATIVE PASS per 26 Oct operator update; B2 remains. | A2 complete by attributed observation, not gesture handoff; B2 remains. |
 | Isolated Preview focus loss and explicit reacquisition | PASS (bounded): PR29 on ffa0af7; active Preview paused on leaving, explicit Start recovered. | Initial no-frame failure retained, subsequent live picture/NEUTRAL READY reported; full focus-loss/resume case not established by receipt review. | Do not repeat unchanged A Preview case. B fills only missing bounded case. Gesture-Live focus/handoff remains conditional. |
 | Native Windows Camera with capture already off | PASS (bounded): PR29, followed by explicit Preview reacquisition. | B has bounded Camera/capture recovery reports; preserve initial no-frame failure. | Never relabel as handoff from active gesture capture or a complete shutdown-order proof. |
 | Active-capture native Camera; gesture focus/resume; hold/rearm | UNRUN: no qualifying current-session full Practice grant. | UNRUN: no such grant established. | Conditional session C only after a genuine pass. No settings/gate bypass or full Practice rerun on known failing profile. |
 | Trace-save failure blocks settings change but retains unchanged grant | Software repair verified on main; no native disk-failure observation claimed. | Same boundary. | Do not fill a real disk or revoke a working grant to reproduce simulated storage failure. Report naturally encountered errors with exact action and logs. |
-| Fresh guide-only independent install | No new unaided-install receipt in this consolidation. A existing install remains its own environment. | Assisted independent environment and 1,012-test verification are retained; not guide-only. | Hau Jie performs a separate clean local installation with the guide, logging help/deviations. No copied environment. Keep original assisted result. |
+| Fresh guide-only independent install | No new unaided-install receipt in this consolidation. A existing install remains its own environment. | NOT COMPLETED per 26 Oct update: 33090e5 setup still agent-assisted with a reused environment; A/setup-receipt.json reported. Earlier independent assisted environment remains historical. | Hau Jie performs a separate clean local installation with the guide, logging help/deviations. No copied environment. Keep original assisted result. |
 | Offline core | No new GF-P23 offline acceptance supplied here. | PASS (bounded self-report): Wi-Fi disconnected with app/file/folder use. HTTPS and external online features excluded. | On the fresh installation, record the affected offline local workflow and exact conditions. Do not silently promote earlier self-report to instrumented release acceptance. |
-| Continuous measured 30-minute Studio workflow | UNRUN in current A material. | INTERRUPTED instrumented run: 791.605 s, 79/79 responsiveness samples, working-set peak 170.21 MiB, private-byte peak 979.78 MiB. Separate later 30-minute no-error run is self-report without continuous timing/rate/memory. | B3: a new uninterrupted >=1,800 s full Studio run with independent timing/rate/memory and faults. Never concatenate the two historical runs or relabel a pipeline-only diagnostic as Studio workflow. A requirement remains visible until Deston resolves per-device release coverage. |
-| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | 25 Oct received receipt: camera-off normal closure and later five-frame camera-0 reacquisition; Studio exit code unknown; not active-capture handoff. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
+| Continuous measured 30-minute Studio workflow | UNRUN in current A material. | NOT COMPLETED: new ~7 s Studio interruption; separate reported 300.016 s pipeline diagnostic; additional 30-minute run user-reported completed, records missing/pending review. Preserve historical 791.605 s monitor and earlier self-report separately; see attempt inventory above. | B3: a new uninterrupted >=1,800 s full Studio run with independent timing/rate/memory and faults. Never concatenate the two historical runs or relabel a pipeline-only diagnostic as Studio workflow. A requirement remains visible until Deston resolves per-device release coverage. |
+| Clean exit, camera release after closure and reacquisition | PARTIAL (d9c68c6): WaitForExit returned, numeric exit code blank; post-close Windows Camera video reported. Two launches reused log paths. | PARTIAL: reviewed post-close five-frame probe, its Studio exit unknown; separate ~7 s Studio run reportedly exit 0 with worker release unconfirmed; pipeline diagnostic separately exit 0/worker release. No combined pass. | B3 process/status/post-close release remains; A numeric exit status and complete per-launch logging remain incomplete. Do not repeat successful A UI checks just to replace metadata. |
 | Native 0x8001010d | No reproduced A triggering action in these records. | Historical notice with later continued output; cause and process termination unestablished. | If it recurs during assigned checks, retain triggering action, PID/start/end, stdout/stderr and exit code; matching Windows faulting-module record only for an actual process exit. Do not suppress or call it a crash from the code alone. |
 | Personal six-stage scenario, M/P case study and final video | Manual draft and development summaries only; known failed P03 Practice. | Diagnostic/model receipts are not genuine readiness or workflow success. | Qualified session C, then final guide/video on identified release after GF-P23. No interviews, new recruitment or fabricated S condition. |
 
@@ -308,7 +350,13 @@ Camera launch is requested. Do not repeat PR29's whole focus sequence.
 - Return only new observations/logs/exports and hashes. Existing reference [10]
   is already received and does not need another packet.
 
-### C — conditional actual gesture workflow and final video
+### C — historical workflow/video plan, superseded 26 October
+
+GF-P20 is now complete under Deston's reviewed evaluation. Do not execute this
+old plan as a new assignment. Final GF-P25 guide/video is Deston's responsibility;
+Javier supplies only missing existing footage/device receipts. Any unrun native
+handoff remains a separate device case and must respect actual runtime protections.
+The original planning text below is retained as history.
 
 After a qualifying personal profile exists, configure all targets/maps first.
 Require the genuine current-session 22-window pass, save, exact event
@@ -364,11 +412,11 @@ process/monitor/fault records and checksums. Missing logs are explicitly absent.
 Do not include old reviewed packets again, profiles/data/videos/Word in a code
 PR, or modify prompt/decision logs. Deston reviews acceptance.
 
-Current blockers: remaining A input/association cases and missing isolated fixture
-where unavailable; B affected native, guide-only/offline, measured continuous
-stability and post-close release receipts; incomplete A numeric exit status and
-per-launch logs; no genuine personal readiness,
-actual personal scenario/M/P/hold-negative-latency evidence or final release video.
+Current device blockers: remaining A input/association cases and missing isolated
+fixture where unavailable; B affected native, guide-only/offline, measured continuous
+full-Studio stability and same-run exit/release receipts; incomplete A numeric exit
+status and per-launch logs. B readiness remains reported unqualified. GF-P20 is
+complete; final guide/video belongs to Deston. Do not restart completed evaluation.
 These are separate, not reasons to delay camera-free A1 work.
 
 References: [Javier brief](JAVIER_HANDOFF.md), [team guide](TEAM_GUIDE.md),
