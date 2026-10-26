@@ -1,5 +1,7 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
+**26 October current handoff:** GF-P16 is accepted under owner manual review; the supervised Harbor walkthrough is complete. GF-P20 hold and negative captures are complete; timed comparison and physical-onset latency remain. The dated device receipts and unresolved cases below remain valid. References below to repeating fresh enrolment or the whole walkthrough are superseded by [the current Javier brief](JAVIER_HANDOFF.md). Laptop B is Hau Jie's laptop. Final video/release acceptance remains outstanding.
+
 The 25 October original ZIP and exports/logs have been received and independently
 checked in Deston's checkout. Archive integrity, event/counter reconciliation and
 saved-state validation pass. Physical Windows checks remain Javier's guided

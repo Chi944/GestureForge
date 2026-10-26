@@ -71,8 +71,8 @@ Original inputs remain unchanged under ignored
 `experiments/local/p20-holds-20261026-ready/`; `review_capture.py` reproduces the
 hash-checked `cue-review.json`. No images or video were recorded.
 
-**Next for GF-P20:** ten minutes of non-command activity, then the timed
-manual/personal workflow comparison and remaining independently timed latency
+**Next for GF-P20:** the negative capture below is now complete. Finish the timed
+manual/personal workflow comparison and independent physical-onset latency
 assessment. The hold capture is a completed substep; GF-P20 remains In Progress
 and whole-task accepted points remain **161/223 (72.2%), 20/29**.
 
@@ -106,6 +106,10 @@ the original trace. No raw images or video were saved.
 physical-onset latency assessment. Do not repeat these completed hold/negative
 captures merely to raise the whole-task percentage. Accepted totals remain
 **161/223 (72.2%), 20/29 tasks** until the remaining GF-P20 criteria are resolved.
+
+### Current team handoffs — 26 October
+
+Nine whole tasks remain (GF-P19 through GF-P27). The [team task table](TEAM_GUIDE.md#remaining-tasks-and-handoffs) separates manual and GPT work; the individual briefs are synchronized. Deston owns GF-P20, Hau Jie operates laptop B and reconciles recognition, and Javier finishes laptop A and consolidates both devices. No new whole task is accepted by this documentation update.
 
 ## Historical checkpoint — 25 October
 

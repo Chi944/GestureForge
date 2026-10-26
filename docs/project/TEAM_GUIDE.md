@@ -1,74 +1,36 @@
 # GestureForge Studio team implementation guide
 
-GF-P20 update — 26 October: ten-minute negative capture completed with zero simulated actions; controller replay agrees, compared with 36 naive per-frame requests. Hold and negative capture substeps are complete. Next: timed manual/personal comparison and physical-onset latency assessment. See [current evidence](PROGRESS.md#gf-p20-negative-activity--26-october).
+## Current release briefing — 26 October 2026
 
-Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
+This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
 
-Updated 25 October 2026 · Intended submission 31 October · Official deadline 7 November 2026
+**Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
 
-Deston has authorised project implementation. Build the approved Windows corporate training and demonstration product on the submitted assignment. The assignment ZIP is preserved separately. This guide assigns work; it does not claim that future features or participant tests are complete.
+**GF-P20 completed substeps:** 20 hold cues produced 20 matching simulated actions without extras (the first occurs 0.047 s after its release cue). The ten-minute non-command capture produced zero protected actions versus 36 naive per-frame requests. Replay agrees. These captures do not measure physical-onset latency or native external execution. Do not repeat them merely to increase progress.
 
-## Active release instructions — Revision 5, 24 October
+**Remaining GF-P20:** timed manual/personal comparison and independent physical-onset latency. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
 
-**Updated 25 October:** follow [PROJECT_PLAN.md](PROJECT_PLAN.md) Revision 5 and
-[TEAM_BACKLOG.csv](TEAM_BACKLOG.csv). These active instructions supersede the
-older repair, starter-delivery, recruitment and three-condition study requests
-below. This is Deston's authorised scope revision, not claimed tutor approval.
-The intended submission is 31 October; the official deadline is 7 November.
+**Accepted progress:** Deston 44/75 (58.7%); Hau Jie 63/75 (84.0%); Javier 54/73 (74.0%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
 
-- **Keep:** Windows personal enrolment/saved profiles, all three commands,
-  deck/bookmarks, runbook, approved app/file/folder/HTTPS shortcuts, persistence,
-  manual fallback and existing safety/readiness gates.
-- **Stop:** the failed P02 NEUTRAL-only repair, supplied-starter qualification,
-  interviews, new recruitment, broad model searches, native macOS expansion,
-  extra features and repeated report/presentation rewrites. Preserve research.
-- **Hau Jie:** the [repair disposition](P02_NEUTRAL_REPAIR_2026_10_25.md) is
-  independently reproduced: 22 payload hashes, 520 predictions and 104 trial
-  outcomes agree. The candidate regresses historical NEUTRAL and negatives; it
-  stays uninstalled and does not qualify Original or candidate for LIVE. Operate
-  laptop B for the remaining guide-only/offline/continuous Studio/shutdown cases.
-  Reconcile methods once the chosen release profile and affected checks exist.
-- **Javier:** use the [Windows case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md)
-  to finish remaining manual/native and recovery cases, coordinate laptop B and
-  consolidate receipts. Camera-off close plus later five-frame reacquisition is
-  bounded evidence, not active handoff, retained Studio exit code, fresh install
-  or continuous endurance. Use the reviewed
-  [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run);
-  gapped process samples and headless capture cannot supply that missing evidence.
-  The 25 October laptop-A ZIP is received and its integrity, export counters
-  and saved-state restoration checked. Screenshots are absent from that packet;
-  native execution remains attributed. Do not resend it or repeat successful
-  checks just to regenerate metadata.
-- **Deston:** integrate/review both deliveries and measurement software. His new
-  personal profile now has 47 TRAIN trials / 235 valid samples and a separate
-  complete 48-trial VALIDATION / 240 valid samples. Fixed kNN, multiplier 1.5,
-  margin 1.5 score 48/48 trials correct (macro-F1 1.00); profile reload reproduces
-  all 240 validation predictions. TRAIN lacks one NEUTRAL trial; preserve that
-  incomplete flag and disclose the deviation. Earlier small/interrupted sessions
-  remain excluded. Next: full 22-window Practice, then the six-stage workflow
-  and recovery. No unknown-gesture safety or LIVE qualification is claimed.
+## Remaining tasks and handoffs
 
-**Marker Mac:** Deston requested the existing Apple Silicon core Studio path.
-Use [MACOS.md](../MACOS.md); macOS 13+ and native Python 3.11 are prerequisites.
-The marker's OS version and native run remain unverified. External desktop
-launches stay Windows-only; no new Mac shortcut implementation is assigned.
+| Task | Owner | Manual work | GPT work |
+| --- | --- | --- | --- |
+| GF-P19 | Javier | Javier: finish only outstanding laptop-A native/error-path cases in the Windows matrix; coordinate Hau Jie's laptop-B cases. Retain exact build, actual outcomes and original per-process logs. | Reconcile the two-device matrix, separate observed launches from requests, and validate new receipts without recounting overlapping exports. |
+| GF-P20 | Deston | Deston: complete the timed manual/personal Harbor comparison with declared order, familiarity, assistance and actual mode; obtain independently annotated stable-pose onset times for action latency. | Prepare the comparison record, score both conditions and latency, reuse the completed 20-hold and ten-minute negative captures/replays, and report unmet targets honestly. |
+| GF-P21 | Hau Jie | Hau Jie: review the chosen P01 release-profile limitations and observe only affected recognition checks still required after GF-P20. No new P02 repair or repeated whole Practice is assigned. | Reconcile saved P01 validation, owner acceptance, unchanged automated Practice and GF-P20 evidence; resolve demonstrated retained-profile defects only. Close after GF-P18/GF-P20 and affected checks. |
+| GF-P22 | Javier | Javier with Hau Jie: finish affected native recovery checks on laptops A/B; record failures and actual recovery, preserving unchanged passes. | Fix reproduced viewer/shortcut/runbook/storage defects, add targeted regression coverage, and reconcile GF-P19/GF-P20 before closure. |
+| GF-P23 | Deston | Hau Jie operates laptop B: fresh guide-only installation, offline core, uninterrupted measured 30-minute full Studio run, clean exit and camera reacquisition. Javier supplies missing laptop-A exit/coverage evidence; Deston reviews release acceptance. | Identify exact release/build and hashes, verify install/monitor/shutdown receipts, reconcile two-device coverage and GF-P21/GF-P22. Apple Silicon core remains unverified; browser collection is not native Studio evidence. |
+| GF-P24 | Hau Jie | Hau Jie: check and approve the final methods/results explanation after GF-P21. | Reconcile the private Word methods/results once with chosen P01 release evidence, original classifier comparisons, frozen TEST failures, stopped P02 repair and limits; no TEST tuning. |
+| GF-P25 | Javier | Javier: record genuine new-user enrolment and six-stage gesture/recovery demonstration on the identified release after GF-P23, with actual mode and limitation visible; verify the finished video plays. | Update the personal-first guide and storyboard from current workflow evidence; edit actual footage, verify guide links and package/video consistency. Do not present supervised operation as automated qualification. |
+| GF-P26 | Deston | Deston: approve the reconciled final report/slides, complete required declaration/contribution facts before submission, and rehearse the ten-minute presentation. | After GF-P23/GF-P24/GF-P25, update the local Word report, requirements/test matrix and slides once; check tools, AI use, references, evidence and file consistency. Keep Word logs local and unchanged. |
+| GF-P27 | Deston | Deston: submit to LMS, then download/open the uploaded files and verify playback and contents. | After GF-P26, assemble and verify the permitted source/data/assets, report, guide, video, slides and declaration; exclude private extras/secrets and check archive contents. |
 
-After a personal profile genuinely qualifies, verify the real six-stage workflow
-and recovery. One consenting available team operator can supply the M/P case
-study; use a second only if readily available. Record familiarity, condition order,
-assistance, errors and actual outcomes with small-sample limits. No current
-personal LIVE pass is established, and manual controls alone do not establish a
-working gesture product. Reconcile report/matrix/slides and video once after the
-real workflow and release evidence exist.
+Work in parallel now: Deston finishes GF-P20; Hau Jie runs laptop B and prepares the recognition reconciliation; Javier finishes laptop A and consolidates both devices. Then close GF-P21/GF-P22, verify GF-P23, finalise GF-P24/GF-P25, and complete GF-P26/GF-P27. The dates are targets, not evidence of completion.
 
-The 22-window Practice gate, 20 five-second holds, ten-minute negative activity,
-latency/replay evidence and two-Windows guide/offline/30-minute/shutdown checks
-remain. No threshold relaxation or TEST tuning; task weights, dependencies and
-completed-task history is retained. Current accepted progress is **161/223 (72.2%),
-20/29 tasks Done**: Deston 44/75, Hau Jie 63/75, Javier 54/73, including GF-P16
-accepted under the owner-approved manual-review criterion above.
-Hau Jie pushes `codex/hau-jie-profiles`; Javier pushes
-`codex/javier-shortcuts`; Deston reviews and merges.
+Hau Jie pushes **codex/hau-jie-profiles**; Javier pushes **codex/javier-shortcuts**. Submit focused PRs; Deston reviews and merges main. Send numeric data, full logs and Word deliverables privately; commit only source and sanitized evidence. Each handoff must identify task/case IDs, actual commit/dirty state or archive hash, expected/observed outcome, evidence paths, failures and remaining gaps.
+
+See [backlog](TEAM_BACKLOG.csv), [progress](PROGRESS.md), [Hau Jie brief](HAU_JIE_HANDOFF.md), [Javier brief](JAVIER_HANDOFF.md), [Windows remaining cases](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md) and [workflow comparison](WORKFLOW_COMPARISON.md). The marker's Apple Silicon core installation remains unverified; successful browser data collection does not verify native Studio.
 
 ## Previous deliveries and technical reference
 

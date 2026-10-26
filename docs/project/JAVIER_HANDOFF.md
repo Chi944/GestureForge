@@ -1,67 +1,43 @@
 # Javier implementation brief
 
-GF-P20 update — 26 October: ten-minute negative capture completed with zero simulated actions; controller replay agrees, compared with 36 naive per-frame requests. Hold and negative capture substeps are complete. Next: timed manual/personal comparison and physical-onset latency assessment. See [current evidence](PROGRESS.md#gf-p20-negative-activity--26-october).
+## Current release briefing — 26 October 2026
 
-Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
+This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
 
-## Current direction — 26 October
+**Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
 
-Deston confirmed basic supervised gesture operation on c49244a. Prepare the real Harbor six-stage workflow/video with the visible supervised-demo override and honest limitations. Continue remaining laptop-A native/recovery checks and consolidate laptop-B evidence. Retain before/after restore exports and actual app outcomes; a launch request alone is not task completion. Work on codex/javier-shortcuts and submit a focused PR.
+**GF-P20 completed substeps:** 20 hold cues produced 20 matching simulated actions without extras (the first occurs 0.047 s after its release cue). The ten-minute non-command capture produced zero protected actions versus 36 naive per-frame requests. Replay agrees. These captures do not measure physical-onset latency or native external execution. Do not repeat them merely to increase progress.
 
-26 October workflow update: Deston completed the supervised Harbor walkthrough with agent-assisted recovery/save/restore and manual Finish. Reuse [the verified results](SUPERVISED_WORKFLOW_2026_10_26.md); do not request the same whole walkthrough again. This is not a Practice pass, timed study or recorded demo video.
+**Remaining GF-P20:** timed manual/personal comparison and independent physical-onset latency. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
 
-Latest operator review: **22/22 manually accepted by Deston**, following his reported review with Claude; autofocus is his reported explanation. Keep this separate from the unchanged 19/22 automated measurement. Reuse existing workflow evidence and continue the remaining device/performance/report work; no repeat session is requested by this update. See [assessment provenance](SUPERVISED_WORKFLOW_2026_10_26.md#operator-review).
+**Accepted progress:** Deston 44/75 (58.7%); Hau Jie 63/75 (84.0%); Javier 54/73 (74.0%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
 
-See [current progress](PROGRESS.md). Earlier directions below are historical where they conflict with this update.
+## Your next delivery
 
-You own the viewer, workspaces, runbooks and desktop shortcuts for GestureForge Studio. Build and test these product components; Deston owns the common shell, routing safety and final acceptance. Read `TEAM_GUIDE.md` and `CONTRACTS.md` before coding.
+### GF-P19
 
-## Active task — finish Windows evidence, Revision 5, 24 October
+- **Manual:** Javier: finish only outstanding laptop-A native/error-path cases in the Windows matrix; coordinate Hau Jie's laptop-B cases. Retain exact build, actual outcomes and original per-process logs.
+- **GPT:** Reconcile the two-device matrix, separate observed launches from requests, and validate new receipts without recounting overlapping exports.
 
-**Updated 25 October:** the [bounded P02 repair](P02_NEUTRAL_REPAIR_2026_10_25.md)
-is independently reproduced and failed. Stop that experiment; no personal LIVE
-qualification is established. New recruitment, interviews, shared-starter
-qualification and the three-condition user study remain deferred. Existing
-product features, safety and two-laptop verification remain.
+### GF-P22
 
-1. **Manual now:** follow the
-   [remaining Windows case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md)
-   for laptop-A app/file/folder/HTTPS association, missing-target, invalid-scheme
-   and explicit recovery cases. Your new 25 October save/restore, clearing and
-   pause/reacquisition observations are recorded as reported passes. The original
-   nine-member ZIP is now received: integrity, export counters and saved budget
-   stage reproduce; current restore validators pass with a stub callback.
-   Screenshots are absent and native behaviour remains attributed. Do not resend
-   the ZIP or repeat successful cases. Preview only simulates; the corrected native-notice procedure explicitly
-   selects Live / Apply and pause / Manual LIVE ready with Camera off.
-2. **GPT now:** sync reviewed main into `codex/javier-shortcuts` and consolidate
-   the matrix with exact builds, observed outcomes and remaining gaps. Hau Jie's
-   camera-off window close followed by five camera-0 frames is bounded evidence,
-   not active handoff or a retained Studio exit code. Assisted reused-environment
-   setup and gapped responsiveness samples do not close fresh guide-only setup
-   or continuous full Studio endurance. Use the reviewed
-   [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
-   for the remaining run; keep genuine timing and shutdown observations.
-   Fix reproduced retained-feature defects and leave review/merge to Deston.
-3. **Hau Jie operates laptop B:** coordinate its remaining guide-only install,
-   offline core, measured continuous full Studio run and shutdown/camera checks.
-   Do not rerun unchanged successful cases or substitute headless capture results.
-4. **Once a personal profile genuinely qualifies:** help Deston observe the
-   six-stage workflow and manual-versus-personal case study with at least one
-   consenting available team operator. A fresh complete four-pose enrolment is
-   the next option; Deston volunteered and confirmed his webcam. No result is promised.
-   Record real order, times, errors, assistance and familiarity using
-   [WORKFLOW_COMPARISON.md](WORKFLOW_COMPARISON.md).
-5. **After the working path passes:** finish eligible active-capture Camera and
-   focus/recovery cases, then film the actual gesture/recovery demonstration on
-   the identified release build. Existing manual footage remains a draft. Finish
-   the personal-first guide once, with genuine results and limitations.
+- **Manual:** Javier with Hau Jie: finish affected native recovery checks on laptops A/B; record failures and actual recovery, preserving unchanged passes.
+- **GPT:** Fix reproduced viewer/shortcut/runbook/storage defects, add targeted regression coverage, and reconcile GF-P19/GF-P20 before closure.
 
-Do not collect for Hau Jie or rerun Practice on the failed candidate. The existing
-22-window gate, hold/negative measurements and no unintended external actions
-remain. Aim for device/video handoff by 29 October for the 31 October target.
-Your accepted progress remains **54/73 (74.0%)**. Dated instructions below are
-historical wherever this section and [Revision 5](PROJECT_PLAN.md) supersede them.
+### GF-P25
+
+- **Manual:** Javier: record genuine new-user enrolment and six-stage gesture/recovery demonstration on the identified release after GF-P23, with actual mode and limitation visible; verify the finished video plays.
+- **GPT:** Update the personal-first guide and storyboard from current workflow evidence; edit actual footage, verify guide links and package/video consistency. Do not present supervised operation as automated qualification.
+
+**Device coordination:** Hau Jie operates laptop B. You consolidate its original receipts with laptop A and supply missing numeric process-exit/coverage evidence for GF-P23. Use [the case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); repeat only incomplete or affected cases. A camera-off close or five-frame reacquisition alone does not prove active handoff or continuous endurance. Work on **codex/javier-shortcuts**.
+
+## Prompt to give your coding agent
+
+> Read the current section of this brief and TEAM_GUIDE.md before the dated history. Sync reviewed main into my own branch, preserving local changes and private evidence. Complete the GPT work listed above, using existing evidence and only fixing reproduced defects. Prepare the remaining device checks for me; do not invent physical passes, repeat completed captures, change qualification records, tune TEST, or push main. Submit a focused PR with fresh targeted checks and a sanitized case/result summary. Keep full logs, participant data and Word documents private. State exactly which remaining actions require my physical laptop.
+
+## Historical instructions and technical reference
+
+The following dated instructions are retained for provenance. Use the current delivery above wherever they conflict.
 
 ## Recovery fixes and next work — 23 October
 
