@@ -2,6 +2,8 @@
 
 ## Current release briefing — 26 October 2026
 
+**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
+
 This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
 
 **Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
@@ -10,7 +12,7 @@ This section is the current work assignment. Dated instructions below are refere
 
 **Remaining GF-P20:** timed manual/personal comparison and independent physical-onset latency. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
 
-**Accepted progress:** Deston 44/75 (58.7%); Hau Jie 63/75 (84.0%); Javier 54/73 (74.0%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
+**Accepted progress:** Deston 44/89 (49.4%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
 
 ## Your next delivery
 
@@ -19,10 +21,9 @@ This section is the current work assignment. Dated instructions below are refere
 - **Manual:** Hau Jie: review the chosen P01 release-profile limitations and observe only affected recognition checks still required after GF-P20. No new P02 repair or repeated whole Practice is assigned.
 - **GPT:** Reconcile saved P01 validation, owner acceptance, unchanged automated Practice and GF-P20 evidence; resolve demonstrated retained-profile defects only. Close after GF-P18/GF-P20 and affected checks.
 
-### GF-P24
+### GF-P24 handoff to Deston
 
-- **Manual:** Hau Jie: check and approve the final methods/results explanation after GF-P21.
-- **GPT:** Reconcile the private Word methods/results once with chosen P01 release evidence, original classifier comparisons, frozen TEST failures, stopped P02 repair and limits; no TEST tuning.
+Deston owns the final methods/results delivery. Supply existing private methods draft, recognition results and source references; answer factual questions and focus your remaining work on GF-P21 and laptop B. No duplicate report rewrite is assigned.
 
 **Laptop B support for GF-P19/GF-P23:** Hau Jie operates laptop B: fresh guide-only installation, offline core, uninterrupted measured 30-minute full Studio run, clean exit and camera reacquisition. Javier supplies missing laptop-A exit/coverage evidence; Deston reviews release acceptance.
 

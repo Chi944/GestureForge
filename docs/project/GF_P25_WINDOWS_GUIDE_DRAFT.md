@@ -1,6 +1,6 @@
 # GF-P25: Windows Studio user-guide draft
 
-Owner: Javier. Prepared 19 October 2026 for Deston's review.
+Current delivery owner: Deston (transferred 26 October 2026). Original draft prepared by Javier on 19 October 2026; preserve his contribution.
 Status: documentation draft, not a completed demo or release acceptance.
 Runtime reference: the identified 16 October Studio package, clean source
 `d200947692253ede0c264755152e4419530147a3`.

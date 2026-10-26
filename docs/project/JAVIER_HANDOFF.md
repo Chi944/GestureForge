@@ -2,6 +2,8 @@
 
 ## Current release briefing — 26 October 2026
 
+**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
+
 This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
 
 **Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
@@ -10,7 +12,7 @@ This section is the current work assignment. Dated instructions below are refere
 
 **Remaining GF-P20:** timed manual/personal comparison and independent physical-onset latency. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
 
-**Accepted progress:** Deston 44/75 (58.7%); Hau Jie 63/75 (84.0%); Javier 54/73 (74.0%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
+**Accepted progress:** Deston 44/89 (49.4%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
 
 ## Your next delivery
 
@@ -24,10 +26,9 @@ This section is the current work assignment. Dated instructions below are refere
 - **Manual:** Javier with Hau Jie: finish affected native recovery checks on laptops A/B; record failures and actual recovery, preserving unchanged passes.
 - **GPT:** Fix reproduced viewer/shortcut/runbook/storage defects, add targeted regression coverage, and reconcile GF-P19/GF-P20 before closure.
 
-### GF-P25
+### GF-P25 handoff to Deston
 
-- **Manual:** Javier: record genuine new-user enrolment and six-stage gesture/recovery demonstration on the identified release after GF-P23, with actual mode and limitation visible; verify the finished video plays.
-- **GPT:** Update the personal-first guide and storyboard from current workflow evidence; edit actual footage, verify guide links and package/video consistency. Do not present supervised operation as automated qualification.
+Deston owns the final guide and demo video. Supply your existing guide draft, storyboard, original footage and relevant device receipts with their actual build identities. Continue GF-P19/GF-P22 and device consolidation; no duplicate filming or final guide rewrite is assigned.
 
 **Device coordination:** Hau Jie operates laptop B. You consolidate its original receipts with laptop A and supply missing numeric process-exit/coverage evidence for GF-P23. Use [the case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); repeat only incomplete or affected cases. A camera-off close or five-frame reacquisition alone does not prove active handoff or continuous endurance. Work on **codex/javier-shortcuts**.
 

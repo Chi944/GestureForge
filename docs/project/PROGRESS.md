@@ -4,6 +4,8 @@ Snapshot: 26 October 2026. Task weights measure accepted work, not an expected g
 
 ## Current checkpoint — 26 October: GF-P16 owner-accepted; GF-P20 holds and negatives captured
 
+**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
+
 Deston completed the Harbor walkthrough on build **a8b86f6**, with agent assistance
 for file recovery, saving/restoring and final manual Finish. The exported events
 show gesture NEXT/PREVIOUS, stage transitions, Calculator/reference/folder launch
@@ -42,8 +44,8 @@ remaining two-laptop native/release evidence and the separately measured hold,
 negative and workflow-comparison checks. No repeat of this whole walkthrough is
 needed solely to reproduce its verified recovery/persistence results.
 
-**Accepted whole tasks: 161/223 (72.2%), 20/29.** Deston 44/75 (58.7%), Hau Jie
-63/75 (84.0%), Javier 54/73 (74.0%). The additional ten points are GF-P16
+**Accepted whole tasks: 161/223 (72.2%), 20/29.** Deston 44/89 (49.4%), Hau Jie
+63/69 (91.3%), Javier 54/65 (83.1%). The additional ten points are GF-P16
 accepted under the explicitly revised owner criterion, not an improved automated
 score. GF-P20 is now the active evaluation task. Weights are unchanged.
 

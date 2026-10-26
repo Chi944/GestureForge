@@ -2,6 +2,8 @@
 
 ## Current release briefing — 26 October 2026
 
+**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
+
 This section is the current work assignment. Dated instructions below are reference/history and must not restart completed work. Target submission: **31 October**; official deadline: **7 November**.
 
 **Accepted:** GF-P16 is Done under Deston's revised manual-review criterion. Operator acceptance is 22/22; the automated Practice measurement remains 19/22. The supervised Harbor workflow/recovery is verified. Runtime protections and recorded outcomes are unchanged. This criterion revision applies to GF-P16 only.
@@ -10,7 +12,7 @@ This section is the current work assignment. Dated instructions below are refere
 
 **Remaining GF-P20:** timed manual/personal comparison and independent physical-onset latency. Record actual supervision/readiness, assistance and failures; do not label supervised operation as an automated qualification pass. Stop P02 repair/model searches, interviews, recruitment and native Mac expansion. Preserve existing evidence.
 
-**Accepted progress:** Deston 44/75 (58.7%); Hau Jie 63/75 (84.0%); Javier 54/73 (74.0%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
+**Accepted progress:** Deston 44/89 (49.4%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **161/223 (72.2%), 20/29 tasks**. Nine whole tasks remain. Completion of a substep does not award its whole task weight.
 
 ## Remaining tasks and handoffs
 
@@ -21,12 +23,12 @@ This section is the current work assignment. Dated instructions below are refere
 | GF-P21 | Hau Jie | Hau Jie: review the chosen P01 release-profile limitations and observe only affected recognition checks still required after GF-P20. No new P02 repair or repeated whole Practice is assigned. | Reconcile saved P01 validation, owner acceptance, unchanged automated Practice and GF-P20 evidence; resolve demonstrated retained-profile defects only. Close after GF-P18/GF-P20 and affected checks. |
 | GF-P22 | Javier | Javier with Hau Jie: finish affected native recovery checks on laptops A/B; record failures and actual recovery, preserving unchanged passes. | Fix reproduced viewer/shortcut/runbook/storage defects, add targeted regression coverage, and reconcile GF-P19/GF-P20 before closure. |
 | GF-P23 | Deston | Hau Jie operates laptop B: fresh guide-only installation, offline core, uninterrupted measured 30-minute full Studio run, clean exit and camera reacquisition. Javier supplies missing laptop-A exit/coverage evidence; Deston reviews release acceptance. | Identify exact release/build and hashes, verify install/monitor/shutdown receipts, reconcile two-device coverage and GF-P21/GF-P22. Apple Silicon core remains unverified; browser collection is not native Studio evidence. |
-| GF-P24 | Hau Jie | Hau Jie: check and approve the final methods/results explanation after GF-P21. | Reconcile the private Word methods/results once with chosen P01 release evidence, original classifier comparisons, frozen TEST failures, stopped P02 repair and limits; no TEST tuning. |
-| GF-P25 | Javier | Javier: record genuine new-user enrolment and six-stage gesture/recovery demonstration on the identified release after GF-P23, with actual mode and limitation visible; verify the finished video plays. | Update the personal-first guide and storyboard from current workflow evidence; edit actual footage, verify guide links and package/video consistency. Do not present supervised operation as automated qualification. |
+| GF-P24 | Deston | Deston: check and approve the final methods/results explanation after GF-P21. | Reconcile the private Word methods/results once with chosen P01 release evidence, original classifier comparisons, frozen TEST failures, stopped P02 repair and limits; no TEST tuning. |
+| GF-P25 | Deston | Deston: record genuine new-user enrolment and six-stage gesture/recovery demonstration on the identified release after GF-P23, with actual mode and limitation visible; verify the finished video plays. | Update the personal-first guide and storyboard from current workflow evidence; edit actual footage, verify guide links and package/video consistency. Do not present supervised operation as automated qualification. |
 | GF-P26 | Deston | Deston: approve the reconciled final report/slides, complete required declaration/contribution facts before submission, and rehearse the ten-minute presentation. | After GF-P23/GF-P24/GF-P25, update the local Word report, requirements/test matrix and slides once; check tools, AI use, references, evidence and file consistency. Keep Word logs local and unchanged. |
 | GF-P27 | Deston | Deston: submit to LMS, then download/open the uploaded files and verify playback and contents. | After GF-P26, assemble and verify the permitted source/data/assets, report, guide, video, slides and declaration; exclude private extras/secrets and check archive contents. |
 
-Work in parallel now: Deston finishes GF-P20; Hau Jie runs laptop B and prepares the recognition reconciliation; Javier finishes laptop A and consolidates both devices. Then close GF-P21/GF-P22, verify GF-P23, finalise GF-P24/GF-P25, and complete GF-P26/GF-P27. The dates are targets, not evidence of completion.
+Work in parallel now: Deston prepares GF-P24/GF-P25 and finishes GF-P20; Hau Jie runs laptop B and prepares the recognition reconciliation; Javier finishes laptop A and consolidates both devices. Then close GF-P21/GF-P22, verify GF-P23, finalise GF-P24/GF-P25, and complete GF-P26/GF-P27. The dates are targets, not evidence of completion.
 
 Hau Jie pushes **codex/hau-jie-profiles**; Javier pushes **codex/javier-shortcuts**. Submit focused PRs; Deston reviews and merges main. Send numeric data, full logs and Word deliverables privately; commit only source and sanitized evidence. Each handoff must identify task/case IDs, actual commit/dirty state or archive hash, expected/observed outcome, evidence paths, failures and remaining gaps.
 

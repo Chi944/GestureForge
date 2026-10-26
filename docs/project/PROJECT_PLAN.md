@@ -1,6 +1,9 @@
 # GestureForge Studio approved project build plan
 
-Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/75, Hau Jie 63/75, Javier 54/73. Start GF-P20; earlier conflicting next-step/status text below is historical.
+**Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
+
+
+Latest decision — 26 October: Deston explicitly directed that his manual review count in place of the automated qualification criterion for GF-P16. GF-P16 is accepted under this revised owner-approved criterion, using 22/22 operator acceptance and the verified Harbor workflow/recovery. The measured Practice result remains 19/22; this is not a claim of automated qualification, tutor approval, or GF-P20 performance acceptance. Runtime protections and model settings are unchanged. Current accepted work: **161/223 (72.2%), 20/29 tasks**; Deston 44/89, Hau Jie 63/69, Javier 54/65. Continue GF-P20 and prepare GF-P24/GF-P25; earlier conflicting next-step/status text below is historical.
 
 ## Current direction — 26 October
 
