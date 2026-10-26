@@ -4,17 +4,21 @@ from dataclasses import replace
 import json
 import os
 from unittest.mock import Mock
+from zipfile import ZipFile
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import pytest
+import numpy as np
+import cv2
 from PySide6.QtWidgets import QApplication
 
 from gestureforge.dataset import save_dataset
+from gestureforge.contracts import Prediction
 from gestureforge.fixtures import synthetic_dataset
 from gestureforge.profiles import ProfileStore
 from gestureforge.vocabulary import GestureVocabulary
-from scripts.run_p20 import GuidedWindow, HoldSequence, NEGATIVE_CUES
+from scripts.run_p20 import GuidedWindow, HoldSequence, LatencyFrames, NEGATIVE_CUES, main
 
 
 def test_twenty_cues_are_five_seconds_with_neutral_and_no_inferred_pass():
@@ -143,6 +147,9 @@ def test_window_starts_no_camera_and_close_retains_not_started(window):
     assert window.names["G1"]
     window.close()
     assert json.loads((window.output / "run.json").read_text())["status"] == "not_started"
+    assert window.latency_frames is None
+    assert not window.record_latency_video
+    assert not list(window.output.glob("private-latency*"))
 
 
 @pytest.mark.parametrize("window", [True], indirect=True)
@@ -223,3 +230,92 @@ def test_focus_loss_stops_and_preserves_cues(window, monkeypatch):
     assert report["status"] == "interrupted"
     assert report["completed_cue_windows"] == 0
     assert any(c["kind"] == "hold" for c in report["cues"])
+
+
+def test_private_frames_preserve_timestamp_identity_gaps_and_unmirrored_image(tmp_path):
+    recording = LatencyFrames(tmp_path)
+    frame = np.zeros((480, 800, 3), dtype=np.uint8)
+    frame[:, :400] = (0, 0, 255)
+    first = Prediction("session", "profile", 4, 100.125, "G1", True)
+    recording.append(frame, first)
+    recording.append(frame, replace(first, frame_id=7, timestamp=100.325))
+    report = recording.close()
+    assert report["frame_count"] == 2 and report["skipped_capture_frames"] == 2
+    assert report["max_capture_gap_seconds"] == pytest.approx(0.2)
+    index = [json.loads(line) for line in (tmp_path / "private-latency-frames.jsonl").read_text().splitlines()]
+    assert [r["capture_timestamp"] for r in index] == [100.125, 100.325]
+    assert [r["frame_id"] for r in index] == [4, 7]
+    assert all(r["session_id"] == "session" for r in index)
+    with ZipFile(tmp_path / "private-latency-frames.zip") as archive:
+        decoded = cv2.imdecode(np.frombuffer(archive.read("000000.jpg"), np.uint8), cv2.IMREAD_COLOR)
+    assert decoded.shape == (384, 640, 3)
+    assert decoded[100, 100, 2] > 240 and decoded[100, 500, 2] < 10
+    assert recording.close() == report
+    with pytest.raises(ValueError, match="closed"):
+        recording.append(frame, first)
+
+
+@pytest.mark.parametrize("limit,value,match", [("MAX_BYTES", 1, "storage"),
+                                               ("MAX_FRAMES", 0, "frame limit")])
+def test_private_recording_caps_before_writing(tmp_path, monkeypatch, limit, value, match):
+    recording = LatencyFrames(tmp_path)
+    monkeypatch.setattr(recording, limit, value)
+    with pytest.raises(ValueError, match=match):
+        recording.append(np.zeros((8, 8, 3), np.uint8), Prediction("s", "p", 0, 1, "G1", True))
+    assert recording.close()["frame_count"] == 0
+
+
+def test_private_recording_rejects_out_of_order_and_excessive_duration(tmp_path):
+    recording = LatencyFrames(tmp_path)
+    frame = np.zeros((8, 8, 3), np.uint8)
+    first = Prediction("s", "p", 3, 1, "G1", True)
+    recording.append(frame, first)
+    with pytest.raises(ValueError, match="identity/time"):
+        recording.append(frame, first)
+    with pytest.raises(ValueError, match="six-minute"):
+        recording.append(frame, replace(first, frame_id=4, timestamp=362))
+    assert recording.close()["frame_count"] == 1
+
+
+def test_recording_failure_stops_packet_dispatch_and_marks_incomplete(window, monkeypatch):
+    window.latency_frames = Mock()
+    window.latency_frames.append.side_effect = OSError("disk full")
+    window.latency_frames.close.return_value = {"frame_count": 0}
+    window.hold_sequence = HoldSequence(("G1", "G2", "G3"), 0)
+    packet = (np.zeros((8, 8, 3), np.uint8), Prediction("s", "p", 0, 1, "G1", True))
+    monkeypatch.setattr("scripts.run_p20.QTimer.singleShot", lambda delay, callback: None)
+    assert window.record_packet(packet) is None
+    assert window.hold_sequence.phase == "interrupted"
+    assert "disk full" in window.hold_sequence.reason
+    window.finish_holds()
+    report = json.loads((window.output / "run.json").read_text())
+    assert report["status"] == "interrupted" and report["capture_passed"] is None
+    assert report["private_visual_recording_error"] == "disk full"
+    window.latency_frames.close.assert_called_once()
+
+
+def test_recording_opt_in_wraps_existing_mailbox_without_second_camera(window, monkeypatch):
+    window.record_latency_video = True
+    worker = Mock()
+    packet = (np.zeros((8, 8, 3), np.uint8), Prediction("s", "p", 0, 1, "G1", True))
+    worker.take_latest.return_value = packet
+    def start_camera():
+        window.worker = worker
+        window.evaluation_trace = Mock()
+    monkeypatch.setattr(window, "start_camera", start_camera)
+    monkeypatch.setattr(window, "pause", lambda: True)
+    window.start_holds()
+    original = worker.take_latest
+    assert original() is packet
+    assert window.latency_frames.count == 1
+    window.hold_sequence.interrupt("test finished", 2)
+    window.finish_holds()
+    window.worker = None
+    window.evaluation_trace = None
+    assert window.latency_frames.closed
+
+
+def test_private_video_cli_refuses_public_output_before_profile_or_camera(tmp_path):
+    with pytest.raises(SystemExit) as exc:
+        main(["--profile-id", "unused", "--output-dir", str(tmp_path), "--record-latency-video"])
+    assert exc.value.code == 2

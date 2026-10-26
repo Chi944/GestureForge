@@ -8,11 +8,14 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass, field
 import hashlib
+import json
 from pathlib import Path
 import sys
 import time
 from typing import Any
+from zipfile import BadZipFile, ZIP_STORED, ZipFile
 
+import cv2
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -35,6 +38,93 @@ NEGATIVE_CUES = (
     "Alternate an open palm with resting your hand flat on the desk.",
     "Move your arms naturally with open hands; do not make a command pose.",
 )
+
+
+class LatencyFrames:
+    """Private timestamped JPEG sequence; timestamps, not playback FPS, define time."""
+
+    MAX_BYTES = 128 * 1024 * 1024
+    MAX_SECONDS = 360
+    MAX_FRAMES = 6000
+
+    def __init__(self, output: Path):
+        self.output = output
+        self.archive = ZipFile(output / "private-latency-frames.zip", "x", ZIP_STORED)
+        try:
+            self.index = (output / "private-latency-frames.jsonl").open("x", encoding="utf-8")
+        except OSError:
+            self.archive.close()
+            raise
+        self.count = 0
+        self.reserved_bytes = 0
+        self.first: Any = None
+        self.previous: Any = None
+        self.skipped = 0
+        self.max_gap = 0.0
+        self.closed = False
+
+    def append(self, frame, prediction) -> None:
+        if self.closed:
+            raise ValueError("Private recording is closed")
+        if self.count >= self.MAX_FRAMES:
+            raise ValueError("Private recording reached its frame limit")
+        if self.previous is not None:
+            if (prediction.session_id != self.previous.session_id
+                    or prediction.frame_id <= self.previous.frame_id
+                    or prediction.timestamp <= self.previous.timestamp):
+                raise ValueError("Private recording received inconsistent frame identity/time")
+            if prediction.timestamp - self.first.timestamp > self.MAX_SECONDS:
+                raise ValueError("Private recording reached its six-minute limit")
+        height, width = frame.shape[:2]
+        if max(height, width) > 640:
+            ratio = 640 / max(height, width)
+            frame = cv2.resize(frame, (round(width * ratio), round(height * ratio)))
+        ok, encoded = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        if not ok:
+            raise OSError("Could not encode private camera frame")
+        data = encoded.tobytes()
+        # Reserve more than the per-entry ZIP/index overhead to bound final output size.
+        if self.reserved_bytes + len(data) + 1024 > self.MAX_BYTES:
+            raise ValueError("Private recording reached its 128 MiB storage limit")
+        name = f"{self.count:06d}.jpg"
+        self.archive.writestr(name, data)
+        assert self.archive.fp is not None
+        self.archive.fp.flush()
+        self.index.write(json.dumps({"image": name, "frame_id": prediction.frame_id,
+                                     "session_id": prediction.session_id,
+                                     "profile_id": prediction.profile_id,
+                                     "capture_timestamp": prediction.timestamp,
+                                     "jpeg_sha256": hashlib.sha256(data).hexdigest()}) + "\n")
+        self.index.flush()
+        if self.previous is not None:
+            self.skipped += prediction.frame_id - self.previous.frame_id - 1
+            self.max_gap = max(self.max_gap, prediction.timestamp - self.previous.timestamp)
+        self.first = self.first or prediction
+        self.previous = prediction
+        self.count += 1
+        self.reserved_bytes += len(data) + 1024
+
+    def close(self) -> dict:
+        if not self.closed:
+            self.closed = True
+            try:
+                self.archive.close()
+            finally:
+                self.index.close()
+        with ZipFile(self.output / "private-latency-frames.zip") as archive:
+            if archive.testzip() is not None or len(archive.namelist()) != self.count:
+                raise OSError("Private frame archive verification failed")
+        return {"format": "timestamped-jpeg-sequence-v1", "frame_count": self.count,
+                "skipped_capture_frames": self.skipped, "max_capture_gap_seconds": self.max_gap,
+                "first_capture_timestamp": self.first.timestamp if self.first else None,
+                "last_capture_timestamp": self.previous.timestamp if self.previous else None,
+                "unmirrored": True, "maximum_image_dimension": 640,
+                "files_sha256": {name: hashlib.sha256((self.output / name).read_bytes()).hexdigest()
+                                 for name in ("private-latency-frames.zip", "private-latency-frames.jsonl")},
+                "limitations": ["Only delivered Studio mailbox frames are recorded; inspect gaps.",
+                                "Frame timestamps follow camera read, not physical sensor exposure.",
+                                "JPEG encoding/storage overhead is included in this measured run.",
+                                "Independent physical-pose annotation is still required."]}
 
 
 @dataclass
@@ -128,7 +218,10 @@ class HoldSequence:
 
 
 class GuidedWindow(Window):
-    def __init__(self, loaded, store: ProfileStore, camera: int, output: Path, *, negative: bool = False):
+    def __init__(self, loaded, store: ProfileStore, camera: int, output: Path, *, negative: bool = False,
+                 record_latency_video: bool = False):
+        if negative and record_latency_video:
+            raise ValueError("Private latency recording is for the short hold run only")
         record = loaded.record
         settings = record.settings
         super().__init__(
@@ -151,7 +244,11 @@ class GuidedWindow(Window):
         assert self.routing is not None
         self.expected_snapshot = self.routing.snapshot
         self.finished_evidence = False
+        self.record_latency_video = record_latency_video
+        self.latency_frames: LatencyFrames | None = None
+        self.latency_error = ""
         self.metadata = {"profile_id": record.profile_id, "negative_activity": negative,
+                         "private_visual_recording_enabled": record_latency_video,
                          "model_version": record.model_version,
                          "manifest_sha256": record.manifest_sha256,
                          "features_sha256": record.features_sha256,
@@ -168,6 +265,9 @@ class GuidedWindow(Window):
                         if negative else "20 holds · 5 seconds each · about 3–5 minutes")
         self.cue = QLabel(introduction + "\nStart when ready. Keep this window focused; "
                           "Esc stops and saves an incomplete run.")
+        if record_latency_video:
+            self.cue.setText(self.cue.text() + "\nPRIVATE camera images will be saved locally "
+                             "after Start (max 128 MiB / six minutes). No audio or upload.")
         self.cue.setWordWrap(True)
         self.cue.setStyleSheet("background:#173548;color:#ffffff;font-size:20px;padding:12px;")
         self.begin_holds = QPushButton("Start guided ten-minute negative test" if negative
@@ -216,10 +316,35 @@ class GuidedWindow(Window):
             self.hold_sequence.interrupt("Camera did not start; no trial was performed", now)
             self.finish_holds()
             return
+        if self.record_latency_video:
+            try:
+                self.latency_frames = LatencyFrames(self.output)
+            except (OSError, ValueError, BadZipFile) as exc:
+                self.latency_error = str(exc)
+                self.hold_sequence.interrupt(f"Private recording failed: {exc}", now)
+                self.finish_holds()
+                return
+            take_latest = self.worker.take_latest
+            self.worker.take_latest = lambda: self.record_packet(take_latest())
         if not self.save_cues():
             return
         self.hold_timer.start(50)
         self.render_cue(now)
+
+    def record_packet(self, packet):
+        if packet is None or self.latency_frames is None:
+            return packet
+        if self.latency_error:
+            return None
+        try:
+            self.latency_frames.append(packet[0], packet[1])
+        except (OSError, ValueError, cv2.error) as exc:
+            self.latency_error = str(exc)
+            assert self.hold_sequence is not None
+            self.hold_sequence.interrupt(f"Private recording failed: {exc}", time.monotonic())
+            QTimer.singleShot(0, self.finish_holds)
+            return None
+        return packet
 
     def tick_holds(self) -> None:
         sequence = self.hold_sequence
@@ -296,6 +421,15 @@ class GuidedWindow(Window):
             self.cue.setText("Trace could not be saved. Keep Studio open and use Pause to retry; review required.")
             self.offer_save_retry()
             return
+        if self.latency_frames is not None:
+            try:
+                self.metadata["private_visual_recording"] = self.latency_frames.close()
+            except (OSError, ValueError, BadZipFile) as exc:
+                self.latency_error = str(exc)
+            self.metadata["private_visual_recording_error"] = self.latency_error
+            if self.latency_error:
+                self.hold_sequence.phase = "interrupted"
+                self.hold_sequence.reason = f"Private recording requires review: {self.latency_error}"
         if not self.save_cues():
             return
         try:
@@ -328,13 +462,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--smoke-test", action="store_true")
     parser.add_argument("--negative", action="store_true", help="guide ten minutes of non-command activity")
+    parser.add_argument("--record-latency-video", action="store_true",
+                        help="with consent, save private timestamped JPEG camera frames for onset annotation")
     args = parser.parse_args(argv)
+    if args.record_latency_video:
+        roots = [Path("experiments/local").resolve(), Path(".local").resolve()]
+        if args.negative or not any(args.output_dir.resolve().is_relative_to(root) for root in roots):
+            parser.error("Private latency recording requires a short hold run under experiments/local or .local")
     validate_camera_index(args.camera)
     store = ProfileStore(Path(".local/profiles"))
     loaded = store.load(args.profile_id)
     args.output_dir.mkdir(parents=True, exist_ok=False)
     app = QApplication(sys.argv[:1])
-    window = GuidedWindow(loaded, store, args.camera, args.output_dir.resolve(), negative=args.negative)
+    window = GuidedWindow(loaded, store, args.camera, args.output_dir.resolve(), negative=args.negative,
+                          record_latency_video=args.record_latency_video)
     window.show()
     window.raise_()
     window.activateWindow()

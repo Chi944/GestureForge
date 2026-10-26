@@ -215,6 +215,29 @@ Store under ignored `experiments/local/`: one session record per participant/con
 Timing annotations require explicit participant permission if an optional recording is used; otherwise use observer timestamps and report timing uncertainty. Never convert launch acceptance into success automatically. Deston reviews complete event traces against outcomes, Hau Jie provides recognition results, and Javier checks dispatcher/recovery evidence. This document completes scenario/protocol authoring; execution and final evidence remain GF-P16/P18/P19/P20/P23.
 
 
+### Optional private visual latency capture
+
+With explicit participant permission, use the existing short 20-hold runner with
+`--record-latency-video`. This stores a timestamped JPEG frame sequence and JSONL
+index, not an MP4. Each saved image is paired with the actual Studio capture
+frame ID and monotonic timestamp. The capture uses the existing camera consumer;
+images remain unmirrored, at most 640 pixels on the longest side. Output must be
+under ignored `experiments/local/` or `.local/`; there is no audio or upload.
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_p20 --profile-id YOUR_PROFILE_ID --camera 1 --output-dir experiments/local/latency-new-run --record-latency-video
+```
+
+Use a fresh output directory. Recording starts only when the operator starts the
+hold run and is bounded to six minutes, 6,000 frames and 128 MiB. Default runs
+save no images. Storage/encoding failures interrupt the run and preserve its
+incomplete status. Review skipped frames and timestamp gaps before independently
+annotating pose onset/release from the images. Never use predictions or cue times
+as physical onset. Camera-read timestamps approximate captured-frame time;
+physical sensor exposure and capture buffering remain timing uncertainties.
+Encoding overhead is part of this measured run. Completion does not certify a
+latency target or alter any previous Practice result.
+
 ### Workflow comparison tool (GF-P20 preparation)
 
 Use the [workflow comparison guide](WORKFLOW_COMPARISON.md) to combine explicit
