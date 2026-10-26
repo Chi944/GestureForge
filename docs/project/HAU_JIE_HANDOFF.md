@@ -14,6 +14,13 @@ This section is the current work assignment. Dated instructions below are refere
 
 **Accepted progress:** Deston 54/89 (60.7%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **171/223 (76.7%), 21/29 tasks**. Eight whole tasks remain. GF-P20 closes as evaluation completed, with shortfalls preserved.
 
+**GF-P24 material prepared:** Deston has consolidated your original contribution
+with the current P01/GF-P20 results in a local Word synthesis. Review the four
+saved misses and send the GF-P21 disposition plus any narrowly affected check;
+do not rewrite your original methods report or repeat the full experiment.
+The [storyboard](GF_P25_DEMO_STORYBOARD.md) proposes your recognition explanation
+and results speaking slots for team rehearsal.
+
 ## Your next delivery
 
 ### GF-P21

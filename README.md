@@ -211,8 +211,16 @@ classifier accuracy and automated software checks.
 The [development rejection diagnostic](docs/project/GF_P21_DEVELOPMENT_DIAGNOSIS_2026_10_15.md)
 reproduces the selected models' failures using DEVELOPMENT data only, without
 changing production recognition. It refuses TEST inputs and preserves invalid
-observations. The next isolated representation experiment uses existing data;
-it is not a new deployed model or an improvement already demonstrated.
+observations. The completed representation experiment remains experimental:
+P67 improves but P1543's NEUTRAL recognition regresses. It is not deployed.
+
+The [26 October workflow evaluation](docs/project/P20_EVALUATION_2026_10_26.md)
+records separate hold, ten-minute non-command and visual-latency checks. The
+fresh latency capture produced 16 responses from 20 attempts, with four misses
+and no duplicate/wrong actions. Successful-response p95 was 0.515–0.718 seconds;
+this excludes misses and does not establish the all-attempt target. Manual and
+personal walkthroughs are completed engineering evidence, not a controlled
+speed comparison.
 
 ## Participant collection
 
@@ -273,6 +281,7 @@ hosted usage is unavailable. This desktop application needs no deployment servic
 | Topic | Guide |
 | :--- | :--- |
 | Installation and operation | [User guide](docs/USER_GUIDE.md), [Windows](docs/WINDOWS_LAPTOP.md), [macOS](docs/MACOS.md) |
+| Product demonstration | [Studio walkthrough guide](docs/project/GF_P25_WINDOWS_GUIDE_DRAFT.md), [ten-minute presentation and demo storyboard](docs/project/GF_P25_DEMO_STORYBOARD.md) |
 | Data and evaluation | [Collection protocol](docs/DATA_COLLECTION.md), [participant kits](docs/project/PARTICIPANT_KITS.md), [paired evaluation](docs/project/PAIRED_EVALUATION.md) |
 | Design and verification | [Shared contracts](docs/project/CONTRACTS.md), [test plan](docs/TEST_PLAN.md), [workflow comparison](docs/project/WORKFLOW_COMPARISON.md) |
 | Team coordination | [Team guide](docs/project/TEAM_GUIDE.md), [accepted progress](docs/project/PROGRESS.md), [agile record](docs/AGILE.md) |

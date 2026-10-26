@@ -28,7 +28,13 @@ This section is the current work assignment. Dated instructions below are refere
 
 ### GF-P25 handoff to Deston
 
-Deston owns the final guide and demo video. Supply your existing guide draft, storyboard, original footage and relevant device receipts with their actual build identities. Continue GF-P19/GF-P22 and device consolidation; no duplicate filming or final guide rewrite is assigned.
+Deston owns the final guide and demo video. Your existing draft is now updated in
+the [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md), with a coordinated
+[ten-minute storyboard](GF_P25_DEMO_STORYBOARD.md) and local presentation. Review
+the shortcut/recovery explanations and proposed speaking slots. Supply only
+not-yet-received original footage and relevant device receipts with actual build
+identities. Continue GF-P19/GF-P22 and device consolidation; no duplicate filming
+or final guide rewrite is assigned.
 
 **Device coordination:** Hau Jie operates laptop B. You consolidate its original receipts with laptop A and supply missing numeric process-exit/coverage evidence for GF-P23. Use [the case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); repeat only incomplete or affected cases. A camera-off close or five-frame reacquisition alone does not prove active handoff or continuous endurance. Work on **codex/javier-shortcuts**.
 

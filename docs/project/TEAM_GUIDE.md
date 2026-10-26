@@ -14,6 +14,13 @@ This section is the current work assignment. Dated instructions below are refere
 
 **Accepted progress:** Deston 54/89 (60.7%); Hau Jie 63/69 (91.3%); Javier 54/65 (83.1%); total **171/223 (76.7%), 21/29 tasks**. Eight whole tasks remain. GF-P20 closes as evaluation completed, with shortfalls preserved.
 
+**Presentation and guide prepared:** the [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md)
+and [ten-minute storyboard](GF_P25_DEMO_STORYBOARD.md) now use the current UI and
+evaluation. Deston's local methods/results Word document and twelve-slide deck
+connect the trainer's problem to actual features and measured limits. Review the
+suggested speaking roles together; they are not an attendance or contribution
+record. Final recording and GF-P21/GF-P23 reconciliation are still required.
+
 ## Remaining tasks and handoffs
 
 | Task | Owner | Manual work | GPT work |
@@ -22,8 +29,8 @@ This section is the current work assignment. Dated instructions below are refere
 | GF-P21 | Hau Jie | Hau Jie: review the saved four-miss diagnosis first; observe only a narrowly affected check if that review establishes a need. No new recording, P02 repair or repeated whole Practice is assigned now. | Reconcile saved P01 validation, owner acceptance, unchanged Practice and completed GF-P20. Review the handedness/sustained-rejection transitions; preserve neutral rearming and settings. Close GF-P21 only after affected recognition findings are resolved or explicitly documented against its criteria. |
 | GF-P22 | Javier | Javier with Hau Jie: finish affected native recovery checks on laptops A/B; record failures and actual recovery, preserving unchanged passes. | Fix reproduced viewer/shortcut/runbook/storage defects, add targeted regression coverage, and reconcile GF-P19/GF-P20 before closure. |
 | GF-P23 | Deston | Hau Jie operates laptop B: fresh guide-only installation, offline core, uninterrupted measured 30-minute full Studio run, clean exit and camera reacquisition. Javier supplies missing laptop-A exit/coverage evidence; Deston reviews release acceptance. | Identify exact release/build and hashes, verify install/monitor/shutdown receipts, reconcile two-device coverage and GF-P21/GF-P22. Apple Silicon core remains unverified; browser collection is not native Studio evidence. |
-| GF-P24 | Deston | Deston: check and approve the final methods/results explanation after GF-P21. | Reconcile the private Word methods/results once with chosen P01 release evidence, original classifier comparisons, frozen TEST failures, stopped P02 repair and limits; no TEST tuning. |
-| GF-P25 | Deston | Deston: record genuine new-user enrolment and six-stage gesture/recovery demonstration on the identified release after GF-P23, with actual mode and limitation visible; verify the finished video plays. | Update the personal-first guide and storyboard from current workflow evidence; edit actual footage, verify guide links and package/video consistency. Do not present supervised operation as automated qualification. |
+| GF-P24 | Deston | Deston: check and approve the final methods/results explanation after GF-P21. | Current six-page local Word synthesis is prepared. Apply only the final GF-P21 disposition and affected-check results, then reconcile into the final report; preserve frozen TEST and measured limits. |
+| GF-P25 | Deston | Deston: rehearse the proposed speaking roles; after GF-P23 record genuine enrolment and six-stage gesture/recovery footage on the identified release, with actual mode and limitation visible, then verify playback. | Guide and 600-second storyboard are prepared, including a 190-second demo slot. Edit genuine footage and verify final guide/package/video consistency. No new evaluation or fabricated footage is needed. |
 | GF-P26 | Deston | Deston: approve the reconciled final report/slides, complete required declaration/contribution facts before submission, and rehearse the ten-minute presentation. | After GF-P23/GF-P24/GF-P25, update the local Word report, requirements/test matrix and slides once; check tools, AI use, references, evidence and file consistency. Keep Word logs local and unchanged. |
 | GF-P27 | Deston | Deston: submit to LMS, then download/open the uploaded files and verify playback and contents. | After GF-P26, assemble and verify the permitted source/data/assets, report, guide, video, slides and declaration; exclude private extras/secrets and check archive contents. |
 

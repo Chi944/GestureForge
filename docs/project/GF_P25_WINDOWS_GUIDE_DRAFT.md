@@ -1,12 +1,22 @@
-# GF-P25: Windows Studio user-guide draft
+# GestureForge Studio Windows guide
 
 Current delivery owner: Deston (transferred 26 October 2026). Original draft prepared by Javier on 19 October 2026; preserve his contribution.
-Status: documentation draft, not a completed demo or release acceptance.
-Runtime reference: the identified 16 October Studio package, clean source
-`d200947692253ede0c264755152e4419530147a3`.
-ZIP SHA256: `4c4f4fbc0223229c50fb5a2e7abf9b1fb00057be1c95f9df443236aaaa42839a`.
-Documentation reviewed against `97a05a0cace85a309966ba74ee04198fb41496ec`.
-Later documentation does not change the runtime identity of the native checks.
+Updated 26 October 2026 against source `39db517`. Guide in preparation; final
+package instructions and genuine demonstration footage depend on GF-P23 release
+checks. This revision does not certify a new ZIP or change historical device evidence.
+
+## What this helps you do
+
+A trainer must keep explaining while moving between material, applications and
+audience questions. GestureForge keeps a prepared sequence and its available
+actions visible, with personal gestures, manual controls and a saved return
+point. Use it to follow a runbook, open local resources, bookmark a discussion
+and restore your place. The supplied Harbor Desk content is fictional.
+
+GestureForge does not control Microsoft PowerPoint or perform tasks inside
+another application. You still calculate, read and confirm completion yourself.
+The intended benefit is less difficulty choosing resources and recovering your
+place; measured speed or customer-demand improvements are not established.
 
 ## Install and open Studio
 
@@ -32,7 +42,7 @@ Double-click `run-studio.cmd`, or use PowerShell inside that project folder:
 .\run-studio.cmd
 ```
 
-`run.cmd` without `--studio` opens the earlier assignment viewer. A terminal
+`run.cmd` without `--studio` opens the earlier viewer. A terminal
 running Studio remains occupied until Studio exits. For additional commands,
 open another PowerShell and change to the project folder first. A prompt such as
 `PS C:\...\gestureforge>` means the shell is ready for a command. A message saying
@@ -45,7 +55,7 @@ change directory before retrying. ZIP-only users do not need Git to run Studio.
 | --- | --- | --- |
 | Preview | Simulated; the requested card or external app does not change through typed dispatch | Simulated when a personal recogniser is loaded and capture is started |
 | Rehearsal / Practice | Simulated | Simulated; measured windows save local evidence |
-| Explicit Live | Manual typed actions can execute without a profile or webcam | Personal capture and dispatch need a genuine current-session full-Practice grant |
+| Explicit Live | Manual typed actions can execute without a profile or webcam | Personal gestures need a current-session full-Practice grant or the explicitly labelled manually approved demo route below |
 
 For manual work, Guest/manual is sufficient. Click **Open Setup**, choose **Live**
 under **Studio action mode**, then **Apply and pause**. Read the footer to confirm
@@ -65,6 +75,45 @@ Pose names are labels, not universal hand shapes. Follow the mapping recorded
 for that person's dataset. Javier's P03 mapping is right open palm = NEUTRAL,
 closed fist = NEXT, thumb up = PREVIOUS, and index plus middle fingers = BOOKMARK.
 Do not apply this mapping to a different person's profile without checking it.
+
+## Enrol a new user
+
+Guest/manual works immediately; another person's profile is not a model trained
+for your hand. No approved standard starter is supplied.
+
+1. Choose **Open Enrolment**, enter a pseudonym, selected hand, actual recording
+   conditions and permission. For the supplied right-hand mapping use **open
+   palm = NEUTRAL, fist = G1, thumb up = G2, index/middle fingers raised = G3**.
+   Custom poses must remain distinct and match that profile's recorded mapping.
+2. Select TRAIN and **12 trials per pose**. Click **Request collection**, wait
+   for the correct preview, then **Begin trial**. This starts collection without
+   an existing recogniser; the main camera-control Start is for loaded models.
+   Follow countdown, hold and release cues with the full hand visible.
+3. Complete 48 TRAIN trials, take a real break, then collect a separate 48-trial
+   VALIDATION session. Wait for the saved confirmation for each. Do not train on
+   VALIDATION or treat partial collection as complete.
+4. In **Profiles**, enter a name, **Browse dataset…** to TRAIN's manifest, review
+   hand/classifier/settings, confirm **Dataset permission confirmed**, then
+   **Create and load personal profile**. Wait for fitting; loading stays paused
+   in Preview. This fits TRAIN; profile creation does not automatically score
+   the separate VALIDATION session or display a validation report.
+5. To return later, use **Load selected**. **Use Guest (manual only)** preserves
+   the profile and dataset. Rename changes its display name; Delete confirms
+   removal of profile settings without deleting its numeric data or other profiles.
+
+Validation scoring is a separate, team-assisted offline step using the existing
+`gestureforge.evaluate` tool with both saved manifests and the profile's actual
+algorithm, distance multiplier and ambiguity margin. Preserve its report in a
+new local output file. Keep this evidence separate from **Practice**, which is
+the in-app behaviour check; a profile load is neither of these evaluations.
+If no matching negative-validation samples are supplied, rejection performance
+is unmeasured, not passed.
+
+See the [collection procedure](../USER_GUIDE.md#collect-in-studio). Collection or
+a high validation score does not guarantee live qualification. For camera
+selection, index **0** usually means the first device and **1** another, not a
+quality setting. Set the number and click **Use camera and pause**; editing alone
+does not apply it. Close other camera applications before starting capture.
 
 ## Cards, Harbor and local shortcuts
 
@@ -172,6 +221,20 @@ cosmetic renaming and existing context selection retain eligibility but never
 resume automatically. An unavailable grant leaves active-capture Camera NOT RUN;
 manual checks remain possible. No approved standard starter is supplied.
 
+### Manually approved demonstration
+
+With a personal recogniser loaded and capture/checks stopped, use **Practice →
+Enable manually approved demo** for supervised demonstration. Choose Live,
+**Apply and pause**, then **Start camera control** and fresh NEUTRAL. Keep
+**Manually approved demo active** visible and Pause available. This session-only
+approval retains hold/rearm and target protections; it does not create an
+automated Practice pass. Camera, recogniser or action-map changes invalidate it.
+
+The selected P01 demonstration has operator review acceptance with a saved
+automated **19/22** result. Do not present that approval as an automated 22/22 or
+as qualification for a new user. Recognition may still miss or misclassify;
+use the labelled manual controls when needed.
+
 ## Evidence and next recording boundary
 
 Preserve the accepted laptop-A PR24/26/28/29 records with their original build
@@ -183,18 +246,17 @@ measured rates/memory where available, faults and clean shutdown require actual
 per-device observations. HTTPS online features are separate from offline core.
 Mark unavailable or unmeasured cases explicitly; Deston retains final acceptance.
 
-Javier's supplied short Preview traces on `d200947` show four recorded PREVIOUS
-simulations matching four reported thumb-up holds, and two NEXT simulations in
-an intended index-finger-only check. These are guided observations with no
-independent physical-pose annotation. Earlier Practice misses, negative actions
-and timing failures remain unresolved; no new full pass or active handoff is
-claimed. Raw traces/profiles/exports stay private.
+The [26 October evaluation](P20_EVALUATION_2026_10_26.md) contains the current
+walkthrough, hold, negative-activity and latency evidence. It reports recognition
+misses separately from completed operator-confirmed workflows; no controlled
+speed advantage is claimed. Original traces/profiles/exports stay private.
 
-The separate storyboard remains a private draft. Record the manual workflow as
-manual footage, show one real limitation/recovery and add a gesture segment only
-after the actual gate and native observations. A script is not filmed evidence.
-GF-P25 stays open until the guide and completed demo receive review. The project
-presentation is a separate deliverable.
+Use the [presentation and demo storyboard](GF_P25_DEMO_STORYBOARD.md) for the
+pain-point-led sequence and genuine enrolment excerpt. Label manual footage,
+simulation, time cuts and the actual demonstration mode. Obtain permission for
+people/screens recorded. Final footage follows the identified release checks.
+A script is not filmed evidence: GF-P25 stays open until the completed guide and
+demo receive review. The ten-minute presentation is a separate deliverable.
 
 AI assistance prepared this draft from repository instructions and supplied
 observations. Javier operates the Windows device; Deston reviews acceptance.

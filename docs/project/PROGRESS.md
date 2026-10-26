@@ -15,6 +15,19 @@ in the results. This is not an all-attempt latency target pass. The completed
 hold/negative/replay checks and M/P walkthroughs are included; the walkthroughs
 are not a controlled speed comparison. See the [final GF-P20 evaluation](P20_EVALUATION_2026_10_26.md).
 
+**GF-P24/GF-P25 preparation — 26 October:** Deston's local six-page
+`GestureForge_Methods_Results.docx` reconciles the original classifier research,
+frozen TEST, stopped repair and current P01/GF-P20 evidence. The local presentation
+now has twelve slides and 600 seconds of planned narration, including a 190-second
+genuine-demo slot. The local five-page `GestureForge_Demo_Guide.docx` provides the
+operator and recording handbook. The [updated Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and
+[storyboard](GF_P25_DEMO_STORYBOARD.md) connect the trainer's resource-selection and
+interruption problem to enrolment, contextual actions, bookmarks, paused restore
+and manual fallback. Local Word/PowerPoint files stay out of GitHub; original
+Hau Jie/Javier contributions remain attributed. These are completed preparation
+substeps, not newly accepted whole tasks. Final GF-P24 reconciliation still needs
+GF-P21; GF-P25 still needs release-matched footage and playback after GF-P23.
+
 **Next:** Hau Jie reviews the four saved recognition/transition misses for GF-P21;
 Javier finishes the outstanding native/device cases for GF-P19/GF-P22. Deston
 prepares GF-P24 methods/results and GF-P25 guide/demo material, then reviews the
