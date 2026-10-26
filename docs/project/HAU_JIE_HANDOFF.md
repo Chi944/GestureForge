@@ -18,6 +18,8 @@ This section is the current work assignment. Dated instructions below are refere
 
 ## Your next delivery
 
+**Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
+
 ### Laptop B support for release
 
 - **Manual:** follow the existing fresh-install/offline/native cases and one measured full-Studio run. Use the new launcher below; keep the window visible and do not restart already reviewed recognition recordings.
