@@ -23,19 +23,18 @@ bounded to that source, not later documentation commits.
 
 ## Current scope and evidence rules
 
-[Revision 5](PROJECT_PLAN.md), authorised by Deston on 24 October, controls:
-personal enrolment is the release path. Shared-starter delivery, unfamiliar-user
-recruitment, interviews and the three-condition study are deferred. Prepare M/P
-or P/M with at least one consenting available team operator, actual familiarity
-and assistance recorded. The earlier unfamiliar-presenter/M/S/P wording is
-historical. Do not invent a starter attempt.
+The [26 October team guide](TEAM_GUIDE.md) and
+[current Javier brief](JAVIER_HANDOFF.md) control. Javier owns GF-P19/GF-P22
+and coordinates device receipts for Deston's GF-P23. Deston owns GF-P20,
+GF-P24 and GF-P25. GF-P20 evaluation is complete with its actual shortfalls;
+no repeat evaluation recording is assigned.
 
-Keep all existing retained features and safety gates. A known failing profile
-must not receive another full Practice attempt merely to obtain a pass.
-The one bounded NEUTRAL replacement has failed and is stopped; see
-[P02 disposition](P02_NEUTRAL_REPAIR_2026_10_25.md). A fresh complete personal
-enrolment is an operator-dependent option in the current team brief, not a
-qualified model. Javier does not collect for Hau Jie or change rejection settings.
+Preserve product protections and exact outcomes. Do not restart P02 repair,
+full Practice searches, recruitment, interviews or native Mac expansion.
+B's reported unqualified readiness is a per-device limit and does not reverse
+the separately accepted project evaluation. Earlier dated session plans below
+remain historical wherever superseded. Do not change settings or qualification
+records to manufacture device evidence.
 
 Status vocabulary below:
 **PASS (bounded)** means the recorded observation passed only on the stated
