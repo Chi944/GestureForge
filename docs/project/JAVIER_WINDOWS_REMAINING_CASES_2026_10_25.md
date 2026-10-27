@@ -31,6 +31,83 @@ A new 25 October post-sync screenshot identifies clean tracked status and local 
 `d9c68c651132d1405881966c2fd5445d820201c9`. Native observations below are
 bounded to that source, not later documentation commits.
 
+## Active GF-P19/GF-P22 closure sheet — 27 October
+
+This section reconciles the current briefs; it does not mark either task Done.
+Javier's supplied 27 October screenshots establish a clean Windows
+`codex/javier-shortcuts` checkout at
+`708e77eadf64d43dfbb477d2ab8955c815f68b1a`.
+A fresh ignored transcript directory `javier-errors-20261027-151103-632` was
+created. No new native target result, process exit or launch receipt has yet been
+supplied for that session. Remote branch synchronization preserves existing
+history; it does not move the running Windows checkout to a later docs commit.
+
+| Case / device | Recorded or planned build | Expected result | Observed result | Receipt | Remaining gap / next action |
+| --- | --- | --- | --- | --- | --- |
+| Basic openings and missing-file retry / A, B | A PR24/26/34; B a480e2e | Explicit request; actual resource visibly opens; failure recovers only on a new request | Existing bounded passes retained | Historical reviewed receipts linked below | No repeat unchanged full walkthrough. |
+| Unavailable slots and save/restore feedback / A | d9c68c6 | Clear each missing slot, preserve entries; file-operation top notice; paused restore/no replay | Guided bounded passes, artifact receipt reviewed | 25 Oct A packet, note and screenshots | Retain; no new-build acceptance inferred. |
+| Same-camera pause and reacquisition / A | d9c68c6 | Same index explicitly stops capture, later Start recovers | Operator-confirmed immediate stop before focus change; reacquisition reported | 25 Oct A note and private confirmations | Retain; not active-capture external Camera. |
+| App-mode script/interpreter and .lnk/.url refusal / A | Planned 708e77e | Reject unsafe target configuration without dispatch | UNRUN on A in current evidence | Fresh 27 Oct transcript exists; UI result pending | Use new disposable text-only suffix fixtures and existing interpreter path for configuration refusal only; never execute/trust them to manufacture a result. |
+| Association failure / A, B | Actual test build if available | OS refusal and explicit manual/default-app recovery in isolated setup | UNRUN | No isolated setup receipt | Record fixture availability first; if absent retain NOT RUN. Never alter existing associations. |
+| Mapped network target refusal / A, B | Actual test build if existing fixture available | Reject actual mapped-network target without request | UNRUN; UNC refusal is separate | No mapped-drive fixture receipt | Use an already available mapping only; otherwise NOT RUN with reason. Do not create network access just to fill a cell. |
+| Numeric Studio exit and post-close release / A | Planned 708e77e | Same launch's PID/times/stdout/stderr and numeric OS exit; then physical camera acquisition | Earlier exit blank; earlier post-close camera image reported | 25 Oct A process log; fresh 27 Oct capture not yet returned | Retain the new process handle until exit; do not Refresh/dispose it before reading the code. Close normally once, then record unavailable explicitly if still blank. Do not repeat old UI tests for logging. |
+| Recovery/error checks / B | New native build must be recorded; old 33090e5 packet is not a fresh pass | Two independent unavailable-slot clears, affected save/restore notice, same-camera pause/resume, absent validation cases | NO NEW NATIVE PASS | Latest B packet already received/reviewed via PR40 | Hau Jie performs only missing cells with disposable fixtures; new per-case screenshots/notes and disjoint exports where restore occurs. |
+| Same-run process/release and release coverage / B | 33090e5 historical; new actual build required | Same-run numeric exit, release, post-close reacquisition; guide-only/offline/measured endurance as assigned | Separate partial receipts, no combined pass | Original B packet + separate Deston endurance review | Hau Jie supplies missing device receipts for Deston's GF-P23. Review faults/instrumentation before another long run; no blind full-run retry. |
+| Eligible active-capture Camera / A, B, separate Deston device | Each device's exact actual runtime | Runtime-eligible capture; shutdown/release before Camera request; return paused and explicit resume | A/B not established; Deston's other device results remain separate | Current Windows procedure and device reviews | No gate bypass or new full Practice search. Record actual eligibility; preserve NOT RUN where unavailable. Deston may contribute his own identified device evidence. |
+
+### Safe execution and handoff boundary
+
+Keep the new A session in Guest/manual Preview with Camera off for target
+configuration refusals. Click New for each draft; do not edit real targets or
+assign the invalid drafts to live slots. A text-only .cmd/.lnk/.url suffix fixture
+checks the configuration boundary, not script execution or Windows link parsing.
+An App-mode interpreter refusal is distinct from the earlier reference-file .cmd
+refusal. Capture the selected type, entered value and specific validation reason;
+a generic unchecked-trust error alone does not establish interpreter exclusion.
+If a defect is actually reproduced, retain the minimal steps/logs and fix only
+the owned component with targeted regression tests and an affected native recheck.
+No owned-component defect is established by this reconciliation.
+
+For the new launch, use one fresh per-process output set and preserve its handle.
+After normal close, read numeric ExitCode before any Refresh/disposal and retain
+the raw result, PID/start/check timestamps and stdout/stderr. A post-wait check
+time is not exact OS termination time. Never turn a blank exit into zero.
+Then separately observe Windows Camera acquisition, close it and record the
+actual result. Keep target tests and intentional camera interruptions separate
+from an endurance attempt. A GUI timer gap cannot be fixed by waiting longer.
+
+Return only NEW files privately: the 27 Oct A transcript and original
+process/stdout/stderr records; disposable fixture inventory; per-case screenshots
+or notes with expected/observed results; actual unavailable-fixture reasons;
+same-run exit plus separate post-close camera observation. B returns only new
+missing-case receipts, its exact build/package identity and required disjoint
+before/after exports if a restore occurs. Do not request the received PR40 packet
+again. Saved session/navigation JSON is distinct from summary exports.
+Hash and index the new private packet before final consolidation.
+No new A physical pass or code-test run is claimed until its actual receipt arrives.
+
+### Shortcut/recovery guide review for Deston
+
+Reviewed the current [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and
+[storyboard](GF_P25_DEMO_STORYBOARD.md) at 708e77e. The shortcut/recovery sequence
+correctly separates request/opening/task completion, semantic/local targets,
+disposable missing-file recovery, explicit retry, paused Preview restoration
+and disjoint summaries. The storyboard labels manual fallback, cuts and actual
+demo mode; no full rewrite or duplicate filming is assigned to Javier.
+
+One wording clarification is returned for Deston's GF-P25 edit: the guide's early
+Camera-handoff paragraph requires a valid personal grant, while its later
+“Manually approved demonstration” section documents a separately labelled
+session-only route. Align those explanations with the runtime's actual approval
+and target/release protections. This is not authorization to approve Javier's
+unqualified P03 profile for a test, claim an automated pass, or change runtime
+eligibility. No shared-shell/recognition settings or Deston-owned guide file was
+changed by this review.
+
+GF-P20/GF-P21/GF-P24 are complete under the current brief. GF-P22 closure still
+depends on reconciling GF-P19's actual remaining device/error results, not a new
+recognition experiment. Deston retains whole-task and release acceptance.
+
 ## Current scope and evidence rules
 
 The [26 October team guide](TEAM_GUIDE.md) and
