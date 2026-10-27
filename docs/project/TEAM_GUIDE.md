@@ -27,7 +27,9 @@ Practice is assigned.
 
 **Presentation preparation — 27 October:** the local PowerPoint now has 14 core
 slides plus three hidden backups, a ten-minute plan and a 45-second embedded
-manual-footage highlight on slide 4. The live demo follows separately. Review the
+highlight combining manual footage and a labelled readiness illustration on
+slide 4. Slide 9 explains the NEUTRAL/READY, hold and rearm sequence. The live demo
+follows separately and is excluded from the ten minutes. Review the
 [storyboard](GF_P25_DEMO_STORYBOARD.md): Deston covers the problem/product and
 handoff, Hau Jie explains recognition and results, and Javier covers guarded
 actions, recovery and verification. These are proposed speaking roles; rehearse
@@ -54,7 +56,9 @@ and review the notes together. GF-P25/GF-P26 are not yet accepted.
 Hau Jie's own weighted work is complete; laptop-B support still contributes to
 the team's release. Prior contributions remain credited when final delivery moves
 to Deston. Existing [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and storyboard
-are ready for rehearsal. The new short highlight uses genuine earlier manual footage; final release-matched demonstration review remains open.
+are ready for rehearsal. The new short highlight uses genuine earlier manual
+footage and a labelled readiness illustration; final release-matched
+demonstration review remains open.
 
 Hau Jie pushes **codex/hau-jie-profiles**; Javier pushes **codex/javier-shortcuts**.
 Use focused PRs. Deston reviews and merges `main`. Each delivery identifies case

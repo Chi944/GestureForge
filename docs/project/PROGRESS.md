@@ -17,7 +17,9 @@ Completed substeps are recorded below; they do not award a whole task early.
 
 **Presentation preparation — 27 October:** the local PowerPoint has 14 core
 slides, three hidden backups, a 600-second speaking plan and an embedded 45-second
-highlight edited from genuine manual walkthrough footage. Notes carry the script,
+highlight combining genuine manual walkthrough footage with a labelled
+gesture-readiness illustration. Slide 9 explicitly shows NEUTRAL/READY, G1 hold,
+LATCHED and neutral rearm. Notes carry the script,
 sources and measurement limits; tables/charts remain editable. The separate live
 demo covers operation. Rehearsal and final release-matched review remain open;
 this preparation does not award GF-P25/GF-P26 or change accepted points. See the
@@ -30,6 +32,22 @@ two-minute real-camera Preview diagnostic passed (2,435 observations; 0.125 s
 maximum GUI gap, 0.172 s frame-delivery gap; normal close and process exit 0).
 It does not replace the outstanding 30-minute release criterion. Details are in
 the [endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md#27-october-bounded-camera-diagnostic).
+
+**Hau Jie's contribution:** his accepted recognition, profile and methods work
+remains **69/69**. PR #42 adds a pinned laptop-B release checklist and records
+software checks that exposed the layout and typing failures repaired above.
+This is useful integration work; it is not a new physical laptop-B pass. His
+remaining support helps close Javier's GF-P19/GF-P22 and Deston's GF-P23.
+
+**Shortest remaining path:** Javier completes only missing native/refusal and
+same-run process receipts; Hau Jie completes laptop-B affected slot/recovery,
+camera pause/resume and fresh guide-only/offline checks. Deston can independently
+rehearse the ten-minute talk and demonstrate the readiness sequence now. Schedule
+the separate active-camera handoff and a measured endurance run on the identified
+candidate after setup is ready; do not repeat completed recognition evaluation.
+Close GF-P19/GF-P22, then GF-P23, then final guide/video and document review
+(GF-P25/GF-P26), then package/upload/download verification (GF-P27). An unavailable
+fixture stays documented as NOT RUN until its release disposition is reviewed.
 
 **Completed evaluation and methods:** GF-P20 covers the saved hold, negative,
 replay, walkthrough and visual-latency evidence; the fresh capture has 16 responses

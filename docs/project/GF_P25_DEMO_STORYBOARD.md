@@ -6,8 +6,9 @@ an embedded **45-second product highlight on slide 4**. The live product demo
 follows the talk. The [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) supplies the
 full operating steps. PowerPoint and video deliverables stay local, not in Git.
 
-The short highlight is edited from Javier's genuine 22 October manual walkthrough.
-It shows request feedback and post-restore state, not a new gesture qualification
+The short highlight combines Javier's genuine 22 October manual walkthrough with
+a labelled animation explaining gesture readiness. It shows request feedback and
+post-restore state, not a new gesture qualification
 or a complete release-matched demonstration. GF-P25 remains open until the
 release dependency, guide review and final demonstration/playback review pass.
 
@@ -46,12 +47,12 @@ the core to ten minutes as specified in the brief; keep the live demo separate.
 | 0:00–0:20 | 1 · GestureForge Studio | **Deston:** introduce the presenter and the interrupted workflow. |
 | 0:20–1:05 | 2 · The presenter loses the thread | **Deston:** explain resource coordination and recovery. Published research motivates the problem; it is not our customer survey. |
 | 1:05–1:50 | 3 · A prepared route through the demo | **Deston:** connect the stage, linked resource and saved place to the pain point. |
-| 1:50–2:40 | 4 · A 45-second product look | **Deston:** introduce and play the genuine manual-control highlight; narrate lightly or let its captions work. |
-| 2:40–3:30 | 5 · A profile belongs to its presenter | **Hau Jie:** explain Guest/manual, personal TRAIN/VALIDATION and Practice; no guaranteed pass for new users. |
+| 1:50–2:40 | 4 · A 45-second product look | **Deston:** introduce genuine manual footage and the labelled gesture-readiness animation; narrate lightly or let captions work. |
+| 2:40–3:30 | 5 · Personal setup before gesture control | **Hau Jie:** explain Guest/manual, personal TRAIN/VALIDATION and Practice; no guaranteed pass for new users. |
 | 3:30–4:25 | 6 · From camera frames to bounded actions | **Hau Jie:** attribute pretrained tracking and explain the team's features, classifiers and controller. |
 | 4:25–5:20 | 7 · Two lightweight AI techniques | **Hau Jie:** compare kNN/SVM, shared preprocessing and session-separated selection. |
 | 5:20–6:20 | 8 · Frozen TEST exposed recognition limits | **Hau Jie:** interpret each participant's starter/personal macro-F1 and retained misses. |
-| 6:20–7:00 | 9 · A gesture becomes one deliberate request | **Javier:** explain neutral, hold, latch, rearm and pause. |
+| 6:20–7:00 | 9 · Gesture readiness | **Javier:** show open palm/NEUTRAL for 300 ms until READY, fist/G1 for 400 ms, one action/LATCHED, then open palm to rearm. Explain explicit Start and current mode. |
 | 7:00–7:45 | 10 · Protection reduced requests in replay | **Javier:** separate 0 versus 36 replay requests from the twenty-hold result and native launch evidence. |
 | 7:45–8:30 | 11 · Useful responses, with visible limits | **Hau Jie:** show 16 responses/four misses and conditional latency without claiming a speed advantage. |
 | 8:30–9:05 | 12 · Engineering a product that can recover | **Javier:** explain lifecycle, verification, recovery and remaining release evidence. |
@@ -65,7 +66,11 @@ selected sources. They support questions rather than lengthening the core talk.
 
 The 45-second highlight uses enlarged Studio footage and restrained title/motion
 cards: keep the route visible, request the approved resource, recover the saved
-place. Its source is manual operation. The clip does not show actual external
+place. The recorded source is manual operation. A separate, visibly labelled
+readiness illustration explains the personal profile, Practice, explicit
+Live/Start, NEUTRAL/READY, command hold and neutral rearm. The pose key identifies
+open palm, fist, thumb up and two raised fingers. This explains the workflow;
+it does not claim a fresh recorded Practice pass. The clip does not show actual external
 application openings or the restore click; captions and notes preserve those
 limits. It is silent, with presenter narration supplied locally. Retain the
 original footage and edit provenance privately. Do not use synthetic enrolment

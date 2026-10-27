@@ -65,7 +65,9 @@ with case IDs, source/package identity, outcomes, evidence and remaining gaps.
 
 Review the new local PowerPoint's slides 9–10 (guarded activation and replay) and
 12 (lifecycle, recovery and verification), then rehearse these proposed speaking
-slots. Check shortcut/recovery wording in the 45-second manual-footage highlight
+slots. Slide 9 now explicitly shows NEUTRAL/READY, fist hold, LATCHED and rearm.
+Check shortcut/recovery wording in the 45-second highlight, which combines
+genuine manual footage and a labelled readiness illustration
 on slide 4; it shows request feedback and post-restore state, not actual app
 openings or a filmed restore click. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
 now separates the ten-minute talk from the live demo. GF-P19/GF-P22 evidence

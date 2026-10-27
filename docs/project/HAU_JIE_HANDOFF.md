@@ -51,8 +51,10 @@ onboarding, architecture, kNN/SVM and frozen TEST) and slide 11 (16 responses,
 four misses and successful-only latency). Check the speaker notes against your
 accepted methods/results, then rehearse these proposed speaking slots with the
 team. No new data collection is assigned. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
-has the exact ten-minute schedule; the 45-second highlight is manual footage,
-not recognition qualification. Laptop-B work above remains the release priority.
+has the exact ten-minute schedule; the 45-second highlight combines manual
+footage with a labelled readiness illustration. Review its example pose key and
+standard personal-profile/Practice route. It is not a new recorded qualification.
+Laptop-B work above remains the release priority.
 
 ## Prompt to give your coding agent
 
