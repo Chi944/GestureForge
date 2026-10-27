@@ -248,6 +248,7 @@ def test_private_frames_preserve_timestamp_identity_gaps_and_unmirrored_image(tm
     assert all(r["session_id"] == "session" for r in index)
     with ZipFile(tmp_path / "private-latency-frames.zip") as archive:
         decoded = cv2.imdecode(np.frombuffer(archive.read("000000.jpg"), np.uint8), cv2.IMREAD_COLOR)
+    assert decoded is not None
     assert decoded.shape == (384, 640, 3)
     assert decoded[100, 100, 2] > 240 and decoded[100, 500, 2] < 10
     assert recording.close() == report

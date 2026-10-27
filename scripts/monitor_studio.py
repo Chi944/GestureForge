@@ -33,6 +33,8 @@ class Monitor:
     active_max_heartbeat_gap: float = 0.0
     first_active_gui_gap_elapsed_seconds: float | None = None
     first_delivered_gap_elapsed_seconds: float | None = None
+    max_checkpoint_duration_seconds: float | None = None
+    max_checkpoint_finished_elapsed_seconds: float | None = None
     active_seconds: float = 0.0
     normal_close: bool = False
     last_tick: float | None = None
@@ -124,6 +126,17 @@ class Monitor:
                 f" | remaining {remaining:.1f}s | received {sum(self.frames)} frames"
                 " | close normally when finished; no automatic stop")
 
+    def save_checkpoint(self, output: ReportFile, now: float) -> None:
+        started = time.monotonic()
+        try:
+            output.save(self.report(now))
+        finally:
+            finished = time.monotonic()
+            duration = max(0.0, finished - started)
+            if self.max_checkpoint_duration_seconds is None or duration > self.max_checkpoint_duration_seconds:
+                self.max_checkpoint_duration_seconds = duration
+                self.max_checkpoint_finished_elapsed_seconds = max(0.0, finished - self.started)
+
     def report(self, now: float, *, finalized: bool = False,
                qt_exit_code: int | None = None) -> dict[str, Any]:
         elapsed = max(0.0, now - self.started)
@@ -175,6 +188,8 @@ class Monitor:
             "delivered_max_gap_seconds_within_generation": self.max_frame_gap,
             "first_active_gui_gap_elapsed_seconds": self.first_active_gui_gap_elapsed_seconds,
             "first_delivered_gap_elapsed_seconds": self.first_delivered_gap_elapsed_seconds,
+            "max_checkpoint_duration_seconds": self.max_checkpoint_duration_seconds,
+            "max_checkpoint_finished_elapsed_seconds": self.max_checkpoint_finished_elapsed_seconds,
             "worker_error_count": errors,
             "unexpected_worker_stop_count": unexpected,
             "all_workers_released": released,
@@ -186,6 +201,7 @@ class Monitor:
                             "Delivered frames only; no raw camera frame-rate claim.",
                             "Active time is sampled; an interval ending with worker release is unmeasured, not an active gap.",
                             "First-gap times are elapsed seconds at detection, not the gap onset or its cause.",
+                            "Checkpoint timings include report generation and saving; appear in subsequent reports and exclude initial/final writes.",
                             "A checkpoint cannot establish subsequent process exit or camera release.",
                             "Camera reopen after close requires a separate native check."],
         }
@@ -247,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         if now - last_saved >= 5 and not failed:
             try:
-                output.save(monitor.report(now))
+                monitor.save_checkpoint(output, now)
                 last_saved = now
             except (OSError, ValueError):
                 failed = True

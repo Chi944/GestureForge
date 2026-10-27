@@ -151,6 +151,7 @@ def test_active_practice_actions_fit_half_width_workflow(qapp) -> None:
         assert not window.practice_consent.isVisible()
         assert not window.practice_review_cues_button.isVisible()
         assert not window.practice_start_button.isVisible()
+        assert not window.demo_override_button.isVisible()
         assert window.practice_negative_cues.isReadOnly()
         assert _rect_in_workflow_viewport(window, window.practice_widget.prepare_button)
         assert _rect_in_workflow_viewport(window, window.practice_widget.begin_button)
@@ -161,6 +162,10 @@ def test_active_practice_actions_fit_half_width_workflow(qapp) -> None:
         assert _rect_in_workflow_viewport(window, window.practice_widget.prepare_button)
         assert _rect_in_workflow_viewport(window, window.practice_widget.begin_button)
         assert window.studio_scroll.horizontalScrollBar().maximum() == 0
+
+        assert window._cancel_practice_rehearsal("Layout check complete.")
+        qapp.processEvents()
+        assert window.demo_override_button.isVisible()
     finally:
         window.close()
 

@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
+import scripts.monitor_studio as monitor_module
 from scripts.monitor_studio import Monitor, ReportFile
 
 
@@ -117,6 +118,64 @@ def test_write_failure_preserves_checkpoint(tmp_path, monkeypatch):
         output.save({"status": "final"})
     assert json.loads(path.read_text())["status"] == "incomplete"
     assert list(tmp_path.iterdir()) == [path]
+
+
+def test_checkpoint_timing_includes_report_and_write_without_hiding_gaps(tmp_path, monkeypatch):
+    monitor = Monitor(10, 1)
+    camera = worker()
+    monitor.event("observation", camera, 10)
+    monitor.event("observation", camera, 11)
+    path = tmp_path / "monitor.json"
+    output = ReportFile(path, monitor.report(11))
+    clock = [11.0]
+    costs = [0.25, 2.75]
+    monkeypatch.setattr("scripts.monitor_studio.time.monotonic", lambda: clock[0])
+    original_memory = monitor_module.current_process_peak_memory
+    original_replace = os.replace
+
+    def memory():
+        clock[0] += costs[0]
+        return original_memory()
+
+    def replace(source, target):
+        clock[0] += costs[1]
+        original_replace(source, target)
+
+    monkeypatch.setattr("scripts.monitor_studio.current_process_peak_memory", memory)
+    monkeypatch.setattr(os, "replace", replace)
+    monitor.save_checkpoint(output, 11)
+    saved = json.loads(path.read_text())
+    assert saved["max_checkpoint_duration_seconds"] is None
+    monitor.tick(clock[0])
+    costs[:] = [0.125, 0.125]
+    monitor.save_checkpoint(output, clock[0])
+    saved = json.loads(path.read_text())
+    assert saved["max_checkpoint_duration_seconds"] == 3
+    assert saved["max_checkpoint_finished_elapsed_seconds"] == 4
+    assert "gui_gap_over_2_seconds" in saved["unmet_measurement_criteria"]
+    assert "delivered_observation_gap_over_2_seconds" in saved["unmet_measurement_criteria"]
+    final = finish(monitor, camera, clock[0])
+    output.save(final)
+    saved = json.loads(path.read_text())
+    assert saved["status"] == "final"
+    assert saved["max_checkpoint_duration_seconds"] == 3
+    assert saved["max_checkpoint_finished_elapsed_seconds"] == 4
+    assert not saved["measurement_criteria_met"]
+    assert list(tmp_path.iterdir()) == [path]
+
+
+@pytest.mark.parametrize("error", [OSError("disk unavailable"), ValueError("external change")])
+def test_checkpoint_timing_propagates_save_failure(monkeypatch, error):
+    monitor = Monitor(10, 1)
+    output = Mock()
+    output.save.side_effect = error
+    clock = iter((20.0, 22.0))
+    monkeypatch.setattr("scripts.monitor_studio.time.monotonic", lambda: next(clock))
+    with pytest.raises(type(error), match=str(error)):
+        monitor.save_checkpoint(output, 20)
+    assert monitor.max_checkpoint_duration_seconds == 2
+    assert monitor.max_checkpoint_finished_elapsed_seconds == 12
+    output.save.assert_called_once()
 
 
 @pytest.mark.parametrize("seconds", [0, -1, float("nan"), float("inf")])

@@ -1799,6 +1799,7 @@ class Window(QMainWindow):
                 self.practice_review_cues_button.setVisible(True)
                 self.practice_review_cues_button.setEnabled(True)
                 self.practice_start_button.setVisible(True)
+                self.demo_override_button.setVisible(True)
                 self.practice_start_button.setEnabled(True)
             if result is not None:
                 if self._is_single_pose_diagnostic(result):
@@ -1990,6 +1991,7 @@ class Window(QMainWindow):
         self.practice_review_cues_button.setVisible(False)
         self.practice_review_cues_button.setEnabled(False)
         self.practice_start_button.setVisible(False)
+        self.demo_override_button.setVisible(False)
         self.deck_tabs.setCurrentWidget(self.practice_page)
         self.feedback.setText("Practice started. Actions are simulated and recorded locally only.")
         self._set_practice_status("Practice started. Review the prompt, prepare a trial, then begin the five-second window.")

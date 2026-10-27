@@ -1,6 +1,6 @@
 # Hau Jie implementation brief
 
-## Current release briefing — 26 October 2026
+## Current release briefing — 27 October 2026
 
 **Your weighted tasks are complete: 69/69 (100.0%).** Your remaining contribution
 is laptop-B support for Javier's integration checks and Deston's release.
@@ -43,6 +43,16 @@ Work on **codex/hau-jie-profiles**, not `main`. Hau Jie's laptop is laptop B;
 Javier does not need another machine. Your recognition/methods contribution
 remains credited; Deston owns final GF-P24/GF-P25 delivery. Native Mac expansion,
 interviews and further consumed-TEST work are not assigned.
+
+## Presentation review — 27 October
+
+Review the new local PowerPoint's recognition section: slides 5–8 (personal
+onboarding, architecture, kNN/SVM and frozen TEST) and slide 11 (16 responses,
+four misses and successful-only latency). Check the speaker notes against your
+accepted methods/results, then rehearse these proposed speaking slots with the
+team. No new data collection is assigned. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
+has the exact ten-minute schedule; the 45-second highlight is manual footage,
+not recognition qualification. Laptop-B work above remains the release priority.
 
 ## Prompt to give your coding agent
 

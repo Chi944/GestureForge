@@ -163,8 +163,9 @@ exports may include earlier rows. Use disjoint segments or a documented event-ID
 union; never add overlapping snapshot totals.
 
 If Camera opens while Studio capture was already off, record that limited case.
-An active-capture handoff separately requires a valid personal grant and evidence
-that capture shut down before the real Camera request. Close Windows Camera
+An active-capture handoff separately requires current personal Live eligibility
+from a full Practice pass or the explicit manually approved demo route below,
+and evidence that capture shut down before the real Camera request. Close Windows Camera
 before explicit Studio reacquisition. A release refusal/timeout must open nothing
 and require a fresh request after recovery. Record naturally observed faults;
 do not label an unrun refusal case passed.
@@ -218,8 +219,10 @@ show fresh NEUTRAL. A grant is memory-only and tied to the exact profile/model,
 hand, camera, behavior and authored maps. Target/map/camera/behavior edits expire
 it even if reverted; restart, Guest and model reload clear it. Ordinary pause,
 cosmetic renaming and existing context selection retain eligibility but never
-resume automatically. An unavailable grant leaves active-capture Camera NOT RUN;
-manual checks remain possible. No approved standard starter is supplied.
+resume automatically. If neither a full-Practice grant nor the explicit manually
+approved demo route below is currently valid, active-capture Camera remains
+NOT RUN; camera-off manual checks remain possible. Demo approval does not prove
+automated qualification. No approved standard starter is supplied.
 
 ### Manually approved demonstration
 

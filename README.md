@@ -309,7 +309,7 @@ failed result. Follow the [current team actions](docs/project/TEAM_GUIDE.md) and
 | Topic | Guide |
 | :--- | :--- |
 | Installation and operation | [User guide](docs/USER_GUIDE.md), [Windows](docs/WINDOWS_LAPTOP.md), [macOS](docs/MACOS.md) |
-| Product demonstration | [Studio walkthrough guide](docs/project/GF_P25_WINDOWS_GUIDE_DRAFT.md), [ten-minute presentation and demo storyboard](docs/project/GF_P25_DEMO_STORYBOARD.md) |
+| Product demonstration | [Studio walkthrough guide](docs/project/GF_P25_WINDOWS_GUIDE_DRAFT.md), [ten-minute presentation, 45-second highlight and live-demo plan](docs/project/GF_P25_DEMO_STORYBOARD.md) |
 | Data and evaluation | [Collection protocol](docs/DATA_COLLECTION.md), [participant kits](docs/project/PARTICIPANT_KITS.md), [paired evaluation](docs/project/PAIRED_EVALUATION.md) |
 | Selected-profile findings | [Recognition disposition](docs/project/GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md), [workflow evaluation](docs/project/P20_EVALUATION_2026_10_26.md) |
 | Design and verification | [Shared contracts](docs/project/CONTRACTS.md), [test plan](docs/TEST_PLAN.md), [workflow comparison](docs/project/WORKFLOW_COMPARISON.md) |

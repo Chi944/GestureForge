@@ -203,7 +203,7 @@ def test_live_start_requires_live_selection_and_revokes_on_camera_change(qapp, t
 
 def test_supervised_demo_is_explicit_scoped_and_does_not_create_pass(qapp, tmp_path, monkeypatch):
     window = Window(model=model(), studio=True, vocabulary=GestureVocabulary(("G1", "G2", "G3")))
-    records = []
+    records: list[dict[str, object]] = []
     monkeypatch.setattr(window, "log", records.append)
     evidence = tmp_path / "practice-failed.json"
     evidence.write_text('{"status":"failed"}', encoding="utf-8")
@@ -212,6 +212,7 @@ def test_supervised_demo_is_explicit_scoped_and_does_not_create_pass(qapp, tmp_p
         assert window._personal_live_grant is None
         assert window.demo_override_button.text() == "Enable manually approved demo"
         window.demo_override_button.click()
+        assert window._personal_live_grant is not None
         assert window._personal_live_grant.supervised_demo
         assert window.practice_attempt is None
         assert "Manually approved demo active" in window.boundary.text()

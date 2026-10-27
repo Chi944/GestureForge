@@ -1,10 +1,15 @@
 # GestureForge presentation and demo storyboard
 
-GF-P25 · Deston · 26 October 2026. This recording plan accompanies the local
-twelve-slide presentation and [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md).
-It is not completed footage or release acceptance. Use the identified GF-P23
-release for final shots. The presentation is ten minutes; no separate demo-video
-duration is prescribed here.
+GF-P25 · Deston · 27 October 2026. The local PowerPoint now contains **14 core
+slides and three hidden backup slides**, with a **600-second speaking plan** and
+an embedded **45-second product highlight on slide 4**. The live product demo
+follows the talk. The [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) supplies the
+full operating steps. PowerPoint and video deliverables stay local, not in Git.
+
+The short highlight is edited from Javier's genuine 22 October manual walkthrough.
+It shows request feedback and post-restore state, not a new gesture qualification
+or a complete release-matched demonstration. GF-P25 remains open until the
+release dependency, guide review and final demonstration/playback review pass.
 
 ## The story
 
@@ -26,47 +31,65 @@ established product outcomes. There were no stakeholder interviews.
 
 ## Ten-minute presentation
 
-The timings below match the current twelve-slide deck and total 600 seconds.
-Keep one main point per slide; use the product as the main visual. These speaking
-roles are a rehearsal proposal, not a contribution record or completed attendance.
-Deston owns the final direction, edit and review.
+The timings below match the current deck and total 600 seconds, including the
+45-second silent clip. Its slot allows five seconds of introduction. Slide
+advances remain manual; the video starts automatically on slide 4. Gentle fades reveal content
+without adding speaking clicks. Core scripts, longer answers and sources are in
+speaker notes. Backup slides 15–17 are excluded from the timed talk.
+
+Speaking roles below are a rehearsal proposal, not a contribution record or
+completed attendance. Deston owns final direction, editing and review. Rehearse
+the core to ten minutes as specified in the brief; keep the live demo separate.
 
 | Time | Slide | Speaker and audience takeaway |
 | --- | --- | --- |
-| 0:00–0:20 | 1 · GestureForge Studio | **Deston:** introduce the trainer's interruption with the opening above. |
-| 0:20–1:00 | 2 · A trainer can lose the thread | **Deston:** show cards → Calculator → reference interrupted by a question. Describe coordination and recovery; this illustration is not a timed competitor comparison. |
-| 1:00–1:35 | 3 · A reusable workflow for training teams | **Deston:** map sequence to runbook, resource choice to contextual actions, interruption to bookmark/paused restore. Explain the proposed training-team use and local reuse. |
-| 1:35–2:15 | 4 · A personal profile, with manual control available | **Hau Jie:** explain Guest/manual versus personal enrolment. Pose IDs are personalised inputs; the stage determines the action. Preview simulates; Live is explicit. |
-| 2:15–2:55 | 5 · Architecture and AI responsibilities | **Hau Jie:** follow webcam → pretrained landmarks → normalised features → personal classifier/rejection → guarded controller → typed action. Attribute pretrained tracking and explain the team's contribution. |
-| 2:55–3:35 | 6 · A fair comparison of kNN and SVM | **Hau Jie:** explain common preprocessing, train-only fitting, session splits and validation selection. Use the actual verified methods/results; avoid accuracy-only claims. |
-| 3:35–4:25 | 7 · Frozen TEST shows uneven recognition | **Hau Jie:** present the recorded per-participant results and misses, with limitations. Do not replace frozen TEST with a better development or demo score. |
-| 4:25–5:00 | 8 · Guarded actions and desktop boundaries | **Javier:** explain neutral/hold/rearm, pause and approved target types. GestureForge requests an opening; the presenter still performs and confirms the task. |
-| 5:00–8:10 | 9 · Harbor Desk product demonstration | **Deston** operates/narrates the 190-second sequence below; **Javier** explains recovery. Keep app mode, action legend and outcomes readable. |
-| 8:10–9:00 | 10 · Measured protection and remaining misses | **Hau Jie:** show protected versus naive requests and the fresh 16-response/4-miss result. Explain conditional latency and why this is not a proven speed advantage. |
-| 9:00–9:35 | 11 · Verification and remaining release evidence | **Javier:** identify genuine Windows evidence, manual fallback and remaining release checks. Mac browser collection is not native Studio validation. |
-| 9:35–10:00 | 12 · Outcome and limits | **Deston:** return to the saved place. “A prepared route through the demo, deliberate actions, and a way back when interrupted.” State the recognition limitation and next improvement. |
+| 0:00–0:20 | 1 · GestureForge Studio | **Deston:** introduce the presenter and the interrupted workflow. |
+| 0:20–1:05 | 2 · The presenter loses the thread | **Deston:** explain resource coordination and recovery. Published research motivates the problem; it is not our customer survey. |
+| 1:05–1:50 | 3 · A prepared route through the demo | **Deston:** connect the stage, linked resource and saved place to the pain point. |
+| 1:50–2:40 | 4 · A 45-second product look | **Deston:** introduce and play the genuine manual-control highlight; narrate lightly or let its captions work. |
+| 2:40–3:30 | 5 · A profile belongs to its presenter | **Hau Jie:** explain Guest/manual, personal TRAIN/VALIDATION and Practice; no guaranteed pass for new users. |
+| 3:30–4:25 | 6 · From camera frames to bounded actions | **Hau Jie:** attribute pretrained tracking and explain the team's features, classifiers and controller. |
+| 4:25–5:20 | 7 · Two lightweight AI techniques | **Hau Jie:** compare kNN/SVM, shared preprocessing and session-separated selection. |
+| 5:20–6:20 | 8 · Frozen TEST exposed recognition limits | **Hau Jie:** interpret each participant's starter/personal macro-F1 and retained misses. |
+| 6:20–7:00 | 9 · A gesture becomes one deliberate request | **Javier:** explain neutral, hold, latch, rearm and pause. |
+| 7:00–7:45 | 10 · Protection reduced requests in replay | **Javier:** separate 0 versus 36 replay requests from the twenty-hold result and native launch evidence. |
+| 7:45–8:30 | 11 · Useful responses, with visible limits | **Hau Jie:** show 16 responses/four misses and conditional latency without claiming a speed advantage. |
+| 8:30–9:05 | 12 · Engineering a product that can recover | **Javier:** explain lifecycle, verification, recovery and remaining release evidence. |
+| 9:05–9:35 | 13 · Three owners, one integration path | **Deston:** identify actual responsibilities and tools; each member can explain their own work. |
+| 9:35–10:00 | 14 · The next step stays in view | **Deston:** return to the pain point and introduce the separate live demonstration. |
 
-## The product demonstration
+Hidden backups cover measurement boundaries, commercial fit/alternatives and
+selected sources. They support questions rather than lengthening the core talk.
 
-Use an edited genuine recording for predictable presentation timing. A live
-version can follow the same sequence, with the recorded version available if
-recognition or external applications fail. Label a switch to recorded footage.
-Do not silently replace live results or splice failures into a purported pass.
+## The short highlight and separate live demonstration
 
-| Offset within slide 9 | Shot and narration |
+The 45-second highlight uses enlarged Studio footage and restrained title/motion
+cards: keep the route visible, request the approved resource, recover the saved
+place. Its source is manual operation. The clip does not show actual external
+application openings or the restore click; captions and notes preserve those
+limits. It is silent, with presenter narration supplied locally. Retain the
+original footage and edit provenance privately. Do not use synthetic enrolment
+footage as a real new-user recording.
+
+After the talk, demonstrate the product directly using this sequence. Prepare
+resources first and identify the actual build and runtime mode. The onboarding
+step can be a guided explanation plus one real trial; full collection should not
+consume the live presentation. Existing sessions and scores must be labelled.
+
+| Live beat | What to show and explain |
 | --- | --- |
-| 0:00–1:10 | **Personal onboarding excerpt.** Guest/manual first; Open Enrolment; chosen hand, poses, actual conditions and consent; Request collection → Begin trial. Show a genuine trial, labelled cuts to full TRAIN and separate VALIDATION, profile creation and the actual Practice result. Explain that preparation takes longer than this excerpt. |
-| 1:10–1:30 | **Harbor and deliberate input.** Show the active mode and legend, then an uninterrupted NEUTRAL/READY → command hold → one action/LATCHED → NEUTRAL sequence. Keep the pose key visible. This shows one action per hold, not a general accuracy guarantee. |
-| 1:30–1:55 | **Resources in context.** Show budget → reference → resources with actual Calculator, reference and folder openings. Caption any cuts. The answers are 240 credits and training coordinator; show the operator's task acknowledgement separately from launch acceptance. |
-| 1:55–2:25 | **Interruption and recovery.** Bookmark the discussion point. Request a deliberately missing disposable reference, show the useful failure, restore that copy and explicitly retry. Never move genuine user files or present a simulated launch as an opened application. |
-| 2:25–2:50 | **Resume without replay.** Save session, restore, show the preserved stage/bookmark and paused Preview. Nothing opens automatically. Re-enter Live explicitly only if another real action is intended. |
-| 2:50–3:10 | **Summary and beyond cards.** Show actual Session summary, then configured standalone Quick Actions and **Use Quick Actions**. Show one safe approved request, identifying manual or gesture source. Close on the reusable workflow. |
+| Personal onboarding | Start with Guest/manual, then show chosen hand, pose key, consent and actual conditions. Explain separate TRAIN/VALIDATION, saved profile and real Practice outcomes. |
+| Deliberate input | Keep NEUTRAL/READY → command hold → one action/LATCHED → NEUTRAL continuous. Show the active mode and legend. |
+| Resources in context | Navigate Harbor's six stages. Show actual Calculator, reference and folder openings, and separate task acknowledgements from launch requests. Answers: 240 credits and training coordinator. |
+| Interruption and recovery | Bookmark a discussion point. Use only a disposable missing reference to demonstrate useful failure and explicit retry; never move genuine user files. |
+| Resume without replay | Save and restore the session; show preserved stage/bookmark, paused Preview and no automatic launch. Re-enter Live explicitly if needed. |
+| Beyond cards | Show Session summary, configured standalone Quick Actions and **Use Quick Actions**. Identify manual or gesture source for one safe approved request. |
 
-For the full separate demo video, extend these shots rather than rushing the
-instructions. Ensure all six stages, all three demonstrated action poses, one
-held pose, neutral rearm, pause, the actual profile mode and recovery are visible.
-Some steps can be manual; label them rather than counting them as gesture success.
-The six-stage mappings are in the [Harbor scenario](DEMO_SCENARIO.md#six-stage-runbook).
+The [Harbor scenario](DEMO_SCENARIO.md#six-stage-runbook) defines all six stages.
+Show the three action poses, one held pose, rearm and pause where practical. If
+recognition fails, use labelled manual controls and explain the limitation rather
+than repeatedly retrying. A switch to recorded footage must be explicit. The
+short highlight does not replace uncompleted device or release evidence.
 
 ### Enrolment footage and honest time cuts
 
@@ -148,9 +171,9 @@ the limitation instead of repeatedly retrying gestures on stage.
 
 ## What still completes GF-P25
 
-The guide and storyboard can be reviewed now. Acceptance also needs the
-identified release's genuine demo footage, a legible exported video, guide review
-and final playback review. Deston records/edits and approves the story. Hau Jie
+The presentation, highlight and guide can be reviewed and rehearsed now.
+Acceptance still needs GF-P23, the identified release's genuine demonstration
+coverage, guide review and final playback review. Deston records/edits and approves the story. Hau Jie
 checks recognition explanations/results; Javier checks Windows shortcut and
 recovery explanations. Rehearse the speaking roles and ten-minute timing together.
 No extra feature is required to tell this story; remaining work is verification,

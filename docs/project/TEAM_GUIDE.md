@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-## Current release briefing — 26 October 2026
+## Current release briefing — 27 October 2026
 
 Target submission: **31 October**. Official deadline: **7 November**.
 Use this current briefing; expand the historical section only for earlier decisions.
@@ -25,6 +25,14 @@ is received and independently verified; do not resend it. The
 Review the gap before any blind full-duration retry. No repeat enrolment or
 Practice is assigned.
 
+**Presentation preparation — 27 October:** the local PowerPoint now has 14 core
+slides plus three hidden backups, a ten-minute plan and a 45-second embedded
+manual-footage highlight on slide 4. The live demo follows separately. Review the
+[storyboard](GF_P25_DEMO_STORYBOARD.md): Deston covers the problem/product and
+handoff, Hau Jie explains recognition and results, and Javier covers guarded
+actions, recovery and verification. These are proposed speaking roles; rehearse
+and review the notes together. GF-P25/GF-P26 are not yet accepted.
+
 ## Remaining tasks and handoffs
 
 | Task | Owner | Next manual work | Next GPT work |
@@ -32,7 +40,7 @@ Practice is assigned.
 | GF-P19 | Javier | Complete remaining laptop-A shortcut/error cases; Hau Jie handles laptop B. Deston can supply the separate active-camera handoff check on his device. | Reconcile exact case/build receipts against the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); preserve device boundaries and unchanged passes. |
 | GF-P22 | Javier | Verify affected native recovery on A/B. | Fix reproduced defects, run affected checks and reconcile GF-P19 plus completed GF-P20 before closure. |
 | GF-P23 | Deston | Hau Jie completes fresh guide-only laptop-B installation, offline core and remaining measured device checks. Deston reviews the release. | Investigate the unresolved gap, validate same-run measurement/exit/reopen receipts and close GF-P21/GF-P22 dependencies. |
-| GF-P25 | Deston | Rehearse now; record final genuine onboarding and six-stage demonstration on the verified GF-P23 release, then check playback. | Finish the guide and edit genuine footage using the [storyboard](GF_P25_DEMO_STORYBOARD.md); keep mode and limitations visible. |
+| GF-P25 | Deston | Rehearse the ten-minute talk and separate live demo; review release-matched onboarding/operation coverage and final playback after GF-P23. | Finish the guide and edit genuine footage using the [storyboard](GF_P25_DEMO_STORYBOARD.md); keep mode and limitations visible. |
 | GF-P26 | Deston | Review the final report/slides, complete required declaration/contribution details and rehearse ten minutes. | Reconcile local documents after GF-P23/GF-P24/GF-P25; verify requirements, tools, AI use, references and evidence. |
 | GF-P27 | Deston | Upload to LMS, then download/open the actual submitted files. | After GF-P26, package and verify permitted source/data/assets and required documents/video; exclude private extras. |
 
@@ -46,7 +54,7 @@ Practice is assigned.
 Hau Jie's own weighted work is complete; laptop-B support still contributes to
 the team's release. Prior contributions remain credited when final delivery moves
 to Deston. Existing [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and storyboard
-are ready for rehearsal, not a claim that final footage is complete.
+are ready for rehearsal. The new short highlight uses genuine earlier manual footage; final release-matched demonstration review remains open.
 
 Hau Jie pushes **codex/hau-jie-profiles**; Javier pushes **codex/javier-shortcuts**.
 Use focused PRs. Deston reviews and merges `main`. Each delivery identifies case

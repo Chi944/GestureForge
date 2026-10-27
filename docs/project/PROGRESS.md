@@ -1,6 +1,6 @@
 # GestureForge Studio progress
 
-Snapshot: **26 October 2026**. Weighted points describe accepted work, not a grade.
+Snapshot: **27 October 2026**. Weighted points describe accepted work, not a grade.
 Target submission: **31 October**; official deadline: **7 November**.
 
 ## Current checkpoint — recognition assessment and methods complete
@@ -14,6 +14,22 @@ Completed substeps are recorded below; they do not award a whole task early.
 | Hau Jie | **69/69 — 100.0%** | Remaining laptop-B fresh-install/offline and affected native support. | Validate and send only outstanding device receipts; no new recognition work. |
 | Javier | **54/65 — 83.1%** | Remaining laptop-A/B shortcut and recovery cases. | Reconcile the device matrix and finish GF-P19/GF-P22. |
 | Total | **183/223 — 82.1%** | **23 of 29 tasks accepted.** | Remaining: GF-P19, GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. |
+
+**Presentation preparation — 27 October:** the local PowerPoint has 14 core
+slides, three hidden backups, a 600-second speaking plan and an embedded 45-second
+highlight edited from genuine manual walkthrough footage. Notes carry the script,
+sources and measurement limits; tables/charts remain editable. The separate live
+demo covers operation. Rehearsal and final release-matched review remain open;
+this preparation does not award GF-P25/GF-P26 or change accepted points. See the
+[updated storyboard](GF_P25_DEMO_STORYBOARD.md).
+
+**Software and diagnostic work — 27 October:** PRs #41/#42 are merged. The
+active-Practice layout now hides/restores the demo-entry button with the other
+setup controls, and the four reported test type errors are repaired. A separate
+two-minute real-camera Preview diagnostic passed (2,435 observations; 0.125 s
+maximum GUI gap, 0.172 s frame-delivery gap; normal close and process exit 0).
+It does not replace the outstanding 30-minute release criterion. Details are in
+the [endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md#27-october-bounded-camera-diagnostic).
 
 **Completed evaluation and methods:** GF-P20 covers the saved hold, negative,
 replay, walkthrough and visual-latency evidence; the fresh capture has 16 responses
@@ -55,7 +71,7 @@ also remain valid additional-device evidence, without replacing A/B coverage.
 The [team guide](TEAM_GUIDE.md), [Hau Jie brief](HAU_JIE_HANDOFF.md),
 [Javier brief](JAVIER_HANDOFF.md) and [backlog](TEAM_BACKLOG.csv) define next work.
 The [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and
-[storyboard](GF_P25_DEMO_STORYBOARD.md) are ready for rehearsal, not final footage.
+[storyboard](GF_P25_DEMO_STORYBOARD.md) are ready for rehearsal; the short highlight does not complete release-matched demo acceptance.
 Native Apple Silicon Studio remains unverified. Private evidence and Word files
 stay local; prompt and decision logs remain unchanged.
 

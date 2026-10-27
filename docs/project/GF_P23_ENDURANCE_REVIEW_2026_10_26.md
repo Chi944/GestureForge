@@ -77,3 +77,31 @@ device does not replace those machine-specific results.
 GF-P23 remains In Progress, including its GF-P22 dependency. Whole-task accepted
 progress remains **183/223 (82.1%), 23/29 tasks**; the newly completed substeps
 are recorded without awarding the whole eight-point release task prematurely.
+
+## 27 October bounded camera diagnostic
+
+A separate real Studio Preview run on Deston's camera 1 and unchanged saved P01
+profile delivered 2,435 observations over 120.079 continuous seconds. Maximum
+active GUI and delivered-observation gaps were 0.125 and 0.172 seconds. The
+two-minute criteria passed, with normal closure, released workers and child
+process exit 0. A separate post-close camera-1 probe read five frames and exited
+normally. No raw frames or features were saved. This is a diagnostic,
+not another 30-minute release test or recognition qualification.
+
+The monitor now records the maximum duration of checkpoint generation and
+saving, plus its completion time. This run's maximum was 0.062 seconds. It did
+not reproduce or explain the historical five-second gap; neither the threshold
+nor the earlier result changed. The two timing fields use bounded storage and
+appear in a subsequent checkpoint/final report. Existing write failures still
+propagate and prevent a pass.
+
+Private aggregate: `experiments/local/studio-diagnostic-20261027/aggregate.json`.
+The independent process receipt is retained with the local presentation-build
+diagnostic records. PRs #41 and #42 now provide the reconciled device matrix and
+[laptop-B checklist](LAPTOP_B_RELEASE_CHECKLIST_2026_10_27.md). Complete the missing
+device cases and a qualifying measured endurance run before closing GF-P23.
+
+Integrated verification after the Practice layout and monitor changes: 86 tests
+across the five affected test files passed offscreen; Ruff and mypy passed the
+six changed Python files. This is focused regression coverage, not a rerun of
+every repository test or either teammate's physical device checks.

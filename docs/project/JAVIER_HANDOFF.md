@@ -1,6 +1,6 @@
 # Javier implementation brief
 
-## Current release briefing — 26 October 2026
+## Current release briefing — 27 October 2026
 
 **Your accepted work is 54/65 (83.1%).** Finish GF-P19 (5 points) and GF-P22
 (6 points); Deston owns final guide/video, report and release acceptance.
@@ -60,6 +60,16 @@ pass by waiting longer. Do not prescribe blind full-run retries.
 
 Keep originals, participant data and Word documents private. Submit a focused PR
 with case IDs, source/package identity, outcomes, evidence and remaining gaps.
+
+## Presentation review — 27 October
+
+Review the new local PowerPoint's slides 9–10 (guarded activation and replay) and
+12 (lifecycle, recovery and verification), then rehearse these proposed speaking
+slots. Check shortcut/recovery wording in the 45-second manual-footage highlight
+on slide 4; it shows request feedback and post-restore state, not actual app
+openings or a filmed restore click. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
+now separates the ten-minute talk from the live demo. GF-P19/GF-P22 evidence
+remains your priority; no duplicate filming is assigned.
 
 ## Prompt to give your coding agent
 
