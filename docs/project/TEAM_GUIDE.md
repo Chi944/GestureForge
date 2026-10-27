@@ -26,7 +26,7 @@ Review the gap before any blind full-duration retry. No repeat enrolment or
 Practice is assigned.
 
 **Presentation preparation — 27 October:** the local PowerPoint now has 14 core
-slides plus three hidden backups, a ten-minute plan and a 45-second embedded
+slides plus three hidden backups, a ten-minute plan and a 60-second embedded
 highlight combining manual footage and a labelled readiness illustration on
 slide 4. Slide 9 explains the NEUTRAL/READY, hold and rearm sequence. The live demo
 follows separately and is excluded from the ten minutes. Review the

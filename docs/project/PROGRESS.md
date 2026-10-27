@@ -1,6 +1,6 @@
 # GestureForge Studio progress
 
-Snapshot: **27 October 2026**. Weighted points describe accepted work, not a grade.
+Snapshot: **28 October 2026**. Weighted points describe accepted work, not a grade.
 Target submission: **31 October**; official deadline: **7 November**.
 
 ## Current checkpoint — recognition assessment and methods complete
@@ -15,15 +15,21 @@ Completed substeps are recorded below; they do not award a whole task early.
 | Javier | **54/65 — 83.1%** | Remaining laptop-A/B shortcut and recovery cases. | Reconcile the device matrix and finish GF-P19/GF-P22. |
 | Total | **183/223 — 82.1%** | **23 of 29 tasks accepted.** | Remaining: GF-P19, GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. |
 
-**Presentation preparation — 27 October:** the local PowerPoint has 14 core
-slides, three hidden backups, a 600-second speaking plan and an embedded 45-second
-highlight combining genuine manual walkthrough footage with a labelled
-gesture-readiness illustration. Slide 9 explicitly shows NEUTRAL/READY, G1 hold,
+**Presentation preparation — 28 October:** the local PowerPoint has 14 core
+slides, three hidden backups, a 600-second speaking plan and an embedded 60-second
+highlight with 50 seconds of genuine Studio footage, concise captions, spoken
+explanation and an eight-second labelled gesture-readiness illustration.
+One current deck and highlight are retained in the delivery output. Slide 9 explicitly shows NEUTRAL/READY, G1 hold,
 LATCHED and neutral rearm. Notes carry the script,
 sources and measurement limits; tables/charts remain editable. The separate live
 demo covers operation. Rehearsal and final release-matched review remain open;
 this preparation does not award GF-P25/GF-P26 or change accepted points. See the
 [updated storyboard](GF_P25_DEMO_STORYBOARD.md).
+
+For GF-P19/GF-P22, use [Deston's step-by-step closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october).
+It separates the remaining A/B checks from Deston's camera handoff and the
+subsequent evidence review. Acceptance of both tasks would add 11 points:
+**194/223 (87.0%), 25/29 tasks**; these points are not awarded yet.
 
 **Software and diagnostic work — 27 October:** PRs #41/#42 are merged. The
 active-Practice layout now hides/restores the demo-entry button with the other

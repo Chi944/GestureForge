@@ -1,8 +1,8 @@
 # GestureForge presentation and demo storyboard
 
-GF-P25 · Deston · 27 October 2026. The local PowerPoint now contains **14 core
+GF-P25 · Deston · 28 October 2026. The local PowerPoint now contains **14 core
 slides and three hidden backup slides**, with a **600-second speaking plan** and
-an embedded **45-second product highlight on slide 4**. The live product demo
+an embedded **60-second product highlight on slide 4**. The live product demo
 follows the talk. The [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) supplies the
 full operating steps. PowerPoint and video deliverables stay local, not in Git.
 
@@ -33,7 +33,7 @@ established product outcomes. There were no stakeholder interviews.
 ## Ten-minute presentation
 
 The timings below match the current deck and total 600 seconds, including the
-45-second silent clip. Its slot allows five seconds of introduction. Slide
+60-second narrated clip. Its slot allows five seconds of introduction. Slide
 advances remain manual; the video starts automatically on slide 4. Gentle fades reveal content
 without adding speaking clicks. Core scripts, longer answers and sources are in
 speaker notes. Backup slides 15–17 are excluded from the timed talk.
@@ -45,13 +45,13 @@ the core to ten minutes as specified in the brief; keep the live demo separate.
 | Time | Slide | Speaker and audience takeaway |
 | --- | --- | --- |
 | 0:00–0:20 | 1 · GestureForge Studio | **Deston:** introduce the presenter and the interrupted workflow. |
-| 0:20–1:05 | 2 · The presenter loses the thread | **Deston:** explain resource coordination and recovery. Published research motivates the problem; it is not our customer survey. |
-| 1:05–1:50 | 3 · A prepared route through the demo | **Deston:** connect the stage, linked resource and saved place to the pain point. |
-| 1:50–2:40 | 4 · A 45-second product look | **Deston:** introduce genuine manual footage and the labelled gesture-readiness animation; narrate lightly or let captions work. |
-| 2:40–3:30 | 5 · Personal setup before gesture control | **Hau Jie:** explain Guest/manual, personal TRAIN/VALIDATION and Practice; no guaranteed pass for new users. |
-| 3:30–4:25 | 6 · From camera frames to bounded actions | **Hau Jie:** attribute pretrained tracking and explain the team's features, classifiers and controller. |
-| 4:25–5:20 | 7 · Two lightweight AI techniques | **Hau Jie:** compare kNN/SVM, shared preprocessing and session-separated selection. |
-| 5:20–6:20 | 8 · Frozen TEST exposed recognition limits | **Hau Jie:** interpret each participant's starter/personal macro-F1 and retained misses. |
+| 0:20–1:00 | 2 · The presenter loses the thread | **Deston:** explain resource coordination and recovery. Published research motivates the problem; it is not our customer survey. |
+| 1:00–1:45 | 3 · A prepared route through the demo | **Deston:** connect the stage, linked resource and saved place to the pain point. |
+| 1:45–2:50 | 4 · A one-minute product look | **Deston:** introduce genuine manual footage and the labelled gesture-readiness animation; let the embedded narration explain the visible actions. |
+| 2:50–3:40 | 5 · Personal setup before gesture control | **Hau Jie:** explain Guest/manual, personal TRAIN/VALIDATION and Practice; no guaranteed pass for new users. |
+| 3:40–4:35 | 6 · From camera frames to bounded actions | **Hau Jie:** attribute pretrained tracking and explain the team's features, classifiers and controller. |
+| 4:35–5:25 | 7 · Two lightweight AI techniques | **Hau Jie:** compare kNN/SVM, shared preprocessing and session-separated selection. |
+| 5:25–6:20 | 8 · Frozen TEST exposed recognition limits | **Hau Jie:** interpret each participant's starter/personal macro-F1 and retained misses. |
 | 6:20–7:00 | 9 · Gesture readiness | **Javier:** show open palm/NEUTRAL for 300 ms until READY, fist/G1 for 400 ms, one action/LATCHED, then open palm to rearm. Explain explicit Start and current mode. |
 | 7:00–7:45 | 10 · Protection reduced requests in replay | **Javier:** separate 0 versus 36 replay requests from the twenty-hold result and native launch evidence. |
 | 7:45–8:30 | 11 · Useful responses, with visible limits | **Hau Jie:** show 16 responses/four misses and conditional latency without claiming a speed advantage. |
@@ -64,15 +64,19 @@ selected sources. They support questions rather than lengthening the core talk.
 
 ## The short highlight and separate live demonstration
 
-The 45-second highlight uses enlarged Studio footage and restrained title/motion
-cards: keep the route visible, request the approved resource, recover the saved
-place. The recorded source is manual operation. A separate, visibly labelled
-readiness illustration explains the personal profile, Practice, explicit
-Live/Start, NEUTRAL/READY, command hold and neutral rearm. The pose key identifies
-open palm, fist, thumb up and two raised fingers. This explains the workflow;
+The 60-second highlight gives 50 seconds to large genuine Studio footage.
+Short captions and spoken explanation accompany the visible mode change, target
+request feedback, restored summary, invalid HTTP rejection and correction to
+HTTPS. A two-second opening and eight-second readiness illustration complete
+the film. The UI fills most of the frame; paragraphs stay out of the video. The recorded source is manual operation. A separate, visibly labelled
+readiness illustration shows NEUTRAL/READY, one command hold and neutral rearm.
+The next slide and live demonstration explain the preceding personal profile,
+Practice and explicit Live/Start steps. The supplied pose key remains open palm,
+fist, thumb up and two raised fingers. This explains the workflow;
 it does not claim a fresh recorded Practice pass. The clip does not show actual external
 application openings or the restore click; captions and notes preserve those
-limits. It is silent, with presenter narration supplied locally. Retain the
+limits. The clip includes local synthesized narration; its script and voice provenance
+remain with the private edit files. Retain the
 original footage and edit provenance privately. Do not use synthetic enrolment
 footage as a real new-user recording.
 

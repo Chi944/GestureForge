@@ -1,6 +1,6 @@
 # Hau Jie implementation brief
 
-## Current release briefing — 27 October 2026
+## Current release briefing — 28 October 2026
 
 **Your weighted tasks are complete: 69/69 (100.0%).** Your remaining contribution
 is laptop-B support for Javier's integration checks and Deston's release.
@@ -17,6 +17,10 @@ Team progress is **183/223 (82.1%), 23/29 tasks**: Deston 60/89 (67.4%), Hau Jie
 GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. See the [team guide](TEAM_GUIDE.md).
 
 ## Your next delivery
+
+Use the laptop-B checklist in [the current closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october).
+Deston can handle the separate active-camera handoff on his own machine; your
+remaining B observations still need to identify laptop B and its actual build.
 
 Your `PRIVATE_LAPTOP_B_NEW_RECEIPTS_20261026.zip` is received: CRC and all 11
 indexed payload hashes pass. **Do not resend it.** The [receipt review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
@@ -51,7 +55,7 @@ onboarding, architecture, kNN/SVM and frozen TEST) and slide 11 (16 responses,
 four misses and successful-only latency). Check the speaker notes against your
 accepted methods/results, then rehearse these proposed speaking slots with the
 team. No new data collection is assigned. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
-has the exact ten-minute schedule; the 45-second highlight combines manual
+has the exact ten-minute schedule; the 60-second highlight combines manual
 footage with a labelled readiness illustration. Review its example pose key and
 standard personal-profile/Practice route. It is not a new recorded qualification.
 Laptop-B work above remains the release priority.

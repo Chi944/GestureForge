@@ -108,6 +108,48 @@ GF-P20/GF-P21/GF-P24 are complete under the current brief. GF-P22 closure still
 depends on reconciling GF-P19's actual remaining device/error results, not a new
 recognition experiment. Deston retains whole-task and release acceptance.
 
+## Deston's shortest closure route — 28 October
+
+P19 and P22 are still open. Deston may perform checks himself on the identified
+device, but his own laptop is additional evidence and does not replace laptop A
+or B. Keep already accepted openings, retries and restoration results.
+
+1. **Laptop A, camera off:** complete only the absent App-mode interpreter,
+   `.cmd`, `.lnk` and `.url` configuration-refusal observations. Use disposable
+   harmless fixtures, capture the selected type/value and specific refusal, and
+   never execute an unsafe target. Retain the same launch's numeric exit status
+   before refreshing or disposing its process handle.
+2. **Laptop B, short recovery session:** with no runbook, verify Save session
+   refuses without a usable file. With Harbor loaded, save and restore, checking
+   the operation notice, paused Preview and no automatic launch. Export before
+   and after separately. Make two disposable TXT targets unavailable, clear
+   their slots independently to Unbound, retain both library entries, then
+   restore the files and previous bindings. Check same-camera Use camera and
+   pause, explicit Start and the missing B focus/resume case.
+3. **Deston's own device, separate Camera handoff:** configure the workspace
+   and target first, load unchanged P01, and use the Windows guide's explicitly
+   labelled manually approved demo route. Select Live, Apply and pause, Start,
+   and fresh NEUTRAL. Request Windows Camera while Studio has real active
+   frames. Verify Studio releases capture before Camera opens, return remains
+   paused, and explicit Start reacquires. Keep the actual approval banner and
+   mode visible. Do not repeat full Practice or change thresholds for this test.
+4. **Evidence review:** give each check device/operator/date/build, expected and
+   observed outcome, screenshots/notes, relevant disjoint exports and process
+   logs. GPT can reconcile receipts, run affected regression tests and fix a
+   reproduced defect. P22 closes after P19's required cases and any resulting
+   fixes are verified; it does not require a new recognition experiment.
+
+For mapped-drive and association cases, record fixture availability first. If no
+safe existing fixture exists, retain NOT RUN with a reason and an explicit
+release-coverage disposition. Do not change system associations or create network
+access just to manufacture a pass. Fresh guide-only/offline installation and the
+30-minute endurance run belong to P23, not this short P19/P22 sequence.
+
+The 27 October guide wording issue above is resolved: the current Windows guide
+describes both full-Practice eligibility and explicitly approved demonstration.
+Historical Practice-only session-C wording below is superseded by that guide;
+its historical UNRUN results remain unchanged. No new physical pass is claimed.
+
 ## Current scope and evidence rules
 
 The [26 October team guide](TEAM_GUIDE.md) and

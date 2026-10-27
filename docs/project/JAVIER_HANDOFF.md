@@ -1,6 +1,6 @@
 # Javier implementation brief
 
-## Current release briefing — 27 October 2026
+## Current release briefing — 28 October 2026
 
 **Your accepted work is 54/65 (83.1%).** Finish GF-P19 (5 points) and GF-P22
 (6 points); Deston owns final guide/video, report and release acceptance.
@@ -16,6 +16,11 @@ Team progress is **183/223 (82.1%), 23/29 tasks**: Deston 60/89 (67.4%), Hau Jie
 GF-P23, GF-P25, GF-P26 and GF-P27. Use the [team guide](TEAM_GUIDE.md) for ownership.
 
 ## Your next delivery
+
+Follow [the current closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october):
+finish the missing A refusals and numeric exit, consolidate Hau Jie's B receipts
+and Deston's separate handoff, then review P19 before closing P22. Both tasks
+would bring your accepted work to 65/65 and the team to 194/223 (87.0%).
 
 **PR #40 is merged.** Deston's checkout now independently verifies the original
 laptop-B ZIP CRC and all 11 indexed payload hashes. Your separate-run inventory
@@ -66,7 +71,7 @@ with case IDs, source/package identity, outcomes, evidence and remaining gaps.
 Review the new local PowerPoint's slides 9–10 (guarded activation and replay) and
 12 (lifecycle, recovery and verification), then rehearse these proposed speaking
 slots. Slide 9 now explicitly shows NEUTRAL/READY, fist hold, LATCHED and rearm.
-Check shortcut/recovery wording in the 45-second highlight, which combines
+Check shortcut/recovery wording in the 60-second highlight, which combines
 genuine manual footage and a labelled readiness illustration
 on slide 4; it shows request feedback and post-restore state, not actual app
 openings or a filmed restore click. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
