@@ -41,7 +41,8 @@ process, **not a verified complete offline-core pass**. Earlier operator reports
 are preserved separately and are not substituted for these online observations.
 
 Installation was assisted, not guide-only. Same-camera pause/reacquisition and
-the outstanding laptop-B focus/resume case were not exercised in this session.
+focus/resume were not exercised in that recovery session; the separate short
+camera session below supplies new bounded observations.
 Active-capture external Camera handoff remains separate. No existing mapped
 network drive was available; no isolated broken-association fixture was supplied.
 Those fixture-dependent cases remain NOT RUN, without changing the OS.
@@ -52,3 +53,41 @@ numeric process result and private archive CRC/index hashes. This documentation
 does not claim a new software test-suite run, gesture readiness or release approval.
 Reuse the separately accepted passive-duration receipts; no further thirty-minute
 run is assigned by this result.
+
+## Separate short camera recovery session
+
+The same identified `708e77e` installation was launched in a new process with
+new receipts. Saved P02 Original was loaded unchanged (profile byte hash checked),
+with camera 0, Right hand and Preview. No collection, Practice, threshold change,
+manual approval or LIVE dispatch was performed.
+
+- Start produced the preview image accessibility control and updated prediction
+  text, with Start disabled.
+- **Use camera and pause**, still selecting index 0, produced “Camera off / Start
+  explicitly to reconnect” and “Paused • camera released”, with Start enabled.
+- Explicit Start restored the preview/prediction state.
+- Activating the existing Notepad window produced pause events. Returning to
+  Studio without a Start command remained paused, with the camera-off/released
+  messages. Explicit Ctrl+Return then restored the preview/prediction state.
+- Escape paused capture again. Normal Alt+F4 removed the Studio window, and the
+  same launch's original process receipt recorded child exit **0**.
+
+All three original start events identify camera 0, Preview and the same model
+version/settings. Accessibility snapshots sometimes lagged; refreshed return
+state and the original event log were reconciled. No active-camera screenshot
+was taken, and frame rate/count, preview pixel quality and exact focus-to-pause
+latency were not measured. No new physical gesture pass is inferred.
+
+Two preceding startup failures are retained separately: a private parent
+launcher's Unicode console-output error (child exit unknown), and a restricted
+startup with no visible window, whose identified child was explicitly stopped
+before any camera/UI case (exit 4294967295). Neither is normal shutdown or a pass.
+The private launcher was corrected; production source was not changed.
+
+The new private archive is `PRIVATE_LAPTOP_B_CAMERA_RECOVERY_20261028.zip`
+(20 indexed payloads, 13,642 bytes), SHA256
+`15b41af08b37755f48dd25353855c2fe715d145b87e3341893fad7b4beb1d1cb`.
+CRC and all payload hashes pass. It contains only this short case's originals,
+observations and separate failed startups, not the received passive-stability
+packet. Guide-only setup, verified complete offline core and any separately
+assigned eligible external Camera handoff remain outside these observations.
