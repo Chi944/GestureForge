@@ -91,3 +91,56 @@ CRC and all payload hashes pass. It contains only this short case's originals,
 observations and separate failed startups, not the received passive-stability
 packet. Guide-only setup, verified complete offline core and any separately
 assigned eligible external Camera handoff remain outside these observations.
+
+## Later operator-run offline attempt: partial, not accepted as fully offline
+
+A new human-operated run used the same identified `708e77e` installation.
+The launcher recorded disconnected physical adapters at startup and actual
+child exit 0 after normal closure. Its 183 sampled link observations contain
+four disconnected samples followed by 179 Wi-Fi-Up samples. Physical link Up
+does not prove Internet traffic, but these records do not establish the assigned
+fully disconnected workflow. Hau Jie subsequently stated that the computer's
+Wi-Fi stayed disconnected throughout. Preserve both accounts for owner review;
+do not infer operator error or change the originals to resolve the discrepancy.
+
+The user reported successful bookmark return, actual Calculator/reference/folder
+opening, and paused Preview restoration without automatic reopening. Original
+pre-restore summary state reconciles three manual launch requests, nine applied
+viewer outcomes and two unchanged outcomes. The original after export has a
+different revision and zero outcomes/counters. The actual saved workspace is
+Demo Studio, not the planned Harbor workspace; it saves card 10 and no bookmarks.
+The existing pre-restore summary and its identical archive are retained as found;
+an exact separate export named `sessionsummary` was not located in the reviewed
+folders. These limits are preserved rather than upgrading the run to a full pass.
+
+Only this attempt's originals and observations were indexed in
+`PRIVATE_LAPTOP_B_OFFLINE_REVIEW_20261028.zip` (30 payloads), SHA256
+`56bfacaaa19061ec6613d275210bf4bb206d7a9fe8e7227ffde43cdb9f98ec18`.
+The later operator clarification is a separate private addendum. No automatic
+rerun or whole offline-core acceptance is assigned by this review.
+
+## Fresh installation: assisted completion, not guide-only
+
+The user extracted the identified source package and created a new Python
+3.11.15 environment before requesting agent help. Dependencies/application and
+the hand model were not yet installed. The agent preserved that environment,
+verified all 222 extracted source files against the ZIP, and completed the
+original setup script with the existing Python base interpreter. No old
+environment, profile, participant samples or target registry was copied.
+
+Setup, dependency consistency, Studio smoke and viewer smoke each returned 0.
+Setup also passed the blank-image native model check without a webcam. The new
+native Studio showed Guest/manual, Preview and Camera off. Normal Alt+F4 then
+produced actual child exit 0 in that same launch's original process receipt.
+This is **AI-assisted installation**, regardless of the proposed folder name;
+the independent guide-only criterion remains unmet. No offline, physical camera,
+Practice or endurance check was performed on this new installation.
+
+The final private packet is
+`PRIVATE_LAPTOP_B_ASSISTED_INSTALL_FINAL_20261028.zip` (22 indexed payloads), SHA256
+`bfa9d8683ef7a42b5cd48d4ff3de1ea80d4d074211a38239dfe707db6cb7c1f9`.
+It resolves the earlier installation packet's pending visible-process exit;
+the earlier immutable snapshot remains preserved. CRC and every indexed payload
+hash pass. Only sanitized findings are committed; original logs, saved states,
+network observations and local paths remain private. These additions change no
+qualification, acceptance points or production source.
