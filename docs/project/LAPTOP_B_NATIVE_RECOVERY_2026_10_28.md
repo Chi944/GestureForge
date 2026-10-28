@@ -166,3 +166,20 @@ This closes the installation's previously missing exit receipt and verifies
 partial local-function evidence. GF-P19 and GF-P23 retain their remaining
 criteria. A short disconnected local-function check is sufficient to resolve the
 network gap; no new endurance, recognition collection or Practice is requested.
+
+## Scoped release acceptance — later on 28 October
+
+Deston explicitly approved scoped release acceptance with disclosed limitations.
+GF-P23 is now accepted using verified assisted installation, passive stability,
+normal shutdown and consolidated functional/recovery evidence. GF-P19 closes
+against its original aggregate coverage, with device identities preserved.
+See [Revision 7](PROJECT_PLAN.md) for the current decision; prior unresolved-task
+statements above describe the earlier review checkpoint.
+
+Guide-only installation and continuously disconnected laptop-B operation remain
+**unverified**, not passed. The four disconnected/179 Wi-Fi-Up observations and
+the operator's report remain unchanged. Native macOS Studio is experimental and
+unverified. The two unavailable recovery originals remain optional supporting
+archive material; the attributed PR observations are not silently promoted to
+independently inspected evidence. No further recording is assigned to close
+P19/P23. Final demonstration/document review and actual submission remain open.

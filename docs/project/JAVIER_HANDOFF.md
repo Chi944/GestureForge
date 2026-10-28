@@ -1,120 +1,43 @@
-# Javier implementation brief
+# Javier final delivery brief
 
-## Revision 6 â€” what to do now
+## Current briefing — 28 October 2026
 
-Your next delivery is the missing supported laptop-A refusal/exit evidence and
-consolidated A/B recovery records, plus the separate eligible camera handoff.
-Reuse existing passes. Defer unavailable mapped-drive/broken-association physical
-fixtures as NOT RUN; do not manufacture OS configuration changes.
+**Your weighted work is complete: 65/65 (100.0%).** Team acceptance is
+**202/223 (90.6%), 26/29 tasks** under [Revision 7](PROJECT_PLAN.md#revision-7--scoped-windows-release-acceptance-28-october-2026). GF-P19 and GF-P23
+are accepted; remaining GF-P25/GF-P26/GF-P27 belong to Deston. No new device,
+recognition, collection, Practice or endurance run is assigned to you.
 
-[The approved minimum release procedure](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026)
-combines passive stability with separate functional checks; no new interactive
-thirty-minute run is assigned. Deston is preparing local documents/guide and
-package preflight in parallel. Final review, guide-only/offline checks and
-required demonstration/rehearsal/declaration/LMS steps remain. This supersedes
-older repetitive instructions below. GF-P22 software acceptance adds six points;
-remaining GF-P19 physical checks explicitly gate GF-P23. Ownership is unchanged.
+Installation is verified as assisted, not guide-only. The offline attempt's
+operator report conflicts with sampled Wi-Fi-Up observations; neither is erased,
+and complete disconnected operation is unverified. Native macOS Studio remains
+unverified. These limits are disclosed in the owner-approved scoped release;
+acceptance is not a claim that every original engineering target passed.
 
-## Current release briefing â€” 28 October 2026
+## What to do next
 
-**Your accepted work is 60/65 (92.3%).** GF-P22 software recovery/guide is now
-accepted. Finish GF-P19 (5 points); Deston owns final guide/video, report and release acceptance.
-Target submission is **31 October**; the official deadline is **7 November**.
+1. Review the existing guide/slides and rehearse your **desktop shortcuts and recovery** speaking section
+   with the team. Use the [storyboard](GF_P25_DEMO_STORYBOARD.md); the presentation
+   is ten minutes including the embedded highlight, followed by a separate live demo.
+2. Check final technical wording against existing results. Keep actual misses,
+   assisted setup, unresolved offline evidence and unverified native Mac status
+   visible where relevant. No new experiment is needed.
+3. Supply any required contribution/declaration details to Deston for final
+   documentation. Help fix a reproduced release defect only if one appears.
 
-GF-P20, GF-P21 and GF-P24 are complete. No new recognition recording or repair
-is assigned. GF-P16 uses Deston's revised manual-review acceptance; automated
-Practice remains 19/22 and runtime protections are unchanged. The
-[evaluation](P20_EVALUATION_2026_10_26.md) retains actual misses and limits.
+PR #44's three received packets are independently verified. The two original
+native/camera recovery packets mentioned there may be sent for optional archival;
+they are not a new acceptance requirement and no repeat session is needed.
 
-Team progress is **189/223 (84.8%), 24/29 tasks**: Deston 60/89 (67.4%), Hau Jie
-69/69 (100.0%), Javier 60/65 (92.3%). Five tasks remain: GF-P19,
-GF-P23, GF-P25, GF-P26 and GF-P27. Use the [team guide](TEAM_GUIDE.md) for ownership.
+## Prompt for your coding agent
 
-## Your next delivery
+> Read Revision 7 in PROJECT_PLAN.md and the current TEAM_GUIDE.md. GF-P19 and
+> GF-P23 are accepted with documented release limitations; do not reopen device,
+> recognition or endurance work. Review my assigned presentation/guide wording
+> against existing evidence, fix only a concrete discrepancy or reproduced defect,
+> and preserve measured results and private-data boundaries. Use my own branch,
+> submit a focused PR if needed, and leave prompt/decision logs unchanged.
 
-Follow [the current closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october):
-finish the missing A refusals and numeric exit, consolidate Hau Jie's B receipts
-and Deston's separate handoff, then review P19. That remaining task
-would bring your accepted work to 65/65 and the team to 194/223 (87.0%).
-
-**PR #43 is merged.** The [new laptop-B passive run](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
-is independently verified: 30 min 35.532 s continuous capture, passing gaps,
-same-run normal shutdown/actual exit 0 and attributed post-close Camera reopening.
-Reuse these accepted substeps on `708e77e`; do not ask Hau Jie to resend them or
-repeat passive endurance. PR #44 adds attributed B interaction/recovery below;
-review the existing originals before assigning any repeated case. Guide-only
-setup and offline cases remain separate, as does laptop-A's missing exit receipt.
-
-**PR #44 merged; received packets reviewed — 28 October:** the final assisted
-installation, offline-review and operator-clarification ZIPs pass CRC/path checks
-and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
-and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
-missing installation exit receipt, not the independent guide-only criterion.
-The offline run preserves three launch requests, nine applied viewer outcomes,
-two boundary no-ops and a distinct restored revision with zero replayed outcomes.
-Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
-operator reports continuous disconnection. Keep both records: link Up is not
-proof of Internet traffic, and complete disconnected operation is not established.
-
-PR #44 also reports separate native slot/save/restore and short camera recovery
-checks. Their two original private packets have **not yet been received here**;
-reuse the attributed observations and request those originals, not another run.
-See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
-
-### GF-P19
-
-- **Manual:** finish only outstanding laptop-A target/error cases in the
-  [Windows matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md). Hau Jie operates
-  laptop B. Preserve unchanged passes and record unavailable native fixtures.
-- **GPT:** obtain the two already-created B native/camera recovery packets, then
-  reconcile expected/observed results, exact build and original
-  per-process evidence. Separate native openings from launch requests. Do not
-  recount cumulative exports or combine separate runs.
-- **Camera handoff:** keep eligible active-capture Windows Camera release and
-  explicit resume separate from endurance. Deston's device can provide additional
-  evidence, but must not be relabelled as laptop A or B.
-
-### GF-P22 â€” accepted
-
-The original software criterion is satisfied: affected recovery tests pass and
-the guide reflects actual behavior. Revision 6 moves the remaining GF-P19 physical
-dependency to explicit GF-P23 release gating. No native result is inferred.
-Do not reopen software work unless a concrete defect is reproduced; if it is,
-fix that defect and rerun only affected tests/native cases.
-
-### GF-P25 handoff to Deston
-
-Deston owns the final guide and demo video. Review shortcut/recovery wording in
-the [Windows guide](GF_P25_WINDOWS_GUIDE_DRAFT.md) and
-[storyboard](GF_P25_DEMO_STORYBOARD.md); supply only not-yet-received original
-footage or receipts with actual build identities. No duplicate filming or complete
-guide rewrite is assigned to you. Rehearse the proposed presentation slot together.
-
-Work on **codex/javier-shortcuts**, not `main`. Consolidate Hau Jie's laptop-B
-support without attributing it to your machine. Use the
-[measurement guide](../USER_GUIDE.md#measure-the-full-studio-stability-run)
-for any justified new run: fresh output folder, same-run measurement/exit and a
-separate camera-reopen check. The persistent gap warning means the run cannot
-pass by waiting longer. Do not prescribe blind full-run retries.
-
-Keep originals, participant data and Word documents private. Submit a focused PR
-with case IDs, source/package identity, outcomes, evidence and remaining gaps.
-
-## Presentation review â€” 27 October
-
-Review the new local PowerPoint's slides 9â€“10 (guarded activation and replay) and
-12 (lifecycle, recovery and verification), then rehearse these proposed speaking
-slots. Slide 9 now explicitly shows NEUTRAL/READY, fist hold, LATCHED and rearm.
-Check shortcut/recovery wording in the 60-second highlight, which combines
-genuine manual footage and a labelled readiness illustration
-on slide 4; it shows request feedback and post-restore state, not actual app
-openings or a filmed restore click. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
-now separates the ten-minute talk from the live demo. Remaining GF-P19 evidence
-is your priority; no duplicate filming is assigned.
-
-## Prompt to give your coding agent
-
-> Read this current briefing, TEAM_GUIDE.md and the two-device matrix. Sync reviewed main into codex/javier-shortcuts, preserving local changes. PR40 and the private laptop-B packet are already reviewed; do not recreate or request them. GF-P22 software work is accepted; reconcile only remaining GF-P19 physical cases and prepare the physical checks for me and Hau Jie. Fix demonstrated owned-component defects, run fresh affected tests and submit a focused PR. Keep actual outcomes, device identities and separate run receipts intact; never infer a native pass from software tests. Do not repeat recognition work or change qualification records. Keep private data/logs/Word files out of Git and leave prompt/decision logs unchanged. State exactly which human actions remain.
+Work on **codex/javier-shortcuts**, not main.
 
 <details>
 <summary>Historical record â€” expand for earlier deliveries and decisions</summary>

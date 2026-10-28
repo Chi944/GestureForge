@@ -1,81 +1,31 @@
-# Javier: two-device evidence matrix and remaining sessions — 25 October 2026
+# Two-device evidence matrix — accepted scope and historical observations
 
-## Revision 6 — current closure scope
+## Current disposition — 28 October 2026
 
-GF-P22 software recovery/guide is accepted against its original criterion and
-verified tests. The outstanding physical cases below remain GF-P19 and explicitly
-gate GF-P23; their results are not inferred from the software acceptance.
+[Revision 7](PROJECT_PLAN.md#revision-7--scoped-windows-release-acceptance-28-october-2026) accepts GF-P19 and GF-P23. The original GF-P19 criterion applies
+four target types to both Windows laptops; the error/recovery and Camera-handoff
+coverage is aggregate system evidence, not every case repeated per laptop.
+Existing A/B openings/refusals plus Deston's 19 native checks and 28 October manual
+active-camera release/paused return/reacquisition satisfy that scoped criterion.
+Individual device identities and limitations remain visible in the dated matrix.
+Mapped-drive and broken-association fixtures remain NOT RUN, deferred under Revision 6.
 
-Reuse accepted passive duration/responsiveness and shutdown together with
-separate supported interaction/recovery checks. **No new interactive 30-minute
-run is required.** The new physical work is only missing supported native
-refusal/recovery, eligible camera handoff, fresh guide-only setup and offline
-core. Keep device/build identities and separate run segments.
+GF-P23 reuses accepted passive stability and separate functional recovery with
+verified assisted setup/startup/exit. Installation is verified as assisted, not guide-only. The offline attempt's
+operator report conflicts with sampled Wi-Fi-Up observations; neither is erased,
+and complete disconnected operation is unverified. Native macOS Studio remains
+unverified. These limits are disclosed in the owner-approved scoped release;
+acceptance is not a claim that every original engineering target passed.
 
-Mapped-drive and broken-association fixtures are **NOT RUN / deferred optional
-fixtures** when unavailable. Do not change associations or create a network
-mapping to manufacture a test. Existing validation/unit coverage remains evidence
-of software behavior, not a native fixture pass. The dated matrix below retains
-its original observations; these dispositions supersede its next-action requests.
-See [Revision 6](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026).
+PR #44 reports additional B native and short camera recovery observations. Their
+private originals are not yet received locally, so those observations remain
+attributed; optional archival is not a new gate. Three other new packets have
+passed independent CRC/path and all 52 indexed payload-hash checks. No new run
+or duplicate device check is assigned.
 
-## Current update — 28 October
-
-**PR #44 merged; received packets reviewed — 28 October:** the final assisted
-installation, offline-review and operator-clarification ZIPs pass CRC/path checks
-and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
-and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
-missing installation exit receipt, not the independent guide-only criterion.
-The offline run preserves three launch requests, nine applied viewer outcomes,
-two boundary no-ops and a distinct restored revision with zero replayed outcomes.
-Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
-operator reports continuous disconnection. Keep both records: link Up is not
-proof of Internet traffic, and complete disconnected operation is not established.
-
-PR #44 also reports separate native slot/save/restore and short camera recovery
-checks. Their two original private packets have **not yet been received here**;
-reuse the attributed observations and request those originals, not another run.
-See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
-
-[PR #43 and the original passive-run packet](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
-are independently verified. Laptop-B passive duration/responsiveness, normal
-shutdown/actual process exit 0 and attributed Camera reopening are accepted
-substeps on `708e77e`. No repeat passive thirty-minute run or duplicate packet
-is needed. Remaining work is interactive/native recovery coverage, fresh
-guide-only setup and offline core; laptop-A's missing exit receipt is separate.
-Preserve the dated preparation and earlier attempts below as historical evidence.
-Current instructions take precedence over older requests for a new full run.
-
-**26 October independent integration check:** the original new laptop-B ZIP has
-now arrived in Deston's checkout. CRC, safe unique member paths and all 11
-payload hashes pass; the PR #40 values below are reproduced. No resend is needed.
-[Deston's separate endurance run](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) reaches
-32 min 20.578 s continuous capture and passes close/reopen substeps, with a
-five-second responsiveness gap retained. These results do not relabel his
-machine as laptop A/B or close their remaining cells.
-
-**Additional integration evidence — 26 October:** [Deston device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md) record 142 passing automated tests (one skip), 19 native API cases, actual Calculator/file recovery and Preview camera pause/focus/reconnect on Deston's laptop. Reuse these bounded results; they do not replace required laptop-A/B coverage or active-capture Camera dispatch. GF-P19 remains In Progress.
-
-**26 October current handoff:** GF-P16 is accepted under owner manual review; GF-P20 evaluation is complete, with its four misses and measured limits retained. Deston owns GF-P20, GF-P24 and final GF-P25 guide/video. Javier continues GF-P19/GF-P22 and two-device receipts for GF-P23. Do not restart completed holds, negatives, latency, comparison or walkthrough captures. [Current Javier brief](JAVIER_HANDOFF.md) and [team guide](TEAM_GUIDE.md) supersede dated session plans below.
-
-The 25 October original ZIP and exports/logs have been received and independently
-checked in Deston's checkout. Archive integrity, event/counter reconciliation and
-saved-state validation pass. Physical Windows checks remain Javier's guided
-observations; the packet contains no screenshots. Receipt review does not advance
-whole-task acceptance.
-
-Current scope: remaining GF-P19 physical cases and coordination for GF-P23/GF-P25. GF-P22 software work is accepted under Revision 6.
-Review owner: Deston; independent 25 October artifact receipt review complete. Laptop A operator: Javier. Laptop B operator: Hau Jie.
-This is an inventory and execution checklist with bounded 25 October laptop-A observations; no whole-task acceptance is claimed.
-
-Reviewed source snapshot: `19c95233b25c227094c1fbe6ce42202bbb47e2d8`.
-The remote `codex/javier-shortcuts` ref was fast-forwarded from
-`6e7ca70c421d7740c253763c5fb72400d823434b` to that main snapshot with an
-expected-head check and `force=false`. No main ref was changed.
-This remote operation does not update Javier's Windows working copy.
-A new 25 October post-sync screenshot identifies clean tracked status and local HEAD
-`d9c68c651132d1405881966c2fd5445d820201c9`. Native observations below are
-bounded to that source, not later documentation commits.
+**202/223 (90.6%), 26/29 tasks accepted.** Javier is **65/65 (100.0%)**.
+Only GF-P25, GF-P26 and GF-P27 remain. The tables below are dated evidence,
+including unrun cases; their older next-action columns do not override Revision 7.
 
 ## Dated closure sheet — 27 October (Revision 6 governs next actions)
 
@@ -156,34 +106,9 @@ recognition experiment. Deston retains whole-task and release acceptance.
 
 ## Deston's shortest closure route — 28 October
 
-**P22 is accepted; P19 remains open.** Keep already accepted openings, retries
-and restoration results. The dated matrices below preserve historical snapshots;
-this route and the current PR #44 update take precedence.
-
-1. **Laptop A, camera off:** complete only absent App-mode interpreter, `.cmd`,
-   `.lnk` and `.url` configuration-refusal observations with harmless disposable
-   fixtures. Record the specific refusal; never execute unsafe targets. Retain
-   the same launch's numeric exit before disposing its process handle.
-2. **Laptop B, existing evidence first:** obtain the original native-recovery
-   and camera-recovery packets named in PR #44. The PR reports no-runbook save
-   refusal, save/restore notices, independent unavailable-slot clearing,
-   same-camera pause/reacquisition, focus/explicit resume and normal exits.
-   Review those receipts rather than repeating those sessions.
-3. **Camera handoff coverage:** Deston's separate 28 October manual dispatch
-   already records active capture, external Camera opening, paused return,
-   explicit reacquisition and exit 0. Do not repeat it or relabel it laptop A/B.
-   Reconcile remaining eligible A/B external Camera coverage with actual runtime
-   eligibility; no qualification bypass or new Practice search is assigned.
-4. **Release-only gaps:** Hau Jie completes a short clearly disconnected local
-   core check and independent guide-only installation. The received assisted
-   installation has a verified numeric exit; the offline attempt retains its
-   conflicting operator/link evidence. Reuse accepted passive thirty-minute
-   stability. These are P23 checks, not a new endurance or recognition request.
-
-Each check identifies device/operator/build and preserves actual outcomes and
-original separate exports/process logs. GPT reconciles them and fixes only a
-reproduced defect. Unavailable mapped-drive/broken-association fixtures remain
-NOT RUN under Revision 6; do not alter OS configuration to manufacture them.
+This former device-check route is closed by Revision 7. Do not repeat its
+prior steps. Continue GF-P25 final guide/demo review, GF-P26 document/declaration
+and rehearsal, then GF-P27 final packaging and verified submission.
 
 The 27 October guide wording issue above is resolved: the current Windows guide
 describes both full-Practice eligibility and explicitly approved demonstration.

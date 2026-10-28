@@ -36,15 +36,16 @@ consent. **GestureForge controls its own viewer; it is not connected to PowerPoi
 > personal Live gestures require the current session's full Practice pass or
 > explicit [manual demo approval](docs/USER_GUIDE.md#manually-approved-demo).
 > Recognition assessment and the supervised personal workflow evaluation are
-> complete, with their measured limitations retained. Device verification,
-> release-matched video and final delivery checks remain in progress.
+> complete, with their measured limitations retained. Desktop verification and
+> a scoped Windows release candidate are accepted. Final demonstration materials,
+> presentation review and submission checks remain in progress.
 
 **Release scope, updated 26 October:** the release target is personal gesture control
 on Windows. Enrol once, save the profile and complete Practice before Live use,
 or explicitly enable a manually approved, supervised demo.
 Supplied starter gestures and no-enrolment first use are deferred; the completed
-starter comparisons remain research evidence. The remaining release work is
-device verification, a demonstrated release candidate and delivery materials. Existing
+starter comparisons remain research evidence. The remaining work is final
+demonstration coverage and delivery materials. Existing
 macOS support remains experimental; Windows is the release verification target.
 
 ![GestureForge Studio in Guest preview mode with camera off](docs/images/studio.png)
@@ -286,11 +287,13 @@ physical Windows run or camera-reopen observation.
 
 ## Release verification
 
-The [28 October release procedure](docs/project/PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026)
-reuses accepted passive endurance plus separate functional checks. No new
-interactive thirty-minute run is required. Unavailable mapped-drive and broken
-association fixtures remain deferred/NOT RUN. Local report, guide and package
-preparation proceeds alongside the remaining essential device checks.
+The [28 October scoped acceptance](docs/project/PROJECT_PLAN.md)
+closes desktop verification using consolidated, separately identified device
+evidence and accepts the Windows release candidate with disclosed limitations.
+Installation was assisted; guide-only setup and continuously disconnected laptop-B
+operation are unverified. No new interactive thirty-minute run is required.
+Unavailable mapped-drive and broken-association fixtures remain deferred/NOT RUN.
+Final demonstration, document review and submission checks remain.
 
 
 The [28 October laptop-B review](docs/project/LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
@@ -303,7 +306,7 @@ independently verifies a passive Studio run on source `708e77e`:
 | Resource use | **24.10 observations/s**, peak process memory **437.21 MiB** |
 | Shutdown and camera reuse | Workers released; actual child exit **0**; operator confirmed Windows Camera reopened |
 | Installation update | Assisted laptop-B setup, dependency checks, both smoke checks and normal Studio exit **0** independently verified |
-| Remaining release coverage | Guide-only installation, unambiguous offline core and remaining supported native cases; PR #44 recovery observations await their separate original packets |
+| Scoped release limitations | Guide-only installation and continuously disconnected operation unverified; PR #44's separate recovery observations remain attributed |
 | Native Apple Silicon Studio | Setup path available; full native device verification outstanding |
 
 Passive capture and shutdown substeps are accepted. This run involved no clicking
@@ -312,7 +315,7 @@ The [28 October packet review](docs/project/LAPTOP_B_NATIVE_RECOVERY_2026_10_28.
 retains the offline discrepancy: four disconnected network samples followed by
 179 Wi-Fi-Up samples, alongside the operator's disconnected report. Link Up
 does not prove Internet traffic; complete disconnected operation remains unverified.
-It does not establish full release acceptance or erase the separate
+The owner's scoped acceptance does not turn those checks into passes or erase the separate
 [earlier gapped run](docs/project/GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
 No repeat passive thirty-minute run is assigned. Follow the
 [current team actions](docs/project/TEAM_GUIDE.md) and

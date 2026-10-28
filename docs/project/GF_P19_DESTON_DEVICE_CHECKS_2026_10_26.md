@@ -1,5 +1,25 @@
 # GF-P19: Deston desktop and camera checks — 26 October 2026
 
+## Current acceptance — 28 October
+
+GF-P19 is accepted under [Revision 7](PROJECT_PLAN.md). Original task wording at
+`223c8c3` requires four target types on both laptops, followed by error handling
+and Camera handoff/recovery coverage; it does not require every error or handoff
+repeated on both. The recorded A/B openings and missing-target recovery, A's
+scheme refusals, Deston's 19 native validation cases and the actual manual Camera
+handoff below provide consolidated coverage with each device kept distinct.
+No gesture-triggered handoff or additional A/B handoff is inferred.
+
+Independent review rechecked 12 native-check and nine handoff payload hashes.
+There is no application-source change since the handoff's `976467c` runtime.
+Current targeted dispatch/recovery/package verification on `4e1e544` passes
+**205 tests, one skipped**. Unavailable association/mapped-drive fixtures retain
+Revision 6's NOT RUN disposition. PR #44's supporting recovery observations
+remain attributed; their absent originals are not a new acceptance gate.
+
+The dated remaining-work and progress statements below are historical, superseded
+by this acceptance and the current [progress table](PROGRESS.md).
+
 Source checked: `3cdfe99f0a648ac04609d31dacf89cbe75d43ed6`.
 Device: Deston's Windows laptop; operator: Codex using native desktop controls.
 Deston confirmed the webcam was connected. This is additional integration evidence,

@@ -1,105 +1,43 @@
-# Hau Jie implementation brief
+# Hau Jie final delivery brief
 
-## Revision 6 — what to do now
+## Current briefing — 28 October 2026
 
-Your next delivery is the remaining laptop-B guide-only setup, offline core,
-and any supported cases still absent after the PR #44 receipt review. Reuse your accepted passive capture,
-shutdown and Camera-reopen receipts. Do not repeat the thirty-minute run or
-recognition work. Send only new case notes/exports with source/device identity.
+**Your weighted work is complete: 69/69 (100.0%).** Team acceptance is
+**202/223 (90.6%), 26/29 tasks** under [Revision 7](PROJECT_PLAN.md#revision-7--scoped-windows-release-acceptance-28-october-2026). GF-P19 and GF-P23
+are accepted; remaining GF-P25/GF-P26/GF-P27 belong to Deston. No new device,
+recognition, collection, Practice or endurance run is assigned to you.
 
-[The approved minimum release procedure](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026)
-combines passive stability with separate functional checks; no new interactive
-thirty-minute run is assigned. Deston is preparing local documents/guide and
-package preflight in parallel. Final review, guide-only/offline checks and
-required demonstration/rehearsal/declaration/LMS steps remain. This supersedes
-older repetitive instructions below. GF-P22 software acceptance adds six points;
-remaining GF-P19 physical checks explicitly gate GF-P23. Ownership is unchanged.
+Installation is verified as assisted, not guide-only. The offline attempt's
+operator report conflicts with sampled Wi-Fi-Up observations; neither is erased,
+and complete disconnected operation is unverified. Native macOS Studio remains
+unverified. These limits are disclosed in the owner-approved scoped release;
+acceptance is not a claim that every original engineering target passed.
 
-## Current release briefing — 28 October 2026
+## What to do next
 
-**Your weighted tasks are complete: 69/69 (100.0%).** Your remaining contribution
-is laptop-B support for Javier's integration checks and Deston's release.
-Target submission is **31 October**; the official deadline is **7 November**.
+1. Review the existing guide/slides and rehearse your **recognition and results** speaking section
+   with the team. Use the [storyboard](GF_P25_DEMO_STORYBOARD.md); the presentation
+   is ten minutes including the embedded highlight, followed by a separate live demo.
+2. Check final technical wording against existing results. Keep actual misses,
+   assisted setup, unresolved offline evidence and unverified native Mac status
+   visible where relevant. No new experiment is needed.
+3. Supply any required contribution/declaration details to Deston for final
+   documentation. Help fix a reproduced release defect only if one appears.
 
-GF-P20, GF-P21 and GF-P24 are complete. Do not restart P02 experiments, Practice
-searches or participant collection. The [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md)
-and [evaluation](P20_EVALUATION_2026_10_26.md) retain the actual outcomes. GF-P16
-uses Deston's owner-approved manual acceptance; automated Practice remains
-19/22. No settings or runtime qualification records change.
+PR #44's three received packets are independently verified. The two original
+native/camera recovery packets mentioned there may be sent for optional archival;
+they are not a new acceptance requirement and no repeat session is needed.
 
-Team progress is **189/223 (84.8%), 24/29 tasks**: Deston 60/89 (67.4%), Hau Jie
-69/69 (100.0%), Javier 60/65 (92.3%). GF-P22 software recovery/guide is accepted;
-remaining tasks are GF-P19, GF-P23, GF-P25, GF-P26 and GF-P27. See the [team guide](TEAM_GUIDE.md).
+## Prompt for your coding agent
 
-## Your next delivery
+> Read Revision 7 in PROJECT_PLAN.md and the current TEAM_GUIDE.md. GF-P19 and
+> GF-P23 are accepted with documented release limitations; do not reopen device,
+> recognition or endurance work. Review my assigned presentation/guide wording
+> against existing evidence, fix only a concrete discrepancy or reproduced defect,
+> and preserve measured results and private-data boundaries. Use my own branch,
+> submit a focused PR if needed, and leave prompt/decision logs unchanged.
 
-Use the laptop-B checklist in [the current closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october).
-Deston has recorded the separate manual active-camera handoff on his own machine; your
-remaining B observations still need to identify laptop B and its actual build.
-
-Your 28 October passive-stability packet is received and independently verified:
-all 11 hashes match, 30 min 35.532 s of continuous capture meets the existing gap
-limits, shutdown exits 0 and your post-close Camera observation is retained.
-**PR #43 is merged. Do not resend this packet or repeat passive endurance.**
-The [receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md) accepts these substeps
-on `708e77e`. Interaction, guide-only setup and offline core are still separate.
-
-### Laptop B support for release
-
-**PR #44 merged; received packets reviewed — 28 October:** the final assisted
-installation, offline-review and operator-clarification ZIPs pass CRC/path checks
-and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
-and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
-missing installation exit receipt, not the independent guide-only criterion.
-The offline run preserves three launch requests, nine applied viewer outcomes,
-two boundary no-ops and a distinct restored revision with zero replayed outcomes.
-Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
-operator reports continuous disconnection. Keep both records: link Up is not
-proof of Internet traffic, and complete disconnected operation is not established.
-
-PR #44 also reports separate native slot/save/restore and short camera recovery
-checks. Their two original private packets have **not yet been received here**;
-reuse the attributed observations and request those originals, not another run.
-See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
-
-1. **Send existing files, no rerun:** `PRIVATE_LAPTOP_B_NATIVE_RECOVERY_20261028.zip`
-   and `PRIVATE_LAPTOP_B_CAMERA_RECOVERY_20261028.zip`. Deston has the other three
-   new packets and the passive-stability packet; do not resend them.
-2. **Short offline check:** after setup, disable Wi-Fi and unplug Ethernet for
-   this local check, confirming Windows shows both disconnected. Open Studio,
-   navigate/bookmark, open Calculator and a local file/folder, save/restore paused
-   without automatic replay, and close normally. Keep before/during/after network
-   observations and the same process's numeric exit. No browser/online target is
-   required and no thirty-minute run is needed. Retain the earlier disputed run.
-3. **Guide-only installation:** use the published guide in a separate writable
-   folder/environment, without copying the working environment. Record any point
-   requiring help; that is a guide improvement, not a guide-only pass. The new
-   assisted installation already proves setup/startup and does not need repeating
-   as another assisted test.
-4. **GPT:** validate existing recovery originals, reconcile the device matrix
-   with Javier, and fix only a reproduced defect. Preserve exact build identity;
-   no new model, Practice, collection or endurance task is assigned.
-
-Work on **codex/hau-jie-profiles**, not `main`. Hau Jie's laptop is laptop B;
-Javier does not need another machine. Your recognition/methods contribution
-remains credited; Deston owns final GF-P24/GF-P25 delivery. Native Mac expansion,
-interviews and further consumed-TEST work are not assigned.
-
-## Presentation review — 27 October
-
-Review the new local PowerPoint's recognition section: slides 5–8 (personal
-onboarding, architecture, kNN/SVM and frozen TEST) and slide 11 (16 responses,
-four misses and successful-only latency). Check the speaker notes against your
-accepted methods/results, then rehearse these proposed speaking slots with the
-team. No new data collection is assigned. The [storyboard](GF_P25_DEMO_STORYBOARD.md)
-has the exact ten-minute schedule; the 60-second highlight combines manual
-footage with a labelled readiness illustration. Review its example pose key and
-standard personal-profile/Practice route. It is not a new recorded qualification.
-Laptop-B work above remains the release priority.
-
-## Prompt to give your coding agent
-
-> Read this current briefing and TEAM_GUIDE.md. Sync reviewed main into codex/hau-jie-profiles without losing local work. Prepare the remaining laptop-B cases from the device matrix; distinguish manual checks from what you can verify in code. The latest private ZIP is already received, so send only new evidence. Preserve exact run/build identity, original failures and separate process receipts. Do not repeat recognition collection, change qualification results or tune TEST. Fix only reproduced owned-component defects and submit a focused PR with fresh affected checks. Keep full logs, samples and Word documents private; leave prompt/decision logs unchanged. Report the remaining human actions clearly.
+Work on **codex/hau-jie-profiles**, not main.
 
 <details>
 <summary>Historical record — expand for earlier deliveries and decisions</summary>

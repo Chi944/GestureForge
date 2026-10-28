@@ -1,5 +1,45 @@
 # GestureForge Studio approved project build plan
 
+## Revision 7 — scoped Windows release acceptance, 28 October 2026
+
+Deston explicitly approved closing GF-P19 and GF-P23 for the scoped Windows
+release, retaining the installation and offline limitations below. This supersedes
+Revision 6's remaining guide-only/offline closure gates; it does not alter original
+measurements, runtime protections, task weights or tutor requirements.
+
+- **GF-P19 accepted (5 points):** the original criterion requires four target
+  types on both Windows laptops, with the error/recovery and Camera-handoff
+  evidence assessed across the integrated system. It does not require every
+  error and handoff case to be repeated on each device. Existing A/B openings
+  and refusals, Deston's 19 native checks and his 28 October manual active-camera
+  release/return/reacquisition establish that aggregate coverage. Unavailable
+  mapped-drive and broken-association fixtures remain NOT RUN as deferred in
+  Revision 6. Device identities and attributed observations remain distinct.
+- **GF-P23 accepted with disclosed limits (8 points):** reuse the verified
+  laptop-B passive stability/shutdown, separate functional/recovery evidence and
+  assisted fresh-environment setup/startup with actual exit 0. Installation was
+  assisted, **not a guide-only pass**. The offline attempt has conflicting operator
+  and link observations; **complete disconnected operation remains unverified**.
+  These are documented release limits accepted by the owner, not passing results.
+- No further duplicated device, endurance, recognition or collection work is
+  assigned to close these tasks. The two recovery packets mentioned in PR #44 but
+  not received locally may be archived later; attributed observations remain
+  labelled, and missing originals are not a new acceptance gate.
+- Native macOS Studio remains unverified. Windows acceptance does not establish
+  Mac shortcut compatibility. Failed recognition measurements remain unchanged.
+
+**26/29 tasks accepted: 202/223 (90.6%).** Deston **68/89 (76.4%)**, Hau Jie
+**69/69 (100.0%)**, Javier **65/65 (100.0%)**. Remaining: GF-P25 guide/demo review,
+GF-P26 final documents/declaration/presentation, GF-P27 package and verified LMS
+submission. Rehearse the ten-minute presentation; the live demo is separate.
+
+Evidence: [device checks](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md),
+[two-device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md),
+[passive stability](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md) and
+[PR #44 observations and packet review](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
+
+## Earlier release procedures — historical where superseded
+
 ## Revision 6 — minimum complete release, 28 October 2026
 
 Deston authorised doing the remaining necessary work and skipping unnecessary
