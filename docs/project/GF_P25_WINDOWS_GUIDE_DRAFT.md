@@ -1,9 +1,11 @@
 # GestureForge Studio Windows guide
 
 Current delivery owner: Deston (transferred 26 October 2026). Original draft prepared by Javier on 19 October 2026; preserve his contribution.
-Updated 26 October 2026 against source `fa9647b`. Guide in preparation; final
-package instructions and genuine demonstration footage depend on GF-P23 release
-checks. This revision does not certify a new ZIP or change historical device evidence.
+Reviewed 28 October 2026 against source `976467c`. Instructions and the local
+Word demo guide are prepared now under Revision 6; final package reconciliation
+follows GF-P23. The current presentation uses 14 core slides and a 60-second
+highlight within its ten-minute speaking plan; the live demonstration is separate.
+This review does not certify a fresh installation or change historical device evidence.
 
 ## What this helps you do
 

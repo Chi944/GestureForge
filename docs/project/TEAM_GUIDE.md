@@ -5,7 +5,16 @@
 Target submission: **31 October**. Official deadline: **7 November**.
 Use this current briefing; expand the historical section only for earlier decisions.
 
-**23 of 29 tasks are accepted: 183/223 weighted points (82.1%).** GF-P20
+**Revision 6:** use [the minimum complete release procedure](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026).
+Reuse accepted passive endurance plus separate functional checks; do not schedule
+another interactive thirty-minute run. Defer unavailable mapped-drive and broken
+association fixtures as NOT RUN without changing the OS. Prepare local report,
+matrix, guide, presentation and package now, then reconcile final results once.
+The source preflight and 63 passing packaging tests are preparation only;
+remaining native recovery/handoff, guide-only/offline, final review/rehearsal,
+declaration and LMS checks still apply. GF-P22 acceptance below adds six verified software points.
+
+**24 of 29 tasks are accepted: 189/223 weighted points (84.8%).** GF-P20
 (evaluation), GF-P21 (recognition assessment) and GF-P24 (methods/results) are
 complete. Recognition research, new participant collection and P02 repair are
 not current assignments. Deston owns final direction, integration and acceptance.
@@ -24,7 +33,7 @@ His post-close Camera observation is retained. These substeps are accepted on
 `708e77e`; no repeat passive endurance is assigned. The
 [receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md) keeps this separate from
 Deston's earlier gapped run. Interaction, guide-only setup, offline core and the
-GF-P22 dependency still prevent whole GF-P23 acceptance. No recognition repeat.
+GF-P19 dependency still prevent whole GF-P23 acceptance. No recognition repeat.
 
 **Presentation preparation — 27 October:** the local PowerPoint now has 14 core
 slides plus three hidden backups, a ten-minute plan and a 60-second embedded
@@ -36,13 +45,28 @@ handoff, Hau Jie explains recognition and results, and Javier covers guarded
 actions, recovery and verification. These are proposed speaking roles; rehearse
 and review the notes together. GF-P25/GF-P26 are not yet accepted.
 
+**GF-P22 accepted — software recovery and guide:** the original criterion at
+`223c8c3` is “Affected tests pass and guide reflects actual behaviour”. The
+reviewed recovery fixes, current guide, 1,229 passing suite tests (two skips) and
+63 passing packaging tests satisfy that software criterion. Revision 6 separates
+this software closure from GF-P19's outstanding physical cases: GF-P22 now depends
+on completed GF-P20; **GF-P23 explicitly depends on GF-P19, GF-P21 and GF-P22**.
+This sequencing change does not infer a native pass or remove device checks from
+release acceptance. Javier gains six accepted points: **60/65 (92.3%)**; team
+**189/223 (84.8%), 24/29 tasks**. Deston remains 60/89 and Hau Jie 69/69.
+
 ## Remaining tasks and handoffs
+
+Deston's 28 October manual active-capture Camera handoff, paused return and
+explicit resume are now recorded in the [device check](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md#additional-manual-camera-handoff--28-october).
+Do not repeat that manual check. It does not establish gesture-triggered or
+laptop-A/B coverage. The local report, matrix and demo guide are updated and
+visually verified; final release reconciliation remains.
 
 | Task | Owner | Next manual work | Next GPT work |
 | --- | --- | --- | --- |
 | GF-P19 | Javier | Complete remaining laptop-A shortcut/error cases; Hau Jie handles laptop B. Deston can supply the separate active-camera handoff check on his device. | Reconcile exact case/build receipts against the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); preserve device boundaries and unchanged passes. |
-| GF-P22 | Javier | Verify affected native recovery on A/B. | Fix reproduced defects, run affected checks and reconcile GF-P19 plus completed GF-P20 before closure. |
-| GF-P23 | Deston | Hau Jie completes guide-only laptop-B installation, offline core and remaining interactive checks. Deston reviews the release. | Reuse accepted passive duration/gaps/shutdown on 708e77e, reconcile changed-runtime coverage and GF-P22. GF-P21 is complete. |
+| GF-P23 | Deston | Hau Jie completes guide-only laptop-B installation, offline core and remaining interactive checks. Deston reviews the release. | Reuse accepted passive duration/gaps/shutdown on 708e77e, reconcile changed-runtime coverage and GF-P19. GF-P21/GF-P22 are complete. |
 | GF-P25 | Deston | Rehearse the ten-minute talk and separate live demo; review release-matched onboarding/operation coverage and final playback after GF-P23. | Finish the guide and edit genuine footage using the [storyboard](GF_P25_DEMO_STORYBOARD.md); keep mode and limitations visible. |
 | GF-P26 | Deston | Review the final report/slides, complete required declaration/contribution details and rehearse ten minutes. | Reconcile local documents after GF-P23/GF-P24/GF-P25; verify requirements, tools, AI use, references and evidence. |
 | GF-P27 | Deston | Upload to LMS, then download/open the actual submitted files. | After GF-P26, package and verify permitted source/data/assets and required documents/video; exclude private extras. |
@@ -51,8 +75,8 @@ and review the notes together. GF-P25/GF-P26 are not yet accepted.
 | --- | --- | --- | --- |
 | Deston | **60/89 — 67.4%** | Camera handoff; demo/presentation rehearsal; final release review. | Remaining device integration, final documents and packaging. |
 | Hau Jie | **69/69 — 100.0%** | Remaining laptop-B installation/offline/native support. | Prepare only outstanding device receipts; no new recognition work. |
-| Javier | **54/65 — 83.1%** | Remaining A/B shortcut and recovery cases. | Consolidate evidence and finish GF-P19/GF-P22. |
-| Total | **183/223 — 82.1%** | **23/29 tasks accepted.** | Six whole tasks remain; partial checks do not award whole-task points. |
+| Javier | **60/65 — 92.3%** | Remaining A/B shortcut and recovery cases. | Consolidate evidence and finish GF-P19. |
+| Total | **189/223 — 84.8%** | **24/29 tasks accepted.** | Five whole tasks remain; partial checks do not award whole-task points. |
 
 Hau Jie's own weighted work is complete; laptop-B support still contributes to
 the team's release. Prior contributions remain credited when final delivery moves

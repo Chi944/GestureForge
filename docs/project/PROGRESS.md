@@ -3,17 +3,36 @@
 Snapshot: **28 October 2026**. Weighted points describe accepted work, not a grade.
 Target submission: **31 October**; official deadline: **7 November**.
 
-## Current checkpoint — laptop-B passive stability accepted
+**Additional completed substep:** Deston's normal Studio controls now demonstrate
+active-capture release for a manual Camera shortcut, return paused, explicit
+reacquisition (585 observations) and normal process exit 0 on `976467c`.
+This is manual dispatch on his device, not an A/B or gesture-triggered result.
+See the [bounded handoff receipt](GF_P19_DESTON_DEVICE_CHECKS_2026_10_26.md#additional-manual-camera-handoff--28-october).
+The local report (18 pages), subsystem matrix (four pages) and demo guide
+(five pages) are updated and visually checked; Word deliverables remain local.
 
-**23/29 tasks accepted; 183/223 points (82.1%).** Six whole tasks remain.
+## Current checkpoint — recovery software accepted; release checks narrowed
+
+**24/29 tasks accepted; 189/223 points (84.8%).** Five whole tasks remain.
 Completed substeps are recorded below; they do not award a whole task early.
+
+**Revision 6 — 28 October:** [the reduced release procedure](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026)
+reuses accepted passive endurance plus separate functional checks; **no new
+interactive thirty-minute run** is required. Unavailable mapped-drive and broken
+association fixtures are deferred as NOT RUN, not passed. Report/matrix/guide
+refresh and source-package preparation proceed now; final reconciliation still
+uses the actual release outcomes. The packager now rejects accidentally tracked
+Office files, raw logs and tool caches: **63 packaging tests**, Ruff and mypy pass.
+The private 223-file source preflight passes CRC, file hashes, required assets,
+privacy checks and extracted Studio startup using existing Windows dependencies.
+It is preparation, not a fresh-install, offline, macOS or final-submission pass.
 
 | Member | Accepted progress | Next manual tasks | Next GPT tasks |
 | --- | --- | --- | --- |
-| Deston | **60/89 — 67.4%** | Separate camera handoff; demo/presentation rehearsal; final release and document review. | Integrate remaining device evidence, finish documents and package preflight. |
+| Deston | **60/89 — 67.4%** | Demo/presentation rehearsal; final release and document review. | Integrate remaining device evidence and reconcile the prepared documents/package. |
 | Hau Jie | **69/69 — 100.0%** | Remaining laptop-B fresh-install/offline and affected native support. | Validate and send only outstanding device receipts; no new recognition work. |
-| Javier | **54/65 — 83.1%** | Remaining laptop-A/B shortcut and recovery cases. | Reconcile the device matrix and finish GF-P19/GF-P22. |
-| Total | **183/223 — 82.1%** | **23 of 29 tasks accepted.** | Remaining: GF-P19, GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. |
+| Javier | **60/65 — 92.3%** | Remaining laptop-A/B shortcut and recovery cases. | Reconcile the device matrix and finish GF-P19. |
+| Total | **189/223 — 84.8%** | **24 of 29 tasks accepted.** | Remaining: GF-P19, GF-P23, GF-P25, GF-P26 and GF-P27. |
 
 **Accepted substeps — 28 October:** PR #43 is reviewed and merged. Hau Jie's
 original packet passes CRC, all 11 payload hashes and independent same-run
@@ -25,7 +44,7 @@ The tested runtime is `708e77e`, not the later branch sync. These passive captur
 shutdown and attributed camera-reopen substeps are accepted; no repeat passive
 30-minute run is assigned. This run included no clicking/scrolling, used assisted
 setup and did not disconnect networking. Interactive workflow coverage, guide-only
-setup, offline core and GF-P22 remain open, so GF-P23's eight points are not yet
+setup, offline core and GF-P19 remain open, so GF-P23's eight points are not yet
 awarded. See the [independent receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md).
 
 **Software verification — 28 October:** merged main `9b34d57` passes Ruff,
@@ -45,10 +64,18 @@ demo covers operation. Rehearsal and final release-matched review remain open;
 this preparation does not award GF-P25/GF-P26 or change accepted points. See the
 [updated storyboard](GF_P25_DEMO_STORYBOARD.md).
 
-For GF-P19/GF-P22, use [Deston's step-by-step closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october).
-It separates the remaining A/B checks from Deston's camera handoff and the
-subsequent evidence review. Acceptance of both tasks would add 11 points:
-**194/223 (87.0%), 25/29 tasks**; these points are not awarded yet.
+**GF-P22 accepted — software recovery and guide:** the original criterion at
+`223c8c3` is “Affected tests pass and guide reflects actual behaviour”. The
+reviewed recovery fixes, current guide, 1,229 passing suite tests (two skips) and
+63 passing packaging tests satisfy that software criterion. Revision 6 separates
+this software closure from GF-P19's outstanding physical cases: GF-P22 now depends
+on completed GF-P20; **GF-P23 explicitly depends on GF-P19, GF-P21 and GF-P22**.
+This sequencing change does not infer a native pass or remove device checks from
+release acceptance. Javier gains six accepted points: **60/65 (92.3%)**; team
+**189/223 (84.8%), 24/29 tasks**. Deston remains 60/89 and Hau Jie 69/69.
+
+For the remaining GF-P19 device checks, use [Deston's step-by-step closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october).
+Completing GF-P19 adds five points: **194/223 (87.0%), 25/29 tasks**.
 
 **Software and diagnostic work — 27 October:** PRs #41/#42 are merged. The
 active-Practice layout now hides/restores the demo-entry button with the other
@@ -62,7 +89,7 @@ the [endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md#27-october-bounded-
 remains **69/69**. PR #42 adds a pinned laptop-B release checklist and records
 software checks that exposed the layout and typing failures repaired above.
 PR #43 now supplies accepted physical passive-capture and shutdown substeps. His
-remaining support helps close Javier's GF-P19/GF-P22 and Deston's GF-P23.
+remaining support helps close Javier's GF-P19 and Deston's GF-P23.
 
 **Shortest remaining path:** Javier completes only missing native/refusal and
 same-run process receipts; Hau Jie completes laptop-B affected slot/recovery,
@@ -71,9 +98,11 @@ rehearse the ten-minute talk and demonstrate the readiness sequence now. Schedul
 the separate active-camera handoff and remaining interaction checks on the identified
 candidate. Reuse the accepted passive endurance result with its exact build;
 do not repeat completed recognition evaluation or silently treat passive capture as interaction.
-Close GF-P19/GF-P22, then GF-P23, then final guide/video and document review
-(GF-P25/GF-P26), then package/upload/download verification (GF-P27). An unavailable
-fixture stays documented as NOT RUN until its release disposition is reviewed.
+Prepare GF-P25/GF-P26 documents, guide/video and the GF-P27 package preflight
+now while GF-P19 device closure continues. Finalise GF-P23, reconcile the
+prepared deliverables once, then verify the actual LMS upload/download. Unavailable
+mapped-drive and broken-association fixtures are deferred optional cases under
+Revision 6 and remain NOT RUN; essential recovery and camera handoff are retained.
 
 **Completed evaluation and methods:** GF-P20 covers the saved hold, negative,
 replay, walkthrough and visual-latency evidence; the fresh capture has 16 responses
@@ -106,11 +135,10 @@ also remain valid additional-device evidence, without replacing A/B coverage.
 | Remaining task | Owner | Completion gate |
 | --- | --- | --- |
 | GF-P19 · Desktop shortcuts | Javier | Remaining two-device native/error-path and eligible camera-handoff evidence. |
-| GF-P22 · Recovery integration | Javier | GF-P19 plus affected recovery verification; fix any demonstrated defects. GF-P20 is complete. |
-| GF-P23 · Release verification | Deston | Passive duration/responsiveness and shutdown accepted on 708e77e; finish interactive coverage, fresh guide-only laptop-B installation/offline evidence and GF-P22, then review the release. |
-| GF-P25 · Guide and demo | Deston | Final genuine release-matched footage, finished guide and playback check after GF-P23. Rehearse now. |
-| GF-P26 · Documents/presentation | Deston | Reconcile final report, matrix, slides and declaration after GF-P23/GF-P24/GF-P25; rehearse ten minutes. |
-| GF-P27 · Submission | Deston | Verify final permitted package, upload, download and open the actual LMS files after GF-P26. |
+| GF-P23 · Release verification | Deston | Reuse passive duration/responsiveness/shutdown on 708e77e plus separate functional coverage; no new interactive endurance. Finish fresh guide-only laptop-B setup/offline and GF-P19, then review. |
+| GF-P25 · Guide and demo | Deston | Prepare the guide/video now; finish genuine release-matched coverage and playback review when GF-P23 closes. Rehearse now. |
+| GF-P26 · Documents/presentation | Deston | Refresh report/matrix/slides now; reconcile once after GF-P23/GF-P24/GF-P25, complete declaration and rehearse ten minutes. |
+| GF-P27 · Submission | Deston | Build and verify source preflight now; final permitted package and actual LMS upload/download/open remain after GF-P26. |
 
 The [team guide](TEAM_GUIDE.md), [Hau Jie brief](HAU_JIE_HANDOFF.md),
 [Javier brief](JAVIER_HANDOFF.md) and [backlog](TEAM_BACKLOG.csv) define next work.

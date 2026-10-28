@@ -26,7 +26,35 @@ Camera instrumentation used Python object IDs, which were reused across starts.
 Three starts produced two frame-count buckets. Do not infer continuous duration,
 per-session frame rates or stability acceptance from those aggregates.
 
-## Remaining work
+## Additional manual Camera handoff — 28 October
+
+Production Studio on `976467c` was exercised through its normal desktop controls,
+using isolated local state and the existing P01 profile. No production camera,
+controller or dispatch code was changed. The saved manual-demo approval route
+was explicitly enabled for this session; no Practice outcome was altered.
+
+- Camera index 1 supplied 195 observations before the manual Quick Actions
+  Camera request. Studio visibly released capture, then recorded one native
+  `launch_requested` outcome at monotonic time 442414.656.
+- Windows Camera opened. Its window was subsequently brought forward through
+  the OS launcher to inspect it; a live image of the same scene was visible.
+  This additional foreground activation is disclosed, not treated as a second
+  Studio launch.
+- After Camera was closed, Studio remained paused with Start available. Explicit
+  Start reacquired camera 1, supplied 585 observations and returned to
+  WAIT NEUTRAL. Normal Studio closure and process exit 0 were recorded.
+- This proves the manual-request capture release/return/resume path on Deston's
+  device. It is not a gesture-triggered action, laptop-A/B result, endurance run
+  or new recognition acceptance. An earlier Preview segment contains a simulated
+  NEXT; it is not counted as a native action or a labelled recognition trial.
+
+Numeric logs, an isolated session export and checksums remain private under
+`.local/p19-handoff-20261028`. The measurement helper records starts, observations
+and normal close; it does not independently timestamp worker release. The UI,
+successful Camera acquisition and subsequent reacquisition provide the bounded
+release/recovery observation. No raw camera recording was saved.
+
+## Remaining work (26 October record; Revision 6 supersedes repeat requirements)
 
 GF-P19 stays **In Progress** under its existing two-device criterion. Reuse the
 unchanged A/B passes in the [case matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md).

@@ -153,10 +153,12 @@ def _tracked_source_files(root: Path) -> list[Path]:
                 "Restore it, or stage its intended removal before packaging."
             )
     forbidden = (".venv/", ".tools/", ".python/", ".cache/", ".local/",
+                 ".pytest_cache/", ".mypy_cache/", ".ruff_cache/",
                  "data/local/", "experiments/local/")
-    local_documents = {"docs/submission/GestureForge_Technical_Report.docx",
-                       "docs/submission/Prompt_Log.docx", "docs/submission/Decision_Log.docx"}
-    if any(name.startswith(forbidden) or name in local_documents for name in files):
+    private_suffixes = {".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".log"}
+    if any(name.lower().startswith(forbidden)
+           or Path(name).suffix.lower() in private_suffixes
+           or "__pycache__" in Path(name).parts for name in files):
         raise SystemExit("Private data or environment files are tracked; review before packaging.")
     return [Path(name) for name in sorted(files)]
 

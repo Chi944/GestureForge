@@ -1,5 +1,48 @@
 # GestureForge Studio approved project build plan
 
+## Revision 6 — minimum complete release, 28 October 2026
+
+Deston authorised doing the remaining necessary work and skipping unnecessary
+repeat work. This revises the release procedure, not recorded results, runtime
+protections, recognition targets or tutor requirements. Current accepted work
+is **189/223 (84.8%), 24/29 tasks** after GF-P22 software acceptance; owners and weights are unchanged.
+
+- Reuse the accepted laptop-B passive 30-minute duration/responsiveness and
+  shutdown evidence together with separate functional/recovery checks. **No new
+  interactive 30-minute run is required.** Record each segment's source/device
+  and outcome; do not describe the passive segment as interactive testing.
+- Defer physical mapped-network-drive and broken-file-association fixtures when
+  unavailable: retain **NOT RUN / deferred optional fixture** and the existing
+  software/validation coverage. Do not change Windows associations, create
+  network mappings or claim those native cases passed.
+- No new interviews, recruitment, recognition search, consumed-TEST tuning,
+  repeated collection or full Practice runs solely to increase progress.
+- Prepare the report, evidence matrix, guide, presentation and source-package
+  preflight now in parallel with device closure. Reconcile them once against
+  the final identified source and actual outcomes before submission.
+
+**Still essential:** remaining supported native launch/handoff and recovery
+coverage; fresh guide-only installation and offline core on laptop B; final
+release/document review; genuine demonstration, presentation rehearsal and
+required declaration; verified final package and LMS upload/download check.
+GF-P19 remains a release dependency; GF-P22 software closure is separated below.
+No point is awarded merely for reducing repeat work. Native macOS Studio remains unverified; Windows
+shortcut support is not extended to macOS by this decision.
+
+**GF-P22 accepted — software recovery and guide:** the original criterion at
+`223c8c3` is “Affected tests pass and guide reflects actual behaviour”. The
+reviewed recovery fixes, current guide, 1,229 passing suite tests (two skips) and
+63 passing packaging tests satisfy that software criterion. Revision 6 separates
+this software closure from GF-P19's outstanding physical cases: GF-P22 now depends
+on completed GF-P20; **GF-P23 explicitly depends on GF-P19, GF-P21 and GF-P22**.
+This sequencing change does not infer a native pass or remove device checks from
+release acceptance. Javier gains six accepted points: **60/65 (92.3%)**; team
+**189/223 (84.8%), 24/29 tasks**. Deston remains 60/89 and Hau Jie 69/69.
+
+This section supersedes older requests below for a new interactive endurance
+run, unavailable optional fixtures, or waiting to begin document preparation.
+Earlier plans and failed measurements remain historical evidence.
+
 **Ownership update — 26 October:** Deston now owns GF-P24 (methods/results, 6 points) and GF-P25 (guide/demo video, 8 points). Hau Jie supplies existing recognition evidence; Javier supplies existing guide/footage and device receipts. Their prior contributions remain attributed. GF-P20 also remains with Deston. No task is newly accepted by this reassignment; individual denominators change, team progress remains 161/223 (72.2%).
 
 

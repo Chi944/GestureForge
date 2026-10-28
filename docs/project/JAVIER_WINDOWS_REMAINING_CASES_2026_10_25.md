@@ -1,5 +1,24 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
+## Revision 6 — current closure scope
+
+GF-P22 software recovery/guide is accepted against its original criterion and
+verified tests. The outstanding physical cases below remain GF-P19 and explicitly
+gate GF-P23; their results are not inferred from the software acceptance.
+
+Reuse accepted passive duration/responsiveness and shutdown together with
+separate supported interaction/recovery checks. **No new interactive 30-minute
+run is required.** The new physical work is only missing supported native
+refusal/recovery, eligible camera handoff, fresh guide-only setup and offline
+core. Keep device/build identities and separate run segments.
+
+Mapped-drive and broken-association fixtures are **NOT RUN / deferred optional
+fixtures** when unavailable. Do not change associations or create a network
+mapping to manufacture a test. Existing validation/unit coverage remains evidence
+of software behavior, not a native fixture pass. The dated matrix below retains
+its original observations; these dispositions supersede its next-action requests.
+See [Revision 6](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026).
+
 ## Current update — 28 October
 
 [PR #43 and the original passive-run packet](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
@@ -29,7 +48,7 @@ saved-state validation pass. Physical Windows checks remain Javier's guided
 observations; the packet contains no screenshots. Receipt review does not advance
 whole-task acceptance.
 
-Scope: GF-P19, GF-P22 and coordination for GF-P23/GF-P25.
+Current scope: remaining GF-P19 physical cases and coordination for GF-P23/GF-P25. GF-P22 software work is accepted under Revision 6.
 Review owner: Deston; independent 25 October artifact receipt review complete. Laptop A operator: Javier. Laptop B operator: Hau Jie.
 This is an inventory and execution checklist with bounded 25 October laptop-A observations; no whole-task acceptance is claimed.
 
@@ -42,7 +61,7 @@ A new 25 October post-sync screenshot identifies clean tracked status and local 
 `d9c68c651132d1405881966c2fd5445d820201c9`. Native observations below are
 bounded to that source, not later documentation commits.
 
-## Active GF-P19/GF-P22 closure sheet — 27 October
+## Dated closure sheet — 27 October (Revision 6 governs next actions)
 
 This section reconciles the current briefs; it does not mark either task Done.
 Javier's supplied 27 October screenshots establish a clean Windows
@@ -528,7 +547,7 @@ Camera launch is requested. Do not repeat PR29's whole focus sequence.
   receipt hashes. Hau Jie follows the guide unaided; record every help request
   or deviation honestly. This does not retrospectively change the assisted run.
   After dependencies/assets exist, disconnect networking and check local core.
-  Then measure one continuous >=1,800-second full Studio workflow with PID,
+  Historical pre-Revision-6 instruction (superseded; do not repeat): measure one continuous >=1,800-second full Studio workflow with PID,
   independent start/end, responsiveness, observation rate and peak memory.
   Use the [full Studio monitor](../USER_GUIDE.md#measure-the-full-studio-stability-run)
   on reviewed main: `.venv\Scripts\python.exe -m scripts.monitor_studio --output

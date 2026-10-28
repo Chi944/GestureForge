@@ -105,11 +105,11 @@ def test_source_state_keeps_dirty_unknown_when_status_fails(tmp_path, monkeypatc
     }
 
 
-@pytest.mark.parametrize("folder", [".local", ".cache"])
+@pytest.mark.parametrize("folder", [".local", ".cache", ".pytest_cache", ".mypy_cache", ".ruff_cache", "gestureforge/__pycache__"])
 def test_source_package_refuses_accidentally_tracked_working_files(tmp_path, folder):
     root = _source_repo(tmp_path)
     local = root / folder / "working-notes.md"
-    local.parent.mkdir()
+    local.parent.mkdir(parents=True)
     local.write_text("Not a submission artifact", encoding="utf-8")
     subprocess.run(["git", "add", str(local)], cwd=root, check=True)
 
@@ -125,6 +125,17 @@ def test_package_refuses_local_submission_documents(tmp_path, filename):
     document.parent.mkdir(parents=True)
     document.write_bytes(b"local document")
     subprocess.run(["git", "add", str(document)], cwd=root, check=True)
+
+    with pytest.raises(SystemExit, match="review before packaging"):
+        package_release._tracked_source_files(root)
+
+
+@pytest.mark.parametrize("filename", ["Report.docx", "Slides.pptx", "Results.xlsx", "capture.log"])
+def test_package_refuses_private_deliverables_outside_known_folders(tmp_path, filename):
+    root = _source_repo(tmp_path)
+    private_file = root / filename
+    private_file.write_bytes(b"private deliverable")
+    subprocess.run(["git", "add", filename], cwd=root, check=True)
 
     with pytest.raises(SystemExit, match="review before packaging"):
         package_release._tracked_source_files(root)

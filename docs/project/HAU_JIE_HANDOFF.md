@@ -1,5 +1,20 @@
 # Hau Jie implementation brief
 
+## Revision 6 — what to do now
+
+Your next delivery is the remaining laptop-B guide-only setup, offline core,
+and supported recovery/interaction cases. Reuse your accepted passive capture,
+shutdown and Camera-reopen receipts. Do not repeat the thirty-minute run or
+recognition work. Send only new case notes/exports with source/device identity.
+
+[The approved minimum release procedure](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026)
+combines passive stability with separate functional checks; no new interactive
+thirty-minute run is assigned. Deston is preparing local documents/guide and
+package preflight in parallel. Final review, guide-only/offline checks and
+required demonstration/rehearsal/declaration/LMS steps remain. This supersedes
+older repetitive instructions below. GF-P22 software acceptance adds six points;
+remaining GF-P19 physical checks explicitly gate GF-P23. Ownership is unchanged.
+
 ## Current release briefing — 28 October 2026
 
 **Your weighted tasks are complete: 69/69 (100.0%).** Your remaining contribution
@@ -12,9 +27,9 @@ and [evaluation](P20_EVALUATION_2026_10_26.md) retain the actual outcomes. GF-P1
 uses Deston's owner-approved manual acceptance; automated Practice remains
 19/22. No settings or runtime qualification records change.
 
-Team progress is **183/223 (82.1%), 23/29 tasks**: Deston 60/89 (67.4%), Hau Jie
-69/69 (100.0%), Javier 54/65 (83.1%). The six remaining tasks are GF-P19,
-GF-P22, GF-P23, GF-P25, GF-P26 and GF-P27. See the [team guide](TEAM_GUIDE.md).
+Team progress is **189/223 (84.8%), 24/29 tasks**: Deston 60/89 (67.4%), Hau Jie
+69/69 (100.0%), Javier 60/65 (92.3%). GF-P22 software recovery/guide is accepted;
+remaining tasks are GF-P19, GF-P23, GF-P25, GF-P26 and GF-P27. See the [team guide](TEAM_GUIDE.md).
 
 ## Your next delivery
 

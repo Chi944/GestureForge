@@ -286,6 +286,13 @@ physical Windows run or camera-reopen observation.
 
 ## Release verification
 
+The [28 October release procedure](docs/project/PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october-2026)
+reuses accepted passive endurance plus separate functional checks. No new
+interactive thirty-minute run is required. Unavailable mapped-drive and broken
+association fixtures remain deferred/NOT RUN. Local report, guide and package
+preparation proceeds alongside the remaining essential device checks.
+
+
 The [28 October laptop-B review](docs/project/LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
 independently verifies a passive Studio run on source `708e77e`:
 
