@@ -286,23 +286,25 @@ physical Windows run or camera-reopen observation.
 
 ## Release verification
 
-The [26 October endurance review](docs/project/GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
-separates completed checks from remaining release work:
+The [28 October laptop-B review](docs/project/LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
+independently verifies a passive Studio run on source `708e77e`:
 
 | Check | Recorded result |
 | :--- | :--- |
-| Continuous delivered observations | 32 minutes 20.578 seconds; duration requirement met |
-| Shutdown and camera reuse | Normal Qt exit, workers released; separate five-frame camera reopen passed |
-| Responsiveness | GUI gap 5.062 seconds and frame-delivery gap 5.094 seconds exceeded the two-second limits; cause unresolved |
-| Monitor feedback | Sticky gap warning and first-gap timing added; 35 focused tests, lint, type checks and Studio startup passed |
-| Second-device release coverage | Original laptop-B receipts received and checked; remaining installation/offline/native cases stay open |
+| Continuous capture | **30 min 35.532 s**, 44,378 delivered observations |
+| Responsiveness | Maximum active GUI gap **0.125 s**; delivery gap **0.296 s**, both within the two-second limits |
+| Resource use | **24.10 observations/s**, peak process memory **437.21 MiB** |
+| Shutdown and camera reuse | Workers released; actual child exit **0**; operator confirmed Windows Camera reopened |
+| Remaining release coverage | Interactive workflow, guide-only installation, offline core and affected native recovery remain open |
 | Native Apple Silicon Studio | Setup path available; full native device verification outstanding |
 
-Reaching zero remaining time does not by itself pass the stability check. No
-interruption was noticed during the measured run; that observation does not
-explain its recorded gap. Do not repeat a full recording simply to replace a
-failed result. Follow the [current team actions](docs/project/TEAM_GUIDE.md) and
-[accepted progress](docs/project/PROGRESS.md) for the remaining evidence.
+Passive capture and shutdown substeps are accepted. This run involved no clicking
+or scrolling, used assisted installation and did not disconnect networking.
+It does not establish full release acceptance or erase the separate
+[earlier gapped run](docs/project/GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
+No repeat passive thirty-minute run is assigned. Follow the
+[current team actions](docs/project/TEAM_GUIDE.md) and
+[accepted progress](docs/project/PROGRESS.md) for the remaining checks.
 
 ## Documentation and development
 

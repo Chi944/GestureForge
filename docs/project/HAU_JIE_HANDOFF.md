@@ -22,11 +22,12 @@ Use the laptop-B checklist in [the current closure route](JAVIER_WINDOWS_REMAINI
 Deston can handle the separate active-camera handoff on his own machine; your
 remaining B observations still need to identify laptop B and its actual build.
 
-Your `PRIVATE_LAPTOP_B_NEW_RECEIPTS_20261026.zip` is received: CRC and all 11
-indexed payload hashes pass. **Do not resend it.** The [receipt review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
-keeps the interrupted Studio run, separate pipeline diagnostic and unmeasured
-reported run distinct. Deston's new duration/close/reopen checks passed their
-substeps, but a measured five-second gap prevents a full stability pass.
+Your 28 October passive-stability packet is received and independently verified:
+all 11 hashes match, 30 min 35.532 s of continuous capture meets the existing gap
+limits, shutdown exits 0 and your post-close Camera observation is retained.
+**PR #43 is merged. Do not resend this packet or repeat passive endurance.**
+The [receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md) accepts these substeps
+on `708e77e`. Interaction, guide-only setup and offline core are still separate.
 
 ### Laptop B support for release
 
@@ -34,7 +35,7 @@ substeps, but a measured five-second gap prevents a full stability pass.
 | --- | --- | --- |
 | Manual: fresh installation/offline | Follow the [Windows guide](../WINDOWS_LAPTOP.md) in a fresh writable installation with its own environment. Record any help. After setup, test local core with networking disconnected. | Exact package/source identity, setup receipt and factual observations. Assisted setup is recorded as assisted. |
 | Manual: affected native cases | Complete only laptop-B cells still outstanding in the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md), including affected slot recovery, same-camera pause and focus/resume where unverified. | Expected/observed results and original exports/logs for those cases. |
-| Manual/GPT: endurance | Sync the monitor warning fix before a justified new attempt. Review existing gaps first; keep the same run's measurement, exit and separate reopen evidence. | A new output folder and actual observations, including interruptions or failure. Never combine separate runs into one pass. |
+| Manual/GPT: interaction coverage | Passive duration/gaps/shutdown are accepted. Record the remaining onscreen viewer controls and native recovery on the identified candidate; keep this separate from the passive run. | Actual actions/outcomes and build identity. No automatic repeat of thirty minutes and no claim that passive capture exercised controls. |
 | GPT: handoff | Validate only new receipts, retain hashes/build identity and reconcile remaining cells with Javier. | Originals privately to Deston; a sanitized case summary to Javier and a focused PR if source/docs change. |
 
 Use [the measurement guide](../USER_GUIDE.md#measure-the-full-studio-stability-run)

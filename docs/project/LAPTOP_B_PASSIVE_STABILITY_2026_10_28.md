@@ -70,3 +70,46 @@ hashes. No new production change, new main software-suite pass or task acceptanc
 is claimed. The 90 focused tests and baseline software failures belong to the
 earlier [708e77e preparation](LAPTOP_B_RELEASE_CHECKLIST_2026_10_27.md), not this
 later main revision. Subsequent reviewed source fixes do not rewrite that record.
+
+## Independent integration review — 28 October
+
+Deston's checkout independently checked the received ZIP's CRC, safe unique
+member paths, all 11 indexed payload hashes/lengths and the five embedded receipt
+hashes. Packet SHA256:
+`eb94a85e8394190cb22ece20bc7dbcd3dc041976c5187415d4b5994f0f0f24dd`.
+The three runtime-file hashes match Git's exact source blobs at `708e77e`.
+Duration, observation rate, peak memory, gap limits, worker release and actual
+child exit were recomputed from the original same-run records. All monitor
+predicates pass. PR #43 was reviewed and merged as `9b34d576f0eea8ceb15ecea0a70c18c72cf5601c`.
+
+Accepted now: passive duration/responsiveness, measured resource use, normal
+shutdown/exit and Hau Jie's attributed post-close camera-reopen observation.
+The Windows version is supplied in the author's report; the packet has no
+independent OS-system receipt. Originals and the independent receipt stay private.
+No full raw logs, private profile or participant data are committed.
+
+Still required: interactive controls/recovery, guide-only installation, offline
+core and GF-P22 closure. The passive run cannot stand in for these checks, and
+later source sync does not establish a physical run on the newer revision.
+No automatic repeat of the accepted passive thirty minutes is assigned.
+GF-P23 remains In Progress; whole-task totals stay 183/223 and 23/29.
+
+### Runtime change review
+
+Comparing `708e77e` with merged main `9b34d57`, the recorded runtime files differ
+only in Practice's demo-entry button visibility and bounded monitor checkpoint
+timing. The launcher is unchanged. Capture, classification, controller, worker
+shutdown and the monitor's acceptance limits are unchanged. Existing passive
+evidence therefore remains useful for that tested path; it is not described as
+a thirty-minute physical run on the newer source. Remaining interactive checks
+must identify their own source and cover affected UI behavior.
+
+### Current software verification
+
+After integration, `scripts/verify.py` on main `9b34d57` completed successfully:
+Ruff, mypy, 1,229 pytest cases passed with two skips, both application smoke
+checks and the synthetic evaluation. The duplicate-ZIP-entry warning comes from
+the deliberate malformed-archive test. Complete output is retained privately in
+`experiments/local/release-verification-20261028.json`. Changed documentation
+links, CSV structure and weighted totals were also checked. This is software
+verification on Deston's machine, not additional physical laptop-B coverage.

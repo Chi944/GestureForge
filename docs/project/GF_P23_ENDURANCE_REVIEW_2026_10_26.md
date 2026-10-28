@@ -105,3 +105,12 @@ Integrated verification after the Practice layout and monitor changes: 86 tests
 across the five affected test files passed offscreen; Ruff and mypy passed the
 six changed Python files. This is focused regression coverage, not a rerun of
 every repository test or either teammate's physical device checks.
+
+## 28 October — laptop-B passive substeps accepted
+
+The [independent laptop-B review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
+accepts the new 30 min 35.532 s passive capture, passing responsiveness,
+normal shutdown/exit and attributed camera-reopen substeps on `708e77e`.
+This is a separate run and does not repair or reinterpret the earlier gap.
+No repeat passive duration is assigned. Interactive workflow, guide-only setup,
+offline core and GF-P22 remain before full GF-P23 acceptance.

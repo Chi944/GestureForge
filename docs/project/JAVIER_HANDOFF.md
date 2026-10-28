@@ -22,11 +22,12 @@ finish the missing A refusals and numeric exit, consolidate Hau Jie's B receipts
 and Deston's separate handoff, then review P19 before closing P22. Both tasks
 would bring your accepted work to 65/65 and the team to 194/223 (87.0%).
 
-**PR #40 is merged.** Deston's checkout now independently verifies the original
-laptop-B ZIP CRC and all 11 indexed payload hashes. Your separate-run inventory
-is correct; do not request another copy. The [latest endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md)
-adds Deston's 32-minute continuous interval and close/reopen evidence while
-retaining a measured five-second gap. It does not replace missing laptop-A/B cases.
+**PR #43 is merged.** The [new laptop-B passive run](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
+is independently verified: 30 min 35.532 s continuous capture, passing gaps,
+same-run normal shutdown/actual exit 0 and attributed post-close Camera reopening.
+Reuse these accepted substeps on `708e77e`; do not ask Hau Jie to resend them or
+repeat passive endurance. They do not cover missing A/B interaction, recovery,
+guide-only setup or offline cases. Keep laptop-A's missing exit receipt separate.
 
 ### GF-P19
 

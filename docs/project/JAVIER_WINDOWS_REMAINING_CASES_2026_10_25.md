@@ -1,5 +1,16 @@
 # Javier: two-device evidence matrix and remaining sessions — 25 October 2026
 
+## Current update — 28 October
+
+[PR #43 and the original passive-run packet](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
+are independently verified. Laptop-B passive duration/responsiveness, normal
+shutdown/actual process exit 0 and attributed Camera reopening are accepted
+substeps on `708e77e`. No repeat passive thirty-minute run or duplicate packet
+is needed. Remaining work is interactive/native recovery coverage, fresh
+guide-only setup and offline core; laptop-A's missing exit receipt is separate.
+Preserve the dated preparation and earlier attempts below as historical evidence.
+Current instructions take precedence over older requests for a new full run.
+
 **26 October independent integration check:** the original new laptop-B ZIP has
 now arrived in Deston's checkout. CRC, safe unique member paths and all 11
 payload hashes pass; the PR #40 values below are reproduced. No resend is needed.

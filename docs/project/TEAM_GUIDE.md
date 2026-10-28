@@ -1,6 +1,6 @@
 # GestureForge Studio team implementation guide
 
-## Current release briefing — 27 October 2026
+## Current release briefing — 28 October 2026
 
 Target submission: **31 October**. Official deadline: **7 November**.
 Use this current briefing; expand the historical section only for earlier decisions.
@@ -17,13 +17,14 @@ The [evaluation](P20_EVALUATION_2026_10_26.md) and
 [recognition disposition](GF_P21_RELEASE_PROFILE_DISPOSITION_2026_10_26.md)
 retain actual misses, failed targets and limits.
 
-**Latest release evidence:** Deston completed a 32 min 20.578 s continuous
-capture interval, normal close and successful camera reopening. A recorded
-five-second gap prevents the full stability pass. Hau Jie's new laptop-B ZIP
-is received and independently verified; do not resend it. The
-[endurance review](GF_P23_ENDURANCE_REVIEW_2026_10_26.md) separates each run.
-Review the gap before any blind full-duration retry. No repeat enrolment or
-Practice is assigned.
+**Latest release evidence:** PR #43 and Hau Jie's original packet are independently
+reviewed. Laptop B passed passive continuous capture for 30 min 35.532 s with
+44,378 observations, GUI/delivery gaps of 0.125/0.296 s and normal process exit 0.
+His post-close Camera observation is retained. These substeps are accepted on
+`708e77e`; no repeat passive endurance is assigned. The
+[receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md) keeps this separate from
+Deston's earlier gapped run. Interaction, guide-only setup, offline core and the
+GF-P22 dependency still prevent whole GF-P23 acceptance. No recognition repeat.
 
 **Presentation preparation — 27 October:** the local PowerPoint now has 14 core
 slides plus three hidden backups, a ten-minute plan and a 60-second embedded
@@ -41,14 +42,14 @@ and review the notes together. GF-P25/GF-P26 are not yet accepted.
 | --- | --- | --- | --- |
 | GF-P19 | Javier | Complete remaining laptop-A shortcut/error cases; Hau Jie handles laptop B. Deston can supply the separate active-camera handoff check on his device. | Reconcile exact case/build receipts against the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md); preserve device boundaries and unchanged passes. |
 | GF-P22 | Javier | Verify affected native recovery on A/B. | Fix reproduced defects, run affected checks and reconcile GF-P19 plus completed GF-P20 before closure. |
-| GF-P23 | Deston | Hau Jie completes fresh guide-only laptop-B installation, offline core and remaining measured device checks. Deston reviews the release. | Investigate the unresolved gap, validate same-run measurement/exit/reopen receipts and close GF-P21/GF-P22 dependencies. |
+| GF-P23 | Deston | Hau Jie completes guide-only laptop-B installation, offline core and remaining interactive checks. Deston reviews the release. | Reuse accepted passive duration/gaps/shutdown on 708e77e, reconcile changed-runtime coverage and GF-P22. GF-P21 is complete. |
 | GF-P25 | Deston | Rehearse the ten-minute talk and separate live demo; review release-matched onboarding/operation coverage and final playback after GF-P23. | Finish the guide and edit genuine footage using the [storyboard](GF_P25_DEMO_STORYBOARD.md); keep mode and limitations visible. |
 | GF-P26 | Deston | Review the final report/slides, complete required declaration/contribution details and rehearse ten minutes. | Reconcile local documents after GF-P23/GF-P24/GF-P25; verify requirements, tools, AI use, references and evidence. |
 | GF-P27 | Deston | Upload to LMS, then download/open the actual submitted files. | After GF-P26, package and verify permitted source/data/assets and required documents/video; exclude private extras. |
 
 | Member | Accepted progress | Next manual tasks | Next GPT tasks |
 | --- | --- | --- | --- |
-| Deston | **60/89 — 67.4%** | Camera handoff; demo/presentation rehearsal; final release review. | Gap investigation, release integration, final documents and packaging. |
+| Deston | **60/89 — 67.4%** | Camera handoff; demo/presentation rehearsal; final release review. | Remaining device integration, final documents and packaging. |
 | Hau Jie | **69/69 — 100.0%** | Remaining laptop-B installation/offline/native support. | Prepare only outstanding device receipts; no new recognition work. |
 | Javier | **54/65 — 83.1%** | Remaining A/B shortcut and recovery cases. | Consolidate evidence and finish GF-P19/GF-P22. |
 | Total | **183/223 — 82.1%** | **23/29 tasks accepted.** | Six whole tasks remain; partial checks do not award whole-task points. |
