@@ -41,15 +41,33 @@ would bring your accepted work to 65/65 and the team to 194/223 (87.0%).
 is independently verified: 30 min 35.532 s continuous capture, passing gaps,
 same-run normal shutdown/actual exit 0 and attributed post-close Camera reopening.
 Reuse these accepted substeps on `708e77e`; do not ask Hau Jie to resend them or
-repeat passive endurance. They do not cover missing A/B interaction, recovery,
-guide-only setup or offline cases. Keep laptop-A's missing exit receipt separate.
+repeat passive endurance. PR #44 adds attributed B interaction/recovery below;
+review the existing originals before assigning any repeated case. Guide-only
+setup and offline cases remain separate, as does laptop-A's missing exit receipt.
+
+**PR #44 merged; received packets reviewed — 28 October:** the final assisted
+installation, offline-review and operator-clarification ZIPs pass CRC/path checks
+and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
+and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
+missing installation exit receipt, not the independent guide-only criterion.
+The offline run preserves three launch requests, nine applied viewer outcomes,
+two boundary no-ops and a distinct restored revision with zero replayed outcomes.
+Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
+operator reports continuous disconnection. Keep both records: link Up is not
+proof of Internet traffic, and complete disconnected operation is not established.
+
+PR #44 also reports separate native slot/save/restore and short camera recovery
+checks. Their two original private packets have **not yet been received here**;
+reuse the attributed observations and request those originals, not another run.
+See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
 
 ### GF-P19
 
 - **Manual:** finish only outstanding laptop-A target/error cases in the
   [Windows matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md). Hau Jie operates
   laptop B. Preserve unchanged passes and record unavailable native fixtures.
-- **GPT:** reconcile expected/observed results, exact build and original
+- **GPT:** obtain the two already-created B native/camera recovery packets, then
+  reconcile expected/observed results, exact build and original
   per-process evidence. Separate native openings from launch requests. Do not
   recount cumulative exports or combine separate runs.
 - **Camera handoff:** keep eligible active-capture Windows Camera release and

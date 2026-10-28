@@ -21,6 +21,22 @@ See [Revision 6](PROJECT_PLAN.md#revision-6--minimum-complete-release-28-october
 
 ## Current update — 28 October
 
+**PR #44 merged; received packets reviewed — 28 October:** the final assisted
+installation, offline-review and operator-clarification ZIPs pass CRC/path checks
+and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
+and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
+missing installation exit receipt, not the independent guide-only criterion.
+The offline run preserves three launch requests, nine applied viewer outcomes,
+two boundary no-ops and a distinct restored revision with zero replayed outcomes.
+Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
+operator reports continuous disconnection. Keep both records: link Up is not
+proof of Internet traffic, and complete disconnected operation is not established.
+
+PR #44 also reports separate native slot/save/restore and short camera recovery
+checks. Their two original private packets have **not yet been received here**;
+reuse the attributed observations and request those originals, not another run.
+See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
+
 [PR #43 and the original passive-run packet](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md)
 are independently verified. Laptop-B passive duration/responsiveness, normal
 shutdown/actual process exit 0 and attributed Camera reopening are accepted
@@ -140,40 +156,34 @@ recognition experiment. Deston retains whole-task and release acceptance.
 
 ## Deston's shortest closure route — 28 October
 
-P19 and P22 are still open. Deston may perform checks himself on the identified
-device, but his own laptop is additional evidence and does not replace laptop A
-or B. Keep already accepted openings, retries and restoration results.
+**P22 is accepted; P19 remains open.** Keep already accepted openings, retries
+and restoration results. The dated matrices below preserve historical snapshots;
+this route and the current PR #44 update take precedence.
 
-1. **Laptop A, camera off:** complete only the absent App-mode interpreter,
-   `.cmd`, `.lnk` and `.url` configuration-refusal observations. Use disposable
-   harmless fixtures, capture the selected type/value and specific refusal, and
-   never execute an unsafe target. Retain the same launch's numeric exit status
-   before refreshing or disposing its process handle.
-2. **Laptop B, short recovery session:** with no runbook, verify Save session
-   refuses without a usable file. With Harbor loaded, save and restore, checking
-   the operation notice, paused Preview and no automatic launch. Export before
-   and after separately. Make two disposable TXT targets unavailable, clear
-   their slots independently to Unbound, retain both library entries, then
-   restore the files and previous bindings. Check same-camera Use camera and
-   pause, explicit Start and the missing B focus/resume case.
-3. **Deston's own device, separate Camera handoff:** configure the workspace
-   and target first, load unchanged P01, and use the Windows guide's explicitly
-   labelled manually approved demo route. Select Live, Apply and pause, Start,
-   and fresh NEUTRAL. Request Windows Camera while Studio has real active
-   frames. Verify Studio releases capture before Camera opens, return remains
-   paused, and explicit Start reacquires. Keep the actual approval banner and
-   mode visible. Do not repeat full Practice or change thresholds for this test.
-4. **Evidence review:** give each check device/operator/date/build, expected and
-   observed outcome, screenshots/notes, relevant disjoint exports and process
-   logs. GPT can reconcile receipts, run affected regression tests and fix a
-   reproduced defect. P22 closes after P19's required cases and any resulting
-   fixes are verified; it does not require a new recognition experiment.
+1. **Laptop A, camera off:** complete only absent App-mode interpreter, `.cmd`,
+   `.lnk` and `.url` configuration-refusal observations with harmless disposable
+   fixtures. Record the specific refusal; never execute unsafe targets. Retain
+   the same launch's numeric exit before disposing its process handle.
+2. **Laptop B, existing evidence first:** obtain the original native-recovery
+   and camera-recovery packets named in PR #44. The PR reports no-runbook save
+   refusal, save/restore notices, independent unavailable-slot clearing,
+   same-camera pause/reacquisition, focus/explicit resume and normal exits.
+   Review those receipts rather than repeating those sessions.
+3. **Camera handoff coverage:** Deston's separate 28 October manual dispatch
+   already records active capture, external Camera opening, paused return,
+   explicit reacquisition and exit 0. Do not repeat it or relabel it laptop A/B.
+   Reconcile remaining eligible A/B external Camera coverage with actual runtime
+   eligibility; no qualification bypass or new Practice search is assigned.
+4. **Release-only gaps:** Hau Jie completes a short clearly disconnected local
+   core check and independent guide-only installation. The received assisted
+   installation has a verified numeric exit; the offline attempt retains its
+   conflicting operator/link evidence. Reuse accepted passive thirty-minute
+   stability. These are P23 checks, not a new endurance or recognition request.
 
-For mapped-drive and association cases, record fixture availability first. If no
-safe existing fixture exists, retain NOT RUN with a reason and an explicit
-release-coverage disposition. Do not change system associations or create network
-access just to manufacture a pass. Fresh guide-only/offline installation and the
-30-minute endurance run belong to P23, not this short P19/P22 sequence.
+Each check identifies device/operator/build and preserves actual outcomes and
+original separate exports/process logs. GPT reconciles them and fixes only a
+reproduced defect. Unavailable mapped-drive/broken-association fixtures remain
+NOT RUN under Revision 6; do not alter OS configuration to manufacture them.
 
 The 27 October guide wording issue above is resolved: the current Windows guide
 describes both full-Practice eligibility and explicitly approved demonstration.

@@ -51,6 +51,23 @@ open another PowerShell and change to the project folder first. A prompt such as
 the folder is not a Git repository means Git was run outside the checkout;
 change directory before retrying. ZIP-only users do not need Git to run Studio.
 
+## Brief offline check after installation
+
+Finish setup and the model download while online first. Save work in other apps,
+then use Windows network settings to turn **Wi-Fi off**, not just disconnect one
+network; unplug Ethernet and disable any hotspot/tethering connection for this
+check. This avoids automatic Wi-Fi reconnection. Keep the network off until
+Studio has closed. Internet reference links are outside this local-only check.
+
+Launch Studio, load the supplied workspace, navigate and bookmark a card, and
+use explicit Live manual controls to open this laptop's configured Calculator,
+local reference file and folder. Save and restore the session; confirm Preview,
+paused state and no automatic target reopening. Export the session summary and
+close normally. Record the build, actual results and network state throughout.
+The check needs no webcam, new profile or thirty-minute wait. Reconnect afterward.
+An assisted installation remains labelled assisted; it does not establish that
+a new user installed successfully using only this guide.
+
 ## Choose manual or gesture operation
 
 | Mode | Typed/manual requests | Gesture requests |

@@ -302,11 +302,16 @@ independently verifies a passive Studio run on source `708e77e`:
 | Responsiveness | Maximum active GUI gap **0.125 s**; delivery gap **0.296 s**, both within the two-second limits |
 | Resource use | **24.10 observations/s**, peak process memory **437.21 MiB** |
 | Shutdown and camera reuse | Workers released; actual child exit **0**; operator confirmed Windows Camera reopened |
-| Remaining release coverage | Interactive workflow, guide-only installation, offline core and affected native recovery remain open |
+| Installation update | Assisted laptop-B setup, dependency checks, both smoke checks and normal Studio exit **0** independently verified |
+| Remaining release coverage | Guide-only installation, unambiguous offline core and remaining supported native cases; PR #44 recovery observations await their separate original packets |
 | Native Apple Silicon Studio | Setup path available; full native device verification outstanding |
 
 Passive capture and shutdown substeps are accepted. This run involved no clicking
 or scrolling, used assisted installation and did not disconnect networking.
+The [28 October packet review](docs/project/LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md#destons-independent-packet-review--28-october)
+retains the offline discrepancy: four disconnected network samples followed by
+179 Wi-Fi-Up samples, alongside the operator's disconnected report. Link Up
+does not prove Internet traffic; complete disconnected operation remains unverified.
 It does not establish full release acceptance or erase the separate
 [earlier gapped run](docs/project/GF_P23_ENDURANCE_REVIEW_2026_10_26.md).
 No repeat passive thirty-minute run is assigned. Follow the

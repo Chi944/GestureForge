@@ -144,3 +144,25 @@ the earlier immutable snapshot remains preserved. CRC and every indexed payload
 hash pass. Only sanitized findings are committed; original logs, saved states,
 network observations and local paths remain private. These additions change no
 qualification, acceptance points or production source.
+
+## Deston's independent packet review — 28 October
+
+PR #44 is reviewed and merged. The supplied final-install, offline-review and
+network-clarification ZIPs pass CRC and safe, unique-path checks. All **52 indexed
+payload sizes and hashes** match. The final installation's setup, dependency
+check, both smoke checks and normal Studio exit are independently reconciled as
+zero. The offline export counts, distinct restored revision and 183 network
+samples reproduce the values above. Embedded packet scripts were not executed.
+
+The clarification archive SHA256 is
+`e914fef100b4b5456a11cfa1697ff170e04c2ed6144cba50ffd08c3d7fb565ef`.
+Original packets and the machine-readable review remain private. The separate
+native-recovery and camera-recovery packets named above have **not been received
+in this checkout**; those sections remain attributed PR observations. Forwarding
+their existing originals is sufficient for review; do not repeat those sessions
+merely to reproduce a packet.
+
+This closes the installation's previously missing exit receipt and verifies
+partial local-function evidence. GF-P19 and GF-P23 retain their remaining
+criteria. A short disconnected local-function check is sufficient to resolve the
+network gap; no new endurance, recognition collection or Practice is requested.

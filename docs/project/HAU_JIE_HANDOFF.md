@@ -3,7 +3,7 @@
 ## Revision 6 — what to do now
 
 Your next delivery is the remaining laptop-B guide-only setup, offline core,
-and supported recovery/interaction cases. Reuse your accepted passive capture,
+and any supported cases still absent after the PR #44 receipt review. Reuse your accepted passive capture,
 shutdown and Camera-reopen receipts. Do not repeat the thirty-minute run or
 recognition work. Send only new case notes/exports with source/device identity.
 
@@ -34,7 +34,7 @@ remaining tasks are GF-P19, GF-P23, GF-P25, GF-P26 and GF-P27. See the [team gui
 ## Your next delivery
 
 Use the laptop-B checklist in [the current closure route](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md#destons-shortest-closure-route--28-october).
-Deston can handle the separate active-camera handoff on his own machine; your
+Deston has recorded the separate manual active-camera handoff on his own machine; your
 remaining B observations still need to identify laptop B and its actual build.
 
 Your 28 October passive-stability packet is received and independently verified:
@@ -46,18 +46,39 @@ on `708e77e`. Interaction, guide-only setup and offline core are still separate.
 
 ### Laptop B support for release
 
-| Work | What to do next | What to return |
-| --- | --- | --- |
-| Manual: fresh installation/offline | Follow the [Windows guide](../WINDOWS_LAPTOP.md) in a fresh writable installation with its own environment. Record any help. After setup, test local core with networking disconnected. | Exact package/source identity, setup receipt and factual observations. Assisted setup is recorded as assisted. |
-| Manual: affected native cases | Complete only laptop-B cells still outstanding in the [device matrix](JAVIER_WINDOWS_REMAINING_CASES_2026_10_25.md), including affected slot recovery, same-camera pause and focus/resume where unverified. | Expected/observed results and original exports/logs for those cases. |
-| Manual/GPT: interaction coverage | Passive duration/gaps/shutdown are accepted. Record the remaining onscreen viewer controls and native recovery on the identified candidate; keep this separate from the passive run. | Actual actions/outcomes and build identity. No automatic repeat of thirty minutes and no claim that passive capture exercised controls. |
-| GPT: handoff | Validate only new receipts, retain hashes/build identity and reconcile remaining cells with Javier. | Originals privately to Deston; a sanitized case summary to Javier and a focused PR if source/docs change. |
+**PR #44 merged; received packets reviewed — 28 October:** the final assisted
+installation, offline-review and operator-clarification ZIPs pass CRC/path checks
+and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
+and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
+missing installation exit receipt, not the independent guide-only criterion.
+The offline run preserves three launch requests, nine applied viewer outcomes,
+two boundary no-ops and a distinct restored revision with zero replayed outcomes.
+Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
+operator reports continuous disconnection. Keep both records: link Up is not
+proof of Internet traffic, and complete disconnected operation is not established.
 
-Use [the measurement guide](../USER_GUIDE.md#measure-the-full-studio-stability-run)
-with the working camera index and a **new** output directory. Remaining zero
-does not erase an earlier gap; close normally and retain evidence if the persistent
-gap warning appears. Do not blindly repeat a full run. Active-camera external
-handoff is separate from endurance and must respect the current runtime controls.
+PR #44 also reports separate native slot/save/restore and short camera recovery
+checks. Their two original private packets have **not yet been received here**;
+reuse the attributed observations and request those originals, not another run.
+See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
+
+1. **Send existing files, no rerun:** `PRIVATE_LAPTOP_B_NATIVE_RECOVERY_20261028.zip`
+   and `PRIVATE_LAPTOP_B_CAMERA_RECOVERY_20261028.zip`. Deston has the other three
+   new packets and the passive-stability packet; do not resend them.
+2. **Short offline check:** after setup, disable Wi-Fi and unplug Ethernet for
+   this local check, confirming Windows shows both disconnected. Open Studio,
+   navigate/bookmark, open Calculator and a local file/folder, save/restore paused
+   without automatic replay, and close normally. Keep before/during/after network
+   observations and the same process's numeric exit. No browser/online target is
+   required and no thirty-minute run is needed. Retain the earlier disputed run.
+3. **Guide-only installation:** use the published guide in a separate writable
+   folder/environment, without copying the working environment. Record any point
+   requiring help; that is a guide improvement, not a guide-only pass. The new
+   assisted installation already proves setup/startup and does not need repeating
+   as another assisted test.
+4. **GPT:** validate existing recovery originals, reconcile the device matrix
+   with Javier, and fix only a reproduced defect. Preserve exact build identity;
+   no new model, Practice, collection or endurance task is assigned.
 
 Work on **codex/hau-jie-profiles**, not `main`. Hau Jie's laptop is laptop B;
 Javier does not need another machine. Your recognition/methods contribution

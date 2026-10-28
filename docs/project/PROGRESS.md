@@ -13,6 +13,22 @@ The local report (18 pages), subsystem matrix (four pages) and demo guide
 
 ## Current checkpoint — recovery software accepted; release checks narrowed
 
+**PR #44 merged; received packets reviewed — 28 October:** the final assisted
+installation, offline-review and operator-clarification ZIPs pass CRC/path checks
+and all **52 indexed payload hashes**. Setup, dependency checks, both smoke checks
+and visible Studio shutdown returned 0 on `708e77e`. This closes the earlier
+missing installation exit receipt, not the independent guide-only criterion.
+The offline run preserves three launch requests, nine applied viewer outcomes,
+two boundary no-ops and a distinct restored revision with zero replayed outcomes.
+Its 183 adapter snapshots show four disconnected and 179 Wi-Fi-Up samples; the
+operator reports continuous disconnection. Keep both records: link Up is not
+proof of Internet traffic, and complete disconnected operation is not established.
+
+PR #44 also reports separate native slot/save/restore and short camera recovery
+checks. Their two original private packets have **not yet been received here**;
+reuse the attributed observations and request those originals, not another run.
+See [the merged observations](LAPTOP_B_NATIVE_RECOVERY_2026_10_28.md).
+
 **24/29 tasks accepted; 189/223 points (84.8%).** Five whole tasks remain.
 Completed substeps are recorded below; they do not award a whole task early.
 
@@ -43,9 +59,9 @@ and actual process exit 0. Hau Jie confirmed Windows Camera worked after closure
 The tested runtime is `708e77e`, not the later branch sync. These passive capture,
 shutdown and attributed camera-reopen substeps are accepted; no repeat passive
 30-minute run is assigned. This run included no clicking/scrolling, used assisted
-setup and did not disconnect networking. Interactive workflow coverage, guide-only
-setup, offline core and GF-P19 remain open, so GF-P23's eight points are not yet
-awarded. See the [independent receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md).
+setup and did not disconnect networking. The newer PR #44 observations above
+add separate functional coverage. Guide-only setup, verified offline core and
+GF-P19 remain open, so GF-P23's eight points are not yet awarded. See the [independent receipt review](LAPTOP_B_PASSIVE_STABILITY_2026_10_28.md).
 
 **Software verification — 28 October:** merged main `9b34d57` passes Ruff,
 mypy, **1,229 tests (two skipped)**, both application smoke checks and the
@@ -91,18 +107,17 @@ software checks that exposed the layout and typing failures repaired above.
 PR #43 now supplies accepted physical passive-capture and shutdown substeps. His
 remaining support helps close Javier's GF-P19 and Deston's GF-P23.
 
-**Shortest remaining path:** Javier completes only missing native/refusal and
-same-run process receipts; Hau Jie completes laptop-B affected slot/recovery,
-camera pause/resume and fresh guide-only/offline checks. Deston can independently
-rehearse the ten-minute talk and demonstrate the readiness sequence now. Schedule
-the separate active-camera handoff and remaining interaction checks on the identified
-candidate. Reuse the accepted passive endurance result with its exact build;
-do not repeat completed recognition evaluation or silently treat passive capture as interaction.
-Prepare GF-P25/GF-P26 documents, guide/video and the GF-P27 package preflight
-now while GF-P19 device closure continues. Finalise GF-P23, reconcile the
-prepared deliverables once, then verify the actual LMS upload/download. Unavailable
-mapped-drive and broken-association fixtures are deferred optional cases under
-Revision 6 and remain NOT RUN; essential recovery and camera handoff are retained.
+**Shortest remaining path:** Javier finishes missing laptop-A configuration
+refusals and the same-run exit receipt, then reconciles the two-device matrix.
+Hau Jie sends the already-created native/camera recovery packets, completes a
+short unequivocally disconnected local workflow, and checks installation using
+only the guide. Record any assistance honestly. Resolve eligible A/B Camera
+handoff coverage separately; Deston's completed manual handoff is additional
+device evidence and is not assigned again. Do not repeat endurance or recognition.
+Deston can rehearse the ten-minute talk and separate live demo now. Documents and
+source preflight are prepared; reconcile final deliverables once GF-P19/GF-P23
+close, then perform the actual LMS upload/download check. Unavailable mapped-drive
+and broken-association fixtures remain NOT RUN under Revision 6.
 
 **Completed evaluation and methods:** GF-P20 covers the saved hold, negative,
 replay, walkthrough and visual-latency evidence; the fresh capture has 16 responses
