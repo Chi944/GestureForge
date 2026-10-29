@@ -579,7 +579,8 @@ def _check_manifest_fingerprint(path: Path, pinned: dict[str, Any]) -> None:
 
 def _resolve_pinned_path(pinned: dict[str, Any], base: Path) -> Path:
     raw = _text(pinned, "path")
-    path = Path(raw)
+    # Windows-created freezes must retain their original bytes when scored on macOS.
+    path = Path(raw.replace("\\", "/"))
     return path.resolve() if path.is_absolute() else (base / path).resolve()
 
 

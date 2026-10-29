@@ -1,5 +1,14 @@
 # Javier final delivery brief
 
+## Rehearsal handoff — 29 October
+
+Review the shortcuts/recovery speaker notes in Deston's refreshed PowerPoint and
+the user guide. Explain Preview versus Live, target validation, camera handoff
+and paused restore without replay; distinguish a launch request from completed
+work. Your agreed declaration share is 25%; review your contribution description
+and complete your identity and signature fields. No repeat device run is assigned.
+Your unavailable separate AI transcripts are disclosed rather than reconstructed.
+
 ## Current briefing — 28 October 2026
 
 **Your weighted work is complete: 65/65 (100.0%).** Team acceptance is

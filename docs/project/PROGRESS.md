@@ -1,7 +1,33 @@
 # GestureForge Studio progress
 
-Snapshot: **28 October 2026**. Weighted acceptance is not a grade.
+Snapshot: **29 October 2026**. Weighted acceptance is not a grade.
 Target submission: **31 October**; official deadline: **7 November**.
+
+## Submission preparation — 29 October
+
+The local delivery set now includes a revised report, subsystem matrix, concise
+AI appendix, full user/developer guide, contribution form and rehearsal slides.
+The agreed contribution split is Deston 50%, Hau Jie 25%, Javier 25%; these are
+contribution percentages, not the weighted task-completion figures below.
+The appendix summarises this chat and keeps recovered prompts in a separate
+private transcript. Teammate and Claude transcripts are unavailable and disclosed.
+
+The private submission includes permitted numeric inputs for reproduction.
+All four frozen TEST model results and six shared-model baseline folds were
+reproduced from a separate source/data staging folder, matching non-timing result
+fields. Windows-created frozen relative paths now resolve on POSIX without
+changing the original freeze files. This does not establish native Mac operation.
+
+Fresh 29 October verification passed **1,238 tests / two skips**, Ruff, both
+startup checks and synthetic evaluation. A test-annotation type error in the first
+check was corrected; the subsequent full mypy check passed all 114 files. Both
+original and follow-up receipts are retained in the private verification package.
+
+Slides and both videos are delivered separately from the code/documents ZIP.
+Complete declaration identities/signatures, review the final files, rehearse,
+then upload and download-check the actual LMS submission. GF-P25–GF-P27 remain
+open until those existing completion gates are satisfied; preparation alone
+does not increase accepted progress.
 
 ## Current checkpoint — GF-P19 and GF-P23 accepted
 

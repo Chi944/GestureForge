@@ -1,5 +1,16 @@
 # GestureForge Studio team implementation guide
 
+## Submission handoff — 29 October
+
+Use the single refreshed PowerPoint supplied by Deston, with its speaker notes
+and 60-second embedded highlight. A longer standalone product demo is a separate
+submission file. The live demonstration remains outside the ten-minute talk.
+Review the local report, appendix, user guide and declaration before submission;
+the agreed contribution split is Deston 50%, Hau Jie 25%, Javier 25%.
+Complete real identity/signature fields and rehearse together. No new participant
+or device session is assigned. Private numeric data and Word documents are not
+published in the [public repository](https://github.com/Chi944/GestureForge).
+
 ## Current release briefing — 28 October 2026
 
 Target submission **31 October**, official deadline **7 November**.

@@ -1,5 +1,14 @@
 # Hau Jie final delivery brief
 
+## Rehearsal handoff — 29 October
+
+Review the recognition/results speaker notes in Deston's refreshed PowerPoint
+and the corresponding report sections. Explain feature normalisation, kNN/SVM,
+rejection and why the frozen TEST misses limit deployment. Your agreed declaration
+share is 25%; review your contribution description and complete your identity and
+signature fields. No new recording is assigned. Your unavailable separate AI
+transcripts are disclosed in the appendix rather than reconstructed.
+
 ## Current briefing — 28 October 2026
 
 **Your weighted work is complete: 69/69 (100.0%).** Team acceptance is

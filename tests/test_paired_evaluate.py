@@ -3,7 +3,8 @@ import shutil
 import subprocess
 import sys
 from dataclasses import replace
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from typing import cast
 from zipfile import ZipFile
 
 import numpy as np
@@ -14,6 +15,21 @@ from gestureforge.dataset import SampleRecord, load_dataset, save_dataset
 from gestureforge.paired_evaluate import freeze_config, score_frozen
 from gestureforge.paired_evaluate import browser_test_ticket, _stable_hash, _without_keys
 from gestureforge.import_participant import import_browser_zip, MODEL_SHA256, RETENTION
+
+
+def test_windows_frozen_reference_resolves_on_posix(monkeypatch) -> None:
+    import gestureforge.paired_evaluate as paired
+
+    class PosixPathProbe(PurePosixPath):
+        def resolve(self):
+            return self
+
+    monkeypatch.setattr(paired, "Path", PosixPathProbe)
+    base = cast(Path, PosixPathProbe("/package/experiments"))
+    reference = {"path": r"data\participant\manifest.json"}
+    assert paired._resolve_pinned_path(reference, base) == (
+        base / "data" / "participant" / "manifest.json"
+    )
 
 
 POSE_DESCRIPTIONS = {

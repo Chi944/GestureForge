@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gestureforge"
 version = "0.1.0"
-description = "Personal gesture recognition assignment prototype"
+description = "Personal gesture controls for training and desktop demonstrations"
 requires-python = ">=3.11,<3.13"
 dependencies = ["numpy", "scikit-learn", "opencv-contrib-python", "mediapipe", "PySide6"]
 
